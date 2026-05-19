@@ -57,16 +57,34 @@ Concretely:
 - Generated artifacts are **disposable**. The canonical source wins
   every conflict.
 
-**Phase 1 deviation** (this milestone): `aikata generate` is not yet
-implemented (it lands in v0.1 for Claude only). Until then:
+**Phase 1 deviation (current operation)**: `aikata generate` is not yet
+implemented (it lands in v0.1 for Claude only). Until then we keep
+`AGENTS.md` canonical and add a **thin hand-written wrapper** at
+[`CLAUDE.md`](../../CLAUDE.md) whose sole role is to point Claude Code
+at `AGENTS.md`.
 
-- aikata's own repo ships **`AGENTS.md` only**. No `CLAUDE.md` exists.
-- Claude Code reads `AGENTS.md` directly (it does, per the
-  [`agents.md` spec](https://agents.md/)).
-- When `aikata generate` is shipped (v0.1), the maintainers will
-  re-evaluate whether to commit a generated `CLAUDE.md` in this repo;
-  the default for **user projects** is documented in
+- The wrapper is ≤ 20 lines, declares itself non-canonical, and instructs
+  Claude Code to read `AGENTS.md`.
+- It exists because Claude Code preferentially discovers `CLAUDE.md`; in
+  practice, omitting the wrapper degraded the in-repo agent experience.
+- The wrapper **adds a 9th non-hidden top-level file**, which would
+  otherwise violate the Top-Level Minimalism rule in
+  [SPEC.md §3](../../SPEC.md#3-design-principles) and `AGENTS.md` §4-10.
+  This ADR is the explicit justification required by that rule; the
+  exception lasts only until Task 7 (`aikata generate` for Claude),
+  at which point this file will be regenerated and the wrapper text
+  superseded.
+- The default for **user projects** is unchanged: `CLAUDE.md` is
+  gitignored unless the user opts in. See
   [ARCHITECTURE.md §6](../../ARCHITECTURE.md#6-distribution--generated-artifacts).
+
+When `aikata generate` is shipped (v0.1, Task 7 of the post-Phase-1
+roadmap), the maintainers will:
+
+1. Run `aikata generate` against the canonical `AGENTS.md`.
+2. Compare the generated `CLAUDE.md` against the hand-written wrapper.
+3. Document the diff in the closing note of this ADR.
+4. Replace the wrapper with the generated output.
 
 ## Consequences
 
