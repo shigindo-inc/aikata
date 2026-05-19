@@ -41,7 +41,9 @@ Read in this order:
 3. [SPEC.md](./SPEC.md) — requirements.
 4. [ARCHITECTURE.md](./ARCHITECTURE.md) — technical structure.
 5. [GLOSSARY.md](./GLOSSARY.md) — terminology.
-6. `docs/tasks/current.md` if it exists — current working memory.
+6. `docs/tasks/current.md` — current working memory _(not yet present;
+   introduced with the standard preset in v0.1. Until then, surface
+   in-flight work via PR descriptions and commit messages)_.
 
 For full context on non-trivial changes, additionally read
 [`docs/origin/initial-design.md`](./docs/origin/initial-design.md) and
@@ -56,7 +58,7 @@ For full context on non-trivial changes, additionally read
 | Add a new preset | `ARCHITECTURE.md`, `internal/presets/`, `templates/presets/` |
 | Modify CLI behavior | `SPEC.md` §4, `internal/cli/`, `cmd/aikata/main.go` |
 | Add AI-tool support | `ARCHITECTURE.md` §3, `internal/generate/`, `templates/ai_tools/` |
-| Fix a bug | `docs/tasks/current.md`, related `*_test.go` |
+| Fix a bug | `docs/tasks/current.md` (when present), related `*_test.go` |
 | Change error/exit codes | `ARCHITECTURE.md` §7, every `internal/cli/*.go` |
 | Update terminology | `GLOSSARY.md`, then run a grep for outdated forms |
 | Record a design decision | new file under `docs/adr/`, follow [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) |
@@ -72,8 +74,10 @@ These are not negotiable. Violating any of them blocks a PR.
 1. **Read before editing.** Before non-trivial changes, read
    [`docs/origin/initial-design.md`](./docs/origin/initial-design.md). It
    has full context not duplicated in the operational docs.
-2. **Update `docs/tasks/current.md`** when you start and finish work
-   (once that file exists in your phase of the project).
+2. **Update `docs/tasks/current.md`** when you start and finish work,
+   **once that file exists** (it is introduced by the standard preset in
+   v0.1). Until then, the PR description and the commit log serve as the
+   working-memory of record — keep them current as you progress.
 3. **Never commit secrets.** Reference `.env.example` instead. `.env`
    itself is gitignored.
 4. **Add tests for new code.** No exceptions in `internal/scaffold`,

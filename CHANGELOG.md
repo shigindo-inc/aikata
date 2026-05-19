@@ -38,6 +38,9 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 - `docs/adr/0002-agents-md-as-canonical.md` — Phase 1 deviation section
   expanded to document the `CLAUDE.md` wrapper, its lifetime, and the
   explicit exception to the top-level-minimalism rule.
+- `AGENTS.md` — references to `docs/tasks/current.md` rewritten as
+  conditional ("once it exists; introduced in v0.1"). Until then, PR
+  descriptions and commit messages are the working-memory of record.
 
 ### Removed
 
