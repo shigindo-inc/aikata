@@ -1,0 +1,219 @@
+---
+project: aikata
+status: draft
+version: 0.0.1
+updated: 2026-05-20
+audience: [human, agent]
+---
+
+# Glossary
+
+Terminology used across aikata documentation and source code. Each entry
+contains the English term, an optional Japanese reading (`yomi`), and a short
+definition. Terms marked **(domain)** are aikata-specific concepts; others are
+industry-standard but redefined here to fix the project's interpretation.
+
+> **Why this file matters**: aikata targets bilingual (Japanese / English)
+> projects. Pinning terminology in one place reduces translation drift in LLM
+> output and helps `aikata doctor` flag mismatches.
+
+---
+
+## A
+
+### ADR — Architecture Decision Record
+
+A short markdown document that captures a single architectural decision,
+its context, and its consequences. Stored under `docs/adr/` with the file
+name pattern `NNNN-title.md`. Format follows
+[`0001-record-architecture-decisions.md`](./docs/adr/0001-record-architecture-decisions.md).
+
+### agent
+
+An LLM-driven coding assistant (Claude Code, Cursor, Codex, Gemini CLI,
+Copilot, Windsurf, …) that reads project documentation and produces or edits
+code. aikata treats agents and humans as **first-class co-readers** of every
+document.
+
+### `AGENTS.md`
+
+The single, hand-written, human-and-agent-readable instruction document at
+the project root. In aikata it is the **canonical source** for agent
+behavior. See
+[ADR 0002](./docs/adr/0002-agents-md-as-canonical.md) for why it is canonical
+and how tool-specific files (e.g. `CLAUDE.md`) relate to it.
+
+### `.ai/`
+
+Directory at the project root used to hold **AI-tool-facing artifacts** and
+the aikata config file (`.ai/aikata.yaml`). By default `aikata init` adds
+`.ai/` to `.gitignore` of the **target project**, but aikata's own
+repository keeps `.ai/` tracked (see ADR 0003).
+
+---
+
+## C
+
+### canonical source
+
+The **single source of truth** for a piece of information. aikata enforces
+canonical sources to keep lossy generation safe: if a generated artifact
+diverges from its canonical source, the canonical source wins. Example:
+`AGENTS.md` is canonical for agent instructions; `CLAUDE.md` (when present)
+is generated and disposable.
+
+### `CLAUDE.md`
+
+A Claude Code-specific instruction file. In aikata, it is **not hand-written**
+and **not present in Phase 1**. It will be produced later by
+`aikata generate` from `AGENTS.md` plus optional Claude-only extensions.
+
+### Conventional Commits
+
+Commit message convention (`<type>(<scope>): <subject>`). aikata mandates it
+for all commits; see [AGENTS.md](./AGENTS.md) for the allowed `type` values
+and the **no-AI-signature** rule.
+
+---
+
+## D
+
+### `docs/origin/`
+
+Folder containing **the historical record** of the project's planning phase
+(`initial-design.md`, `initial-setup.md`). These files are **never edited
+after Phase 1 of setup**; operational documents at the project root
+(`SPEC.md`, `ARCHITECTURE.md`, …) supersede them. See
+[`initial-setup.md` §1.2](./docs/origin/initial-setup.md).
+
+### dogfooding (ドッグフーディング)
+
+Using one's own product internally. aikata is dogfooded: the aikata repo
+itself is structured the way `aikata init --preset standard --oss` would
+produce. The migration of aikata's own layout to a fully generated form is
+tracked in [ROADMAP.md](./ROADMAP.md).
+
+---
+
+## F
+
+### frontmatter
+
+The YAML block at the top of a markdown file delimited by `---`. aikata uses
+frontmatter for cross-document metadata: `project`, `status`, `version`,
+`updated`, `audience`. Designed to be readable as plain text **and** to work
+as Obsidian Properties without harming non-Obsidian users (ADR 0003).
+
+---
+
+## G
+
+### generate (verb) — `aikata generate`
+
+The command that produces AI-tool-facing artifacts (`CLAUDE.md`,
+`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, …) from the
+canonical documents. The output of `generate` is **lossy** and disposable.
+
+### golden test
+
+A test that compares produced output against a checked-in expected output
+under `testdata/golden/`. Used to validate `aikata init` and `aikata
+generate`.
+
+---
+
+## H
+
+### Human-LLM dual readable
+
+Design principle: every document must be useful to a human and an LLM
+without rewriting. Implications include: short paragraphs, explicit
+navigation, no diagrams-only documents, no cleverness that requires a UI
+viewer.
+
+---
+
+## I
+
+### init (verb) — `aikata init`
+
+The command that scaffolds a new project. The MVP target is `--preset
+minimal` and `--preset standard`.
+
+---
+
+## L
+
+### lossy generation
+
+The acceptance that **derived files may lose information** vs. their
+canonical source. This is acceptable as long as the canonical source remains
+authoritative and regeneration is cheap (Design Principle 7).
+
+---
+
+## M
+
+### MADR — Markdown Architecture Decision Record
+
+A lightweight ADR format ([adr.github.io](https://adr.github.io/madr/)).
+aikata's ADR template is inspired by MADR but simplified;
+see [ADR 0001](./docs/adr/0001-record-architecture-decisions.md).
+
+---
+
+## O
+
+### opinionated, but small
+
+aikata's positioning: it makes a few strong choices (file names, frontmatter
+schema, canonical source rules) but does **not** lock the user into a
+particular tool chain. Compared to Vite vs. ai-rulez's Terraform-like
+breadth, aikata is closer to Vite/Astro.
+
+---
+
+## P
+
+### preset — (プリセット)
+
+A named bundle of templates and feature flags. Built-in presets:
+`minimal`, `standard`, plus stack-specific presets such as `flutter`
+(planned for v0.2). External presets are a planned v1.x feature.
+
+---
+
+## S
+
+### scaffold (verb / noun) — 雛形 (hinagata)
+
+To generate the initial structure (directories + template files) of a
+project. The noun form refers to the generated structure itself.
+
+### stack-agnostic core
+
+Design principle: the aikata CLI core knows nothing about specific
+technology stacks. Stack knowledge lives entirely in presets under
+`templates/presets/<stack>/`. Adding a stack must not require modifying
+core code (this guides the v1.x plugin design).
+
+---
+
+## T
+
+### top-level minimalism
+
+Design rule: at most **8 non-hidden files** at the project root after
+`aikata init --preset standard`. Dot-files (`.gitignore`, `.env.example`,
+`.ai/`) do not count. Enforced by `aikata doctor`.
+
+---
+
+## Y
+
+### yomi (読み)
+
+The Japanese phonetic reading of a kanji term. Recorded in this glossary
+for terms that have a non-obvious reading, so LLMs and non-Japanese
+contributors can pronounce them correctly. Example: `相方 (aikata)`,
+`雛形 (hinagata)`.

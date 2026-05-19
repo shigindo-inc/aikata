@@ -1,0 +1,51 @@
+# --- Go build artifacts ---
+# Binaries
+/aikata
+/aikata.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries / coverage
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Vendor (we use go modules, no vendor by default)
+/vendor/
+
+# --- Release artifacts ---
+/dist/
+/bin/
+
+# --- aikata-specific ---
+# Proposals from `aikata init` against existing directories (do not commit)
+/.aikata-proposed/
+
+# NOTE: `.ai/` is intentionally NOT ignored here.
+# aikata dogfoods itself; generated AI-tool artifacts (e.g. .ai/aikata.yaml, CLAUDE.md)
+# are committed so that contributors can start working with Claude Code / Cursor
+# immediately after `git clone`. See ARCHITECTURE.md §"Distribution & Generated Artifacts"
+# and docs/adr/0003-do-no-harm-policy.md.
+
+# --- Editor / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Secrets ---
+.env
+.env.local
+*.local
+
+# --- Remember plugin (local-only memory) ---
+/.remember/

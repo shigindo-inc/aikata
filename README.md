@@ -1,0 +1,116 @@
+---
+project: aikata
+status: draft
+version: 0.0.1
+updated: 2026-05-20
+audience: [human, agent]
+---
+
+# aikata
+
+> **aikata** (相方, *ai-kata*, /aɪˈkɑːtə/) — a lightweight CLI that
+> scaffolds AI-readable markdown documents and per-AI-tool config files
+> in a single command.
+
+The name means "partner" in Japanese: a companion that helps humans and
+LLMs collaborate as equals during development.
+
+> **Status — Pre-MVP (Phase 1: documentation bootstrap).**
+> The CLI is not implemented yet. This repository currently ships the
+> operational documents that define what aikata will be. See
+> [ROADMAP.md](./ROADMAP.md) for the path to v0.1.
+
+---
+
+## Why aikata?
+
+Modern projects must be readable by **both humans and multiple AI coding
+agents** (Claude Code, Cursor, Codex, Gemini CLI, Copilot, Windsurf, …).
+Today this means hand-maintaining several near-duplicate instruction
+files. aikata fixes that by treating **markdown documents** as the
+single source of truth and **generating** tool-specific files from them.
+
+For the long-form rationale, read [SPEC.md](./SPEC.md) §1.
+
+---
+
+## Quickstart (planned, v0.1)
+
+> The commands below describe the v0.1 target. They will not run today.
+
+```bash
+# Install (one of):
+brew install aikata-dev/tap/aikata
+curl -sSL https://aikata.dev/install.sh | sh
+
+# Scaffold a new project:
+aikata init my-app --preset standard --lang en --ai-tools claude
+
+# Check consistency at any time:
+aikata doctor
+
+# Re-generate per-AI-tool files after edits:
+aikata generate
+```
+
+See [SPEC.md §4](./SPEC.md#4-functional-requirements-cli) for the full
+command surface.
+
+---
+
+## Project documents
+
+| Read for… | Document |
+|---|---|
+| What & Why | [SPEC.md](./SPEC.md) |
+| How (technical) | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| When (milestones) | [ROADMAP.md](./ROADMAP.md) |
+| Terminology | [GLOSSARY.md](./GLOSSARY.md) |
+| Agent / contributor rules | [AGENTS.md](./AGENTS.md) |
+| Release notes | [CHANGELOG.md](./CHANGELOG.md) |
+| License | [LICENSE](./LICENSE) (MIT) |
+
+### Decisions & design
+
+- [`docs/adr/`](./docs/adr/) — Architecture Decision Records.
+  - [0001 — Record Architecture Decisions](./docs/adr/0001-record-architecture-decisions.md)
+  - [0002 — `AGENTS.md` is Canonical](./docs/adr/0002-agents-md-as-canonical.md)
+  - [0003 — Do-No-Harm Policy](./docs/adr/0003-do-no-harm-policy.md)
+- [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
+
+### Historical record (do not edit)
+
+- [`docs/origin/initial-design.md`](./docs/origin/initial-design.md) — original design document.
+- [`docs/origin/initial-setup.md`](./docs/origin/initial-setup.md) — original setup guide.
+
+---
+
+## Differentiation in one sentence
+
+> Existing AI-scaffolding tools center on **rules**; aikata centers on
+> **documents that both humans and LLMs read** — opinionated where it
+> reduces friction, silent where it would harm users who opt out.
+
+For the comparison table, see [SPEC.md §1.3](./SPEC.md#13-differentiation).
+
+---
+
+## Contributing
+
+aikata follows the rules in [AGENTS.md](./AGENTS.md). The same rules
+apply to human and AI contributors. Highlights:
+
+- Conventional Commits (no AI signatures).
+- Tests required for new core logic.
+- New top-level files require an ADR.
+- The Do-No-Harm Policy ([ADR 0003](./docs/adr/0003-do-no-harm-policy.md))
+  applies to every optional feature.
+
+A `CONTRIBUTING.md` will land when aikata reaches public OSS status
+(v1.0 — see [ROADMAP.md](./ROADMAP.md)).
+
+---
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
