@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/shigindo-inc/aikata/internal/config"
 	"github.com/shigindo-inc/aikata/internal/templates"
 )
 
@@ -69,11 +70,33 @@ func Run(opts Options) error {
 		return err
 	}
 
+	// Preset-specific post-render artifacts that aren't expressed as
+	// markdown templates. Keep this list short — when it grows past two
+	// or three branches, lift it into internal/presets.
+	if err := addPresetArtifacts(opts, rendered); err != nil {
+		return err
+	}
+
 	if opts.DryRun {
 		return printDryRun(opts.Stdout, opts.TargetDir, rendered)
 	}
 
 	return writeAll(opts.TargetDir, rendered)
+}
+
+// addPresetArtifacts injects non-template files that a preset is
+// expected to ship alongside its markdown set. As of Task 5 only the
+// standard preset has one: a struct-driven `.ai/aikata.yaml`.
+func addPresetArtifacts(opts Options, rendered map[string]string) error {
+	if opts.Preset == "standard" {
+		cfg := config.Default(opts.ProjectName, opts.Lang)
+		buf, err := config.Marshal(cfg)
+		if err != nil {
+			return err
+		}
+		rendered[".ai/aikata.yaml"] = string(buf)
+	}
+	return nil
 }
 
 func (o *Options) validate() error {

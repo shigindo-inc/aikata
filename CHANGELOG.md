@@ -61,6 +61,25 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- `aikata init --preset standard` (Task 5):
+  - New package `internal/config` with `AikataYaml` struct, `Default`,
+    `Marshal`, `Unmarshal`, version constant; schema matches
+    `ARCHITECTURE.md` §4.1.
+  - 11 standard-preset templates under
+    `internal/templates/data/presets/standard/` covering
+    README/AGENTS/SPEC/ARCHITECTURE/GLOSSARY plus `.env.example`,
+    `.gitignore`, `docs/adr/0001-...`, `docs/tasks/current.md`,
+    `docs/troubleshooting.md`, `docs/prompts.md`.
+  - `internal/scaffold/scaffold.go` gains `addPresetArtifacts` which
+    injects `.ai/aikata.yaml` (struct-driven, not template-driven) for
+    the standard preset.
+  - `aikata init` default preset switched from `minimal` to `standard`
+    (SPEC.md §4.1 default).
+  - New dependency: `gopkg.in/yaml.v3 v3.0.1`.
+  - Tests: 4 new standard-preset Run tests (file set, aikata.yaml
+    content, gitignore content, OSS scrub) + 1 cli init test
+    (`aikata.yaml` written under default preset) + 1 golden snapshot
+    `testdata/golden/standard/` covering all 12 generated files.
 - `aikata init --preset minimal` MVP (Task 4):
   - New package `internal/templates` — embed-backed template loader
     (`//go:embed all:data`), template helpers `now`, `joinSlash`,
