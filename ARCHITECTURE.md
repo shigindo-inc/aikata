@@ -146,15 +146,16 @@ the repository layout in §2 is the **producer**.
 
 ### 3.2 Optional files
 
-| File | Triggered by | Purpose |
-|---|---|---|
-| `UI.md` | `--with-ui` or UI-style preset | UI / UX guidelines |
-| `API.md` | `--with-api` or API-style preset | API interface spec |
-| `docs/testing.md` | `--with-tdd` | Test strategy |
-| `CHANGELOG.md` | `--with-changelog` | Release notes |
-| `CONTRIBUTING.md` | `--oss` | Contributor guide |
-| `SECURITY.md` | `--oss` | Security policy |
-| `ROADMAP.md` | `--oss` | Roadmap |
+| File / directory | Triggered by | First shipped | Purpose |
+|---|---|---|---|
+| `UI.md` | `--with-ui` or UI-style preset | v0.3 | UI / UX guidelines |
+| `API.md` | `--with-api` or API-style preset | v0.3 | API interface spec |
+| `docs/testing.md` | `--with-tdd` | v0.3 | Test strategy |
+| `CHANGELOG.md` | `--with-changelog` | v0.3 | Release notes |
+| `docs/memory/` (5 files) | `--with-memory` | v0.2 | Long-term agent memory (`user`, `feedback`, `project`, `reference` + `README`). See [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). |
+| `CONTRIBUTING.md` | `--oss` | v1.0 | Contributor guide |
+| `SECURITY.md` | `--oss` | v1.0 | Security policy |
+| `ROADMAP.md` | `--oss` | v1.0 | Roadmap |
 
 ### 3.3 File-level responsibilities
 

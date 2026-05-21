@@ -144,6 +144,18 @@ minimal` and `--preset standard`.
 
 ## L
 
+### long-term memory — `docs/memory/`
+
+The third class of agent-facing artifact, complementary to **rules**
+(`AGENTS.md`) and **working memory** (`docs/tasks/current.md`).
+Captures mutable facts that should survive across sessions: user
+profile and preferences, validated continuing instructions, ongoing
+project context, and external references. Subdivided into four
+**memory types** — `user`, `feedback`, `project`, `reference` — one
+file per type under `docs/memory/`. Opt-in via `--with-memory`
+(planned v0.2). Defined by
+[ADR 0004](./docs/adr/0004-long-term-memory-slot.md).
+
 ### lossy generation
 
 The acceptance that **derived files may lose information** vs. their
@@ -153,6 +165,24 @@ authoritative and regeneration is cheap (Design Principle 7).
 ---
 
 ## M
+
+### memory type — `user` / `feedback` / `project` / `reference`
+
+The four canonical buckets inside [long-term memory](#long-term-memory--docsmemory):
+
+- `user` — profile, role, knowledge, preferences of the user.
+- `feedback` — continuing instructions (corrections + validated approaches).
+- `project` — ongoing project context not derivable from code or git log.
+- `reference` — pointers to external systems.
+
+These names are deliberately aligned with the Claude Code auto-memory
+taxonomy and the superpowers plugin so agents can transfer convention.
+
+### memory slot
+
+A single file (`docs/memory/<type>.md`) corresponding to one memory
+type. Always one file per type; subdirectory layouts are deferred to
+v1.x.
 
 ### MADR — Markdown Architecture Decision Record
 

@@ -67,6 +67,29 @@ what unblocks a decision, and the latest update date.
   agents rewrite Status and Next freely.
 - **Unblocks**: real dogfooding evidence.
 
+### Q-DESIGN-07 — Memory generate-projection across AI-tool memory channels
+
+- **Status**: Open. Scope (γ) — the canonical `docs/memory/` slot —
+  is resolved by [ADR 0004](../adr/0004-long-term-memory-slot.md).
+  This entry captures the **deferred scope (δ)**: projecting memory
+  into tool-specific memory channels via `aikata generate`.
+- **Question**: How should `aikata generate` mirror
+  `docs/memory/{user,feedback,project,reference}.md` into:
+  - Claude Code's `.claude/memory/` typed files (one `<type>_<slug>.md`
+    per entry), or appended sections in `CLAUDE.md`?
+  - Cursor's `.cursor/rules/long-term/` (or wherever Cursor consolidates
+    persistent context, which is in flux)?
+  - Codex / Gemini CLI / Copilot / Windsurf — what do they accept as
+    long-term memory, if anything?
+- **Why deferred**: Each target tool's memory mechanism is moving fast
+  (Q1 2026). Locking a generate format too early creates churn. Better
+  to live with the canonical slot for one release cycle and observe.
+- **Unblocks**: Investigation owner (likely the v0.3 owner) reads one
+  or two real session logs from each tool, drafts a generate strategy
+  in a new ADR, and ships behind `aikata generate --memory` in v0.4
+  if the strategy proves stable.
+- **Updated**: 2026-05-21.
+
 ### Q-DESIGN-06 — Stack-agnostic core boundary
 
 - The Flutter preset must not require core changes. Where does the

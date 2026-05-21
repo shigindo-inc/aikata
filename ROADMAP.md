@@ -76,10 +76,15 @@ monorepo.
 - [ ] `--preset flutter` (templates under `templates/presets/flutter/`,
       `docs/stacks/flutter.md`).
 - [ ] `--lang ja` template set.
+- [ ] `--with-memory` flag — provisions
+      `docs/memory/{user,feedback,project,reference}.md` for opt-in
+      long-term agent memory; see
+      [ADR 0004](./docs/adr/0004-long-term-memory-slot.md).
 - [ ] `aikata generate` targets for Cursor (`.cursor/rules/*.mdc`) and
       Codex (`AGENTS.md` is already the canonical; verify pass-through).
 - [ ] First implementation of `aikata doctor` covering: frontmatter
-      keys, broken links from `AGENTS.md`, ADR statuses.
+      keys, broken links from `AGENTS.md`, ADR statuses, memory
+      `memory_type` matches filename.
 
 ---
 
@@ -88,11 +93,15 @@ monorepo.
 **Goal**: Editing an aikata project is as ergonomic as creating one.
 
 - [ ] `aikata add <component>` for `ui`, `api`, `tdd`, `changelog`, `adr`,
-      `stack`, `ai-tool`.
+      `stack`, `ai-tool`, `memory`.
 - [ ] ADR auto-numbering and template insertion.
 - [ ] `--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog` flags on
       `aikata init`.
 - [ ] `--json` machine-readable output for `doctor`.
+- [ ] Investigate memory generate-projection (ADR-0004 option δ): how
+      to mirror `docs/memory/*` into tool-specific channels (Claude
+      `.claude/memory/`, Cursor `.cursor/rules/long-term/`). Record
+      findings in a new ADR; ship only if the cost is low.
 
 ---
 
@@ -104,6 +113,9 @@ monorepo.
 - [ ] `aikata update` interactive diff-merge.
 - [ ] Migration framework for `.ai/aikata.yaml` schema versions.
 - [ ] npm wrapper for `npx aikata` distribution.
+- [ ] If v0.3 investigation justified it: ship
+      `aikata generate --memory` for at least one AI-tool memory
+      channel (ADR-0004 option δ).
 
 ---
 

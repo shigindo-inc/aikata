@@ -96,15 +96,15 @@ documents and are disposable.
 
 ## 3. Design Principles
 
-aikata follows seven principles. They are the test against which every
+aikata follows eight principles. They are the test against which every
 feature request is judged.
 
 1. **Human-LLM dual readable** — every document is equally useful to both.
 2. **Convention over configuration** — minimal config to start, full
    override available.
-3. **Do no harm** — opt-out features (Obsidian, TDD, Flutter, monorepo)
-   never penalize users who don't adopt them. Codified in
-   [ADR 0003](./docs/adr/0003-do-no-harm-policy.md).
+3. **Do no harm** — opt-out features (Obsidian, TDD, Flutter, monorepo,
+   long-term memory) never penalize users who don't adopt them.
+   Codified in [ADR 0003](./docs/adr/0003-do-no-harm-policy.md).
 4. **Top-level minimalism** — at most 8 non-hidden files at project root.
 5. **Composable, not monolithic** — features ship as files, addable and
    removable individually.
@@ -112,6 +112,14 @@ feature request is judged.
    knowledge; presets are where opinions live.
 7. **Lossy generation is OK** — generated files may lose information; the
    canonical source remains authoritative.
+8. **Rules ≠ memory ≠ working state** — three distinct agent-facing
+   slots with distinct lifetimes: invariant **rules** live in
+   `AGENTS.md`; mutable **long-term memory** (user preferences,
+   project context, references) lives under `docs/memory/` (opt-in via
+   `--with-memory`, planned v0.2); ephemeral **working memory** lives
+   in `docs/tasks/current.md` (created with the standard preset in
+   v0.1). Codified in
+   [ADR 0004](./docs/adr/0004-long-term-memory-slot.md).
 
 ---
 
@@ -129,8 +137,11 @@ must do and the user-visible behavior. Implementation details live in
 
 - Create a default file set in an empty or new directory.
 - Read flags `--preset`, `--with-ui`, `--with-api`, `--with-tdd`,
-  `--with-changelog`, `--oss`, `--monorepo`, `--lang ja|en`, `--ai-tools`,
-  `--minimal`, `--no-interactive`, `--dry-run`, `--force`.
+  `--with-changelog`, `--with-memory`, `--oss`, `--monorepo`,
+  `--lang ja|en`, `--ai-tools`, `--minimal`, `--no-interactive`,
+  `--dry-run`, `--force`. (`--with-memory` enables the long-term
+  agent memory slot defined in
+  [ADR 0004](./docs/adr/0004-long-term-memory-slot.md); ships v0.2.)
 - When run in an existing non-empty directory **without** `--force`:
   write proposed files under `.aikata-proposed/` instead of overwriting,
   and exit with a non-error message.

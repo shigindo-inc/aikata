@@ -41,6 +41,26 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 - `AGENTS.md` — references to `docs/tasks/current.md` rewritten as
   conditional ("once it exists; introduced in v0.1"). Until then, PR
   descriptions and commit messages are the working-memory of record.
+- Long-term agent memory slot introduced under `docs/memory/`:
+  - `docs/memory/{README,user,feedback,project,reference}.md` —
+    aikata's own dogfooding seed; format spec lives in the README
+    inside that directory.
+  - `docs/adr/0004-long-term-memory-slot.md` — design rationale,
+    type taxonomy, Do-No-Harm compliance, and the deferral of the
+    generate-projection question (option δ) to v0.3+.
+  - `SPEC.md` §3 — Design Principle #8 ("Rules ≠ memory ≠ working
+    state") added; §4.1 — `--with-memory` flag listed (ships v0.2).
+  - `ARCHITECTURE.md` §3.2 — `--with-memory` row added with v0.2 tag.
+  - `ROADMAP.md` — v0.2 gains `--with-memory` implementation, v0.3
+    gains the option-δ investigation, v0.4 gains the conditional ship.
+  - `AGENTS.md` — Read order extended to include `docs/memory/`; new
+    Navigation matrix row "Recall user/project context"; new §4a
+    explaining the rules/memory/working-state distinction.
+  - `GLOSSARY.md` — new entries `long-term memory`, `memory type`,
+    `memory slot`.
+  - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
+    option (δ) (memory generate-projection across AI-tool memory
+    channels).
 
 ### Removed
 

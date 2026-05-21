@@ -41,7 +41,10 @@ Read in this order:
 3. [SPEC.md](./SPEC.md) — requirements.
 4. [ARCHITECTURE.md](./ARCHITECTURE.md) — technical structure.
 5. [GLOSSARY.md](./GLOSSARY.md) — terminology.
-6. `docs/tasks/current.md` — current working memory _(not yet present;
+6. [`docs/memory/`](./docs/memory/) — long-term memory (user
+   preferences, project context, references). Read at least
+   [`feedback.md`](./docs/memory/feedback.md) before non-trivial work.
+7. `docs/tasks/current.md` — current working memory _(not yet present;
    introduced with the standard preset in v0.1. Until then, surface
    in-flight work via PR descriptions and commit messages)_.
 
@@ -63,6 +66,7 @@ For full context on non-trivial changes, additionally read
 | Update terminology | `GLOSSARY.md`, then run a grep for outdated forms |
 | Record a design decision | new file under `docs/adr/`, follow [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) |
 | Update planning notes | `docs/decisions/open-questions.md` |
+| Recall user / project context | `docs/memory/{user,feedback,project,reference}.md` (see [ADR 0004](./docs/adr/0004-long-term-memory-slot.md)) |
 | Touch documents only | the relevant top-level `.md` + `docs/` |
 
 ---
@@ -103,6 +107,23 @@ These are not negotiable. Violating any of them blocks a PR.
 12. **Canonical source rule.** Edit `AGENTS.md`, **not** generated
     tool-specific files. Generated files will be overwritten by
     `aikata generate`.
+
+---
+
+## 4a. Rules vs. memory vs. working state
+
+Three slots, three lifetimes. **Do not blur them.**
+
+- **Rules** (this file, `AGENTS.md`): invariant constraints — always
+  true regardless of context. Edits go through a PR + ADR.
+- **Long-term memory** ([`docs/memory/`](./docs/memory/)): mutable
+  facts and preferences accumulated over time. Append entries with a
+  `[YYYY-MM-DD]` prefix; supersede in place, do not delete. See
+  [ADR 0004](./docs/adr/0004-long-term-memory-slot.md).
+- **Working memory** (`docs/tasks/current.md`, planned v0.1): current
+  in-flight task state. Rewrite freely.
+
+When a memory entry and a Hard Rule disagree, **the Hard Rule wins**.
 
 ---
 
