@@ -32,5 +32,8 @@ func newRootCmd(version string) *cobra.Command {
 	//   aikata version 0.0.1-dev
 	cmd.SetVersionTemplate("aikata version {{.Version}}\n")
 
+	// Subcommands. Keep this list short; each subcommand owns its own file.
+	cmd.AddCommand(newInitCmd())
+
 	return cmd
 }

@@ -57,16 +57,16 @@ aikata/
 │   ├── config/                  # .ai/aikata.yaml read/write
 │   ├── presets/                 # Preset registry
 │   └── templates/               # Template loader (wraps embed.FS)
-├── templates/                   # Embedded markdown templates (//go:embed)
-│   ├── base/                    # Shared partials
-│   ├── presets/
-│   │   ├── minimal/
-│   │   ├── standard/
-│   │   └── flutter/             # (planned v0.2)
-│   └── ai_tools/
-│       ├── claude/
-│       ├── cursor/
-│       └── codex/
+│       └── data/                # Embedded markdown templates (//go:embed all:data)
+│           ├── base/            # Shared partials
+│           ├── presets/
+│           │   ├── minimal/
+│           │   ├── standard/
+│           │   └── flutter/     # (planned v0.2)
+│           └── ai_tools/
+│               ├── claude/
+│               ├── cursor/
+│               └── codex/
 ├── docs/
 │   ├── adr/                     # Architecture Decision Records
 │   ├── decisions/               # Open questions, design notes
@@ -232,8 +232,10 @@ overrides:                       # Per-tool fine-tuning.
 
 ### 5.2 Embedding
 
-- All templates live under `templates/` and are embedded via `//go:embed
-  all:templates`.
+- All templates live under `internal/templates/data/` and are embedded
+  by the `internal/templates` package via `//go:embed all:data`. Keeping
+  the embed root inside the package avoids `..`-relative embed paths,
+  which the Go `embed` directive rejects.
 - Loaded once at startup; no runtime filesystem lookup.
 - This implies: rebuilding the binary is required to update templates
   (acceptable for v0.x; `--templates-dir` override is a v1 candidate).
