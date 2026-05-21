@@ -189,3 +189,106 @@ func TestRun_NoLocalPathsInOutput(t *testing.T) {
 		}
 	}
 }
+
+// --- standard preset ---
+
+func standardOpts(target string) Options {
+	o := defaultOpts(target)
+	o.Preset = "standard"
+	return o
+}
+
+// expectedStandardFiles lists every file the standard preset must
+// produce, expressed as forward-slash paths relative to TargetDir.
+var expectedStandardFiles = []string{
+	"AGENTS.md",
+	"ARCHITECTURE.md",
+	"GLOSSARY.md",
+	"README.md",
+	"SPEC.md",
+	".env.example",
+	".gitignore",
+	".ai/aikata.yaml",
+	"docs/adr/0001-record-architecture-decisions.md",
+	"docs/prompts.md",
+	"docs/tasks/current.md",
+	"docs/troubleshooting.md",
+}
+
+func TestRun_GeneratesAllStandardFiles(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(standardOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedStandardFiles {
+		full := filepath.Join(tmp, filepath.FromSlash(rel))
+		info, err := os.Stat(full)
+		if err != nil {
+			t.Errorf("expected %s to exist: %v", rel, err)
+			continue
+		}
+		if info.Size() == 0 {
+			t.Errorf("%s is empty", rel)
+		}
+	}
+}
+
+func TestRun_StandardAikataYamlContent(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(standardOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, ".ai", "aikata.yaml"))
+	if err != nil {
+		t.Fatalf("read .ai/aikata.yaml: %v", err)
+	}
+	out := string(body)
+	for _, needle := range []string{
+		"version: 1",
+		"name: samplekata",
+		"lang: en",
+		"- claude",
+	} {
+		if !strings.Contains(out, needle) {
+			t.Errorf("aikata.yaml missing %q:\n%s", needle, out)
+		}
+	}
+}
+
+func TestRun_StandardGitignoreMentionsGeneratedArtifacts(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(standardOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, ".gitignore"))
+	if err != nil {
+		t.Fatalf("read .gitignore: %v", err)
+	}
+	out := string(body)
+	for _, needle := range []string{"CLAUDE.md", ".cursor/rules/", ".aikata-proposed/"} {
+		if !strings.Contains(out, needle) {
+			t.Errorf(".gitignore missing %q:\n%s", needle, out)
+		}
+	}
+}
+
+func TestRun_StandardOSSReadiness(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(standardOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedStandardFiles {
+		body, err := os.ReadFile(filepath.Join(tmp, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatalf("read %s: %v", rel, err)
+		}
+		if strings.Contains(string(body), "/Users/") {
+			t.Errorf("%s contains a /Users/ path (OSS leak)", rel)
+		}
+		for _, sec := range []string{"AKIA", "ghp_", "sk-", "xoxb-"} {
+			if strings.Contains(string(body), sec) {
+				t.Errorf("%s contains secret-like pattern %q", rel, sec)
+			}
+		}
+	}
+}

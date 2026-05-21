@@ -79,7 +79,7 @@ func newInitCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&preset, "preset", "minimal", "preset name (currently: minimal)")
+	cmd.Flags().StringVar(&preset, "preset", "standard", "preset name (minimal | standard)")
 	cmd.Flags().StringVar(&name, "name", "", "project name; overrides the positional argument when both are given")
 	cmd.Flags().BoolVar(&noInteractive, "no-interactive", false, "skip interactive prompts (required in v0.1)")
 	cmd.Flags().BoolVar(&force, "force", false, "overwrite existing files in a non-empty target directory")

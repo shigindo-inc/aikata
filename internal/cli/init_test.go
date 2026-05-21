@@ -149,6 +149,37 @@ func TestInit_NonEmptyDirWithoutForce(t *testing.T) {
 	}
 }
 
+func TestInit_StandardPresetWritesAikataYaml(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	_, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive")
+	if err != nil {
+		t.Fatalf("init standard: %v", err)
+	}
+	yamlPath := filepath.Join(tmp, ".ai", "aikata.yaml")
+	body, err := os.ReadFile(yamlPath)
+	if err != nil {
+		t.Fatalf("read aikata.yaml: %v", err)
+	}
+	if !strings.Contains(string(body), "name: samplekata") {
+		t.Errorf("aikata.yaml does not contain project name: %s", body)
+	}
+}
+
+func TestInit_DefaultPresetIsStandard(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	_, err := runInit(t, "samplekata", "--no-interactive")
+	if err != nil {
+		t.Fatalf("init with default preset: %v", err)
+	}
+	// The standard preset places aikata.yaml under .ai/, which the
+	// minimal preset does not produce.
+	if _, err := os.Stat(filepath.Join(tmp, ".ai", "aikata.yaml")); err != nil {
+		t.Errorf("expected .ai/aikata.yaml under default preset (standard), got %v", err)
+	}
+}
+
 func TestRootCmdShowsInitInHelp(t *testing.T) {
 	// Ensure newInitCmd has been wired into the root command.
 	cmd := newRootCmd("0.0.1-test")
