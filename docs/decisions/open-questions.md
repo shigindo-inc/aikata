@@ -70,8 +70,9 @@ what unblocks a decision, and the latest update date.
 ### Q-DESIGN-07 — Memory generate-projection across AI-tool memory channels
 
 - **Status**: Open. Scope (γ) — the canonical `docs/memory/` slot —
-  is resolved by [ADR 0004](../adr/0004-long-term-memory-slot.md).
-  This entry captures the **deferred scope (δ)**: projecting memory
+  is resolved by [ADR 0004](../adr/0004-long-term-memory-slot.md) and
+  **shipped as `aikata init --with-memory` in v0.1** (Task 5A). This
+  entry captures the still-**deferred scope (δ)**: projecting memory
   into tool-specific memory channels via `aikata generate`.
 - **Question**: How should `aikata generate` mirror
   `docs/memory/{user,feedback,project,reference}.md` into:

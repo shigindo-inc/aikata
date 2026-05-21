@@ -9,10 +9,9 @@ audience: [human, agent]
 # Current Work — {{.ProjectName}}
 
 > This is the agent's **short-term working memory**. Rewrite freely as
-> work progresses. For long-term context that should survive across
-> sessions, prefer `docs/memory/` (opt in via `aikata init
-> --with-memory`) or update [AGENTS.md](../../AGENTS.md) for invariant
-> rules.
+> work progresses.{{if .WithMemory}} For long-term context that should
+> survive across sessions, prefer `docs/memory/`.{{end}} Update
+> [AGENTS.md](../../AGENTS.md) for invariant rules.
 
 ---
 

@@ -28,6 +28,10 @@ type Options struct {
 	Force bool
 	// DryRun prints the plan to Stdout without writing.
 	DryRun bool
+	// WithMemory provisions the optional long-term agent memory slot
+	// under docs/memory/ (ADR 0004). Templates branch on {{.WithMemory}}
+	// to add memory cross-references when this is true.
+	WithMemory bool
 	// Clock is the time source for template helpers; nil = time.Now.
 	Clock templates.Clock
 	// Stdout receives dry-run output and progress messages.
@@ -74,6 +78,12 @@ func Run(opts Options) error {
 	// markdown templates. Keep this list short — when it grows past two
 	// or three branches, lift it into internal/presets.
 	if err := addPresetArtifacts(opts, rendered); err != nil {
+		return err
+	}
+
+	// Opt-in long-term memory slot (ADR 0004). Adds docs/memory/*.md
+	// independent of preset choice.
+	if err := addMemoryArtifacts(opts, rendered); err != nil {
 		return err
 	}
 
@@ -159,15 +169,23 @@ func isNonEmpty(dir string) (bool, error) {
 	return len(entries) > 0, nil
 }
 
+// templateData is the single source of truth for what {{.foo}} fields
+// templates can reference. New fields go here, not inline at the call
+// sites.
+func templateData(opts Options) map[string]any {
+	return map[string]any{
+		"ProjectName": opts.ProjectName,
+		"Lang":        opts.Lang,
+		"Preset":      opts.Preset,
+		"WithMemory":  opts.WithMemory,
+	}
+}
+
 // renderAll evaluates every template up front. The returned map is
 // keyed by the *target* path relative to TargetDir (e.g. "README.md"),
 // not the template path.
 func renderAll(files []string, presetDir string, opts Options) (map[string]string, error) {
-	data := map[string]any{
-		"ProjectName": opts.ProjectName,
-		"Lang":        opts.Lang,
-		"Preset":      opts.Preset,
-	}
+	data := templateData(opts)
 	rendered := make(map[string]string, len(files))
 	for _, tmplPath := range files {
 		content, err := templates.Render(tmplPath, data, opts.Clock)
@@ -178,6 +196,41 @@ func renderAll(files []string, presetDir string, opts Options) (map[string]strin
 		rendered[rel] = content
 	}
 	return rendered, nil
+}
+
+// addMemoryArtifacts renders the docs/memory/*.md slot when WithMemory
+// is set. The memory templates live under `memory/` in the embedded FS
+// (separate from `presets/`) so they compose with every preset.
+//
+// Do-No-Harm (ADR 0003 / 0004): when WithMemory is false this is a
+// no-op and no memory references appear in the rendered output.
+func addMemoryArtifacts(opts Options, rendered map[string]string) error {
+	if !opts.WithMemory {
+		return nil
+	}
+	root, err := templates.FS()
+	if err != nil {
+		return err
+	}
+	data := templateData(opts)
+	return fs.WalkDir(root, "memory", func(p string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if d.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(p, ".tmpl") {
+			return nil
+		}
+		content, err := templates.Render(p, data, opts.Clock)
+		if err != nil {
+			return err
+		}
+		rel := "docs/memory/" + strings.TrimSuffix(strings.TrimPrefix(p, "memory/"), ".tmpl")
+		rendered[rel] = content
+		return nil
+	})
 }
 
 // writeAll persists rendered content to TargetDir. Files inherit 0644

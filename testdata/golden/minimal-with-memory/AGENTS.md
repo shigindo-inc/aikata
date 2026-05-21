@@ -1,12 +1,12 @@
 ---
-project: {{.ProjectName}}
+project: samplekata
 status: draft
 version: 0.0.1
-updated: {{now}}
+updated: 2026-05-21
 audience: agent
 ---
 
-# Agent Instructions for {{.ProjectName}}
+# Agent Instructions for samplekata
 
 ## 1. Project overview
 
@@ -19,11 +19,9 @@ Read in this order:
 1. [README.md](./README.md) — overview
 2. **This file (AGENTS.md)** — operating rules
 3. [SPEC.md](./SPEC.md) — requirements
-{{- if .WithMemory}}
 4. [`docs/memory/`](./docs/memory/) — long-term context (user
    preferences, project notes); read
    [`feedback.md`](./docs/memory/feedback.md) before non-trivial work
-{{- end}}
 
 ## 3. Hard rules
 

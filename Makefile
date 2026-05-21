@@ -44,5 +44,9 @@ clean:
 tidy:
 	go mod tidy
 
+.PHONY: update-golden
+update-golden:
+	go test ./internal/scaffold/... -run TestGolden_ -update
+
 .PHONY: verify
 verify: tidy test lint build

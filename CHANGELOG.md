@@ -61,6 +61,31 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- `aikata init --with-memory` opt-in (Task 5A — ADR 0004 (γ) ships):
+  - 5 new memory templates under `internal/templates/data/memory/`
+    (`README`, `user`, `feedback`, `project`, `reference` — each with
+    matching `memory_type` frontmatter).
+  - `scaffold.Options` gains `WithMemory bool`; the new
+    `addMemoryArtifacts` walks `memory/` in the embedded FS and adds
+    `docs/memory/*.md` to the rendered set.
+  - `templateData` helper centralizes the template-fields contract.
+  - `internal/cli/init.go` accepts `--with-memory` (boolean, default
+    false). Composes with both `--preset minimal` and `--preset
+    standard`.
+  - Standard preset's `AGENTS.md.tmpl` gains `{{if .WithMemory}}`
+    branches in Read order and Navigation matrix (`Recall user /
+    project context` row). Minimal preset's `AGENTS.md.tmpl` gains a
+    Read order branch for `docs/memory/`. Standard preset's
+    `docs/tasks/current.md.tmpl` gains a conditional mention of
+    long-term memory.
+  - New tests: 4 scaffold tests (with-memory file set, memory_type
+    matches filename, standard AGENTS references memory, Do-No-Harm
+    regression for both presets), 2 init tests (with-memory generates
+    dir, without-memory omits dir), 2 golden snapshots
+    (`minimal-with-memory`, `standard-with-memory`).
+  - `Makefile` gains `update-golden` target (`go test ... -update`).
+  - `docs/decisions/open-questions.md` Q-DESIGN-07 updated: scope (γ)
+    shipped; (δ) AI-tool memory-channel projection still deferred.
 - `aikata init --preset standard` (Task 5):
   - New package `internal/config` with `AikataYaml` struct, `Default`,
     `Marshal`, `Unmarshal`, version constant; schema matches

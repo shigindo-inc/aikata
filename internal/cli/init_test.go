@@ -166,6 +166,38 @@ func TestInit_StandardPresetWritesAikataYaml(t *testing.T) {
 	}
 }
 
+func TestInit_WithMemoryFlagProducesMemoryDir(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	_, err := runInit(t, "samplekata", "--preset", "minimal", "--no-interactive", "--with-memory")
+	if err != nil {
+		t.Fatalf("init --with-memory: %v", err)
+	}
+	for _, rel := range []string{
+		"docs/memory/README.md",
+		"docs/memory/user.md",
+		"docs/memory/feedback.md",
+		"docs/memory/project.md",
+		"docs/memory/reference.md",
+	} {
+		if _, err := os.Stat(filepath.Join(tmp, filepath.FromSlash(rel))); err != nil {
+			t.Errorf("expected %s after --with-memory: %v", rel, err)
+		}
+	}
+}
+
+func TestInit_WithoutMemoryFlagOmitsMemoryDir(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	_, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive")
+	if err != nil {
+		t.Fatalf("init standard: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, "docs", "memory")); !os.IsNotExist(err) {
+		t.Errorf("docs/memory/ must NOT exist without --with-memory: %v", err)
+	}
+}
+
 func TestInit_DefaultPresetIsStandard(t *testing.T) {
 	tmp := t.TempDir()
 	chdir(t, tmp)
