@@ -1,0 +1,24 @@
+# golangci-lint configuration (v2 schema).
+# See https://golangci-lint.run/docs/configuration/file/ for details.
+version: "2"
+
+run:
+  # Build tags considered when linting. None for now.
+  build-tags: []
+  # The Go module is honored; ./... below covers everything.
+
+linters:
+  # Start from no defaults and enable the set we want explicitly.
+  default: none
+  enable:
+    - errcheck      # Unchecked errors
+    - govet         # `go vet` checks
+    - ineffassign   # Detect ineffectual assignments
+    - revive        # Style + correctness, golint-style
+    - staticcheck   # Wide-ranging static analysis
+    - unused        # Unused vars / consts / funcs / types
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
