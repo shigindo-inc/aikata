@@ -61,6 +61,23 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- Go project skeleton (Phase 2):
+  - `go.mod` (`module github.com/shigindo-inc/aikata`, `go 1.21`).
+  - `cmd/aikata/main.go` — entry point that delegates to
+    `internal/cli`.
+  - `internal/cli/{root,doc,root_test}.go` — cobra root command with
+    `--version` / `--help` and unit tests.
+  - `internal/{scaffold,doctor,generate,config,presets,templates}/doc.go`
+    placeholders documenting each package's responsibility.
+  - `Makefile` (targets: `build`, `test`, `lint`, `install`, `run`,
+    `clean`, `tidy`, `verify`).
+  - `.golangci.yml` (golangci-lint v2 schema, default linters
+    `errcheck` / `govet` / `ineffassign` / `revive` / `staticcheck` /
+    `unused`; formatters `gofmt` / `goimports`).
+  - `.github/workflows/ci.yml` — Linux + Go 1.21 CI running `go vet`,
+    `go test -race`, `golangci-lint`, `go build`, and a `--version`
+    smoke test.
+  - Dependency added: `github.com/spf13/cobra` v1.10.2.
 
 ### Removed
 
