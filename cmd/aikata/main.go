@@ -6,7 +6,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"os"
 
 	"github.com/shigindo-inc/aikata/internal/cli"
@@ -17,13 +17,16 @@ import (
 var version = "0.0.1-dev"
 
 func main() {
-	if err := cli.Execute(version); err != nil {
-		// cobra has already printed the user-facing error message to
-		// stderr. Translate to a non-zero exit code per
-		// ARCHITECTURE.md §7.2. Generic errors map to exit code 1;
-		// finer-grained codes are emitted by cli.Execute itself via
-		// os.Exit when needed.
-		fmt.Fprintln(os.Stderr)
-		os.Exit(1)
+	err := cli.Execute(version)
+	if err == nil {
+		return
 	}
+	// cobra has already printed the user-facing error message to
+	// stderr. Map the error to an exit code per ARCHITECTURE.md §7.2:
+	// unwrap an *ExitError if one is present, otherwise fall back to 1.
+	var ee *cli.ExitError
+	if errors.As(err, &ee) {
+		os.Exit(ee.Code)
+	}
+	os.Exit(1)
 }

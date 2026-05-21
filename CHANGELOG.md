@@ -61,6 +61,30 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- `aikata init --preset minimal` MVP (Task 4):
+  - New package `internal/templates` — embed-backed template loader
+    (`//go:embed all:data`), template helpers `now`, `joinSlash`,
+    `kebab`, and `Render(path, data, clock)` with
+    `missingkey=error` semantics.
+  - New package `internal/scaffold` — `Options` + `Run` performing
+    all-or-nothing template rendering before any filesystem write.
+    `ErrTargetDirNotEmpty` sentinel for the no-`--force` path.
+  - `internal/cli/init.go` — cobra `init` subcommand with flags
+    `--preset`, `--name`, `--no-interactive`, `--force`, `--dry-run`,
+    `--lang`. Positional name supported; `--name` wins when both.
+  - `internal/cli/errors.go` — `ExitError{Code, Err}` for routing
+    user-input failures (exit 2) through `cmd/aikata/main.go`.
+  - `cmd/aikata/main.go` — exit-code translation via `errors.As`.
+  - `internal/templates/data/presets/minimal/{README,AGENTS,SPEC}.md.tmpl`
+    — 3 lightweight templates (~30 lines each) per D1.
+  - `testdata/golden/minimal/` — golden snapshots for the minimal
+    preset; `-update` flag on the package rewrites them from current
+    output.
+  - Tests: 10 unit tests in `scaffold`, 7 in `cli`, 6 in `templates`,
+    plus a fresh golden-comparison test for the minimal preset.
+- ARCHITECTURE.md §2 and §5.2 updated: template root is now
+  `internal/templates/data/`, embedded with `//go:embed all:data`
+  (D2 — keeps `..`-relative embed paths out of the build).
 - OSS readiness scrub (Task 3A — pre-public-release hygiene):
   - `docs/memory/reference.md` — removed the maintainer's absolute
     local path (`/Users/...`) and replaced it with guidance to use
