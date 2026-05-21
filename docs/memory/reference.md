@@ -20,8 +20,11 @@ question; bookmark them here so they are one click away. See
 
 - [2026-05-21] GitHub repo:
   [`shigindo-inc/aikata`](https://github.com/shigindo-inc/aikata).
-- [2026-05-21] Local working tree:
-  `/Users/satoshi/Workspace/develop/personal/oss/aikata`.
+- [2026-05-21] Local working trees vary by contributor; do not record
+  absolute paths here. Use `$REPO_ROOT` in commands when documenting
+  shell snippets.
+  **(superseded 2026-05-21: removed the maintainer's absolute path
+  before the OSS-readiness scrub of Task 3A)**
 
 ## Internal canonical entry points
 

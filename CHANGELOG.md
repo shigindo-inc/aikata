@@ -61,6 +61,21 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- OSS readiness scrub (Task 3A — pre-public-release hygiene):
+  - `docs/memory/reference.md` — removed the maintainer's absolute
+    local path (`/Users/...`) and replaced it with guidance to use
+    `$REPO_ROOT` in shell snippets going forward. Old entry kept with
+    a `(superseded ...)` marker per ADR 0004 conventions.
+  - `docs/memory/project.md` — recorded the repository-visibility
+    plan (private until v0.1, public at tag), the binding
+    squash-merge policy, and the git-history scrub decision
+    (HEAD-only, history left intact because the leaked string is a
+    local path rather than a secret; revisit at Task 8).
+  - GitHub repo settings — disabled merge-commit and rebase-merge,
+    enabled `Automatically delete head branches`. Squash is now the
+    only merge mode.
+  - Cleaned up the merged `feat/phase-2-go-init` branch (local +
+    remote).
 - Go project skeleton (Phase 2):
   - `go.mod` (`module github.com/shigindo-inc/aikata`, `go 1.21`).
   - `cmd/aikata/main.go` — entry point that delegates to

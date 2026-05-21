@@ -44,6 +44,27 @@ stakeholders, and current "north stars." See
   confirmed scope (γ): `docs/memory/{user,feedback,project,reference}.md`.
   Scope (δ) — projecting memory into tool-specific channels — is
   deferred and tracked as Q-DESIGN-07.
+- [2026-05-21] **Repository visibility plan**: aikata will be released
+  as **OSS public** at v0.1 tag. Keep the repo `PRIVATE` on GitHub
+  until the v0.1 release artifact is verified; flip to `PUBLIC` in
+  Task 8 as part of the release procedure. Every PR from Task 3A
+  onward must pass the OSS-readiness scrub (no `/Users/`, no
+  AKIA/ghp_/sk-/xoxb- tokens, no personal contact info beyond the
+  LICENSE holder).
+- [2026-05-21] **Squash-merge is the binding merge policy** for the
+  repo. Repo settings disable merge-commit and rebase-merge, enable
+  `Automatically delete head branches`. PR #1 used the default merge
+  commit and is grandfathered; from PR #2 (Task 4) onward, squash
+  only.
+- [2026-05-21] **Git history scrub policy**: the maintainer's
+  absolute path leaked into commits `4682955 / ea890fb / b8d0b6c /
+  d29f44e` via `docs/memory/reference.md` line 24. Task 3A scrubs
+  HEAD only. A history rewrite (`git filter-repo`) was deliberately
+  not performed because (a) the leaked string is a local path, not a
+  secret, (b) force-push would invalidate PR #1's merge SHA and break
+  the GitHub PR page references. Revisit before flipping visibility
+  to PUBLIC in Task 8 — if scrub is still desired, do it then with a
+  documented force-push window.
 
 ## Active deferrals
 
