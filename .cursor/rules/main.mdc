@@ -1,0 +1,27 @@
+---
+description: Read AGENTS.md as the canonical source for project rules
+alwaysApply: true
+---
+
+# Cursor rules — pointer to AGENTS.md
+
+This file is **generated** by `aikata generate` from
+[`AGENTS.md`](../../AGENTS.md). Cursor reads `AGENTS.md` natively in
+2026; this `.mdc` exists so the rule remains discoverable from the
+`.cursor/rules/` listing with `alwaysApply: true`.
+
+Do not edit `.cursor/rules/main.mdc` directly; rerun `aikata generate`
+instead.
+
+## Read order
+
+- [`AGENTS.md`](../../AGENTS.md) — operating rules (canonical)
+- [`README.md`](../../README.md) — project overview
+- [`SPEC.md`](../../SPEC.md) — what / why
+- [`ARCHITECTURE.md`](../../ARCHITECTURE.md) — how
+- [`GLOSSARY.md`](../../GLOSSARY.md) — terminology
+- [`docs/memory/`](../../docs/memory/) — long-term agent memory (user
+  preferences, project notes, references)
+- [`docs/decisions/open-questions.md`](../../docs/decisions/open-questions.md) — undecided items
+
+Generated for `aikata`.

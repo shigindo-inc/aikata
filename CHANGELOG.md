@@ -20,6 +20,26 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.2 Task 9 — Cursor pass-through + Codex no-op:
+  - `CursorProvider` emits `.cursor/rules/main.mdc`, a thin wrapper
+    with `alwaysApply: true` that defers to canonical `AGENTS.md` and
+    mirrors the same adaptive Read-order rendering as `CLAUDE.md`.
+  - `CodexProvider` is registered for symmetry but produces zero
+    files; Codex reads `AGENTS.md` directly per the 2026 spec
+    (`developers.openai.com/codex/guides/agents-md`). `aikata
+    generate` now prints `[codex] no files generated (reads AGENTS.md
+    directly)` to stderr so the no-op is visible.
+  - `internal/generate/Run` now returns `(map[string]int, error)`
+    reporting per-provider file counts so the cli layer can surface
+    no-op providers. Existing callers updated; the `Provider`
+    interface is unchanged.
+  - `docs/adr/0005-cursor-codex-pass-through.md` formalizes the
+    strategy; richer glob-scoped MDC generation is deferred and
+    tracked in `docs/decisions/open-questions.md` as Q-DESIGN-08.
+  - aikata's own `.ai/aikata.yaml` opts into `cursor` and `codex` so
+    `.cursor/rules/main.mdc` is committed to the repository,
+    consistent with ADR 0002 §"Operational status" (aikata's repo
+    commits self-generated artifacts).
 - v0.1 release plumbing (Task 8):
   - `docs/origin/` removed pre-public-flip. The folder held the
   pre-v0.1 planning notes (`initial-design.md`, `initial-setup.md`)

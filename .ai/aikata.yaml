@@ -5,6 +5,8 @@ project:
     description: Lightweight CLI that scaffolds AI-readable markdown documents.
 ai_tools:
     - claude
+    - cursor
+    - codex
 features:
     monorepo: false
     obsidian_hints: false

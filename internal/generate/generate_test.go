@@ -56,7 +56,7 @@ func TestKnownTools_IsSorted(t *testing.T) {
 }
 
 func TestRun_RequiresTargetDir(t *testing.T) {
-	err := Run(Context{Project: config.Default("x", "en")})
+	_, err := Run(Context{Project: config.Default("x", "en")})
 	if err == nil {
 		t.Fatalf("expected error for empty TargetDir")
 	}
@@ -66,7 +66,7 @@ func TestRun_RequiresEnabledAITools(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := config.Default("x", "en")
 	cfg.AITools = nil
-	err := Run(Context{TargetDir: tmp, Project: cfg})
+	_, err := Run(Context{TargetDir: tmp, Project: cfg})
 	if err == nil {
 		t.Fatalf("expected error when ai_tools is empty")
 	}
@@ -76,7 +76,7 @@ func TestRun_UnknownAIToolBubblesUp(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := config.Default("x", "en")
 	cfg.AITools = []string{"nope"}
-	err := Run(Context{TargetDir: tmp, Project: cfg})
+	_, err := Run(Context{TargetDir: tmp, Project: cfg})
 	if !errors.Is(err, ErrUnknownAITool) {
 		t.Fatalf("expected ErrUnknownAITool wrapped, got %v", err)
 	}
@@ -85,7 +85,7 @@ func TestRun_UnknownAIToolBubblesUp(t *testing.T) {
 func TestRun_ClaudeRequiresAgentsMD(t *testing.T) {
 	tmp := t.TempDir()
 	cfg := config.Default("samplekata", "en")
-	err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()})
+	_, err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()})
 	if err == nil {
 		t.Fatalf("expected error when AGENTS.md missing")
 	}
@@ -98,7 +98,7 @@ func TestRun_ClaudeProducesCLAUDE(t *testing.T) {
 	tmp := t.TempDir()
 	seedAgentsMD(t, tmp)
 	cfg := config.Default("samplekata", "en")
-	err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()})
+	_, err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()})
 	if err != nil {
 		t.Fatalf("Run: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestRun_ClaudeReflectsAvailableDocs(t *testing.T) {
 		}
 	}
 	cfg := config.Default("samplekata", "en")
-	if err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()}); err != nil {
+	if _, err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()}); err != nil {
 		t.Fatalf("Run: %v", err)
 	}
 	body, err := os.ReadFile(filepath.Join(tmp, "CLAUDE.md"))
@@ -153,7 +153,7 @@ func TestRun_OSSReadiness(t *testing.T) {
 	tmp := t.TempDir()
 	seedAgentsMD(t, tmp)
 	cfg := config.Default("samplekata", "en")
-	if err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()}); err != nil {
+	if _, err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()}); err != nil {
 		t.Fatalf("Run: %v", err)
 	}
 	body, err := os.ReadFile(filepath.Join(tmp, "CLAUDE.md"))

@@ -85,6 +85,42 @@ func TestGenerate_MinimalAfterInitProducesCLAUDE(t *testing.T) {
 	}
 }
 
+func TestGenerate_CursorAndCodex(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
+		t.Fatalf("init: %v", err)
+	}
+	// Rewrite ai_tools to enable claude + cursor + codex.
+	yamlPath := filepath.Join(tmp, ".ai", "aikata.yaml")
+	orig, err := os.ReadFile(yamlPath)
+	if err != nil {
+		t.Fatalf("read aikata.yaml: %v", err)
+	}
+	rewritten := strings.Replace(string(orig),
+		"ai_tools:\n    - claude\n",
+		"ai_tools:\n    - claude\n    - cursor\n    - codex\n", 1)
+	if rewritten == string(orig) {
+		t.Fatalf("aikata.yaml format unexpected, could not enable cursor/codex:\n%s", orig)
+	}
+	if err := os.WriteFile(yamlPath, []byte(rewritten), 0o644); err != nil {
+		t.Fatalf("rewrite aikata.yaml: %v", err)
+	}
+
+	out, err := runGenerate(t)
+	if err != nil {
+		t.Fatalf("generate: %v (out: %s)", err, out)
+	}
+	if !strings.Contains(out, "[codex] no files generated") {
+		t.Errorf("expected codex no-op notice in output, got:\n%s", out)
+	}
+	for _, rel := range []string{"CLAUDE.md", filepath.Join(".cursor", "rules", "main.mdc")} {
+		if _, err := os.Stat(filepath.Join(tmp, rel)); err != nil {
+			t.Errorf("expected %s to exist after generate: %v", rel, err)
+		}
+	}
+}
+
 func TestRootCmdShowsGenerateInHelp(t *testing.T) {
 	cmd := newRootCmd("0.0.1-test")
 	var buf bytes.Buffer
