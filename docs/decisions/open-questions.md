@@ -96,6 +96,27 @@ what unblocks a decision, and the latest update date.
   if the strategy proves stable.
 - **Updated**: 2026-05-21.
 
+### Q-DESIGN-08 — Cursor `.cursor/rules/` glob-scoped detailed generation
+
+- **Status**: Open. Scope (basic) — single `.cursor/rules/main.mdc`
+  wrapper with `alwaysApply: true` — is resolved by
+  [ADR 0005](../adr/0005-cursor-codex-pass-through.md) and **shipped
+  in v0.2** (Task 9). This entry captures the still-**deferred scope**:
+  splitting rules into multiple `.mdc` files with `globs` for
+  per-file-pattern scoping.
+- **Question**: Should `aikata generate` emit one `.mdc` per rule
+  category (e.g. `testing.mdc` for test files, `frontend.mdc` for
+  UI code, etc.), each with appropriate `globs:` frontmatter, instead
+  of the single `main.mdc` wrapper?
+- **Why deferred**: We have no field experience yet with the wrapper.
+  Splitting upfront risks designing the wrong taxonomy. Better to
+  ship the wrapper, observe how users (and dogfooding) actually want
+  to scope rules, then split.
+- **Unblocks**: Two or three real-world cases where the
+  single-wrapper approach loses information that `globs` could
+  preserve.
+- **Updated**: 2026-05-22.
+
 ### Q-DESIGN-06 — Stack-agnostic core boundary
 
 - The Flutter preset must not require core changes. Where does the

@@ -41,6 +41,8 @@ var ErrUnknownAITool = errors.New("generate: unknown ai_tool")
 // implementations. Kept unexported so callers go through Run / Get.
 var registry = map[string]Provider{
 	"claude": ClaudeProvider{},
+	"codex":  CodexProvider{},
+	"cursor": CursorProvider{},
 }
 
 // Get returns the Provider for the given name. Returns
@@ -66,31 +68,38 @@ func KnownTools() []string {
 
 // Run materializes every enabled provider's files to ctx.TargetDir.
 // Files are written all-or-nothing: every provider must succeed before
-// any disk write happens.
-func Run(ctx Context) error {
+// any disk write happens. The returned map reports how many files each
+// provider produced, so the cli layer can surface no-op providers
+// (e.g. codex, which reads AGENTS.md directly).
+func Run(ctx Context) (map[string]int, error) {
 	if ctx.TargetDir == "" {
-		return errors.New("generate: target directory is required")
+		return nil, errors.New("generate: target directory is required")
 	}
 	if len(ctx.Project.AITools) == 0 {
-		return errors.New("generate: no AI tools enabled in .ai/aikata.yaml")
+		return nil, errors.New("generate: no AI tools enabled in .ai/aikata.yaml")
 	}
 
 	rendered := make(map[string]string)
+	counts := make(map[string]int, len(ctx.Project.AITools))
 	for _, name := range ctx.Project.AITools {
 		provider, err := Get(name)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		files, err := provider.Files(ctx)
 		if err != nil {
-			return fmt.Errorf("generate(%s): %w", name, err)
+			return nil, fmt.Errorf("generate(%s): %w", name, err)
 		}
+		counts[name] = len(files)
 		for rel, content := range files {
 			rendered[rel] = content
 		}
 	}
 
-	return writeAll(ctx.TargetDir, rendered)
+	if err := writeAll(ctx.TargetDir, rendered); err != nil {
+		return nil, err
+	}
+	return counts, nil
 }
 
 func writeAll(targetDir string, rendered map[string]string) error {

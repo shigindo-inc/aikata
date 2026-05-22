@@ -52,7 +52,8 @@ func newGenerateCmd() *cobra.Command {
 				TargetDir: target,
 				Project:   cfg,
 			}
-			if err := generate.Run(ctx); err != nil {
+			counts, err := generate.Run(ctx)
+			if err != nil {
 				if errors.Is(err, generate.ErrUnknownAITool) {
 					return &ExitError{
 						Code: 2,
@@ -60,6 +61,14 @@ func newGenerateCmd() *cobra.Command {
 					}
 				}
 				return err
+			}
+			for _, name := range cfg.AITools {
+				if counts[name] == 0 {
+					if _, err := fmt.Fprintf(cmd.ErrOrStderr(),
+						"[%s] no files generated (reads AGENTS.md directly)\n", name); err != nil {
+						return fmt.Errorf("generate: write noop notice: %w", err)
+					}
+				}
 			}
 			if _, err := fmt.Fprintf(cmd.OutOrStdout(), "generated artifacts for: %s\n", strings.Join(cfg.AITools, ", ")); err != nil {
 				return fmt.Errorf("generate: write status: %w", err)
