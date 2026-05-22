@@ -294,6 +294,159 @@ func TestRun_StandardOSSReadiness(t *testing.T) {
 	}
 }
 
+// --- flutter preset (Task 10) ---
+
+func flutterOpts(target string) Options {
+	o := defaultOpts(target)
+	o.Preset = "flutter"
+	o.Stacks = []string{"flutter"}
+	return o
+}
+
+var expectedFlutterFiles = []string{
+	"AGENTS.md",
+	"ARCHITECTURE.md",
+	"GLOSSARY.md",
+	"README.md",
+	"SPEC.md",
+	".env.example",
+	".gitignore",
+	".ai/aikata.yaml",
+	"docs/adr/0001-record-architecture-decisions.md",
+	"docs/prompts.md",
+	"docs/stacks/flutter.md",
+	"docs/tasks/current.md",
+	"docs/troubleshooting.md",
+}
+
+func TestRun_GeneratesAllFlutterFiles(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(flutterOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedFlutterFiles {
+		full := filepath.Join(tmp, filepath.FromSlash(rel))
+		info, err := os.Stat(full)
+		if err != nil {
+			t.Errorf("expected %s to exist: %v", rel, err)
+			continue
+		}
+		if info.Size() == 0 {
+			t.Errorf("%s is empty", rel)
+		}
+	}
+}
+
+func TestRun_FlutterAikataYamlIncludesStack(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(flutterOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, ".ai", "aikata.yaml"))
+	if err != nil {
+		t.Fatalf("read .ai/aikata.yaml: %v", err)
+	}
+	out := string(body)
+	for _, needle := range []string{"version: 1", "name: samplekata", "stacks:", "- flutter"} {
+		if !strings.Contains(out, needle) {
+			t.Errorf("aikata.yaml missing %q:\n%s", needle, out)
+		}
+	}
+}
+
+func TestRun_FlutterAGENTSReferencesStackDoc(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(flutterOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS.md: %v", err)
+	}
+	if !strings.Contains(string(body), "docs/stacks/flutter.md") {
+		t.Errorf("flutter AGENTS.md should reference docs/stacks/flutter.md:\n%s", body)
+	}
+}
+
+func TestRun_FlutterGitignoreCoversFlutterArtifacts(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(flutterOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, ".gitignore"))
+	if err != nil {
+		t.Fatalf("read .gitignore: %v", err)
+	}
+	out := string(body)
+	for _, needle := range []string{".dart_tool/", "build/", "ios/Pods/", "pubspec.lock"} {
+		if !strings.Contains(out, needle) {
+			t.Errorf(".gitignore missing %q:\n%s", needle, out)
+		}
+	}
+}
+
+func TestRun_FlutterOSSReadiness(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(flutterOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedFlutterFiles {
+		body, err := os.ReadFile(filepath.Join(tmp, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatalf("read %s: %v", rel, err)
+		}
+		if strings.Contains(string(body), "/Users/") {
+			t.Errorf("%s contains a /Users/ path (OSS leak)", rel)
+		}
+		for _, sec := range []string{"AKIA", "ghp_", "sk-", "xoxb-"} {
+			if strings.Contains(string(body), sec) {
+				t.Errorf("%s contains secret-like pattern %q", rel, sec)
+			}
+		}
+	}
+}
+
+// TestRun_NonFlutter_NoFlutterFootprint is the Do-No-Harm regression
+// gate (ADR 0003): minimal/standard presets must not contain any
+// flutter-specific identifier (the string "flutter" or "docs/stacks/"
+// references).
+func TestRun_NonFlutter_NoFlutterFootprint(t *testing.T) {
+	for _, preset := range []string{"minimal", "standard"} {
+		preset := preset
+		t.Run(preset, func(t *testing.T) {
+			tmp := t.TempDir()
+			opts := defaultOpts(tmp)
+			opts.Preset = preset
+			if err := Run(opts); err != nil {
+				t.Fatalf("Run: %v", err)
+			}
+			err := filepath.WalkDir(tmp, func(path string, d fs.DirEntry, walkErr error) error {
+				if walkErr != nil {
+					return walkErr
+				}
+				if d.IsDir() {
+					return nil
+				}
+				body, err := os.ReadFile(path)
+				if err != nil {
+					return err
+				}
+				for _, needle := range []string{"flutter", "docs/stacks/"} {
+					if strings.Contains(strings.ToLower(string(body)), needle) {
+						rel, _ := filepath.Rel(tmp, path)
+						t.Errorf("%s mentions %q in non-flutter preset:\n%s",
+							rel, needle, body)
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				t.Fatalf("walk: %v", err)
+			}
+		})
+	}
+}
+
 // --- --with-memory (Task 5A) ---
 
 var expectedMemoryFiles = []string{

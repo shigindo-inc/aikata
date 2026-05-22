@@ -1,0 +1,57 @@
+# --- Secrets ---
+.env
+.env.local
+*.local
+
+# --- aikata working files ---
+# Proposals from `aikata init` against existing directories (transient).
+/.aikata-proposed/
+
+# --- AI tool-generated artifacts ---
+# Regenerable from canonical AGENTS.md via `aikata generate`.
+# To commit them anyway, set docs.generate_gitignore: false in
+# .ai/aikata.yaml (or remove these lines manually).
+CLAUDE.md
+.cursor/rules/
+.github/copilot-instructions.md
+GEMINI.md
+.windsurfrules
+
+# --- Flutter / Dart build outputs ---
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+pubspec.lock
+*.iml
+
+# --- iOS ---
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# --- Android ---
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/gradle-wrapper.jar
+android/local.properties
+android/**/GeneratedPluginRegistrant.*
+
+# --- Editor / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Coverage ---
+coverage/

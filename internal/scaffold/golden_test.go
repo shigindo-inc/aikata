@@ -60,6 +60,24 @@ func TestGolden_StandardWithMemory(t *testing.T) {
 	compareWithGolden(t, goldenRoot(t, "standard-with-memory"), tmp)
 }
 
+func TestGolden_Flutter(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(flutterOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "flutter"), tmp)
+}
+
+func TestGolden_FlutterWithMemory(t *testing.T) {
+	tmp := t.TempDir()
+	opts := flutterOpts(tmp)
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "flutter-with-memory"), tmp)
+}
+
 // compareWithGolden either updates the golden tree from gotDir (when
 // -update is set) or asserts that the two trees are byte-identical.
 func compareWithGolden(t *testing.T, goldenDir, gotDir string) {

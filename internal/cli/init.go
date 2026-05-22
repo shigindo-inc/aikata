@@ -82,6 +82,7 @@ func newInitCmd() *cobra.Command {
 				Force:       force,
 				DryRun:      dryRun,
 				WithMemory:  withMemory,
+				Stacks:      stacksForPreset(preset),
 				Stdout:      cmd.OutOrStdout(),
 			}
 
@@ -95,7 +96,7 @@ func newInitCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&preset, "preset", "standard", "preset name (minimal | standard)")
+	cmd.Flags().StringVar(&preset, "preset", "standard", "preset name (minimal | standard | flutter)")
 	cmd.Flags().StringVar(&name, "name", "", "project name; overrides the positional argument when both are given")
 	cmd.Flags().BoolVar(&noInteractive, "no-interactive", false, "skip interactive prompts (required in v0.1)")
 	cmd.Flags().BoolVar(&force, "force", false, "overwrite existing files in a non-empty target directory")
@@ -104,4 +105,16 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&withMemory, "with-memory", false, "include long-term agent memory under docs/memory/ (ADR 0004)")
 
 	return cmd
+}
+
+// stacksForPreset returns the stack identifiers implied by a preset
+// name. Stack-flavored presets like `flutter` set their own stack
+// implicitly; `minimal` / `standard` ship without one.
+func stacksForPreset(preset string) []string {
+	switch preset {
+	case "flutter":
+		return []string{"flutter"}
+	default:
+		return nil
+	}
 }

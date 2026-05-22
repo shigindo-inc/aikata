@@ -20,6 +20,32 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.2 Task 10 — `--preset flutter`:
+  - New `flutter` preset under
+    `internal/templates/data/presets/flutter/` ships a full document
+    set (README / AGENTS / SPEC / ARCHITECTURE / GLOSSARY / `.env.example`
+    / `.gitignore` / ADR 0001 / docs/tasks/current / docs/troubleshooting
+    / docs/prompts / `.ai/aikata.yaml` via `config.Default`) plus a
+    Flutter-specific `docs/stacks/flutter.md` covering lints, null
+    safety, state management, widget authoring rules, async / isolate
+    budget, build_runner, testing, platform channels, and accessibility.
+  - `scaffold.Options` gains a `Stacks []string` field; `templateData`
+    exposes it as `{{.Stacks}}` so AGENTS.md templates can render
+    `docs/stacks/<stack>.md` cross-references with
+    `{{range .Stacks}}`. Stack-flavored presets (currently just
+    flutter) seed this implicitly via cli/init's `stacksForPreset`
+    helper. The minimal / standard presets stay stack-agnostic
+    (Stacks=nil), preserving the Do-No-Harm guarantee.
+  - `.gitignore` covers Flutter build outputs: `build/`, `.dart_tool/`,
+    `ios/Pods/`, `pubspec.lock`, etc.
+  - `AGENTS.md` Read-order list uses repeated `1.` so markdown
+    renderers auto-number across optional sections (stacks, memory)
+    without colliding explicit numbers.
+  - Interactive prompt offers `flutter` as a third preset choice.
+  - 6 new tests (file presence, yaml stack content, AGENTS reference,
+    gitignore Flutter coverage, OSS scrub, Do-No-Harm regression on
+    minimal/standard) plus 2 golden trees
+    (`testdata/golden/flutter/`, `testdata/golden/flutter-with-memory/`).
 - v0.2 Task 9 — Cursor pass-through + Codex no-op:
   - `CursorProvider` emits `.cursor/rules/main.mdc`, a thin wrapper
     with `alwaysApply: true` that defers to canonical `AGENTS.md` and
