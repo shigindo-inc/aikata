@@ -1,0 +1,35 @@
+---
+project: samplekata
+status: draft
+version: 0.0.1
+updated: 2026-05-21
+audience: [human, agent]
+memory_type: feedback
+---
+
+# Memory — `feedback`
+
+ユーザーからの継続的な指示。過去セッションで受けた訂正や、ユーザーが
+明示的に検証済みとしたアプローチ。書き込みルールは
+[`README.md`](./README.md) を参照。**このファイルと
+[`../../AGENTS.md`](../../AGENTS.md) が衝突した場合は AGENTS.md が
+勝つ。**
+
+---
+
+## コミット／PR の衛生
+
+- _TODO: 例「Conventional Commits 必須」「AI 署名禁止」「squash-merge のみ」。_
+
+## コードスタイル
+
+- _TODO: 過去セッションで検証された言語固有の好み。_
+
+## プロセス
+
+- _TODO: 例「PR 説明のフォーマット」「新規パッケージはテスト必須」
+  「lint 警告でブロック」。_
+
+## スコープ規律
+
+- _TODO: 変更のサイズを保つために検証済みのパターン。_

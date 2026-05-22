@@ -20,6 +20,40 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.2 Task 12 — `--lang ja` parallel-directory templates:
+  - All preset / memory / ai_tools templates moved from
+    `<base>/<file>` to `<base>/en/<file>` and the matching Japanese
+    set added under `<base>/ja/<file>`. The parallel directory
+    structure was chosen over `{{if eq .Lang "ja"}}` branching so
+    translations can evolve independently without bloating template
+    files (ADR-equivalent decision documented as E3 in the Task 12
+    Plan section).
+  - `scaffold.resolveLangDir` selects `<base>/<lang>/`, falling back
+    to `<base>/en/` with a one-line stdout notice when the requested
+    language has no translations. The fallback is verified by
+    `TestLangFallback_UnknownLangFallsBackToEn`.
+  - `generate.resolveLangTemplate` does the same for AI-tool
+    artifacts (`ai_tools/<tool>/<lang>/<file>`); the
+    `generate.Context.Lang()` helper reads
+    `cfg.Project.Lang` (default "en") so providers do not need to
+    re-derive the language. Routing covered by
+    `TestRun_LangRoutesToJaTemplate` and
+    `TestRun_LangFallsBackToEnForUnknownLang`.
+  - **47 new ja template files** (4 presets × ~12 files +
+    5 memory + 2 ai_tools) authored as Japanese originals rather
+    than mechanical translations. Frontmatter and template structure
+    mirror the en counterparts exactly so existing tests stay
+    invariant.
+  - **5 new ja golden trees** (`minimal-ja/`, `standard-ja/`,
+    `flutter-ja/`, `typescript-ja/`, `standard-ja-with-memory/`).
+  - **`lang_consistency_test.go`** asserts en/ja file-name set
+    equality for every preset, the memory directory, and each
+    ai_tool — the cheap pre-doctor guard against translation drift.
+  - Existing en golden trees are unchanged: the lang directory move
+    only affects template paths, not output paths, so
+    `TestGolden_Minimal` / `TestGolden_Standard` / `TestGolden_Flutter`
+    / `TestGolden_Typescript` and their `*-with-memory` siblings
+    remain byte-identical.
 - v0.2 Task 11 — `--preset typescript`:
   - New `typescript` preset under
     `internal/templates/data/presets/typescript/` ships the same

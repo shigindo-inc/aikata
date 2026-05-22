@@ -1,0 +1,75 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: agent
+---
+
+# {{.ProjectName}} のエージェント指示書
+
+## 1. プロジェクト概要
+
+何を／なぜは [SPEC.md](./SPEC.md) を、技術構造は
+[ARCHITECTURE.md](./ARCHITECTURE.md) を、用語は
+[GLOSSARY.md](./GLOSSARY.md) を参照。
+
+## 2. 作業を始める前に
+
+次の順に読む（markdown が自動採番する — `1.` の重複は意図的）:
+
+1. [README.md](./README.md) — 概要
+1. **本ファイル (AGENTS.md)** — 運用ルール
+1. [SPEC.md](./SPEC.md) — 要件
+1. [ARCHITECTURE.md](./ARCHITECTURE.md) — 技術構造
+1. [GLOSSARY.md](./GLOSSARY.md) — 用語
+{{- range .Stacks}}
+1. [`docs/stacks/{{.}}.md`](./docs/stacks/{{.}}.md) — スタック固有ルール
+{{- end}}
+{{- if .WithMemory}}
+1. [`docs/memory/`](./docs/memory/) — 長期コンテキスト（ユーザーの好み、
+   プロジェクトの覚書、参照）。非自明な作業の前に
+   [`feedback.md`](./docs/memory/feedback.md) を必ず確認すること。
+{{- end}}
+1. [`docs/tasks/current.md`](./docs/tasks/current.md) — 現在の作業メモ
+
+## 3. ナビゲーション
+
+| 作業の種類 | まず読むファイル |
+|---|---|
+| 新規モジュール／エンドポイントの実装 | `SPEC.md`, `docs/stacks/typescript.md` |
+| 公開 API の変更 | `SPEC.md`, `ARCHITECTURE.md`, 関連テスト |
+| バグ修正 | `docs/tasks/current.md`, 関連テスト |
+| 設計判断の記録 | `docs/adr/` に新規ファイル。書式は [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) |
+| 用語の更新 | `GLOSSARY.md` を更新後、旧表記を grep |
+{{- if .WithMemory}}
+| ユーザー／プロジェクト文脈の参照 | `docs/memory/{user,feedback,project,reference}.md` |
+{{- end}}
+| 厄介な問題の調査 | まず `docs/troubleshooting.md` |
+
+## 4. 厳守ルール
+
+- **シークレットをコミットしない。** 代わりに [`.env.example`](./.env.example) のパターンを参照。
+- **作業の開始時と終了時に [`docs/tasks/current.md`](./docs/tasks/current.md) を更新する。**
+- **新規コードにはテストを追加する**: テストは `src/` と 1:1 で配置。
+  `docs/stacks/typescript.md` に記載のテストランナー（vitest / jest）
+  を作業完了の宣言前に実行する。
+- **型チェックを通す**（`tsc --noEmit` または同等）。エラー 0 が基準。
+- **lint を警告 0 で通す**（`eslint .` または同等）。
+- **`any` を使わない**。やむを得ない場合はインラインコメントで理由を述べる。
+  `unknown` を優先し、narrowing で絞る。
+- **[Conventional Commits](https://www.conventionalcommits.org/) を使う** —
+  種別: feat, fix, docs, style, refactor, test, chore, perf, ci, build。
+- **コミットに AI 署名を入れない** — ツールではなく変更を記述する。
+- **設計判断は [`docs/adr/`](./docs/adr/) に ADR として記録する** —
+  書式は [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) に従う。
+- **新しいドメイン用語が出てきたら [GLOSSARY.md](./GLOSSARY.md) を更新する。**
+
+## 5. 詰まったとき
+
+優先順位は次のとおり:
+
+1. [`docs/troubleshooting.md`](./docs/troubleshooting.md) を確認 — 既知である可能性が高い。
+2. [`docs/adr/`](./docs/adr/) で過去の設計判断を確認。
+3. [`docs/stacks/typescript.md`](./docs/stacks/typescript.md) でスタック固有のガイダンスを確認。
+4. 質問を文書化し、`docs/tasks/current.md` に追記してメンテナーに surface する。

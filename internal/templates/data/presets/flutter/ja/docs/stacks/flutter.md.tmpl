@@ -1,0 +1,97 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Flutter — スタック固有ルール
+
+> {{.ProjectName}} が Flutter プロジェクトであることに由来する規約。
+> [AGENTS.md](../../AGENTS.md) の不変則に *追加* されるルール。
+> 衝突した場合は AGENTS.md が勝つ。
+
+---
+
+## 1. コーディングスタイルと lint
+
+- `analysis_options.yaml` は最低限 `package:flutter_lints/flutter.yaml`
+  を extends する。プロジェクト固有の追加ルールは同ファイルに 1 行
+  コメントで根拠を添える。
+- `flutter analyze` は**警告 0** でなければコミットしない。CI が強制する。
+- `dart format`（80 桁デフォルト）を使う。空白を手調整しない。
+
+## 2. null safety
+
+- sound null safety（Dart 3+）でビルドする。
+- `!`（bang 演算子）の使用は避ける。使う場合は、その箇所で値が不変に
+  non-null である理由をインラインコメントで添える。
+- `initState` やコンストラクタ本文の後で non-null になるフィールドは
+  `?` よりも `late` を優先する。
+
+## 3. 状態管理
+
+_TODO: 採用方式（Provider / Riverpod / Bloc / GetX / 素の
+`setState`）を記載し、それを決めた ADR にリンクする。ADR 無しで
+2 つの state-management ライブラリを混用してはならない。_
+
+## 4. Widget の書き方
+
+- **適用できる箇所はすべて const コンストラクタにする。**
+  linter（`prefer_const_constructors`）は ON のまま、黙らせない。
+- widget は画面境界で先に分割し、その後で繰り返しサブツリーごとに
+  分ける。巨大な `build` メソッドを引き継ぐより、widget に切り出す。
+- `await` をまたいで `BuildContext` を使う場合: `await` 解決後に必ず
+  `if (!mounted) return;` で確認する。
+- `StatefulWidget` の外で `setState` を呼ばない。widget の外に出る
+  必要のある状態ロジックは §3 の選択肢に委ねる。
+
+## 5. 非同期、isolate、メインスレッド予算
+
+- 1 フレーム（〜16 ms）以上の停滞を起こす CPU バウンドな処理は
+  `compute` または専用 isolate に逃がす。
+- 長時間タスクは開始から 1 フレーム以内にノンブロッキングな進捗
+  インジケータを表示する。
+
+## 6. Build_runner / コード生成
+
+- 生成ファイルはソースの隣に置く（`foo.g.dart`, `foo.freezed.dart`）。
+- 生成ファイルは**コミットする**。コントリビューターが build_runner を
+  実行しなくてもコードを読めるようにするため。CI は
+  `dart run build_runner build --delete-conflicting-outputs` を実行し、
+  作業ツリーが dirty なら失敗する。
+
+## 7. テスト
+
+- **単体テスト** を `test/` 配下に `lib/` と 1:1 で配置。
+- **Widget tests** を再利用可能な widget（他ファイルから import される
+  もの）すべてに用意。
+- **Golden tests** を視覚的に regression させたくない UI に用意。
+  golden はプラットフォーム依存 — CI の同一イメージで実行し、
+  ローカル環境が異なる場合はローカル生成した golden をコミットしない。
+- **Integration tests** を `integration_test/` 配下で複数画面に
+  またがるフローに用意。
+- 作業完了の宣言前に `flutter test`（必要なら
+  `flutter test integration_test/`）を必ず実行。
+
+## 8. プラットフォームチャネルとネイティブコード
+
+- 各プラットフォームチャネルは Dart 側の単一呼び出し元と、対応する
+  ネイティブハンドラを必ずペアで持つ。不一致は無音障害になる。
+- 各チャネルを `ARCHITECTURE.md` に記録: チャネル名、両端のファイル
+  パス、メッセージスキーマ。
+
+## 9. アクセシビリティ
+
+- 全ての対話的 widget は `Semantics` ラベルを公開する（明示または
+  デフォルト経由）。
+- 色を情報の唯一の搬送手段にしない。
+- テキストスケール: `MediaQuery.textScaler = TextScaler.noScaling` を
+  設定しない。OS レベルの設定を通す。
+
+## 10. 本書を改訂するタイミング
+
+- 状態管理・ナビゲーション・IO の挙動を大きく変える依存を追加 → セクションを追加。
+- 単一の ADR に収まらないチーム横断的な好み → ここに追加。
+- 規定したルールが誤りと判明 → 削除し、コミットメッセージで理由を述べる。

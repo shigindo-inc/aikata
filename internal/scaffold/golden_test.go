@@ -96,6 +96,59 @@ func TestGolden_TypescriptWithMemory(t *testing.T) {
 	compareWithGolden(t, goldenRoot(t, "typescript-with-memory"), tmp)
 }
 
+// --- --lang ja (Task 12) ---
+
+func TestGolden_MinimalJa(t *testing.T) {
+	tmp := t.TempDir()
+	opts := defaultOpts(tmp)
+	opts.Lang = "ja"
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "minimal-ja"), tmp)
+}
+
+func TestGolden_StandardJa(t *testing.T) {
+	tmp := t.TempDir()
+	opts := standardOpts(tmp)
+	opts.Lang = "ja"
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "standard-ja"), tmp)
+}
+
+func TestGolden_FlutterJa(t *testing.T) {
+	tmp := t.TempDir()
+	opts := flutterOpts(tmp)
+	opts.Lang = "ja"
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "flutter-ja"), tmp)
+}
+
+func TestGolden_TypescriptJa(t *testing.T) {
+	tmp := t.TempDir()
+	opts := typescriptOpts(tmp)
+	opts.Lang = "ja"
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "typescript-ja"), tmp)
+}
+
+func TestGolden_StandardJaWithMemory(t *testing.T) {
+	tmp := t.TempDir()
+	opts := standardOpts(tmp)
+	opts.Lang = "ja"
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "standard-ja-with-memory"), tmp)
+}
+
 // compareWithGolden either updates the golden tree from gotDir (when
 // -update is set) or asserts that the two trees are byte-identical.
 func compareWithGolden(t *testing.T, goldenDir, gotDir string) {

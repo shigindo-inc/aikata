@@ -55,12 +55,13 @@ func TestFSContainsMinimalPreset(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FS: %v", err)
 	}
-	entries, err := fs.ReadDir(root, "presets/minimal")
+	// Presets are now lang-scoped (Task 12); read the en subdirectory.
+	entries, err := fs.ReadDir(root, "presets/minimal/en")
 	if err != nil {
-		t.Fatalf("ReadDir presets/minimal: %v", err)
+		t.Fatalf("ReadDir presets/minimal/en: %v", err)
 	}
 	if len(entries) == 0 {
-		t.Fatalf("presets/minimal has no entries")
+		t.Fatalf("presets/minimal/en has no entries")
 	}
 	for _, e := range entries {
 		if !strings.HasSuffix(e.Name(), ".md.tmpl") {
@@ -70,7 +71,7 @@ func TestFSContainsMinimalPreset(t *testing.T) {
 }
 
 func TestRenderMinimalReadme(t *testing.T) {
-	got, err := Render("presets/minimal/README.md.tmpl",
+	got, err := Render("presets/minimal/en/README.md.tmpl",
 		map[string]any{"ProjectName": "samplekata", "Lang": "en"},
 		fixedClock(2026, time.May, 21))
 	if err != nil {
@@ -85,7 +86,7 @@ func TestRenderMissingKeyIsAnError(t *testing.T) {
 	// Pass empty data so {{.ProjectName}} resolves to <no value>; the
 	// missingkey=error option turns this into a real error rather than a
 	// silent template output of "<no value>".
-	_, err := Render("presets/minimal/README.md.tmpl", map[string]any{},
+	_, err := Render("presets/minimal/en/README.md.tmpl", map[string]any{},
 		fixedClock(2026, time.May, 21))
 	if err == nil {
 		t.Fatalf("expected error for missing template key; got nil")

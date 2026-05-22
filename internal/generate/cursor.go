@@ -40,7 +40,8 @@ func (CursorProvider) Files(ctx Context) (map[string]string, error) {
 		"HasOpenQuestions": has("docs/decisions/open-questions.md"),
 		"HasMemory":        has("docs/memory"),
 	}
-	content, err := templates.Render("ai_tools/cursor/main.mdc.tmpl", data, ctx.Clock)
+	path := resolveLangTemplate("ai_tools/cursor", ctx.Lang(), "main.mdc.tmpl")
+	content, err := templates.Render(path, data, ctx.Clock)
 	if err != nil {
 		return nil, err
 	}
