@@ -43,7 +43,8 @@ func (ClaudeProvider) Files(ctx Context) (map[string]string, error) {
 		"HasOpenQuestions": has("docs/decisions/open-questions.md"),
 		"HasMemory":        has("docs/memory"),
 	}
-	content, err := templates.Render("ai_tools/claude/CLAUDE.md.tmpl", data, ctx.Clock)
+	path := resolveLangTemplate("ai_tools/claude", ctx.Lang(), "CLAUDE.md.tmpl")
+	content, err := templates.Render(path, data, ctx.Clock)
 	if err != nil {
 		return nil, err
 	}

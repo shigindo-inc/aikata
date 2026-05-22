@@ -3,6 +3,7 @@ package generate
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
@@ -25,6 +26,16 @@ type Context struct {
 	Clock templates.Clock
 }
 
+// Lang returns the document language for this run, defaulting to "en"
+// when the project did not pin one. Providers use it to pick the
+// language-scoped template under ai_tools/<tool>/<lang>/.
+func (c Context) Lang() string {
+	if c.Project.Project.Lang == "" {
+		return "en"
+	}
+	return c.Project.Project.Lang
+}
+
 // Provider produces a set of files for one AI tool. Returned map keys
 // are paths relative to ctx.TargetDir (e.g. "CLAUDE.md",
 // ".cursor/rules/aikata.mdc"); values are file contents.
@@ -36,6 +47,24 @@ type Provider interface {
 // ErrUnknownAITool is returned when `.ai/aikata.yaml` enables a tool
 // for which no Provider is registered. The cli maps this to exit code 2.
 var ErrUnknownAITool = errors.New("generate: unknown ai_tool")
+
+// resolveLangTemplate picks the language-scoped template under base,
+// falling back to "en" when the requested lang directory is missing
+// in the embedded FS. The return value is always a usable embed path;
+// when both lang and en are missing the caller's templates.Render
+// surfaces the not-found error.
+func resolveLangTemplate(base, lang, filename string) string {
+	if lang == "" {
+		lang = "en"
+	}
+	root, err := templates.FS()
+	if err == nil {
+		if _, statErr := fs.Stat(root, base+"/"+lang+"/"+filename); statErr == nil {
+			return base + "/" + lang + "/" + filename
+		}
+	}
+	return base + "/en/" + filename
+}
 
 // registry maps tool names ("claude", "cursor", …) to their Provider
 // implementations. Kept unexported so callers go through Run / Get.

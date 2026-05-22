@@ -1,0 +1,39 @@
+---
+description: 規範ソースとして AGENTS.md を読む
+alwaysApply: true
+---
+
+# Cursor ルール — AGENTS.md へのポインタ
+
+このファイルは [`AGENTS.md`](../../AGENTS.md) から `aikata generate` で
+**生成**されています。2026 年時点で Cursor は `AGENTS.md` を native に
+読みます。この `.mdc` は `.cursor/rules/` のリスティングから
+`alwaysApply: true` のルールとして発見可能にするために存在します。
+
+`.cursor/rules/main.mdc` を直接編集しないこと。代わりに `aikata generate` を
+再実行してください。
+
+## 読む順序
+
+- [`AGENTS.md`](../../AGENTS.md) — 運用ルール（規範）
+{{- if .HasReadme}}
+- [`README.md`](../../README.md) — プロジェクト概要
+{{- end}}
+{{- if .HasSpec}}
+- [`SPEC.md`](../../SPEC.md) — 何を／なぜ
+{{- end}}
+{{- if .HasArchitecture}}
+- [`ARCHITECTURE.md`](../../ARCHITECTURE.md) — どう作るか
+{{- end}}
+{{- if .HasGlossary}}
+- [`GLOSSARY.md`](../../GLOSSARY.md) — 用語
+{{- end}}
+{{- if .HasMemory}}
+- [`docs/memory/`](../../docs/memory/) — エージェントの長期メモリ（ユーザーの
+  好み、プロジェクトの覚書、参照）
+{{- end}}
+{{- if .HasOpenQuestions}}
+- [`docs/decisions/open-questions.md`](../../docs/decisions/open-questions.md) — 未決定事項
+{{- end}}
+
+`{{.ProjectName}}` 向けに生成。

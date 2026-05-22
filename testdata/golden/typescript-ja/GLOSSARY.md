@@ -1,0 +1,93 @@
+---
+project: samplekata
+status: draft
+version: 0.0.1
+updated: 2026-05-21
+audience: [human, agent]
+---
+
+# 用語集
+
+samplekata のドキュメントとソースコード全体で使用する用語。
+**(domain)** マークはプロジェクト固有の概念。それ以外は業界標準の
+用語で、人間と LLM 双方の曖昧さを減らすため本書で解釈を固定する。
+
+> **なぜこのファイルが重要か**: 語彙を一箇所に固定することで、
+> LLM 出力の翻訳ドリフトを減らし、レビュアーが用語の不整合に
+> 気付きやすくなる。
+
+---
+
+## A
+
+### ADR — Architecture Decision Record
+
+ひとつのアーキテクチャ判断と、その文脈・帰結を記録する短い markdown
+文書。`docs/adr/NNNN-title.md` で保存。書式は
+[`docs/adr/0001-record-architecture-decisions.md`](./docs/adr/0001-record-architecture-decisions.md)
+に従う。
+
+### agent
+
+本プロジェクトのドキュメントを読み、コードを生成・編集する
+LLM ベースのコーディングアシスタント。
+
+---
+
+## C
+
+### canonical source（規範ソース）
+
+ある情報の**唯一の真実の源**。生成物と乖離した場合は規範ソースが勝つ。
+
+### Conventional Commits
+
+コミットメッセージの規約（`<type>(<scope>): <subject>`）。本プロジェクトでは必須。
+[AGENTS.md](./AGENTS.md) を参照。
+
+---
+
+## E
+
+### ESM — ECMAScript Modules
+
+JavaScript / TypeScript の標準モジュールシステム（`import` / `export`）。
+本プロジェクトの ESM／CJS 選択は
+[`docs/stacks/typescript.md`](./docs/stacks/typescript.md) に固定する。
+
+---
+
+## F
+
+### frontmatter
+
+markdown ファイル冒頭の `---` で囲まれた YAML ブロック。
+本プロジェクトでは `project`, `status`, `version`, `updated`,
+`audience` をクロスドキュメントのメタデータとして使う。
+
+---
+
+## S
+
+### strict mode (TypeScript)
+
+`strict` ファミリのフラグ（`strictNullChecks`, `noImplicitAny` など）を
+全て有効化する `tsconfig.json` の構成。本プロジェクトは strict mode を
+ON のまま出荷する。strict ファミリのいずれかを無効化するには ADR を
+要する。
+
+---
+
+## T
+
+### type narrowing（型の絞り込み）
+
+広い型を、コード分岐の中でより具体的な型に絞ること
+（`typeof`, `instanceof`, 判別子タグ、ユーザー定義型ガード）。
+`as` キャストや `!` non-null assertion より優先する。
+
+---
+
+## (プロジェクト固有の用語)
+
+_TODO: samplekata で重要なドメイン用語に置き換える。_
