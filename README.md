@@ -44,6 +44,11 @@ For the long-form rationale, read [SPEC.md](./SPEC.md) §1.
 # Install (one of):
 go install github.com/shigindo-inc/aikata/cmd/aikata@latest
 
+# Verify the install:
+aikata --version
+# If your build does not expose version metadata yet:
+aikata --help
+
 # Or download a pre-built binary from the latest GitHub Release:
 # https://github.com/shigindo-inc/aikata/releases
 
@@ -60,11 +65,66 @@ aikata init my-app --preset standard --with-memory --no-interactive
 aikata generate
 ```
 
+`go install` writes the binary to `$GOBIN` when it is set, otherwise to
+`$(go env GOPATH)/bin`. That directory must be in `PATH`; see
+[`docs/troubleshooting.md`](./docs/troubleshooting.md) if `aikata` is not
+found after install.
+
 > The `aikata doctor` command, Homebrew tap, and `curl -sSL` install
 > script land in later releases — see [ROADMAP.md](./ROADMAP.md).
 
 See [SPEC.md §4](./SPEC.md#4-functional-requirements-cli) for the full
 command surface.
+
+### Local development install
+
+From a local checkout:
+
+```bash
+cd /path/to/aikata
+go install ./cmd/aikata
+
+# Or install into a directory that is often already in PATH:
+GOBIN="$HOME/.local/bin" go install ./cmd/aikata
+```
+
+### Existing repository setup
+
+From the repository root, `aikata init` refuses to write into a non-empty
+directory unless `--force` is passed. Always inspect the dry run before
+overwriting files:
+
+```bash
+aikata init my-project --preset standard --with-memory --no-interactive --dry-run --force
+
+# If the proposed changes are acceptable:
+aikata init my-project --preset standard --with-memory --no-interactive --force
+```
+
+For an existing repository that already has `AGENTS.md`, the safer minimal
+path is to create `.ai/aikata.yaml` manually:
+
+```bash
+mkdir -p .ai
+```
+
+```yaml
+version: 1
+project:
+    name: my-project
+    lang: en
+ai_tools:
+    - claude
+```
+
+Then regenerate tool-specific artifacts:
+
+```bash
+aikata generate
+```
+
+`aikata generate` overwrites generated tool-specific artifacts such as
+`CLAUDE.md`; keep canonical instructions in `AGENTS.md`.
 
 ---
 

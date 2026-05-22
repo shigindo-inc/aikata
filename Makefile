@@ -4,7 +4,7 @@
 #   make build    — build the aikata binary into ./aikata
 #   make test     — run all Go tests
 #   make lint     — run golangci-lint
-#   make install  — install aikata into $GOBIN
+#   make install  — install aikata into $GOBIN, or $GOPATH/bin when unset
 #   make run      — go run aikata (pass flags via ARGS="--help")
 #   make clean    — remove build artifacts
 #   make tidy     — go mod tidy
