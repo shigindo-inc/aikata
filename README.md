@@ -15,10 +15,14 @@ audience: [human, agent]
 The name means "partner" in Japanese: a companion that helps humans and
 LLMs collaborate as equals during development.
 
-> **Status — Pre-MVP (Phase 1: documentation bootstrap).**
-> The CLI is not implemented yet. This repository currently ships the
-> operational documents that define what aikata will be. See
-> [ROADMAP.md](./ROADMAP.md) for the path to v0.1.
+[![ci](https://github.com/shigindo-inc/aikata/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shigindo-inc/aikata/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
+[![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
+
+> **Status — v0.1 (MVP).**
+> `aikata init` (minimal / standard presets, optional `--with-memory`)
+> and `aikata generate` (Claude target) ship in v0.1.
+> [ROADMAP.md](./ROADMAP.md) lists what comes next.
 
 ---
 
@@ -34,24 +38,30 @@ For the long-form rationale, read [SPEC.md](./SPEC.md) §1.
 
 ---
 
-## Quickstart (planned, v0.1)
-
-> The commands below describe the v0.1 target. They will not run today.
+## Quickstart
 
 ```bash
 # Install (one of):
-brew install aikata-dev/tap/aikata
-curl -sSL https://aikata.dev/install.sh | sh
+go install github.com/shigindo-inc/aikata/cmd/aikata@latest
 
-# Scaffold a new project:
-aikata init my-app --preset standard --lang en --ai-tools claude
+# Or download a pre-built binary from the latest GitHub Release:
+# https://github.com/shigindo-inc/aikata/releases
 
-# Check consistency at any time:
-aikata doctor
+# Scaffold a new project (interactive when stdin is a TTY):
+aikata init my-app
 
-# Re-generate per-AI-tool files after edits:
+# Or non-interactively with explicit flags:
+aikata init my-app --preset standard --no-interactive
+
+# Opt in to the long-term agent memory slot (ADR 0004):
+aikata init my-app --preset standard --with-memory --no-interactive
+
+# Re-generate per-AI-tool files (currently CLAUDE.md from AGENTS.md):
 aikata generate
 ```
+
+> The `aikata doctor` command, Homebrew tap, and `curl -sSL` install
+> script land in later releases — see [ROADMAP.md](./ROADMAP.md).
 
 See [SPEC.md §4](./SPEC.md#4-functional-requirements-cli) for the full
 command surface.
