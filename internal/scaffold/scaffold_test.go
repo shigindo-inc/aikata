@@ -3,6 +3,7 @@ package scaffold
 import (
 	"bytes"
 	"errors"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -290,5 +291,122 @@ func TestRun_StandardOSSReadiness(t *testing.T) {
 				t.Errorf("%s contains secret-like pattern %q", rel, sec)
 			}
 		}
+	}
+}
+
+// --- --with-memory (Task 5A) ---
+
+var expectedMemoryFiles = []string{
+	"docs/memory/README.md",
+	"docs/memory/user.md",
+	"docs/memory/feedback.md",
+	"docs/memory/project.md",
+	"docs/memory/reference.md",
+}
+
+func TestRun_WithMemory_GeneratesMemoryFilesUnderMinimal(t *testing.T) {
+	tmp := t.TempDir()
+	opts := defaultOpts(tmp)
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedMemoryFiles {
+		full := filepath.Join(tmp, filepath.FromSlash(rel))
+		info, err := os.Stat(full)
+		if err != nil {
+			t.Errorf("expected %s to exist: %v", rel, err)
+			continue
+		}
+		if info.Size() == 0 {
+			t.Errorf("%s is empty", rel)
+		}
+	}
+}
+
+func TestRun_WithMemory_MemoryTypeMatchesFilename(t *testing.T) {
+	tmp := t.TempDir()
+	opts := defaultOpts(tmp)
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	cases := map[string]string{
+		"docs/memory/user.md":      "memory_type: user",
+		"docs/memory/feedback.md":  "memory_type: feedback",
+		"docs/memory/project.md":   "memory_type: project",
+		"docs/memory/reference.md": "memory_type: reference",
+	}
+	for rel, want := range cases {
+		body, err := os.ReadFile(filepath.Join(tmp, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatalf("read %s: %v", rel, err)
+		}
+		if !strings.Contains(string(body), want) {
+			t.Errorf("%s missing %q in frontmatter", rel, want)
+		}
+	}
+}
+
+func TestRun_WithMemory_StandardAGENTSReferencesMemory(t *testing.T) {
+	tmp := t.TempDir()
+	opts := standardOpts(tmp)
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	agents, err := os.ReadFile(filepath.Join(tmp, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS.md: %v", err)
+	}
+	body := string(agents)
+	if !strings.Contains(body, "docs/memory/") {
+		t.Errorf("standard AGENTS.md should reference docs/memory/ when WithMemory:\n%s", body)
+	}
+	if !strings.Contains(body, "Recall user / project context") {
+		t.Errorf("standard AGENTS.md should include the Recall navigation row")
+	}
+}
+
+// TestRun_WithoutMemory_NoMemoryFootprint is the Do-No-Harm regression
+// gate (ADR 0003 / 0004): with WithMemory=false the generated tree must
+// not contain `docs/memory/` and no rendered file may mention the
+// directory or the slot.
+func TestRun_WithoutMemory_NoMemoryFootprint(t *testing.T) {
+	for _, preset := range []string{"minimal", "standard"} {
+		preset := preset
+		t.Run(preset, func(t *testing.T) {
+			tmp := t.TempDir()
+			opts := defaultOpts(tmp)
+			opts.Preset = preset
+			opts.WithMemory = false
+			if err := Run(opts); err != nil {
+				t.Fatalf("Run: %v", err)
+			}
+			if _, err := os.Stat(filepath.Join(tmp, "docs", "memory")); !errors.Is(err, os.ErrNotExist) {
+				t.Errorf("docs/memory/ should not exist when WithMemory=false: %v", err)
+			}
+			err := filepath.WalkDir(tmp, func(path string, d fs.DirEntry, walkErr error) error {
+				if walkErr != nil {
+					return walkErr
+				}
+				if d.IsDir() {
+					return nil
+				}
+				body, err := os.ReadFile(path)
+				if err != nil {
+					return err
+				}
+				if strings.Contains(string(body), "docs/memory/") {
+					rel, _ := filepath.Rel(tmp, path)
+					t.Errorf("%s mentions docs/memory/ even though WithMemory=false:\n%s",
+						rel, body)
+				}
+				return nil
+			})
+			if err != nil {
+				t.Fatalf("walk: %v", err)
+			}
+		})
 	}
 }

@@ -1,12 +1,12 @@
 ---
-project: {{.ProjectName}}
+project: samplekata
 status: draft
 version: 0.0.1
-updated: {{now}}
+updated: 2026-05-21
 audience: agent
 ---
 
-# Agent Instructions for {{.ProjectName}}
+# Agent Instructions for samplekata
 
 ## 1. Project overview
 
@@ -23,14 +23,10 @@ Read in this order:
 3. [SPEC.md](./SPEC.md) — requirements
 4. [ARCHITECTURE.md](./ARCHITECTURE.md) — technical structure
 5. [GLOSSARY.md](./GLOSSARY.md) — terminology
-{{- if .WithMemory}}
 6. [`docs/memory/`](./docs/memory/) — long-term context (user
    preferences, project notes, references); read at least
    [`feedback.md`](./docs/memory/feedback.md) before non-trivial work
 7. [`docs/tasks/current.md`](./docs/tasks/current.md) — current working memory
-{{- else}}
-6. [`docs/tasks/current.md`](./docs/tasks/current.md) — current working memory
-{{- end}}
 
 ## 3. Navigation matrix
 
@@ -41,9 +37,7 @@ Read in this order:
 | Fix a bug | `docs/tasks/current.md`, related tests |
 | Record a design decision | new file under `docs/adr/`, follow [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) |
 | Update terminology | `GLOSSARY.md`, then grep for outdated forms |
-{{- if .WithMemory}}
 | Recall user / project context | `docs/memory/{user,feedback,project,reference}.md` |
-{{- end}}
 | Diagnose a hairy problem | `docs/troubleshooting.md` first |
 
 ## 4. Hard rules

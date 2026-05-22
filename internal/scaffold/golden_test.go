@@ -40,6 +40,26 @@ func TestGolden_Standard(t *testing.T) {
 	compareWithGolden(t, goldenRoot(t, "standard"), tmp)
 }
 
+func TestGolden_MinimalWithMemory(t *testing.T) {
+	tmp := t.TempDir()
+	opts := defaultOpts(tmp)
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "minimal-with-memory"), tmp)
+}
+
+func TestGolden_StandardWithMemory(t *testing.T) {
+	tmp := t.TempDir()
+	opts := standardOpts(tmp)
+	opts.WithMemory = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "standard-with-memory"), tmp)
+}
+
 // compareWithGolden either updates the golden tree from gotDir (when
 // -update is set) or asserts that the two trees are byte-identical.
 func compareWithGolden(t *testing.T, goldenDir, gotDir string) {

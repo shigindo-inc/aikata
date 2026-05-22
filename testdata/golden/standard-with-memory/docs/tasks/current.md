@@ -9,7 +9,8 @@ audience: [human, agent]
 # Current Work — samplekata
 
 > This is the agent's **short-term working memory**. Rewrite freely as
-> work progresses. Update
+> work progresses. For long-term context that should
+> survive across sessions, prefer `docs/memory/`. Update
 > [AGENTS.md](../../AGENTS.md) for invariant rules.
 
 ---

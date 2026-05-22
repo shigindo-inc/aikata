@@ -27,6 +27,7 @@ func newInitCmd() *cobra.Command {
 		force         bool
 		dryRun        bool
 		lang          string
+		withMemory    bool
 	)
 
 	cmd := &cobra.Command{
@@ -66,6 +67,7 @@ func newInitCmd() *cobra.Command {
 				Lang:        lang,
 				Force:       force,
 				DryRun:      dryRun,
+				WithMemory:  withMemory,
 				Stdout:      cmd.OutOrStdout(),
 			}
 
@@ -85,6 +87,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&force, "force", false, "overwrite existing files in a non-empty target directory")
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "print the plan without writing files")
 	cmd.Flags().StringVar(&lang, "lang", "en", "document language (en | ja)")
+	cmd.Flags().BoolVar(&withMemory, "with-memory", false, "include long-term agent memory under docs/memory/ (ADR 0004)")
 
 	return cmd
 }
