@@ -1,0 +1,18 @@
+version: 1
+project:
+    name: aikata
+    lang: en
+    description: Lightweight CLI that scaffolds AI-readable markdown documents.
+ai_tools:
+    - claude
+features:
+    monorepo: false
+    obsidian_hints: false
+    tdd: false
+docs:
+    # aikata's own repo overrides the target-project default and
+    # commits generated artifacts (CLAUDE.md, .cursor/rules/, …) so
+    # contributors can open the repo with Claude Code / Cursor without
+    # first installing aikata. See ADR 0003 §"Consequences".
+    generate_gitignore: false
+    task_file_location: docs/tasks/current.md
