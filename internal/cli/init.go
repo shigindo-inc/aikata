@@ -42,16 +42,30 @@ func newInitCmd() *cobra.Command {
 			if len(args) == 1 && name == "" {
 				name = args[0]
 			}
-			if !noInteractive {
-				return &ExitError{
-					Code: 2,
-					Err:  errors.New("interactive mode is not yet implemented (Task 6); rerun with --no-interactive"),
+
+			// Interactive when the user did not pass --no-interactive
+			// AND stdin is attached to a real terminal. Piped or
+			// redirected stdin auto-falls-back to non-interactive so
+			// CI invocations don't hang waiting for input.
+			interactive := !noInteractive && isTTYFunc()
+			if interactive {
+				result, err := runPrompt(cmd.InOrStdin(), cmd.OutOrStdout(), promptResult{
+					Name:       name,
+					Preset:     preset,
+					WithMemory: withMemory,
+				})
+				if err != nil {
+					return &ExitError{Code: 2, Err: err}
 				}
+				name = result.Name
+				preset = result.Preset
+				withMemory = result.WithMemory
 			}
+
 			if name == "" {
 				return &ExitError{
 					Code: 2,
-					Err:  errors.New("project name is required: pass it as the positional arg or --name"),
+					Err:  errors.New("project name is required: pass it as the positional arg, --name, or via the interactive prompt"),
 				}
 			}
 
