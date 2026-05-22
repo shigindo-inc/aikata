@@ -149,6 +149,42 @@ func TestRun_ClaudeReflectsAvailableDocs(t *testing.T) {
 	}
 }
 
+func TestRun_LangRoutesToJaTemplate(t *testing.T) {
+	tmp := t.TempDir()
+	seedAgentsMD(t, tmp)
+	cfg := config.Default("samplekata", "ja")
+	if _, err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()}); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, "CLAUDE.md"))
+	if err != nil {
+		t.Fatalf("read CLAUDE.md: %v", err)
+	}
+	out := string(body)
+	// The ja CLAUDE.md template uses the Japanese phrase "生成" and
+	// "規範ソース" — assert at least one of these appears so we know
+	// resolveLangTemplate routed to ai_tools/claude/ja/.
+	if !strings.Contains(out, "規範ソース") {
+		t.Errorf("expected ja routing to include 規範ソース header; got:\n%s", out)
+	}
+}
+
+func TestRun_LangFallsBackToEnForUnknownLang(t *testing.T) {
+	tmp := t.TempDir()
+	seedAgentsMD(t, tmp)
+	cfg := config.Default("samplekata", "fr") // no fr templates
+	if _, err := Run(Context{TargetDir: tmp, Project: cfg, Clock: fixedClock()}); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, "CLAUDE.md"))
+	if err != nil {
+		t.Fatalf("read CLAUDE.md: %v", err)
+	}
+	if !strings.Contains(string(body), "canonical source") {
+		t.Errorf("expected en fallback content; got:\n%s", body)
+	}
+}
+
 func TestRun_OSSReadiness(t *testing.T) {
 	tmp := t.TempDir()
 	seedAgentsMD(t, tmp)

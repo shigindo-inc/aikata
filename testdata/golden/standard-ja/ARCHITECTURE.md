@@ -1,0 +1,68 @@
+---
+project: samplekata
+status: draft
+version: 0.0.1
+updated: 2026-05-21
+audience: [human, agent]
+---
+
+# ARCHITECTURE — どう作るか
+
+> 本書は samplekata の**作り方**を説明する。
+> **何を／なぜ**は [SPEC.md](./SPEC.md) を参照。
+> 個別の設計判断は [`docs/adr/`](./docs/adr/) 配下に記録する。
+
+---
+
+## 1. 実装言語とランタイム
+
+_TODO: 言語、ランタイム、最低サポートバージョンを記載_
+
+## 2. リポジトリ構成
+
+```
+samplekata/
+├── README.md
+├── AGENTS.md
+├── SPEC.md
+├── ARCHITECTURE.md
+├── GLOSSARY.md
+├── .env.example
+├── .gitignore
+├── .ai/
+│   └── aikata.yaml
+└── docs/
+    ├── adr/
+    │   └── 0001-record-architecture-decisions.md
+    ├── tasks/
+    │   └── current.md
+    ├── troubleshooting.md
+    └── prompts.md
+```
+
+_TODO: ソースコードのツリーが定まったら拡張する。_
+
+## 3. 主要コンポーネント
+
+_TODO: モジュール／サービス／パッケージを列挙。各々短い段落で説明する。_
+
+## 4. データフロー
+
+_TODO: システム内でデータがどう動くかを述べる。_
+
+## 5. 依存
+
+_TODO: 外部依存を列挙し、それぞれ採用理由を 1 行で添える
+（重量・メンテ放棄物は避ける）。_
+
+## 6. エラー処理とログ
+
+_TODO: エラーラップの規約、終了コード、ログレベルを記述。_
+
+## 7. テスト戦略
+
+_TODO: 単体／結合／ゴールデンの各レイヤと CI ゲートを記述。_
+
+## 8. 配布とリリース
+
+_TODO: 成果物のパッケージ／配布手段を記述。_

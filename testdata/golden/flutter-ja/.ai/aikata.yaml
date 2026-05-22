@@ -1,0 +1,15 @@
+version: 1
+project:
+    name: samplekata
+    lang: ja
+ai_tools:
+    - claude
+stacks:
+    - flutter
+features:
+    monorepo: false
+    obsidian_hints: false
+    tdd: false
+docs:
+    generate_gitignore: true
+    task_file_location: docs/tasks/current.md

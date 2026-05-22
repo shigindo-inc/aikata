@@ -57,14 +57,21 @@ func Run(opts Options) error {
 		return err
 	}
 
-	presetDir := "presets/" + opts.Preset
-	files, err := listTemplateFiles(presetDir)
+	presetDir, langDir, err := resolveLangDir("presets/"+opts.Preset, opts.Lang, opts.Stdout)
+	if err != nil {
+		return err
+	}
+	files, err := listTemplateFiles(langDir)
 	if err != nil {
 		return err
 	}
 	if len(files) == 0 {
 		return fmt.Errorf("scaffold: preset %q has no templates", opts.Preset)
 	}
+	// renderAll trims the lang-scoped prefix (e.g. "presets/minimal/en/")
+	// to compute target paths, so files render to the same location
+	// regardless of language.
+	_ = presetDir
 
 	nonEmpty, err := isNonEmpty(opts.TargetDir)
 	if err != nil {
@@ -74,7 +81,7 @@ func Run(opts Options) error {
 		return ErrTargetDirNotEmpty
 	}
 
-	rendered, err := renderAll(files, presetDir, opts)
+	rendered, err := renderAll(files, langDir, opts)
 	if err != nil {
 		return err
 	}
@@ -209,8 +216,9 @@ func renderAll(files []string, presetDir string, opts Options) (map[string]strin
 }
 
 // addMemoryArtifacts renders the docs/memory/*.md slot when WithMemory
-// is set. The memory templates live under `memory/` in the embedded FS
-// (separate from `presets/`) so they compose with every preset.
+// is set. The memory templates live under `memory/<lang>/` in the
+// embedded FS (separate from `presets/`) so they compose with every
+// preset and language.
 //
 // Do-No-Harm (ADR 0003 / 0004): when WithMemory is false this is a
 // no-op and no memory references appear in the rendered output.
@@ -222,8 +230,12 @@ func addMemoryArtifacts(opts Options, rendered map[string]string) error {
 	if err != nil {
 		return err
 	}
+	_, langDir, err := resolveLangDir("memory", opts.Lang, opts.Stdout)
+	if err != nil {
+		return err
+	}
 	data := templateData(opts)
-	return fs.WalkDir(root, "memory", func(p string, d fs.DirEntry, walkErr error) error {
+	return fs.WalkDir(root, langDir, func(p string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
@@ -237,10 +249,47 @@ func addMemoryArtifacts(opts Options, rendered map[string]string) error {
 		if err != nil {
 			return err
 		}
-		rel := "docs/memory/" + strings.TrimSuffix(strings.TrimPrefix(p, "memory/"), ".tmpl")
+		rel := "docs/memory/" + strings.TrimSuffix(strings.TrimPrefix(p, langDir+"/"), ".tmpl")
 		rendered[rel] = content
 		return nil
 	})
+}
+
+// resolveLangDir picks the language-scoped directory under base for
+// Lang, falling back to "en" when Lang is empty or its directory is
+// missing in the embedded FS. The fallback is reported via stdout (if
+// supplied) so users discovering the missing translation see it.
+//
+// Returns (base, base+"/"+chosenLang).
+func resolveLangDir(base, lang string, stdout io.Writer) (string, string, error) {
+	root, err := templates.FS()
+	if err != nil {
+		return "", "", err
+	}
+	chosen := lang
+	if chosen == "" {
+		chosen = "en"
+	}
+	target := base + "/" + chosen
+	if _, err := fs.Stat(root, target); err != nil {
+		if !errors.Is(err, fs.ErrNotExist) {
+			return "", "", fmt.Errorf("scaffold: stat %s: %w", target, err)
+		}
+		// Fall back to "en"; surface the substitution so users see it.
+		if stdout == nil {
+			stdout = os.Stderr
+		}
+		if chosen != "en" {
+			if _, werr := fmt.Fprintf(stdout, "scaffold: language %q not available for %s, falling back to en\n", chosen, base); werr != nil {
+				return "", "", fmt.Errorf("scaffold: write fallback notice: %w", werr)
+			}
+		}
+		target = base + "/en"
+		if _, err := fs.Stat(root, target); err != nil {
+			return "", "", fmt.Errorf("scaffold: %s/en not found: %w", base, err)
+		}
+	}
+	return base, target, nil
 }
 
 // writeAll persists rendered content to TargetDir. Files inherit 0644

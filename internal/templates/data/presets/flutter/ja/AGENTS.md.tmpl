@@ -1,0 +1,74 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: agent
+---
+
+# {{.ProjectName}} のエージェント指示書
+
+## 1. プロジェクト概要
+
+何を／なぜは [SPEC.md](./SPEC.md) を、技術構造は
+[ARCHITECTURE.md](./ARCHITECTURE.md) を、用語は
+[GLOSSARY.md](./GLOSSARY.md) を参照。
+
+## 2. 作業を始める前に
+
+次の順に読む（markdown が自動採番する — `1.` の重複は意図的）:
+
+1. [README.md](./README.md) — 概要
+1. **本ファイル (AGENTS.md)** — 運用ルール
+1. [SPEC.md](./SPEC.md) — 要件
+1. [ARCHITECTURE.md](./ARCHITECTURE.md) — 技術構造
+1. [GLOSSARY.md](./GLOSSARY.md) — 用語
+{{- range .Stacks}}
+1. [`docs/stacks/{{.}}.md`](./docs/stacks/{{.}}.md) — スタック固有ルール
+{{- end}}
+{{- if .WithMemory}}
+1. [`docs/memory/`](./docs/memory/) — 長期コンテキスト（ユーザーの好み、
+   プロジェクトの覚書、参照）。非自明な作業の前に
+   [`feedback.md`](./docs/memory/feedback.md) を必ず確認すること。
+{{- end}}
+1. [`docs/tasks/current.md`](./docs/tasks/current.md) — 現在の作業メモ
+
+## 3. ナビゲーション
+
+| 作業の種類 | まず読むファイル |
+|---|---|
+| 新規 widget／画面の実装 | `SPEC.md`, `docs/stacks/flutter.md` |
+| 状態管理の追加・変更 | `ARCHITECTURE.md`, `docs/stacks/flutter.md` |
+| バグ修正 | `docs/tasks/current.md`, `test/` 配下の関連テスト |
+| 設計判断の記録 | `docs/adr/` に新規ファイル。書式は [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) |
+| 用語の更新 | `GLOSSARY.md` を更新後、旧表記を grep |
+{{- if .WithMemory}}
+| ユーザー／プロジェクト文脈の参照 | `docs/memory/{user,feedback,project,reference}.md` |
+{{- end}}
+| 厄介な問題の調査 | まず `docs/troubleshooting.md` |
+
+## 4. 厳守ルール
+
+- **シークレットをコミットしない。** 代わりに [`.env.example`](./.env.example) のパターンを参照。
+- **作業の開始時と終了時に [`docs/tasks/current.md`](./docs/tasks/current.md) を更新する。**
+- **新規コードにはテストを追加する**: widget tests を `test/` 配下に
+  `lib/` と 1:1 で配置。完了宣言前に `flutter test` を必ず実行。
+- **コミット前に `flutter analyze` を走らせる**。警告 0 が基準。
+- **null safety を尊重する** — `!` で非 null assertion を黙らせるには、
+  必ず理由を述べたコメントを残す。
+- **[Conventional Commits](https://www.conventionalcommits.org/) を使う** —
+  種別: feat, fix, docs, style, refactor, test, chore, perf, ci, build。
+- **コミットに AI 署名を入れない** — ツールではなく変更を記述する。
+- **設計判断は [`docs/adr/`](./docs/adr/) に ADR として記録する** —
+  書式は [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) に従う。
+- **新しいドメイン用語が出てきたら [GLOSSARY.md](./GLOSSARY.md) を更新する。**
+
+## 5. 詰まったとき
+
+優先順位は次のとおり:
+
+1. [`docs/troubleshooting.md`](./docs/troubleshooting.md) を確認 — 問題が既知である可能性が高い。
+2. [`docs/adr/`](./docs/adr/) で過去の設計判断を確認。
+3. [`docs/stacks/flutter.md`](./docs/stacks/flutter.md) でスタック固有のガイダンスを確認。
+4. 質問を文書化し、`docs/tasks/current.md` に追記してメンテナーに surface する。
+   アーキテクチャ上の重要点を黙って推測しない。

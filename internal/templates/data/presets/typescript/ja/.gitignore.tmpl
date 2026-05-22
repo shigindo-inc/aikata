@@ -1,0 +1,55 @@
+# --- シークレット ---
+.env
+.env.local
+.env.*.local
+*.local
+
+# --- aikata 作業ファイル ---
+# 既存ディレクトリに対する `aikata init` の提案物（一時的）。
+/.aikata-proposed/
+
+# --- AI ツールが生成する成果物 ---
+# 規範 AGENTS.md から `aikata generate` で再生成可能。
+# 生成物もコミットしたい場合は .ai/aikata.yaml で
+# docs.generate_gitignore: false を設定するか、本ファイルから手動で
+# 当該行を削除する。
+CLAUDE.md
+.cursor/rules/
+.github/copilot-instructions.md
+GEMINI.md
+.windsurfrules
+
+# --- Node / TypeScript のビルド成果物 ---
+node_modules/
+dist/
+build/
+out/
+lib/
+*.tsbuildinfo
+
+# --- バンドラ／フレームワーク ---
+.next/
+.nuxt/
+.turbo/
+.svelte-kit/
+.astro/
+.parcel-cache/
+.vite/
+
+# --- テスト／カバレッジ ---
+coverage/
+.nyc_output/
+
+# --- エディタ／OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- パッケージマネージャのデバッグログ ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
