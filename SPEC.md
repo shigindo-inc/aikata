@@ -317,6 +317,12 @@ These boundaries may be revisited per [ROADMAP.md](./ROADMAP.md) §"v1.x".
 
 ## 9. References
 
+- Source design document:
+  [`docs/origin/initial-design.md`](./docs/origin/initial-design.md)
+  (historical record, **do not edit**)
+- Source setup document:
+  [`docs/origin/initial-setup.md`](./docs/origin/initial-setup.md)
+  (historical record, **do not edit**)
 - Open questions:
   [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md)
 - [agents.md open spec](https://agents.md/)

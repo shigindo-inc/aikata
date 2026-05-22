@@ -27,9 +27,8 @@ documents for projects.
 - **Open design questions** — read
   [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md).
 
-The initial design rationale lives in the canonical operational docs
-listed above; pre-v0.1 planning notes are preserved in git history
-(see commit `ea48abf`).
+The historical planning record (frozen, do not edit) is under
+[`docs/origin/`](./docs/origin/).
 
 ---
 
@@ -49,8 +48,9 @@ Read in this order:
    introduced with the standard preset in v0.1. Until then, surface
    in-flight work via PR descriptions and commit messages)_.
 
-For the design rationale behind any specific decision, consult the
-matching ADR under [`docs/adr/`](./docs/adr/).
+For full context on non-trivial changes, additionally read
+[`docs/origin/initial-design.md`](./docs/origin/initial-design.md) and
+[`docs/origin/initial-setup.md`](./docs/origin/initial-setup.md).
 
 ---
 
@@ -75,9 +75,9 @@ matching ADR under [`docs/adr/`](./docs/adr/).
 
 These are not negotiable. Violating any of them blocks a PR.
 
-1. **Read before editing.** Before non-trivial changes, ground
-   yourself in [SPEC.md](./SPEC.md), [ARCHITECTURE.md](./ARCHITECTURE.md),
-   and the relevant ADR under [`docs/adr/`](./docs/adr/).
+1. **Read before editing.** Before non-trivial changes, read
+   [`docs/origin/initial-design.md`](./docs/origin/initial-design.md). It
+   has full context not duplicated in the operational docs.
 2. **Update `docs/tasks/current.md`** when you start and finish work,
    **once that file exists** (it is introduced by the standard preset in
    v0.1). Until then, the PR description and the commit log serve as the
@@ -169,8 +169,7 @@ In order of preference:
 1. Check [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md)
    — your question may already be tracked.
 2. Check [`docs/adr/`](./docs/adr/) for past decisions on the topic.
-3. Skim related ADRs and `git log` for the design intent behind the
-   surrounding code.
+3. Search the origin docs (`docs/origin/`) for design intent.
 4. If still unclear, **write the question down**: add it to
    `open-questions.md` and ask the human maintainer. Do not silently
    guess on an architecturally relevant point.

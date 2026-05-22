@@ -21,16 +21,7 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 ### Added
 
 - v0.1 release plumbing (Task 8):
-  - `docs/origin/` removed pre-public-flip. The folder held the
-  pre-v0.1 planning notes (`initial-design.md`, `initial-setup.md`)
-  whose substance was already split into SPEC / ARCHITECTURE /
-  ROADMAP / GLOSSARY / ADR / open-questions. Keeping it around added
-  duplicated noise and a redundant top of the navigation tree for new
-  contributors. The notes themselves are preserved in git history
-  (commit `ea48abf`). References from AGENTS / SPEC / ARCHITECTURE /
-  ROADMAP / README / GLOSSARY / ADR 0002 / ADR 0003 / memory/project
-  are either updated to point at the operational docs or removed.
-- `.github/workflows/ci.yml` matrix expanded to macOS / Linux /
+  - `.github/workflows/ci.yml` matrix expanded to macOS / Linux /
     Windows × Go 1.21 (lint and `go mod tidy` are Linux-only to keep
     the matrix focused).
   - `.github/workflows/release.yml` — tag-driven (`v*`) workflow that
@@ -52,8 +43,8 @@ post-Phase-1 roadmap).
 
 ### Added
 
-- Operational documents split from the pre-v0.1 planning notes
-  (preserved in git history at commit `ea48abf`):
+- Operational documents split from `docs/origin/initial-design.md` and
+  `docs/origin/initial-setup.md`:
   - `README.md`, `AGENTS.md`, `SPEC.md`, `ARCHITECTURE.md`, `ROADMAP.md`,
     `GLOSSARY.md`, `LICENSE`, `.gitignore`
   - `docs/adr/0001-record-architecture-decisions.md`

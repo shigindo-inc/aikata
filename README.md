@@ -88,6 +88,11 @@ command surface.
   - [0003 — Do-No-Harm Policy](./docs/adr/0003-do-no-harm-policy.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
+### Historical record (do not edit)
+
+- [`docs/origin/initial-design.md`](./docs/origin/initial-design.md) — original design document.
+- [`docs/origin/initial-setup.md`](./docs/origin/initial-setup.md) — original setup guide.
+
 ### AI-tool entry points
 
 - [`CLAUDE.md`](./CLAUDE.md) — thin Phase 1 wrapper that points Claude Code at

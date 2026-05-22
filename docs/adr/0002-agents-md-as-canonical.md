@@ -11,7 +11,8 @@ audience: [human, agent]
 - **Status**: Accepted
 - **Date**: 2026-05-20
 - **Deciders**: aikata maintainers
-- **Related**: ADR 0003 (Do-No-Harm Policy)
+- **Related**: ADR 0003 (Do-No-Harm Policy);
+  [`docs/origin/initial-design.md`](../origin/initial-design.md) §9.1.1
 
 ## Context
 

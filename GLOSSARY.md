@@ -78,6 +78,14 @@ and the **no-AI-signature** rule.
 
 ## D
 
+### `docs/origin/`
+
+Folder containing **the historical record** of the project's planning phase
+(`initial-design.md`, `initial-setup.md`). These files are **never edited
+after Phase 1 of setup**; operational documents at the project root
+(`SPEC.md`, `ARCHITECTURE.md`, …) supersede them. See
+[`initial-setup.md` §1.2](./docs/origin/initial-setup.md).
+
 ### dogfooding (ドッグフーディング)
 
 Using one's own product internally. aikata is dogfooded: the aikata repo

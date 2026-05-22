@@ -19,7 +19,7 @@ stakeholders, and current "north stars." See
 ## Current phase
 
 - [2026-05-21] **Phase 1 complete**: operational documents split from
-  the pre-v0.1 planning notes (preserved in git history). Phase 2 (Go
+  `docs/origin/initial-design.md` and `initial-setup.md`. Phase 2 (Go
   project init) is the next deliverable. See
   [`ROADMAP.md`](../../ROADMAP.md#phase-1--documentation-bootstrap-current).
 - [2026-05-21] Phase 1 commits landed on `main` directly. From Phase 2

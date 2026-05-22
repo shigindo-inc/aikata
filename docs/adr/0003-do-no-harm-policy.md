@@ -11,7 +11,13 @@ audience: [human, agent]
 - **Status**: Accepted
 - **Date**: 2026-05-20
 - **Deciders**: aikata maintainers
-- **Related**: ADR 0002 (Canonical `AGENTS.md`)
+- **Related**: ADR 0002 (Canonical `AGENTS.md`);
+  [`docs/origin/initial-design.md`](../origin/initial-design.md) §6
+
+> **Note on numbering**: `docs/origin/initial-setup.md` §1.1 originally
+> placed this ADR at `0001`. ADR 0001 was reserved for the meta-decision
+> "use ADRs," and ADR 0002 was assigned to the canonical-`AGENTS.md`
+> decision by the maintainer. This ADR was therefore renumbered to 0003.
 
 ## Context
 

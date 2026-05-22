@@ -27,10 +27,11 @@ sequencing, see [`docs/decisions/open-questions.md`](./docs/decisions/open-quest
 markdown documents so that any AI agent and any new contributor can pick up
 the project from `README.md` alone.
 
-- [x] Split into operational documents: README, AGENTS, SPEC,
+- [x] `docs/origin/initial-design.md` archived.
+- [x] `docs/origin/initial-setup.md` archived.
+- [ ] Split into operational documents: README, AGENTS, SPEC,
       ARCHITECTURE, ROADMAP, GLOSSARY, CHANGELOG, LICENSE, ADRs,
-      open-questions. The original planning notes were collapsed into
-      these and are preserved in git history.
+      open-questions.
 
 **Exit criteria**:
 
