@@ -71,8 +71,12 @@ question; bookmark them here so they are one click away. See
   framework (Phase 2 dependency).
 - [2026-05-21] [charmbracelet/huh](https://github.com/charmbracelet/huh)
   — interactive prompts (Task 6).
+  **(superseded 2026-05-22: not adopted in v0.1. huh v1+ requires
+  Go 1.23 and pulls in ~30 indirect deps; bufio-based prompt used
+  instead. See CHANGELOG `aikata init --with-memory` / Task 6 note.)**
 - [2026-05-21] [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss)
   — terminal styling (Task 6).
+  **(superseded 2026-05-22: not adopted in v0.1 — same reason as huh.)**
 - [2026-05-21] [`gopkg.in/yaml.v3`](https://pkg.go.dev/gopkg.in/yaml.v3)
   — YAML parser (Task 5).
 - [2026-05-21] [goreleaser/goreleaser](https://goreleaser.com/) —

@@ -1,0 +1,47 @@
+# Release workflow for aikata.
+#
+# Triggered by a `v*` tag push (e.g. `git tag -a v0.1.0 -m "..."`
+# followed by `git push origin v0.1.0`). GoReleaser builds the cross-
+# platform binaries described in `.goreleaser.yml` and uploads them
+# as a GitHub Release.
+#
+# Security note: no untrusted event fields are interpolated into any
+# `run:` step. Only the workflow's default GITHUB_TOKEN is used as
+# a secret, which GoReleaser needs to create the release.
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  goreleaser:
+    name: goreleaser
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # GoReleaser inspects git history (tags, changelog, etc.)
+          # and refuses to run on a shallow clone.
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+          check-latest: true
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

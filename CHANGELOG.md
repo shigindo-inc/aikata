@@ -20,6 +20,29 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.1 release plumbing (Task 8):
+  - `.github/workflows/ci.yml` matrix expanded to macOS / Linux /
+    Windows × Go 1.21 (lint and `go mod tidy` are Linux-only to keep
+    the matrix focused).
+  - `.github/workflows/release.yml` — tag-driven (`v*`) workflow that
+    runs GoReleaser.
+  - `.goreleaser.yml` — cross-platform builds for linux/darwin/windows
+    on amd64/arm64 (no Windows ARM64), checksum file, GitHub-driven
+    changelog filtering, `-trimpath` + `-X main.version`.
+  - `.gitattributes` — forces LF line endings everywhere so the
+    golden trees stay byte-identical across runners.
+  - `CHANGELOG.md` — promoted to `[0.1.0]`, dated.
+  - `README.md` — Quickstart "planned" notice removed; CI / Release
+    badges added.
+
+## [0.1.0] - 2026-05-22
+
+This is the first tagged release of aikata. The `Added` section below
+lists the cumulative scope of the v0.1 cycle (Tasks 0 → 8 of the
+post-Phase-1 roadmap).
+
+### Added
+
 - Operational documents split from `docs/origin/initial-design.md` and
   `docs/origin/initial-setup.md`:
   - `README.md`, `AGENTS.md`, `SPEC.md`, `ARCHITECTURE.md`, `ROADMAP.md`,

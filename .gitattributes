@@ -1,0 +1,29 @@
+# Force LF line endings across platforms so golden tests stay
+# byte-identical between macOS/Linux/Windows CI runners and so the
+# embedded templates (// go:embed) ship with the same bytes on every
+# clone. Without this, Windows clones with core.autocrlf=true rewrite
+# *.md / *.tmpl on checkout and the golden comparison breaks.
+* text=auto eol=lf
+
+# Be explicit for the file types aikata ships and tests against.
+*.go        text eol=lf
+*.md        text eol=lf
+*.tmpl      text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.toml      text eol=lf
+Makefile    text eol=lf
+.gitignore  text eol=lf
+.gitattributes text eol=lf
+
+# Golden trees are byte-for-byte reference output; protect them
+# especially aggressively.
+testdata/golden/** text eol=lf
+
+# Binaries that, even if checked in by accident, must never be normalized.
+*.png       binary
+*.jpg       binary
+*.gif       binary
+*.ico       binary
+*.zip       binary
+*.tar.gz    binary

@@ -1,0 +1,78 @@
+# GoReleaser config — see https://goreleaser.com for full schema.
+# Triggered by the `release` GitHub Actions workflow on `v*` tags.
+version: 2
+
+project_name: aikata
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: aikata
+    main: ./cmd/aikata
+    binary: aikata
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      # No Windows ARM64 build: aikata has no Windows ARM64 users in
+      # v0.1 and the toolchain support story is still maturing.
+      - goos: windows
+        goarch: arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+
+archives:
+  - id: aikata
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^chore:"
+      - "^test:"
+      - "^ci:"
+      - "Merge pull request"
+
+release:
+  github:
+    owner: shigindo-inc
+    name: aikata
+  draft: false
+  prerelease: auto
+  name_template: "aikata {{ .Tag }}"
+  header: |
+    aikata `{{ .Tag }}` — see [CHANGELOG.md](./CHANGELOG.md) for the
+    full release notes.
+  footer: |
+    ---
+    Released via [GoReleaser](https://goreleaser.com).
