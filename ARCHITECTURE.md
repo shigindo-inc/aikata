@@ -159,7 +159,7 @@ the repository layout in §2 is the **producer**.
 
 ### 3.3 File-level responsibilities
 
-(Inherited from `docs/origin/initial-design.md` §3.3 — summarized here.)
+(Summarized; each file's contract is enforced by `aikata doctor` once it ships.)
 
 - **`README.md`** — human-primary; ≤ 100 lines; navigation + quickstart.
 - **`AGENTS.md`** — agent-primary; ≤ 200 lines; canonical instructions.
@@ -380,9 +380,7 @@ wall-clock measurements.
 ## 12. Phase 2 Bootstrap Checklist (for the next task)
 
 When the Go-project-init task begins, the following artifacts must be
-produced. This list is the executable form of the Phase 2 checklist from
-[`docs/origin/initial-setup.md`](./docs/origin/initial-setup.md) §6
-Phase 2.
+produced. This list is the executable form of the Phase 2 checklist.
 
 - [ ] `go mod init github.com/<owner>/aikata` (replace `<owner>`).
 - [ ] `cmd/aikata/main.go` with `--version` and `--help` only.
