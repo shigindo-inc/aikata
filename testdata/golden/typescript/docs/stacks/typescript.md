@@ -1,0 +1,102 @@
+---
+project: samplekata
+status: draft
+version: 0.0.1
+updated: 2026-05-21
+audience: [human, agent]
+---
+
+# TypeScript — Stack-Specific Rules
+
+> Conventions and rules that apply specifically because
+> samplekata is a TypeScript project. These are *additive* to the
+> invariants in [AGENTS.md](../../AGENTS.md); when they conflict,
+> AGENTS.md wins.
+
+---
+
+## 1. tsconfig
+
+- `strict: true` (and the full strict family stays on). Disabling any
+  strict-family flag requires an ADR.
+- `noUncheckedIndexedAccess: true` — make array / record indexing
+  return `T | undefined`.
+- `exactOptionalPropertyTypes: true` — distinguish absent from
+  `undefined`.
+- `target` and `module` chosen to match the runtime (see §2 / §3).
+- `incremental: true` for fast rebuilds; `.tsbuildinfo` is gitignored.
+
+## 2. Module format (ESM vs CJS)
+
+- _TODO: pin the choice here and link the ADR that recorded it._
+- File extensions:
+  - ESM: explicit `.js` / `.ts` extensions in import specifiers when
+    `moduleResolution: nodenext`.
+  - CJS: no extension is fine; do not mix.
+- Do not ship both flavors from one package without an ADR justifying
+  the dual-publish.
+
+## 3. Runtime target
+
+- _TODO: pin Node.js LTS / Bun / Deno / browser._
+- `package.json` `engines` enforces the minimum.
+
+## 4. Package manager
+
+- _TODO: pin npm / pnpm / yarn / bun. Commit the lockfile. CI runs
+  `<pm> ci` (or equivalent reproducible install)._
+- Do not mix package managers in one project.
+
+## 5. Lint
+
+- ESLint with `@typescript-eslint` recommended-type-checked config at
+  minimum. Project-specific tightenings go in `eslint.config.*` with a
+  one-line justification comment.
+- `eslint .` must report **zero warnings** before commit. CI enforces
+  this.
+- Use `prettier` (or `dprint`) for formatting; do not hand-tune
+  whitespace.
+
+## 6. Type discipline
+
+- **No `any`** without an inline comment justifying the escape hatch.
+  Prefer `unknown` and narrow.
+- **Avoid `as` casts.** Prefer user-defined type guards or
+  `satisfies`.
+- **Avoid `!` (non-null assertion)** unless the call site cannot be
+  refactored to narrow. Each use needs a comment.
+- Prefer `readonly` for inputs that are not mutated. Make immutability
+  explicit at function and class boundaries.
+- Use `import type` for type-only imports so the emit stays tree-shake
+  friendly.
+
+## 7. Test runner
+
+- _TODO: pin **vitest** or **jest** and link the ADR. Mixing runners is
+  not allowed without an ADR._
+- Tests under `test/` mirror `src/` one-to-one.
+- Run the test command before declaring work complete.
+
+## 8. Errors
+
+- Subclass `Error` for new error categories; do not throw plain
+  strings or object literals.
+- Public surfaces document which errors callers can expect.
+- Use `cause` (ES2022) to chain errors instead of dropping the
+  original stack.
+
+## 9. Async
+
+- `Promise` is the unit of asynchrony. Prefer `async`/`await` over
+  raw `.then` chains.
+- Do not float promises in non-test code — either `await` them or
+  intentionally fire-and-forget with a comment.
+- Reject early; do not swallow errors with empty `catch` blocks.
+
+## 10. When to revise this file
+
+- A new dependency that significantly changes how state, IO, or build
+  works → add a section.
+- A team-wide preference that does not fit a single ADR → add it here.
+- A rule that turned out to be wrong → remove it and explain in the
+  commit message.

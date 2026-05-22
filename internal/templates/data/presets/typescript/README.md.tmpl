@@ -1,0 +1,54 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# {{.ProjectName}}
+
+> One-line description of {{.ProjectName}} (a TypeScript project) goes here.
+
+This project was scaffolded with
+[aikata](https://github.com/shigindo-inc/aikata) — the `typescript` preset.
+
+## Read first
+
+| Read for… | Document |
+|---|---|
+| What & Why | [SPEC.md](./SPEC.md) |
+| How (technical) | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| Terminology | [GLOSSARY.md](./GLOSSARY.md) |
+| Agent rules | [AGENTS.md](./AGENTS.md) |
+| Stack-specific rules | [docs/stacks/typescript.md](./docs/stacks/typescript.md) |
+
+### Decisions & design
+
+- [`docs/adr/`](./docs/adr/) — Architecture Decision Records.
+
+### Operational notes (frequently changed)
+
+- [`docs/tasks/current.md`](./docs/tasks/current.md) — current in-flight work.
+- [`docs/troubleshooting.md`](./docs/troubleshooting.md) — known pitfalls.
+- [`docs/prompts.md`](./docs/prompts.md) — reusable prompts.
+
+## Quickstart
+
+```bash
+# Replace the placeholder commands with the package manager of choice.
+npm install          # or: pnpm install / yarn / bun install
+npm run lint
+npm test
+npm run build
+```
+
+## Configuration
+
+aikata stores its own settings under [`.ai/aikata.yaml`](./.ai/aikata.yaml).
+Environment variables expected by {{.ProjectName}} are documented in
+[`.env.example`](./.env.example).
+
+## License
+
+(unspecified — add a `LICENSE` file before publishing)

@@ -104,7 +104,7 @@ func Run(opts Options) error {
 // stack-flavored presets emit a struct-driven `.ai/aikata.yaml` so
 // downstream tooling (aikata generate, doctor) has structured config.
 func addPresetArtifacts(opts Options, rendered map[string]string) error {
-	if opts.Preset == "standard" || opts.Preset == "flutter" {
+	if opts.Preset == "standard" || opts.Preset == "flutter" || opts.Preset == "typescript" {
 		cfg := config.Default(opts.ProjectName, opts.Lang)
 		if len(opts.Stacks) > 0 {
 			cfg.Stacks = append([]string(nil), opts.Stacks...)

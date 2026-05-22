@@ -20,6 +20,35 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.2 Task 11 — `--preset typescript`:
+  - New `typescript` preset under
+    `internal/templates/data/presets/typescript/` ships the same
+    document set shape as flutter (README / AGENTS / SPEC / ARCHITECTURE
+    / GLOSSARY / `.env.example` / `.gitignore` / ADR 0001 /
+    docs/tasks/current / docs/troubleshooting / docs/prompts /
+    `.ai/aikata.yaml`) plus a TypeScript-specific
+    `docs/stacks/typescript.md` covering tsconfig strictness,
+    module-format choice, package manager, lint discipline, type
+    rules (no `any`, prefer `unknown` and narrow), test runner
+    selection, error subclassing, and async hygiene.
+  - `cli/init.go`'s `stacksForPreset` returns `["typescript"]` for the
+    new preset; `scaffold.addPresetArtifacts` emits the same
+    struct-driven `.ai/aikata.yaml` as standard / flutter with
+    `stacks: [typescript]`.
+  - `.gitignore` covers Node / TypeScript artifacts
+    (`node_modules/`, `dist/`, `build/`, `*.tsbuildinfo`, `coverage/`,
+    `.next/`, `.turbo/`, etc.).
+  - Interactive prompt offers `typescript` as a fourth preset choice
+    (`standard | minimal | flutter | typescript`).
+  - 5 new unit tests (file presence, yaml stack content, AGENTS
+    reference, gitignore Node coverage, OSS scrub) plus 2 golden trees
+    (`testdata/golden/typescript/`,
+    `testdata/golden/typescript-with-memory/`).
+  - The Do-No-Harm regression test (formerly
+    `TestRun_NonFlutter_NoFlutterFootprint`) is renamed
+    `TestRun_NonStack_NoStackFootprint` and asserts that
+    `minimal`/`standard` outputs contain neither `flutter` nor
+    `typescript` nor `docs/stacks/`.
 - v0.2 Task 10 — `--preset flutter`:
   - New `flutter` preset under
     `internal/templates/data/presets/flutter/` ships a full document

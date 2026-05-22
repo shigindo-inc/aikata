@@ -406,11 +406,11 @@ func TestRun_FlutterOSSReadiness(t *testing.T) {
 	}
 }
 
-// TestRun_NonFlutter_NoFlutterFootprint is the Do-No-Harm regression
-// gate (ADR 0003): minimal/standard presets must not contain any
-// flutter-specific identifier (the string "flutter" or "docs/stacks/"
-// references).
-func TestRun_NonFlutter_NoFlutterFootprint(t *testing.T) {
+// TestRun_NonStack_NoStackFootprint is the Do-No-Harm regression gate
+// (ADR 0003): minimal / standard presets must not contain any
+// stack-specific identifier (`flutter`, `typescript`, or
+// `docs/stacks/` references).
+func TestRun_NonStack_NoStackFootprint(t *testing.T) {
 	for _, preset := range []string{"minimal", "standard"} {
 		preset := preset
 		t.Run(preset, func(t *testing.T) {
@@ -431,10 +431,11 @@ func TestRun_NonFlutter_NoFlutterFootprint(t *testing.T) {
 				if err != nil {
 					return err
 				}
-				for _, needle := range []string{"flutter", "docs/stacks/"} {
-					if strings.Contains(strings.ToLower(string(body)), needle) {
+				lower := strings.ToLower(string(body))
+				for _, needle := range []string{"flutter", "typescript", "docs/stacks/"} {
+					if strings.Contains(lower, needle) {
 						rel, _ := filepath.Rel(tmp, path)
-						t.Errorf("%s mentions %q in non-flutter preset:\n%s",
+						t.Errorf("%s mentions %q in non-stack preset:\n%s",
 							rel, needle, body)
 					}
 				}
@@ -444,6 +445,118 @@ func TestRun_NonFlutter_NoFlutterFootprint(t *testing.T) {
 				t.Fatalf("walk: %v", err)
 			}
 		})
+	}
+}
+
+// --- typescript preset (Task 11) ---
+
+func typescriptOpts(target string) Options {
+	o := defaultOpts(target)
+	o.Preset = "typescript"
+	o.Stacks = []string{"typescript"}
+	return o
+}
+
+var expectedTypescriptFiles = []string{
+	"AGENTS.md",
+	"ARCHITECTURE.md",
+	"GLOSSARY.md",
+	"README.md",
+	"SPEC.md",
+	".env.example",
+	".gitignore",
+	".ai/aikata.yaml",
+	"docs/adr/0001-record-architecture-decisions.md",
+	"docs/prompts.md",
+	"docs/stacks/typescript.md",
+	"docs/tasks/current.md",
+	"docs/troubleshooting.md",
+}
+
+func TestRun_GeneratesAllTypescriptFiles(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(typescriptOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedTypescriptFiles {
+		full := filepath.Join(tmp, filepath.FromSlash(rel))
+		info, err := os.Stat(full)
+		if err != nil {
+			t.Errorf("expected %s to exist: %v", rel, err)
+			continue
+		}
+		if info.Size() == 0 {
+			t.Errorf("%s is empty", rel)
+		}
+	}
+}
+
+func TestRun_TypescriptAikataYamlIncludesStack(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(typescriptOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, ".ai", "aikata.yaml"))
+	if err != nil {
+		t.Fatalf("read .ai/aikata.yaml: %v", err)
+	}
+	out := string(body)
+	for _, needle := range []string{"version: 1", "name: samplekata", "stacks:", "- typescript"} {
+		if !strings.Contains(out, needle) {
+			t.Errorf("aikata.yaml missing %q:\n%s", needle, out)
+		}
+	}
+}
+
+func TestRun_TypescriptAGENTSReferencesStackDoc(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(typescriptOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS.md: %v", err)
+	}
+	if !strings.Contains(string(body), "docs/stacks/typescript.md") {
+		t.Errorf("typescript AGENTS.md should reference docs/stacks/typescript.md:\n%s", body)
+	}
+}
+
+func TestRun_TypescriptGitignoreCoversNodeArtifacts(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(typescriptOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, ".gitignore"))
+	if err != nil {
+		t.Fatalf("read .gitignore: %v", err)
+	}
+	out := string(body)
+	for _, needle := range []string{"node_modules/", "dist/", "*.tsbuildinfo", "coverage/"} {
+		if !strings.Contains(out, needle) {
+			t.Errorf(".gitignore missing %q:\n%s", needle, out)
+		}
+	}
+}
+
+func TestRun_TypescriptOSSReadiness(t *testing.T) {
+	tmp := t.TempDir()
+	if err := Run(typescriptOpts(tmp)); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	for _, rel := range expectedTypescriptFiles {
+		body, err := os.ReadFile(filepath.Join(tmp, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatalf("read %s: %v", rel, err)
+		}
+		if strings.Contains(string(body), "/Users/") {
+			t.Errorf("%s contains a /Users/ path (OSS leak)", rel)
+		}
+		for _, sec := range []string{"AKIA", "ghp_", "sk-", "xoxb-"} {
+			if strings.Contains(string(body), sec) {
+				t.Errorf("%s contains secret-like pattern %q", rel, sec)
+			}
+		}
 	}
 }
 
