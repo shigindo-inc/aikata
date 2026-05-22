@@ -32,6 +32,11 @@ type Options struct {
 	// under docs/memory/ (ADR 0004). Templates branch on {{.WithMemory}}
 	// to add memory cross-references when this is true.
 	WithMemory bool
+	// Stacks lists stack identifiers (e.g. "flutter") the project opts
+	// into. Templates branch on {{range .Stacks}} to include
+	// docs/stacks/<stack>.md cross-references; the values also flow
+	// into .ai/aikata.yaml's `stacks:` field for downstream tools.
+	Stacks []string
 	// Clock is the time source for template helpers; nil = time.Now.
 	Clock templates.Clock
 	// Stdout receives dry-run output and progress messages.
@@ -95,11 +100,15 @@ func Run(opts Options) error {
 }
 
 // addPresetArtifacts injects non-template files that a preset is
-// expected to ship alongside its markdown set. As of Task 5 only the
-// standard preset has one: a struct-driven `.ai/aikata.yaml`.
+// expected to ship alongside its markdown set. The standard and
+// stack-flavored presets emit a struct-driven `.ai/aikata.yaml` so
+// downstream tooling (aikata generate, doctor) has structured config.
 func addPresetArtifacts(opts Options, rendered map[string]string) error {
-	if opts.Preset == "standard" {
+	if opts.Preset == "standard" || opts.Preset == "flutter" {
 		cfg := config.Default(opts.ProjectName, opts.Lang)
+		if len(opts.Stacks) > 0 {
+			cfg.Stacks = append([]string(nil), opts.Stacks...)
+		}
 		buf, err := config.Marshal(cfg)
 		if err != nil {
 			return err
@@ -178,6 +187,7 @@ func templateData(opts Options) map[string]any {
 		"Lang":        opts.Lang,
 		"Preset":      opts.Preset,
 		"WithMemory":  opts.WithMemory,
+		"Stacks":      opts.Stacks,
 	}
 }
 

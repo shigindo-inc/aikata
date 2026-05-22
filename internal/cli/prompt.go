@@ -42,7 +42,7 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult) (promptResult, e
 
 	// Preset — Enter keeps the existing default.
 	{
-		prompt := fmt.Sprintf("Preset (standard | minimal) [%s]: ", result.Preset)
+		prompt := fmt.Sprintf("Preset (standard | minimal | flutter) [%s]: ", result.Preset)
 		got, err := readLine(sc, w, prompt)
 		if err != nil {
 			return result, err
@@ -54,8 +54,10 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult) (promptResult, e
 			result.Preset = "standard"
 		case "minimal", "2":
 			result.Preset = "minimal"
+		case "flutter", "3":
+			result.Preset = "flutter"
 		default:
-			return result, fmt.Errorf("prompt: unknown preset %q (expected standard | minimal)", got)
+			return result, fmt.Errorf("prompt: unknown preset %q (expected standard | minimal | flutter)", got)
 		}
 	}
 
