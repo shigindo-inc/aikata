@@ -61,6 +61,35 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- `aikata generate` for Claude (Task 7 — ADR 0002 migration completed):
+  - New package `internal/generate` with `Provider` interface,
+    registry (`Get` / `KnownTools`), `Context` struct, all-or-nothing
+    `Run`. The registry exposes `claude` only in v0.1; Cursor, Codex,
+    Gemini, Copilot, Windsurf land in v0.2+.
+  - `ClaudeProvider` reads canonical `AGENTS.md` plus existence
+    checks on README/SPEC/ARCHITECTURE/GLOSSARY/docs/memory/
+    open-questions, then emits a generated `CLAUDE.md` whose Read
+    order adapts to whichever docs the project ships.
+  - New CLI subcommand `aikata generate` reads `.ai/aikata.yaml`
+    from cwd, iterates the enabled `ai_tools`, and writes each
+    provider's artifacts. Missing config maps to exit 2; unknown
+    tool maps to exit 2 with the list of known names.
+  - New template `internal/templates/data/ai_tools/claude/CLAUDE.md.tmpl`
+    backs the generator with the same dot-helper pattern used by
+    `internal/templates`.
+  - `cmd/aikata`'s root command now wires `generate` alongside `init`.
+  - aikata's own repository ships `.ai/aikata.yaml` (overriding
+    `docs.generate_gitignore` to `false` per ADR 0003) and migrates
+    `CLAUDE.md` from the Task 1 hand-written wrapper to the
+    generator output.
+  - `docs/adr/0002-agents-md-as-canonical.md` updated to "Operational
+    status (Task 7 shipped)", with the migration diff documented
+    inline.
+  - Tests: 8 unit tests in `internal/generate` (registry,
+    unknown-tool error, empty-tools error, no-AGENTS-MD error,
+    artifact production, adaptive read order, OSS scrub) + 4
+    integration tests in `internal/cli` (`aikata generate` end-to-end
+    after init, exit-code mapping, help mention).
 - `aikata init --with-memory` opt-in (Task 5A — ADR 0004 (γ) ships):
   - 5 new memory templates under `internal/templates/data/memory/`
     (`README`, `user`, `feedback`, `project`, `reference` — each with

@@ -22,12 +22,17 @@ what unblocks a decision, and the latest update date.
 ### Q-DESIGN-01 — How do `AGENTS.md` and tool-specific files relate at v1.0+?
 
 - **Status**: Partially answered by [ADR 0002](../adr/0002-agents-md-as-canonical.md).
-- **Open part**: how to express **Claude-only** features (Skills, hooks,
-  fast mode) without bloating the canonical `AGENTS.md`.
+  Task 7 shipped the first generator (Claude) — `CLAUDE.md` is now a
+  thin generated wrapper around `AGENTS.md`. The wrapper is
+  intentionally minimal in v0.1.
+- **Open part**: how to express **Claude-only** features (Skills,
+  hooks, fast-mode references) without bloating the canonical
+  `AGENTS.md`.
 - **Leading position**: per-tool **extension blocks** under
   `templates/ai_tools/<tool>/extensions/`, concatenated after the
-  canonical content during `aikata generate`.
-- **Unblocks decision**: real `aikata generate` usage in v0.1.
+  canonical content during `aikata generate`. v0.2 candidate.
+- **Unblocks decision**: a real Claude-only feature that needs to
+  ship in this repo (none yet — dogfooding hasn't surfaced one).
 
 ### Q-DESIGN-02 — Commit generated artifacts or `.gitignore` them?
 
