@@ -42,19 +42,81 @@ func runInit(t *testing.T, args ...string) (string, error) {
 	return buf.String(), err
 }
 
-func TestInit_RequiresNoInteractiveFlag(t *testing.T) {
+func TestInit_AutoFallsBackToNonInteractiveWithoutTTY(t *testing.T) {
+	// Force the TTY detector to report "no TTY" so we are exercising
+	// the auto-fallback branch rather than relying on whatever stdin
+	// `go test` happens to attach to this test (macOS in particular
+	// can leave os.Stdin in character-device mode under `go test`).
+	prev := isTTYFunc
+	isTTYFunc = func() bool { return false }
+	t.Cleanup(func() { isTTYFunc = prev })
+
 	tmp := t.TempDir()
 	chdir(t, tmp)
 	_, err := runInit(t, "samplekata", "--preset", "minimal")
-	if err == nil {
-		t.Fatalf("expected error without --no-interactive")
+	if err != nil {
+		t.Fatalf("expected auto-fallback to succeed: %v", err)
 	}
-	var ee *ExitError
-	if !errors.As(err, &ee) {
-		t.Fatalf("expected *ExitError, got %T: %v", err, err)
+	if _, err := os.Stat(filepath.Join(tmp, "README.md")); err != nil {
+		t.Errorf("README.md missing after auto-fallback init: %v", err)
 	}
-	if ee.Code != 2 {
-		t.Errorf("exit code = %d, want 2", ee.Code)
+}
+
+func TestInit_InteractivePromptHappyPath(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	// Force the TTY check to true and feed answers via the cobra
+	// command's input reader.
+	prev := isTTYFunc
+	isTTYFunc = func() bool { return true }
+	t.Cleanup(func() { isTTYFunc = prev })
+
+	cmd := newInitCmd()
+	var out bytes.Buffer
+	cmd.SetOut(&out)
+	cmd.SetErr(&out)
+	cmd.SetIn(strings.NewReader("interactiveproj\nminimal\nn\n"))
+	cmd.SetArgs(nil)
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("interactive init: %v (out: %s)", err, out.String())
+	}
+	body, err := os.ReadFile(filepath.Join(tmp, "README.md"))
+	if err != nil {
+		t.Fatalf("read README: %v", err)
+	}
+	if !strings.Contains(string(body), "interactiveproj") {
+		t.Errorf("README does not carry interactive name:\n%s", body)
+	}
+	// minimal preset, so .ai/aikata.yaml must NOT exist.
+	if _, err := os.Stat(filepath.Join(tmp, ".ai", "aikata.yaml")); !os.IsNotExist(err) {
+		t.Errorf("minimal preset should not produce .ai/aikata.yaml: %v", err)
+	}
+}
+
+func TestInit_InteractiveAcceptsDefaults(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	prev := isTTYFunc
+	isTTYFunc = func() bool { return true }
+	t.Cleanup(func() { isTTYFunc = prev })
+
+	cmd := newInitCmd()
+	var out bytes.Buffer
+	cmd.SetOut(&out)
+	cmd.SetErr(&out)
+	// Provide name, then two empty lines to accept preset / memory defaults.
+	cmd.SetIn(strings.NewReader("defaultproj\n\n\n"))
+	cmd.SetArgs(nil)
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("interactive init (defaults): %v (out: %s)", err, out.String())
+	}
+	// Default preset is standard, so .ai/aikata.yaml must exist.
+	if _, err := os.Stat(filepath.Join(tmp, ".ai", "aikata.yaml")); err != nil {
+		t.Errorf("default preset (standard) should produce .ai/aikata.yaml: %v", err)
+	}
+	// Default with-memory is false.
+	if _, err := os.Stat(filepath.Join(tmp, "docs", "memory")); !os.IsNotExist(err) {
+		t.Errorf("default with-memory is false; docs/memory/ must not exist: %v", err)
 	}
 }
 

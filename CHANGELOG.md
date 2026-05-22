@@ -61,6 +61,29 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   - `docs/decisions/open-questions.md` — Q-DESIGN-07 registered for
     option (δ) (memory generate-projection across AI-tool memory
     channels).
+- Interactive `aikata init` mode (Task 6):
+  - New file `internal/cli/prompt.go` — small bufio-based prompt that
+    asks for project name (skipped if already supplied), preset
+    (`standard`/`minimal`, `1`/`2` also accepted, blank keeps default),
+    and `--with-memory` (`y`/`yes`/`n`/`no`, blank keeps default).
+  - `internal/cli/init.go` runs the prompt when stdin is a TTY and
+    `--no-interactive` is not passed. When stdin is not a terminal
+    (CI, pipes, `go test`) the command auto-falls-back to non-
+    interactive mode so it never hangs.
+  - `isTTYFunc` is a package variable so tests can swap it out for a
+    deterministic answer.
+  - **No new dependencies.** The original plan called for
+    `charmbracelet/huh` + `lipgloss`, but huh v1 requires Go 1.23+
+    and its dependency tree spans bubbletea, bubbles, x/ansi, etc.
+    Both would have violated aikata's "minimal external dependencies"
+    rule (ARCHITECTURE.md §10) and bumped the Go floor. A bufio-based
+    prompt fits aikata's "lightweight, opinionated but small" stance
+    and keeps the go directive at 1.21.
+  - Tests: 8 new unit tests in `prompt_test.go` (happy path, blank
+    inputs keep defaults, name skipped when supplied, empty-name
+    error, unknown preset error, numeric preset choices `1`/`2`, yes/
+    no variants, unknown yes/no error) + 3 new `init_test.go` tests
+    (TTY auto-fallback, interactive happy path, defaults accepted).
 - `aikata generate` for Claude (Task 7 — ADR 0002 migration completed):
   - New package `internal/generate` with `Provider` interface,
     registry (`Get` / `KnownTools`), `Context` struct, all-or-nothing
