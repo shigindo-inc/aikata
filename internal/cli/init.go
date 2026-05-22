@@ -96,7 +96,7 @@ func newInitCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&preset, "preset", "standard", "preset name (minimal | standard | flutter)")
+	cmd.Flags().StringVar(&preset, "preset", "standard", "preset name (minimal | standard | flutter | typescript)")
 	cmd.Flags().StringVar(&name, "name", "", "project name; overrides the positional argument when both are given")
 	cmd.Flags().BoolVar(&noInteractive, "no-interactive", false, "skip interactive prompts (required in v0.1)")
 	cmd.Flags().BoolVar(&force, "force", false, "overwrite existing files in a non-empty target directory")
@@ -114,6 +114,8 @@ func stacksForPreset(preset string) []string {
 	switch preset {
 	case "flutter":
 		return []string{"flutter"}
+	case "typescript":
+		return []string{"typescript"}
 	default:
 		return nil
 	}

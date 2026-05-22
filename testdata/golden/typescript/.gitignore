@@ -1,0 +1,54 @@
+# --- Secrets ---
+.env
+.env.local
+.env.*.local
+*.local
+
+# --- aikata working files ---
+# Proposals from `aikata init` against existing directories (transient).
+/.aikata-proposed/
+
+# --- AI tool-generated artifacts ---
+# Regenerable from canonical AGENTS.md via `aikata generate`.
+# To commit them anyway, set docs.generate_gitignore: false in
+# .ai/aikata.yaml (or remove these lines manually).
+CLAUDE.md
+.cursor/rules/
+.github/copilot-instructions.md
+GEMINI.md
+.windsurfrules
+
+# --- Node / TypeScript build outputs ---
+node_modules/
+dist/
+build/
+out/
+lib/
+*.tsbuildinfo
+
+# --- Bundlers / frameworks ---
+.next/
+.nuxt/
+.turbo/
+.svelte-kit/
+.astro/
+.parcel-cache/
+.vite/
+
+# --- Test / coverage ---
+coverage/
+.nyc_output/
+
+# --- Editor / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Package manager debug logs ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
