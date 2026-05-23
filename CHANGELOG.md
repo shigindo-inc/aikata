@@ -20,6 +20,25 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.2 Task 13 — `aikata doctor` initial release (read-only):
+  - New `aikata doctor` subcommand runs eight consistency checks
+    against the project at the current working directory: required
+    frontmatter keys, AGENTS.md link existence, ADR Deprecated
+    status (must reference `Replaced by` / `Superseded by`),
+    memory `memory_type` ↔ filename match, frontmatter `updated:`
+    staleness (> 365 days warning), `.env.example` variables
+    cross-referenced from AGENTS.md / ARCHITECTURE.md, GLOSSARY
+    terms referenced from at least one other markdown file. Exit
+    code 0 (clean) / 3 (errors found); warnings and infos are
+    advisory and never set a non-zero exit.
+  - `internal/doctor/` exposes `Run(Options) ([]Issue, error)`,
+    `Format`, and `HasErrors` so future commands (`add`, `update`)
+    can reuse the checks programmatically.
+  - The `.github/workflows/ci.yml` matrix runs `aikata doctor`
+    against this repository on every PR — aikata is the first
+    project to dogfood the check.
+  - `--fix` and `--json` are deferred to v0.3 per the v0.2 Plan
+    (option E5).
 - v0.2 Task 12 — `--lang ja` parallel-directory templates:
   - All preset / memory / ai_tools templates moved from
     `<base>/<file>` to `<base>/en/<file>` and the matching Japanese
