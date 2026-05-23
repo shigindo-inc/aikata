@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-22
+updated: 2026-05-23
 audience: [human, agent]
 ---
 
@@ -80,4 +80,52 @@ aikata --version
 aikata --help
 ```
 
-**Updated**: 2026-05-22
+**Updated**: 2026-05-23
+
+---
+
+## `aikata --version` shows `0.0.1-dev` after `go install`
+
+**Symptom**
+
+After installing a tagged release with Go:
+
+```bash
+go install github.com/shigindo-inc/aikata/cmd/aikata@latest
+aikata --version
+```
+
+older aikata binaries may print:
+
+```bash
+aikata version 0.0.1-dev
+```
+
+**Cause**
+
+Release archives built by GoReleaser embed the release version with
+`-ldflags`. Plain `go install` does not use those release-time flags.
+
+Starting after v0.1.0, aikata falls back to Go build info when the
+linked version is still the development default. That means installs
+such as `@latest` and `@v0.1.0` can report the resolved module version
+when Go recorded one.
+
+**Fix**
+
+Check the module version embedded in the installed binary:
+
+```bash
+go version -m "$(command -v aikata)"
+```
+
+Look for the `mod` line:
+
+```text
+mod     github.com/shigindo-inc/aikata  v0.1.0
+```
+
+If the module version is current, the binary itself is current even if
+an older `aikata --version` output says `0.0.1-dev`.
+
+**Updated**: 2026-05-23

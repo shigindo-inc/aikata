@@ -8,16 +8,19 @@ package main
 import (
 	"errors"
 	"os"
+	"runtime/debug"
 
 	"github.com/shigindo-inc/aikata/internal/cli"
 )
 
 // version is the aikata binary version. Overridden at release time via
 // -ldflags "-X main.version=v0.1.0".
-var version = "0.0.1-dev"
+const devVersion = "0.0.1-dev"
+
+var version = devVersion
 
 func main() {
-	err := cli.Execute(version)
+	err := cli.Execute(effectiveVersion(version))
 	if err == nil {
 		return
 	}
@@ -29,4 +32,22 @@ func main() {
 		os.Exit(ee.Code)
 	}
 	os.Exit(1)
+}
+
+func effectiveVersion(linkedVersion string) string {
+	info, ok := debug.ReadBuildInfo()
+	return resolveVersion(linkedVersion, info, ok)
+}
+
+func resolveVersion(linkedVersion string, info *debug.BuildInfo, ok bool) string {
+	if linkedVersion != "" && linkedVersion != devVersion {
+		return linkedVersion
+	}
+	if ok && info != nil && info.Main.Version != "" && info.Main.Version != "(devel)" {
+		return info.Main.Version
+	}
+	if linkedVersion != "" {
+		return linkedVersion
+	}
+	return devVersion
 }

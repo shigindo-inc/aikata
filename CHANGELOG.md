@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-23
 audience: [human, agent]
 ---
 
@@ -17,6 +17,12 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+### Fixed
+
+- `aikata --version` now falls back to Go build info when the release
+  ldflags value is absent, so `go install github.com/shigindo-inc/aikata/cmd/aikata@latest`
+  can report the resolved module version instead of `0.0.1-dev`.
 
 ### Added
 
