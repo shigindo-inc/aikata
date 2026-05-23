@@ -76,3 +76,11 @@ jobs:
       - name: Smoke test --version (Windows)
         if: runner.os == 'Windows'
         run: .\aikata.exe --version
+
+      - name: aikata doctor (self-check, Unix)
+        if: runner.os != 'Windows'
+        run: ./aikata doctor
+
+      - name: aikata doctor (self-check, Windows)
+        if: runner.os == 'Windows'
+        run: .\aikata.exe doctor
