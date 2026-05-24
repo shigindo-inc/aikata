@@ -149,6 +149,25 @@ func TestGolden_StandardJaWithMemory(t *testing.T) {
 	compareWithGolden(t, goldenRoot(t, "standard-ja-with-memory"), tmp)
 }
 
+// TestGolden_StandardWithExtras exercises the v0.4.1 optional-component
+// flags (`--with-ui` / `--with-api` / `--with-tdd` / `--with-changelog`)
+// all together. Coverage is intentionally one combined fixture rather
+// than four individual ones: the components are independent (no
+// shared template branching, per scaffold D3) so a single all-on tree
+// is enough to catch dispatch breakage.
+func TestGolden_StandardWithExtras(t *testing.T) {
+	tmp := t.TempDir()
+	opts := standardOpts(tmp)
+	opts.WithUI = true
+	opts.WithAPI = true
+	opts.WithTDD = true
+	opts.WithChangelog = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	compareWithGolden(t, goldenRoot(t, "standard-with-extras"), tmp)
+}
+
 // compareWithGolden either updates the golden tree from gotDir (when
 // -update is set) or asserts that the two trees are byte-identical.
 func compareWithGolden(t *testing.T, goldenDir, gotDir string) {

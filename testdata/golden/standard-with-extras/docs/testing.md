@@ -1,0 +1,23 @@
+---
+project: samplekata
+status: draft
+version: 0.0.1
+updated: 2026-05-21
+audience: [human, agent]
+---
+
+# Testing
+
+Test strategy and tooling for samplekata. Keep this file scoped
+to *what is tested at which layer and how* — the runbook for adding
+a new test, not a tutorial on testing in general.
+
+## Strategy
+
+TODO — name the test layers (unit / integration / contract / e2e),
+state what each is responsible for, and where the boundaries are.
+
+## Tooling
+
+TODO — list the test runners, fixtures, golden-file harness, CI
+configuration, and any project-specific assertions the team relies on.
