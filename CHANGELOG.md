@@ -38,6 +38,17 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   duplicate ADR numbers and gaps in the `0001..max` range at
   `LevelInfo`. Findings stay advisory because the project may
   legitimately retire a number.
+- `aikata init` exposes `--ai-tools` (comma-separated `claude | cursor
+  | codex`, default `claude`). The value flows into the generated
+  `.ai/aikata.yaml`. Unknown tools are rejected with a clear error.
+- `aikata init` interactive prompt is brought to parity with the
+  non-interactive flag surface for v0.3. It now asks about document
+  language and AI tools in addition to project name, preset, and
+  long-term memory. Questions whose flag was explicitly set on the
+  command line are silently skipped. The optional-feature questions
+  (UI / API / TDD / changelog) and OSS-intent question are recorded
+  as Q-PROMPT-01 in `docs/decisions/open-questions.md` and land
+  in v0.4 alongside their matching `--with-*` flags.
 - `aikata doctor --json` emits a versioned machine-readable report on
   stdout. Schema version `1` with `issues[]` and `summary{errors,
   warnings, info}`; `line` and `code` are omitted when empty. The

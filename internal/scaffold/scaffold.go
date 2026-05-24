@@ -37,6 +37,10 @@ type Options struct {
 	// docs/stacks/<stack>.md cross-references; the values also flow
 	// into .ai/aikata.yaml's `stacks:` field for downstream tools.
 	Stacks []string
+	// AITools lists the AI-tool identifiers the project enables in its
+	// initial `.ai/aikata.yaml`. Empty defaults to `["claude"]` for
+	// backward compatibility with v0.2 init behaviour.
+	AITools []string
 	// Clock is the time source for template helpers; nil = time.Now.
 	Clock templates.Clock
 	// Stdout receives dry-run output and progress messages.
@@ -115,6 +119,9 @@ func addPresetArtifacts(opts Options, rendered map[string]string) error {
 		cfg := config.Default(opts.ProjectName, opts.Lang)
 		if len(opts.Stacks) > 0 {
 			cfg.Stacks = append([]string(nil), opts.Stacks...)
+		}
+		if len(opts.AITools) > 0 {
+			cfg.AITools = append([]string(nil), opts.AITools...)
 		}
 		buf, err := config.Marshal(cfg)
 		if err != nil {

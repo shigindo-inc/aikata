@@ -147,7 +147,11 @@ must do and the user-visible behavior. Implementation details live in
   and exit with a non-error message.
 - In interactive mode (the default), ask: project name, language, AI tools,
   stack preset, optional features (UI / API / TDD / monorepo), and OSS
-  intent.
+  intent. v0.3 covers project name, language, preset, AI tools, and the
+  long-term memory slot. The optional-feature questions and the
+  `extended` / OSS intent question land in v0.4 alongside their
+  matching non-interactive flags. Questions whose flag was explicitly
+  set on the command line are silently skipped.
 - Default preset: `standard`. Default `--ai-tools`: `claude`. Default
   `--lang`: `en`.
 
