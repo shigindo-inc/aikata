@@ -23,6 +23,23 @@ aikata は、AI コーディング時代のプロジェクトに必要な Markdo
 aikata init my-app --preset standard --lang ja --no-interactive
 ```
 
+## インストール
+
+**aikata の利用に Go のセットアップは不要です。** Go が必要なのは
+ソースから入れる場合だけです。
+
+- **推奨（Go 不要）**: [Releases ページ](https://github.com/shigindo-inc/aikata/releases/latest)
+  から OS / アーキテクチャに合った tar / zip をダウンロード →
+  `checksums.txt` で SHA-256 を検証 → `aikata` バイナリを PATH の通った
+  ディレクトリ（例: `$HOME/.local/bin/`）に配置。詳細手順は英語 README
+  の "Install" セクションに表でまとめてあります。
+- **Go ユーザー向け**: `go install github.com/shigindo-inc/aikata/cmd/aikata@latest`
+  （Go 1.21 以上）。`$(go env GOPATH)/bin` が PATH に入っている必要が
+  あります。
+- **計画中**: 1 行 install スクリプト（`curl -fsSL ... | bash`）は v0.3、
+  Homebrew tap と `npx aikata` は v0.4 で対応予定です。
+  [ROADMAP.md](../ROADMAP.md) を参照してください。
+
 Flutter / TypeScript プリセットでも同じ指定が使えます。
 
 ```bash
