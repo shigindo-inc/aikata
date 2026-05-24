@@ -52,14 +52,18 @@ func newGenerateCmd() *cobra.Command {
 					// keep going with the legacy file so the user's run
 					// is not blocked. The next aikata doctor --fix can
 					// retry once the underlying issue is resolved.
-					fmt.Fprintf(cmd.ErrOrStderr(),
+					if _, werr := fmt.Fprintf(cmd.ErrOrStderr(),
 						"warning: failed to migrate %s -> %s (ADR 0008): %v\n",
-						config.LegacyPath(target), config.PrimaryPath(target), migrateErr)
+						config.LegacyPath(target), config.PrimaryPath(target), migrateErr); werr != nil {
+						return werr
+					}
 				case moved:
 					cfgPath = config.PrimaryPath(target)
-					fmt.Fprintf(cmd.ErrOrStderr(),
+					if _, werr := fmt.Fprintf(cmd.ErrOrStderr(),
 						"notice: migrated %s -> %s (ADR 0008)\n",
-						config.LegacyPath(target), cfgPath)
+						config.LegacyPath(target), cfgPath); werr != nil {
+						return werr
+					}
 				}
 			}
 			body, err := os.ReadFile(cfgPath)
