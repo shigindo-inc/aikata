@@ -4,6 +4,11 @@ version: 2
 
 project_name: aikata
 
+# Write GoReleaser's build output to a private directory rather than
+# ./dist so the human-curated dist/ tree (Claude Code skill, future
+# plugin payloads) is not wiped by `release --clean`.
+dist: .goreleaser-output
+
 before:
   hooks:
     - go mod tidy
