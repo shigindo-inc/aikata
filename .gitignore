@@ -49,3 +49,9 @@ Thumbs.db
 
 # --- Remember plugin (local-only memory) ---
 /.remember/
+
+# --- MCP server local state (per-developer, not part of aikata) ---
+# Serena MCP writes project-local config / memories here when it activates
+# against this repo from a developer's Claude Code environment. aikata
+# itself has no dependency on Serena or any MCP server.
+/.serena/
