@@ -161,6 +161,63 @@ func TestFix_ReducesIssuesEndToEnd(t *testing.T) {
 	}
 }
 
+// TestCheckConfigPath_AndFix walks the full deprecation flow:
+//   - a project with only .ai/aikata.yaml triggers checkConfigPath as
+//     a warning with Code == "config.legacy-path",
+//   - Fix moves the file to .aikata/aikata.yaml,
+//   - a second Run no longer surfaces the issue.
+func TestCheckConfigPath_AndFix(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+	// Place the config under the legacy directory only.
+	legacyDir := filepath.Join(tmp, ".ai")
+	if err := os.MkdirAll(legacyDir, 0o755); err != nil {
+		t.Fatalf("mkdir .ai: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(legacyDir, "aikata.yaml"), []byte("version: 1\nproject:\n  name: demo\n"), 0o644); err != nil {
+		t.Fatalf("write legacy aikata.yaml: %v", err)
+	}
+
+	opts := Options{TargetDir: tmp, Now: fixedDate()}
+	before, err := Run(opts)
+	if err != nil {
+		t.Fatalf("Run before: %v", err)
+	}
+	var hit *Issue
+	for i := range before {
+		if before[i].Code == "config.legacy-path" {
+			hit = &before[i]
+			break
+		}
+	}
+	if hit == nil {
+		t.Fatalf("expected config.legacy-path issue; got: %+v", before)
+	}
+	if hit.Level != LevelWarning {
+		t.Errorf("config.legacy-path level = %v, want LevelWarning", hit.Level)
+	}
+
+	if _, err := Fix(opts, before); err != nil {
+		t.Fatalf("Fix: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, ".aikata", "aikata.yaml")); err != nil {
+		t.Errorf("expected .aikata/aikata.yaml after fix: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(legacyDir, "aikata.yaml")); !os.IsNotExist(err) {
+		t.Errorf("legacy file should be gone after fix: %v", err)
+	}
+
+	after, err := Run(opts)
+	if err != nil {
+		t.Fatalf("Run after: %v", err)
+	}
+	for _, iss := range after {
+		if iss.Code == "config.legacy-path" {
+			t.Errorf("config.legacy-path still reported after fix: %+v", iss)
+		}
+	}
+}
+
 func countFixable(issues []Issue) int {
 	n := 0
 	for _, iss := range issues {
