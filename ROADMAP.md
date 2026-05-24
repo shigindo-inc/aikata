@@ -141,6 +141,14 @@ and put a minimal Claude-Code distribution surface in place.
       [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md). New
       `init` output should use `.aikata/`; readers should fall back to the
       legacy `.ai/` path with a deprecation warning through v0.x.
+- [ ] Promote `ROADMAP.md` into the `standard` preset. It represents the
+      durable "when / sequence" layer alongside `SPEC.md` (what / why),
+      `ARCHITECTURE.md` (how), and ADRs (decision rationale), so it should
+      not be hidden behind a narrow `--with-roadmap` flag.
+- [ ] Reserve `extended` as the future heavier preset name. For v0.3.x, it
+      may be listed or accepted only as a future-use alias that prints a
+      clear message and falls back to `standard`; do not add heavy generated
+      content until its document set is justified.
 - [ ] `aikata completion bash | zsh | fish | pwsh` — cobra-generated
       shell completion. Documented in README "Install".
 - [ ] `aikata list presets | stacks | ai-tools` and
@@ -152,9 +160,10 @@ and put a minimal Claude-Code distribution surface in place.
       repository and ships as a release asset. **No** slash commands,
       sub-agents, or hooks yet — distribution is "copy one file into
       `~/.claude/skills/`" so the surface stays tiny and reversible.
-- [ ] `CONTRIBUTING.md` added to this repository directly (not via the
-      v1.0 `--oss` flag) so external contributors have a clear entry
-      point now that aikata is public.
+- [ ] `CONTRIBUTING.md` added to this repository directly (before the
+      future `extended` preset grows an operational-readiness pack) so
+      external contributors have a clear entry point now that aikata is
+      public.
 
 ---
 
@@ -228,8 +237,8 @@ elsewhere, and scales to a monorepo.
 
 - [ ] Major AI tools all supported: Claude, Cursor, Codex, Gemini,
       Copilot, Windsurf.
-- [ ] `--oss` adds the OSS-readiness pack:
-      - `CONTRIBUTING.md`, `SECURITY.md`, `ROADMAP.md`
+- [ ] `--preset extended` adds the operational-readiness pack:
+      - `CONTRIBUTING.md`, `SECURITY.md`
       - `CODE_OF_CONDUCT.md` (Contributor Covenant)
       - `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.md`
       - `.github/PULL_REQUEST_TEMPLATE.md`
@@ -311,7 +320,7 @@ Pass criteria, all three must hold:
    `aikata generate` produces at the release commit.
 
 The aspirational long-form goal — "the aikata repository is fully
-reproducible by `aikata init --preset standard --oss --ai-tools claude,cursor`
+reproducible by `aikata init --preset extended --ai-tools claude,cursor`
 plus a manual `git diff` review" — stays as the v1.0 target.
 
 ---

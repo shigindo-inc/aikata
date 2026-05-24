@@ -32,12 +32,15 @@ func (l Level) String() string {
 
 // Issue is a single finding emitted by a check function. File is a
 // path relative to Options.TargetDir; Line is 1-based (0 = no specific
-// line).
+// line). Code, when set, is a stable machine-readable discriminator
+// consumed by `doctor --fix`. The zero value (empty Code) marks the
+// issue as advisory-only — `--fix` will skip it.
 type Issue struct {
 	Level   Level
 	File    string
 	Line    int
 	Message string
+	Code    string
 }
 
 // Options carries the inputs every check needs.
