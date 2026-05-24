@@ -20,6 +20,25 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- v0.2.1 — onboarding patch: `scripts/install.sh` is a POSIX shell
+  installer that detects the host OS / architecture, downloads the
+  matching release archive, verifies its SHA-256 against
+  `checksums.txt`, and drops the binary into `$HOME/.local/bin`
+  (override with `AIKATA_INSTALL_DIR`). Pinning a tag via
+  `AIKATA_VERSION=vX.Y.Z` skips the unauthenticated GitHub API call
+  that resolves the latest release. Supported targets:
+  linux/{amd64,arm64} and darwin/{amd64,arm64}; Windows users continue
+  to use the manual download path.
+- v0.2.1 — `README.md` Install section now documents the one-line
+  convenience path
+  (`curl -fsSL .../scripts/install.sh | sh`) alongside the manual
+  download + checksum-verify path. `docs/japanese-users.ja.md` mirrors
+  the addition.
+- v0.2.1 — `.github/workflows/ci.yml` adds an `install-script` job
+  that runs `scripts/install.sh` on `ubuntu-latest` and `macos-latest`
+  and asserts `aikata --version` succeeds. The job pins
+  `AIKATA_VERSION` to the previous release so PRs can verify the
+  installer end-to-end without depending on an unreleased tag.
 - ADR 0006 records the locale policy: aikata's own repository keeps
   English canonical documentation, `--lang ja` generated templates
   remain first-class, and Japanese repository documentation is a focused
