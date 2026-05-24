@@ -78,14 +78,6 @@ func FindPreset(name string) (PresetInfo, bool) {
 	return PresetInfo{}, false
 }
 
-// Stacks returns the stack identifiers currently bundled with the
-// canonical templates. v0.3.x ships flutter and typescript via the
-// matching presets; v0.4 introduces `aikata add stack` which will
-// extend this list.
-func Stacks() []string {
-	return []string{"flutter", "typescript"}
-}
-
 // ActivePresetNames returns the names of presets whose Status is
 // StatusActive, in registry order. Used by code paths that only want
 // to enumerate scaffold-capable presets (e.g. init flag validation).
