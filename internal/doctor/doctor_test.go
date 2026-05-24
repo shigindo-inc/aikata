@@ -319,6 +319,55 @@ func TestCheckGlossary_UnusedTermIsInfo(t *testing.T) {
 	}
 }
 
+func TestCheckADRNumbering_DuplicateAndGapAreInfo(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+	// Healthy scaffold already has 0001-foo.md. Add a duplicate of
+	// number 0001 and a gap by jumping to 0003.
+	adrBody := `---
+project: sample
+status: draft
+version: 0.0.1
+updated: 2026-05-20
+audience: [human, agent]
+---
+
+# ADR
+
+- **Status**: Accepted
+`
+	if err := os.WriteFile(filepath.Join(tmp, "docs", "adr", "0001-bar.md"), []byte(adrBody), 0o644); err != nil {
+		t.Fatalf("write dup: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmp, "docs", "adr", "0003-baz.md"), []byte(adrBody), 0o644); err != nil {
+		t.Fatalf("write gap: %v", err)
+	}
+
+	issues := runDoctor(t, tmp)
+
+	var foundDup, foundGap bool
+	for _, iss := range issues {
+		if iss.Level != LevelInfo {
+			continue
+		}
+		if strings.Contains(iss.Message, "duplicate ADR number 0001") {
+			foundDup = true
+		}
+		if strings.Contains(iss.Message, "ADR number 0002 is unused") {
+			foundGap = true
+		}
+	}
+	if !foundDup {
+		t.Errorf("expected duplicate-number info issue, got:\n%+v", issues)
+	}
+	if !foundGap {
+		t.Errorf("expected gap info issue for 0002, got:\n%+v", issues)
+	}
+	if HasErrors(issues) {
+		t.Errorf("ADR numbering findings must stay at info level, got errors:\n%+v", issues)
+	}
+}
+
 func TestFormat_RendersAllLevels(t *testing.T) {
 	issues := []Issue{
 		{Level: LevelError, File: "a.md", Line: 5, Message: "boom"},
