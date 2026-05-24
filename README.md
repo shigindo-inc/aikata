@@ -19,9 +19,13 @@ LLMs collaborate as equals during development.
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.1 (MVP).**
-> `aikata init` (minimal / standard presets, optional `--with-memory`)
-> and `aikata generate` (Claude target) ship in v0.1.
+> **Status — v0.2.**
+> `aikata init` ships four presets (`minimal` / `standard` / `flutter` /
+> `typescript`), bilingual templates (`--lang en|ja`), and the long-term
+> agent memory slot (`--with-memory`). `aikata generate` emits Claude
+> Code (`CLAUDE.md`) and Cursor (`.cursor/rules/main.mdc`) artifacts;
+> Codex passes through `AGENTS.md` directly. `aikata doctor` runs eight
+> read-only consistency checks.
 > [ROADMAP.md](./ROADMAP.md) lists what comes next.
 
 ---
@@ -58,11 +62,22 @@ aikata init my-app
 # Or non-interactively with explicit flags:
 aikata init my-app --preset standard --no-interactive
 
+# Stack-flavored presets (v0.2):
+aikata init my-flutter-app --preset flutter --no-interactive
+aikata init my-ts-app --preset typescript --no-interactive
+
+# Japanese template set (v0.2):
+aikata init my-app --preset standard --lang ja --no-interactive
+
 # Opt in to the long-term agent memory slot (ADR 0004):
 aikata init my-app --preset standard --with-memory --no-interactive
 
-# Re-generate per-AI-tool files (currently CLAUDE.md from AGENTS.md):
+# Generate per-AI-tool files. Currently emits CLAUDE.md and
+# .cursor/rules/main.mdc; Codex reads AGENTS.md directly:
 aikata generate
+
+# Check project consistency (v0.2):
+aikata doctor
 ```
 
 `go install` writes the binary to `$GOBIN` when it is set, otherwise to
@@ -70,8 +85,8 @@ aikata generate
 [`docs/troubleshooting.md`](./docs/troubleshooting.md) if `aikata` is not
 found after install.
 
-> The `aikata doctor` command, Homebrew tap, and `curl -sSL` install
-> script land in later releases — see [ROADMAP.md](./ROADMAP.md).
+> Homebrew tap and `curl -sSL` install script land in later releases —
+> see [ROADMAP.md](./ROADMAP.md).
 
 See [SPEC.md §4](./SPEC.md#4-functional-requirements-cli) for the full
 command surface.
@@ -146,6 +161,8 @@ aikata generate
   - [0001 — Record Architecture Decisions](./docs/adr/0001-record-architecture-decisions.md)
   - [0002 — `AGENTS.md` is Canonical](./docs/adr/0002-agents-md-as-canonical.md)
   - [0003 — Do-No-Harm Policy](./docs/adr/0003-do-no-harm-policy.md)
+  - [0004 — Long-Term Memory Slot](./docs/adr/0004-long-term-memory-slot.md)
+  - [0005 — Cursor / Codex Pass-Through](./docs/adr/0005-cursor-codex-pass-through.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
 ### AI-tool entry points

@@ -18,6 +18,8 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-23
+
 ### Fixed
 
 - `aikata --version` now falls back to Go build info when the release
