@@ -131,7 +131,7 @@ func newListStacksCmd() *cobra.Command {
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			items := make([]listItem, 0)
-			for _, s := range scaffold.Stacks() {
+			for _, s := range components.Stacks() {
 				items = append(items, listItem{Name: s})
 			}
 			return writeList(cmd.OutOrStdout(), "stacks", items, jsonOut, formatPlainText)

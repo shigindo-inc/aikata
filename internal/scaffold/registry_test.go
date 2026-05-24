@@ -79,16 +79,3 @@ func TestActivePresetNames(t *testing.T) {
 		}
 	}
 }
-
-func TestStacks(t *testing.T) {
-	got := Stacks()
-	if len(got) != 2 {
-		t.Fatalf("Stacks() len = %d, want 2; got %v", len(got), got)
-	}
-	want := map[string]bool{"flutter": true, "typescript": true}
-	for _, s := range got {
-		if !want[s] {
-			t.Errorf("Stacks(): unexpected entry %q", s)
-		}
-	}
-}

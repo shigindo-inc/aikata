@@ -8,6 +8,7 @@ import "sort"
 var registry = []Component{
 	Adr,
 	Memory,
+	Stack,
 }
 
 // All returns the full component list, sorted by Name. The slice is
