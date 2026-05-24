@@ -189,19 +189,40 @@ Deferred to v0.3.x (not blocking v0.3.0):
       to mirror `docs/memory/*` into tool-specific channels (Claude
       `.claude/memory/`, Cursor `.cursor/rules/long-term/`). Record
       findings in a new ADR; ship only if the cost is low.
+- [ ] Command vocabulary cleanup before the project-sync feature lands:
+      reserve `aikata update` for updating the aikata CLI itself, and
+      rename the future template diff-merge command to `aikata sync`.
+      `aikata generate` may detect stale templates and point users to
+      `aikata sync`, but it must not rewrite canonical project
+      documents as a side effect. See
+      [ADR 0009](./docs/adr/0009-update-command-owns-cli-version-updates.md).
+
+Follow-up candidate for v0.4.x:
+
+- [ ] `aikata update --check` — opt-in release check against GitHub
+      Releases. This is the first narrow step toward Claude Code-style
+      update behavior without changing installed binaries.
+- [ ] Native installer metadata — record whether the current binary came
+      from the install script, Homebrew, npm, `go install`, or an
+      unknown source so a later `aikata update` can choose the safe
+      update path.
+- [ ] If the metadata and checksum flow are low-risk, ship native
+      installer-managed `aikata update`; package-manager installs should
+      be delegated to `brew upgrade`, npm, or the relevant manager rather
+      than overwritten directly (ADR 0009).
 
 ---
 
-## v0.5 — `aikata update`
+## v0.5 — `aikata sync`
 
 **Goal**: keep an aikata project current with the canonical templates
 without losing the user's edits.
 
-- [ ] `aikata update` interactive diff-merge — the single largest
+- [ ] `aikata sync` interactive diff-merge — the single largest
       feature on the roadmap. Carved out of v0.4 / v0.6 so it gets its
       own release cycle and doesn't drag packaging work with it.
 - [ ] Migration framework for `.aikata/aikata.yaml` schema versions
-      (needed so `update` can rewrite older configs forward-compatibly).
+      (needed so `sync` can rewrite older configs forward-compatibly).
 - [ ] Dogfooding gate becomes binding (see "Dogfooding milestone"
       below).
 
@@ -262,10 +283,10 @@ Speculative. Order and inclusion depend on validating
   (agentsmesh-like).
 - Bilingual document mode (Japanese for humans, English for LLMs in a
   single canonical file).
-- Opt-in version-upgrade self-check (`aikata --version` queries the
-  GitHub Releases API and prints "newer version available"). Opt-in
-  because of the network call; would be the first time aikata reaches
-  out to the network at all.
+- Full cross-channel `aikata update` behavior after v0.4.x: native
+  installs can self-update; Homebrew, npm, Go, and OS package-manager
+  installs are delegated to their owning package manager or shown as
+  actionable commands.
 
 ---
 
