@@ -82,24 +82,31 @@ Shipped:
 
 ---
 
-## v0.2.1 — Onboarding patch
+## v0.2.1 — Onboarding patch ✅ (released 2026-05-24)
 
-**Goal**: remove the "Go required?" misperception by making a no-Go
-install one shell line instead of "find the right asset on the
-Releases page". External-only changes, no behavioural change to the
-CLI itself.
+Removed the "Go required?" misperception by making a no-Go install one
+shell line instead of "find the right asset on the Releases page".
+External-only changes, no behavioural change to the CLI itself.
 
-- [ ] `scripts/install.sh` — POSIX shell script that detects OS / arch,
-      fetches the latest GitHub Release archive, verifies
-      `checksums.txt`, and drops the binary into `$HOME/.local/bin`.
-      Served from
-      `https://raw.githubusercontent.com/shigindo-inc/aikata/main/scripts/install.sh`
-      until an `aikata.dev` redirect exists.
-- [ ] README "Install" section documents both the secure path
-      (manual download → verify → move) and the convenience path
-      (`curl -fsSL ... | bash`).
-- [ ] Smoke test in CI that the install script resolves, downloads, and
-      runs `aikata --version` on Linux and macOS runners.
+Shipped:
+
+- `scripts/install.sh` — POSIX shell script that detects OS / arch,
+  downloads the matching release archive, verifies its SHA-256 against
+  `checksums.txt`, and drops the binary into `$HOME/.local/bin`
+  (override with `AIKATA_INSTALL_DIR`). Pin a tag via
+  `AIKATA_VERSION=vX.Y.Z` to skip the unauthenticated GitHub API call.
+  Supported targets: linux/{amd64,arm64} and darwin/{amd64,arm64};
+  Windows continues to use the manual download path. Served from
+  `https://raw.githubusercontent.com/shigindo-inc/aikata/main/scripts/install.sh`
+  until an `aikata.dev` redirect exists.
+- README "Install" section now documents both paths — manual download
+  + checksum verify (secure) and `curl -fsSL ... | sh` (convenience).
+  `docs/japanese-users.ja.md` mirrors the addition.
+- CI gains an `install-script` job that runs the installer on
+  `ubuntu-latest` and `macos-latest` and asserts `aikata --version`
+  succeeds. The job pins `AIKATA_VERSION` to the previous release so
+  PRs can verify the installer end-to-end without depending on an
+  unreleased tag.
 
 Patch release tag `v0.2.1`. No new core features, no schema bump.
 

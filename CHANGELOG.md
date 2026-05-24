@@ -18,6 +18,8 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-24
+
 ### Added
 
 - v0.2.1 — onboarding patch: `scripts/install.sh` is a POSIX shell
