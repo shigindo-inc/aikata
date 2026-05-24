@@ -6,12 +6,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Version is the schema version of `.ai/aikata.yaml` that this binary
-// writes and is expected to read. Bumped only when an incompatible
-// schema change ships (see ARCHITECTURE.md §4.2).
+// Version is the schema version of `.aikata/aikata.yaml` (and the
+// pre-v0.3.2 `.ai/aikata.yaml` fallback) that this binary writes and
+// is expected to read. Bumped only when an incompatible schema
+// change ships (see ARCHITECTURE.md §4.2).
 const Version = 1
 
-// AikataYaml is the in-memory representation of `.ai/aikata.yaml`.
+// AikataYaml is the in-memory representation of the aikata config
+// file (`.aikata/aikata.yaml`, or the legacy `.ai/aikata.yaml`).
 // Field tags double as the YAML schema spec — keep them in sync with
 // ARCHITECTURE.md §4.1.
 type AikataYaml struct {
@@ -80,9 +82,9 @@ func Marshal(y AikataYaml) ([]byte, error) {
 	return out, nil
 }
 
-// Unmarshal parses an `.ai/aikata.yaml` payload. Returned errors wrap
-// the underlying yaml parse error with the path-style context callers
-// expect (ARCHITECTURE.md §7.1).
+// Unmarshal parses an aikata.yaml payload (either path). Returned
+// errors wrap the underlying yaml parse error with the path-style
+// context callers expect (ARCHITECTURE.md §7.1).
 func Unmarshal(data []byte) (AikataYaml, error) {
 	var y AikataYaml
 	if err := yaml.Unmarshal(data, &y); err != nil {
