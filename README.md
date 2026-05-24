@@ -74,6 +74,39 @@ aikata --version
 
 `checksums.txt` is published alongside the binaries in the same release.
 
+### Convenience — install script (Linux / macOS, v0.2.1+)
+
+For a one-line install, the project ships a POSIX shell script that
+detects your OS / architecture, downloads the matching archive, verifies
+its SHA-256 against `checksums.txt`, and drops the binary into
+`$HOME/.local/bin`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shigindo-inc/aikata/main/scripts/install.sh | sh
+```
+
+To pin a specific version (and avoid the unauthenticated GitHub API call
+that resolves the latest tag):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shigindo-inc/aikata/main/scripts/install.sh \
+  | AIKATA_VERSION=v0.2.1 sh
+```
+
+Override the install location with `AIKATA_INSTALL_DIR`. The script
+prints a warning if the install directory is not on your `PATH`. Windows
+users: continue to use the manual download path above; an installer for
+Windows is not planned for the v0.x series.
+
+If you prefer to read the script before executing it (recommended for
+any `curl | sh` pattern), download it first:
+
+```bash
+curl -fsSL -o install.sh https://raw.githubusercontent.com/shigindo-inc/aikata/main/scripts/install.sh
+less install.sh
+sh install.sh
+```
+
 ### From source — `go install` (requires Go 1.21+)
 
 ```bash
@@ -86,8 +119,8 @@ aikata --version
 [`docs/troubleshooting.md`](./docs/troubleshooting.md) if `aikata` is
 not found after install.
 
-> A one-line `curl -fsSL ... | bash` installer and a Homebrew tap land
-> in later releases — see [ROADMAP.md](./ROADMAP.md) v0.3 / v0.4.
+> A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
+> land in v0.6 — see [ROADMAP.md](./ROADMAP.md).
 
 ## Quickstart
 
