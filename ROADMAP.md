@@ -115,8 +115,8 @@ Patch release tag `v0.2.1`. No new core features, no schema bump.
 ## v0.3 — Fast follow-up (lightweight)
 
 **Goal**: close out the v0.2 surface with low-risk quality-of-life
-improvements that don't touch templates or presets, and put a minimal
-Claude-Code distribution surface in place.
+improvements, complete the scoped config-directory migration from ADR 0008,
+and put a minimal Claude-Code distribution surface in place.
 
 - [ ] `aikata doctor --fix` for the trivially-fixable subset (bump
       stale `updated:` to today, scaffold missing required frontmatter
@@ -136,6 +136,11 @@ Claude-Code distribution surface in place.
       preset, and long-term memory. Audit the prompt against
       [SPEC.md §4.1](./SPEC.md#41-aikata-init-name) and explicitly mark
       any intentionally deferred questions.
+- [ ] Migrate aikata-owned config from `.ai/aikata.yaml` to
+      `.aikata/aikata.yaml` per
+      [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md). New
+      `init` output should use `.aikata/`; readers should fall back to the
+      legacy `.ai/` path with a deprecation warning through v0.x.
 - [ ] `aikata completion bash | zsh | fish | pwsh` — cobra-generated
       shell completion. Documented in README "Install".
 - [ ] `aikata list presets | stacks | ai-tools` and
@@ -161,7 +166,7 @@ Claude-Code distribution surface in place.
       - `adr` — auto-numbered ADR skeleton (uses the v0.3 numbering
         helper).
       - `stack` — adds `docs/stacks/<name>.md` and updates
-        `.ai/aikata.yaml` `stacks:`.
+        `.aikata/aikata.yaml` `stacks:`.
       - `memory` — opt-in equivalent of `--with-memory` for projects
         that did not enable it at init time.
 - [ ] `aikata add <component>` — **second wave** (lower individual
@@ -189,7 +194,7 @@ without losing the user's edits.
 - [ ] `aikata update` interactive diff-merge — the single largest
       feature on the roadmap. Carved out of v0.4 / v0.6 so it gets its
       own release cycle and doesn't drag packaging work with it.
-- [ ] Migration framework for `.ai/aikata.yaml` schema versions
+- [ ] Migration framework for `.aikata/aikata.yaml` schema versions
       (needed so `update` can rewrite older configs forward-compatibly).
 - [ ] Dogfooding gate becomes binding (see "Dogfooding milestone"
       below).
