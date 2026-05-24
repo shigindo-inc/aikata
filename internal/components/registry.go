@@ -7,6 +7,7 @@ import "sort"
 // can mutate freely.
 var registry = []Component{
 	Adr,
+	AITool,
 	Memory,
 	Stack,
 }
