@@ -53,17 +53,25 @@ func newInitCmd() *cobra.Command {
 			interactive := !noInteractive && isTTYFunc()
 			if interactive {
 				skip := promptSkip{
-					Preset:     cmd.Flags().Changed("preset"),
-					WithMemory: cmd.Flags().Changed("with-memory"),
-					Lang:       cmd.Flags().Changed("lang"),
-					AITools:    cmd.Flags().Changed("ai-tools"),
+					Preset:        cmd.Flags().Changed("preset"),
+					WithMemory:    cmd.Flags().Changed("with-memory"),
+					WithUI:        cmd.Flags().Changed("with-ui"),
+					WithAPI:       cmd.Flags().Changed("with-api"),
+					WithTDD:       cmd.Flags().Changed("with-tdd"),
+					WithChangelog: cmd.Flags().Changed("with-changelog"),
+					Lang:          cmd.Flags().Changed("lang"),
+					AITools:       cmd.Flags().Changed("ai-tools"),
 				}
 				result, err := runPrompt(cmd.InOrStdin(), cmd.OutOrStdout(), promptResult{
-					Name:       name,
-					Preset:     preset,
-					WithMemory: withMemory,
-					Lang:       lang,
-					AITools:    aiTools,
+					Name:          name,
+					Preset:        preset,
+					WithMemory:    withMemory,
+					WithUI:        withUI,
+					WithAPI:       withAPI,
+					WithTDD:       withTDD,
+					WithChangelog: withChangelog,
+					Lang:          lang,
+					AITools:       aiTools,
 				}, skip)
 				if err != nil {
 					return &ExitError{Code: 2, Err: err}
@@ -71,6 +79,10 @@ func newInitCmd() *cobra.Command {
 				name = result.Name
 				preset = result.Preset
 				withMemory = result.WithMemory
+				withUI = result.WithUI
+				withAPI = result.WithAPI
+				withTDD = result.WithTDD
+				withChangelog = result.WithChangelog
 				lang = result.Lang
 				aiTools = result.AITools
 			}

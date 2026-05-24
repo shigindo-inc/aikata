@@ -11,14 +11,18 @@ import (
 
 // promptResult holds the values `aikata init` collects interactively.
 // Defaults flow in from the cobra flag values so the user can accept
-// them with an empty Enter. v0.3 extended the set with Lang and
-// AITools to bring the prompt back to flag parity. See SPEC.md §4.1.
+// them with an empty Enter. The optional-component fields are kept in
+// sync with the `--with-*` flag set.
 type promptResult struct {
-	Name       string
-	Preset     string
-	WithMemory bool
-	Lang       string
-	AITools    []string
+	Name          string
+	Preset        string
+	WithMemory    bool
+	WithUI        bool
+	WithAPI       bool
+	WithTDD       bool
+	WithChangelog bool
+	Lang          string
+	AITools       []string
 }
 
 // promptSkip lets the caller (init.go) tell runPrompt which fields
@@ -27,10 +31,14 @@ type promptResult struct {
 // field has no Skip — it is required and the prompt asks only when
 // the default is empty.
 type promptSkip struct {
-	Preset     bool
-	WithMemory bool
-	Lang       bool
-	AITools    bool
+	Preset        bool
+	WithMemory    bool
+	WithUI        bool
+	WithAPI       bool
+	WithTDD       bool
+	WithChangelog bool
+	Lang          bool
+	AITools       bool
 }
 
 // validAITools enumerates the tool identifiers init accepts in v0.3.
@@ -124,29 +132,56 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult, skip promptSkip)
 		result.AITools = parsed
 	}
 
-	if !skip.WithMemory {
-		defStr := "N"
-		if result.WithMemory {
-			defStr = "Y"
+	// Optional-component questions. The order matches scaffold.Run's
+	// dispatch table so the user-visible sequence and the underlying
+	// flag set stay in lockstep.
+	optionalQs := []struct {
+		skip   bool
+		target *bool
+		prompt string
+	}{
+		{skip.WithMemory, &result.WithMemory, "Include long-term memory slot under docs/memory/?"},
+		{skip.WithUI, &result.WithUI, "Include UI.md (UI / UX guidelines)?"},
+		{skip.WithAPI, &result.WithAPI, "Include API.md (API interface spec)?"},
+		{skip.WithTDD, &result.WithTDD, "Include docs/testing.md (test strategy)?"},
+		{skip.WithChangelog, &result.WithChangelog, "Include CHANGELOG.md (release notes)?"},
+	}
+	for _, q := range optionalQs {
+		if q.skip {
+			continue
 		}
-		prompt := fmt.Sprintf("Include long-term memory slot under docs/memory/? [y/N, default %s]: ", defStr)
-		got, err := readLine(sc, w, prompt)
-		if err != nil {
+		if err := askYesNo(sc, w, q.prompt, q.target); err != nil {
 			return result, err
-		}
-		switch strings.ToLower(got) {
-		case "":
-			// keep default
-		case "y", "yes":
-			result.WithMemory = true
-		case "n", "no":
-			result.WithMemory = false
-		default:
-			return result, fmt.Errorf("prompt: unknown yes/no value %q", got)
 		}
 	}
 
 	return result, nil
+}
+
+// askYesNo asks a y/N question, accepts blank / y / yes / n / no
+// (case-insensitive), and updates *target in place. Blank input keeps
+// the current value of *target as the default. Unknown input returns
+// an error so the caller can surface it to the user.
+func askYesNo(sc *bufio.Scanner, w io.Writer, question string, target *bool) error {
+	defStr := "N"
+	if *target {
+		defStr = "Y"
+	}
+	got, err := readLine(sc, w, fmt.Sprintf("%s [y/N, default %s]: ", question, defStr))
+	if err != nil {
+		return err
+	}
+	switch strings.ToLower(got) {
+	case "":
+		// keep default
+	case "y", "yes":
+		*target = true
+	case "n", "no":
+		*target = false
+	default:
+		return fmt.Errorf("prompt: unknown yes/no value %q", got)
+	}
+	return nil
 }
 
 // parseAITools normalizes a comma-separated tool list into a sorted,
