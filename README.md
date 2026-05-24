@@ -122,6 +122,27 @@ not found after install.
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
 > land in v0.6 — see [ROADMAP.md](./ROADMAP.md).
 
+### Shell completion (v0.3.1+)
+
+`aikata completion <shell>` prints a completion script for `bash`, `zsh`,
+`fish`, or `powershell`. Activate it once per shell:
+
+```bash
+# Bash (current shell):
+source <(aikata completion bash)
+
+# Zsh (system-wide, with `autoload -Uz compinit; compinit` already in .zshrc):
+aikata completion zsh > "${fpath[1]}/_aikata"
+
+# Fish (per-user, persistent):
+aikata completion fish > ~/.config/fish/completions/aikata.fish
+
+# PowerShell:
+aikata completion powershell | Out-String | Invoke-Expression
+```
+
+Run `aikata completion --help` for additional install paths.
+
 ## Quickstart
 
 ```bash
