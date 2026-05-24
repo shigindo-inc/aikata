@@ -122,6 +122,22 @@ not found after install.
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
 > land in v0.6 — see [ROADMAP.md](./ROADMAP.md).
 
+### Claude Code skill (optional, v0.3.1+)
+
+aikata ships a minimal Claude Code skill that teaches Claude when to
+call the CLI and how to parse `aikata doctor --json`. It is a single
+file — no slash commands, sub-agents, or hooks — so installing it is
+one copy:
+
+```bash
+mkdir -p ~/.claude/skills
+curl -fsSL -o ~/.claude/skills/aikata.md \
+  https://github.com/shigindo-inc/aikata/releases/latest/download/aikata-skill.md
+```
+
+See [`dist/README.md`](./dist/README.md) for offline install from a
+checkout and notes on the v0.6 plugin migration path.
+
 ### Shell completion (v0.3.1+)
 
 `aikata completion <shell>` prints a completion script for `bash`, `zsh`,
