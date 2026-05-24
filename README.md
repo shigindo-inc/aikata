@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-23
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -14,6 +14,9 @@ audience: [human, agent]
 
 The name means "partner" in Japanese: a companion that helps humans and
 LLMs collaborate as equals during development.
+
+Japanese users can start from
+[`docs/japanese-users.ja.md`](./docs/japanese-users.ja.md).
 
 [![ci](https://github.com/shigindo-inc/aikata/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shigindo-inc/aikata/actions/workflows/ci.yml)
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
@@ -152,6 +155,7 @@ aikata generate
 | When (milestones) | [ROADMAP.md](./ROADMAP.md) |
 | Terminology | [GLOSSARY.md](./GLOSSARY.md) |
 | Agent / contributor rules | [AGENTS.md](./AGENTS.md) |
+| Japanese users | [docs/japanese-users.ja.md](./docs/japanese-users.ja.md) |
 | Release notes | [CHANGELOG.md](./CHANGELOG.md) |
 | License | [LICENSE](./LICENSE) (MIT) |
 
@@ -163,6 +167,7 @@ aikata generate
   - [0003 — Do-No-Harm Policy](./docs/adr/0003-do-no-harm-policy.md)
   - [0004 — Long-Term Memory Slot](./docs/adr/0004-long-term-memory-slot.md)
   - [0005 — Cursor / Codex Pass-Through](./docs/adr/0005-cursor-codex-pass-through.md)
+  - [0006 — Locale / Japanese Documentation Policy](./docs/adr/0006-locale-and-japanese-documentation-policy.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
 ### AI-tool entry points
