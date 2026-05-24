@@ -18,6 +18,16 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Changed
+
+- Roadmap / spec command semantics updated: `aikata update` is reserved
+  for updating the aikata CLI itself, while the future template
+  diff-merge command is renamed to `aikata sync`. `aikata generate`
+  remains responsible for tool-specific generated artifacts and may only
+  point users toward `sync` when project templates are stale.
+- ADR 0009 records the command naming decision and the install-source
+  constraints for future `aikata update` behavior.
+
 ## [0.3.0] - 2026-05-24
 
 ### Added
@@ -124,7 +134,7 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
     first-wave (`adr`, `stack`, `memory`) and second-wave (`ai-tool`,
     `ui`, `api`, `tdd`, `changelog`); the matching `--with-*` init
     flags; the memory generate-projection investigation.
-  - **v0.5** — `aikata update` interactive diff-merge gets its own
+  - **v0.5** — `aikata sync` interactive diff-merge gets its own
     release cycle (the single largest feature on the roadmap).
   - **v0.6** — packaging & distribution: `--monorepo`, npm wrapper,
     Homebrew tap, Claude Code plugin (slash commands), conditional

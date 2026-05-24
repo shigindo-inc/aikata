@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -54,7 +54,7 @@ documents and are disposable.
 | Unit of truth | Rules | Documents |
 | Audience | English / enterprise | Bilingual (ja / en) first, English default |
 | Scope | All-in-one config | Minimal core + presets |
-| Update model | Init-only | `init` + `add` + `update` + `doctor` |
+| Update model | Init-only | `init` + `add` + `sync` + `doctor` |
 | Optional features | Tightly coupled | Strictly opt-in (Do-No-Harm Policy) |
 
 ---
@@ -71,7 +71,7 @@ documents and are disposable.
    documents.
 3. Verify consistency of the document set (`aikata doctor`).
 4. Merge upstream template updates without overwriting user edits
-   (`aikata update`).
+   (`aikata sync`).
 5. Provide stack-specific presets (initial: `minimal`, `standard`; later
    `flutter`, `typescript`, …).
 6. Support monorepo layouts (nested `AGENTS.md` per app).
@@ -232,6 +232,27 @@ must do and the user-visible behavior. Implementation details live in
 
 ### 4.5 `aikata update`
 
+**Purpose**: Update the aikata CLI itself.
+
+**Must be able to**:
+
+- Check whether a newer aikata release is available when explicitly
+  requested.
+- Update native / installer-managed aikata binaries without requiring
+  Go.
+- Delegate package-manager installs to their package manager (`brew`,
+  npm, etc.) instead of overwriting managed files directly.
+- Print an actionable manual command when the install source is
+  unknown or cannot be updated safely.
+
+`aikata update` follows the user expectation established by tools such
+as Claude Code: `update` means "update this CLI". Network access is
+explicit and limited to release metadata and release assets needed for
+the update operation. See
+[ADR 0009](./docs/adr/0009-update-command-owns-cli-version-updates.md).
+
+### 4.6 `aikata sync`
+
 **Purpose**: Merge upstream template updates into the user's project.
 
 **Must be able to**:
@@ -241,9 +262,11 @@ must do and the user-visible behavior. Implementation details live in
 - Present diffs interactively with accept / reject per hunk.
 - Preserve user edits (no silent overwrite).
 
-Inspired by Copier's update flow.
+Inspired by Copier's update flow. `aikata generate` may warn that a
+project is behind bundled templates, but it must not silently perform
+this sync because canonical project documents may contain user edits.
 
-### 4.6 `aikata list`
+### 4.7 `aikata list`
 
 **Purpose**: List available presets, components, and AI-tool integrations.
 
