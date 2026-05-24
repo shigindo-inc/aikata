@@ -227,7 +227,8 @@ must do and the user-visible behavior. Implementation details live in
 
 **Must be able to**:
 
-- Read `.ai/aikata.yaml`, determine enabled AI tools.
+- Read `.aikata/aikata.yaml` (falling back to legacy `.ai/aikata.yaml`),
+  determine enabled AI tools.
 - For each enabled tool, emit its expected file(s).
 - Add generated artifact paths to `.gitignore` of the **target project** by
   default (see Do-No-Harm policy for the exception in aikata itself).
@@ -304,7 +305,8 @@ this sync because canonical project documents may contain user edits.
 
 - The bundled template schema is versioned. Templates produced by aikata
   v0.1 remain readable by aikata v1.x.
-- `.ai/aikata.yaml` has a top-level `version: 1` field for future migrations.
+- `.aikata/aikata.yaml` has a top-level `version: 1` field for future
+  migrations; legacy `.ai/aikata.yaml` remains readable during v0.x.
 
 ### 5.5 Internationalization
 

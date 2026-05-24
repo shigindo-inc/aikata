@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -68,7 +68,7 @@ output** — rerun `aikata generate` from the repo root to refresh it.
 - The default for **user projects** is unchanged: `CLAUDE.md` is
   gitignored unless the user opts in. See
   [ARCHITECTURE.md §6](../../ARCHITECTURE.md#6-distribution--generated-artifacts).
-  aikata's own repository overrides this via `.ai/aikata.yaml`'s
+  aikata's own repository overrides this via `.aikata/aikata.yaml`'s
   `docs.generate_gitignore: false`.
 
 ### Migration from the Phase 1 hand-written wrapper

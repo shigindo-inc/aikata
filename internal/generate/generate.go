@@ -19,7 +19,7 @@ type Context struct {
 	// TargetDir is the project root where the canonical AGENTS.md
 	// lives and where generated files will be written.
 	TargetDir string
-	// Project mirrors the values in `.ai/aikata.yaml`.
+	// Project mirrors the values in `.aikata/aikata.yaml`.
 	Project config.AikataYaml
 	// Clock injects the time source for golden-stable rendering;
 	// nil = time.Now via templates.Helpers.
@@ -44,7 +44,7 @@ type Provider interface {
 	Files(ctx Context) (map[string]string, error)
 }
 
-// ErrUnknownAITool is returned when `.ai/aikata.yaml` enables a tool
+// ErrUnknownAITool is returned when `.aikata/aikata.yaml` enables a tool
 // for which no Provider is registered. The cli maps this to exit code 2.
 var ErrUnknownAITool = errors.New("generate: unknown ai_tool")
 
@@ -105,7 +105,7 @@ func Run(ctx Context) (map[string]int, error) {
 		return nil, errors.New("generate: target directory is required")
 	}
 	if len(ctx.Project.AITools) == 0 {
-		return nil, errors.New("generate: no AI tools enabled in .ai/aikata.yaml")
+		return nil, errors.New("generate: no AI tools enabled in .aikata/aikata.yaml")
 	}
 
 	rendered := make(map[string]string)

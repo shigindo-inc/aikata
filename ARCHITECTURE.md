@@ -181,7 +181,7 @@ belongs in optional `UI.md` when enabled. See
 
 > **Path note**: v0.3.2 onward writes `.aikata/aikata.yaml` per
 > [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md). The
-> legacy `.aikata/aikata.yaml` path remains read-only for projects from
+> legacy `.ai/aikata.yaml` path remains read-only for projects from
 > v0.2 / v0.3.0 / v0.3.1 and is migrated automatically by
 > `aikata doctor --fix`; the fallback stays in place throughout the
 > v0.x line.

@@ -57,8 +57,8 @@ this is the canonical-locale policy in
 - `internal/doctor/` — `aikata doctor` checks (`checks.go`),
   auto-fix engine (`fix.go`), JSON output (`json.go`).
 - `internal/adr/` — shared ADR numbering helper.
-- `internal/config/` — `.ai/aikata.yaml` schema and (from v0.3.2)
-  `.aikata/aikata.yaml` migration helpers.
+- `internal/config/` — `.aikata/aikata.yaml` schema and legacy
+  `.ai/aikata.yaml` migration helpers.
 - `docs/adr/` — Architecture Decision Records, 4-digit zero-padded.
 - `docs/decisions/open-questions.md` — undecided design items.
 - `dist/` — shippable artifacts attached to releases (Claude Code

@@ -13,7 +13,7 @@ features:
     tdd: false
 docs:
     # aikata's own repo overrides the target-project default and
-    # commits generated artifacts (CLAUDE.md, .cursor/rules/, …) so
+    # commits generated artifacts (CLAUDE.md, .cursor/rules/, ...) so
     # contributors can open the repo with Claude Code / Cursor without
     # first installing aikata. See ADR 0003 §"Consequences".
     generate_gitignore: false
