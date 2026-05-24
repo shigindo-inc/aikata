@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/shigindo-inc/aikata/internal/config"
 )
 
 // FixableCodes lists the Issue.Code values that Fix knows how to
@@ -19,6 +21,7 @@ var FixableCodes = []string{
 	"frontmatter.missing-key.updated",
 	"frontmatter.missing-key.audience",
 	"updated.stale",
+	"config.legacy-path",
 }
 
 // FixResult summarizes the outcome of a Fix pass.
@@ -43,6 +46,8 @@ type FixResult struct {
 //   - "frontmatter.missing-key.<k>"  → append the missing key with
 //     a placeholder value.
 //   - "updated.stale"                → bump `updated:` to today.
+//   - "config.legacy-path"           → move .ai/aikata.yaml to
+//     .aikata/aikata.yaml (ADR 0008).
 //
 // Today is taken from opts.Now to keep tests deterministic; the CLI
 // layer passes a zero Time so doctor's Run substitutes time.Now.
@@ -70,6 +75,11 @@ func Fix(opts Options, issues []Issue) (FixResult, error) {
 			changed, err = fixMissingKey(full, key, today)
 		case iss.Code == "updated.stale":
 			changed, err = fixStaleUpdated(full, today)
+		case iss.Code == "config.legacy-path":
+			// The config-path fixer is project-wide (operates on the
+			// TargetDir as a whole), not file-scoped. Pass the project
+			// root rather than the issue's File path.
+			changed, err = config.MoveLegacyToPrimary(opts.TargetDir)
 		default:
 			res.Skipped++
 			continue
