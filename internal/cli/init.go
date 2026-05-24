@@ -10,12 +10,11 @@ import (
 	"github.com/shigindo-inc/aikata/internal/scaffold"
 )
 
-// newInitCmd builds the `aikata init` subcommand. v0.4.0 covers the
-// scaffolding-time surface (`--preset`, `--name`, `--lang`,
-// `--ai-tools`, `--with-memory`). Optional-feature flags
-// (`--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog`) and
-// their interactive prompts land in v0.4.1; the post-init authoring
-// counterpart lives behind `aikata add <component>` (this release).
+// newInitCmd builds the `aikata init` subcommand. The scaffolding-time
+// surface is `--preset`, `--name`, `--lang`, `--ai-tools`, and the
+// optional-component flags (`--with-memory`, `--with-ui`, `--with-api`,
+// `--with-tdd`, `--with-changelog`). The post-init counterpart lives
+// behind `aikata add <component>`.
 func newInitCmd() *cobra.Command {
 	var (
 		preset        string
@@ -25,6 +24,10 @@ func newInitCmd() *cobra.Command {
 		dryRun        bool
 		lang          string
 		withMemory    bool
+		withUI        bool
+		withAPI       bool
+		withTDD       bool
+		withChangelog bool
 		aiToolsCSV    string
 	)
 
@@ -85,16 +88,20 @@ func newInitCmd() *cobra.Command {
 			}
 
 			opts := scaffold.Options{
-				ProjectName: name,
-				Preset:      preset,
-				TargetDir:   target,
-				Lang:        lang,
-				Force:       force,
-				DryRun:      dryRun,
-				WithMemory:  withMemory,
-				Stacks:      stacksForPreset(preset),
-				AITools:     aiTools,
-				Stdout:      cmd.OutOrStdout(),
+				ProjectName:   name,
+				Preset:        preset,
+				TargetDir:     target,
+				Lang:          lang,
+				Force:         force,
+				DryRun:        dryRun,
+				WithMemory:    withMemory,
+				WithUI:        withUI,
+				WithAPI:       withAPI,
+				WithTDD:       withTDD,
+				WithChangelog: withChangelog,
+				Stacks:        stacksForPreset(preset),
+				AITools:       aiTools,
+				Stdout:        cmd.OutOrStdout(),
 			}
 
 			if err := scaffold.Run(opts); err != nil {
@@ -114,6 +121,10 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "print the plan without writing files")
 	cmd.Flags().StringVar(&lang, "lang", "en", "document language (en | ja)")
 	cmd.Flags().BoolVar(&withMemory, "with-memory", false, "include long-term agent memory under docs/memory/ (ADR 0004)")
+	cmd.Flags().BoolVar(&withUI, "with-ui", false, "include UI / UX guidelines at UI.md")
+	cmd.Flags().BoolVar(&withAPI, "with-api", false, "include API interface spec at API.md")
+	cmd.Flags().BoolVar(&withTDD, "with-tdd", false, "include test strategy at docs/testing.md")
+	cmd.Flags().BoolVar(&withChangelog, "with-changelog", false, "include release notes at CHANGELOG.md")
 	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .aikata/aikata.yaml (claude | cursor | codex)")
 
 	return cmd

@@ -33,6 +33,15 @@ type Options struct {
 	// under docs/memory/ (ADR 0004). Templates branch on {{.WithMemory}}
 	// to add memory cross-references when this is true.
 	WithMemory bool
+	// WithUI, WithAPI, WithTDD, WithChangelog gate the single-file
+	// optional components (UI.md / API.md / docs/testing.md /
+	// CHANGELOG.md). Each component owns its own rendering; preset
+	// templates do not branch on these flags (v0.4.1 ships them as
+	// independent files only).
+	WithUI        bool
+	WithAPI       bool
+	WithTDD       bool
+	WithChangelog bool
 	// Stacks lists stack identifiers (e.g. "flutter") the project opts
 	// into. Templates branch on {{range .Stacks}} to include
 	// docs/stacks/<stack>.md cross-references; the values also flow
@@ -94,19 +103,41 @@ func Run(opts Options) error {
 		return err
 	}
 
-	// Opt-in long-term memory slot (ADR 0004). The renderer lives in
-	// internal/components so `aikata add memory` shares the same code
-	// path.
-	if opts.WithMemory {
-		memFiles, err := components.RenderMemory(components.MemoryParams{
-			Lang:        opts.Lang,
-			ProjectName: opts.ProjectName,
-			Clock:       opts.Clock,
-		})
+	// Opt-in optional components. Each renderer lives in
+	// internal/components so the init-time path and the corresponding
+	// `aikata add <name>` command share one code path. The table grows
+	// when a new optional component lands; scaffold itself stays
+	// component-agnostic.
+	sfp := components.SingleFileParams{
+		Lang:        opts.Lang,
+		ProjectName: opts.ProjectName,
+		Clock:       opts.Clock,
+	}
+	optionalSpecs := []struct {
+		enabled bool
+		render  func() (map[string]string, error)
+	}{
+		{opts.WithMemory, func() (map[string]string, error) {
+			return components.RenderMemory(components.MemoryParams{
+				Lang:        opts.Lang,
+				ProjectName: opts.ProjectName,
+				Clock:       opts.Clock,
+			})
+		}},
+		{opts.WithUI, func() (map[string]string, error) { return components.RenderUI(sfp) }},
+		{opts.WithAPI, func() (map[string]string, error) { return components.RenderAPI(sfp) }},
+		{opts.WithTDD, func() (map[string]string, error) { return components.RenderTDD(sfp) }},
+		{opts.WithChangelog, func() (map[string]string, error) { return components.RenderChangelog(sfp) }},
+	}
+	for _, spec := range optionalSpecs {
+		if !spec.enabled {
+			continue
+		}
+		files, err := spec.render()
 		if err != nil {
 			return fmt.Errorf("scaffold: %w", err)
 		}
-		for k, v := range memFiles {
+		for k, v := range files {
 			rendered[k] = v
 		}
 	}

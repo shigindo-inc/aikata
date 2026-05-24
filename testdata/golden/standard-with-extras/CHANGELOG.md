@@ -1,0 +1,24 @@
+---
+project: samplekata
+status: draft
+version: 0.0.1
+updated: 2026-05-21
+audience: [human, agent]
+---
+
+# Changelog
+
+All notable changes to **samplekata** are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+TODO — list changes that have landed on the main branch but have not
+yet shipped under a tagged release.
+
+## [0.1.0] - YYYY-MM-DD
+
+TODO — first release notes go here. Group entries under `Added`,
+`Changed`, `Deprecated`, `Removed`, `Fixed`, or `Security`.
