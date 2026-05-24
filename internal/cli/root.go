@@ -39,6 +39,7 @@ func newRootCmd(version string) *cobra.Command {
 
 	// Subcommands. Keep this list short; each subcommand owns its own file.
 	cmd.AddCommand(newInitCmd())
+	cmd.AddCommand(newAddCmd())
 	cmd.AddCommand(newGenerateCmd())
 	cmd.AddCommand(newDoctorCmd())
 	cmd.AddCommand(newCompletionCmd())
