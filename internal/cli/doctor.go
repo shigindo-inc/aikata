@@ -15,8 +15,9 @@ import (
 // touching the filesystem.
 func newDoctorCmd() *cobra.Command {
 	var (
-		fix    bool
-		dryRun bool
+		fix      bool
+		dryRun   bool
+		jsonOut  bool
 	)
 	cmd := &cobra.Command{
 		Use:   "doctor",
@@ -25,7 +26,9 @@ func newDoctorCmd() *cobra.Command {
 			"current working directory. Errors set exit code 3; warnings\n" +
 			"and infos do not. Pass --fix to apply the trivially-fixable\n" +
 			"subset (stale `updated:` bumps and missing-frontmatter scaffolds).\n" +
-			"Combine with --dry-run to preview the fix without writing.",
+			"Combine with --dry-run to preview the fix without writing.\n" +
+			"Pass --json to emit a machine-readable report instead of the\n" +
+			"human-readable text format.",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
@@ -37,28 +40,46 @@ func newDoctorCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err := doctor.Format(cmd.OutOrStdout(), issues); err != nil {
-				return err
-			}
 
 			if fix {
+				// With --json, the text-format pre-print would corrupt
+				// the JSON stream. Apply the fix silently and emit the
+				// post-fix report instead.
+				if !jsonOut {
+					if err := doctor.Format(cmd.OutOrStdout(), issues); err != nil {
+						return err
+					}
+				}
 				if dryRun {
-					n := countFixableIssues(issues)
-					fmt.Fprintf(cmd.OutOrStdout(),
-						"\n--fix --dry-run: would attempt to fix %d issue(s); no files written.\n", n)
+					if !jsonOut {
+						n := countFixableIssues(issues)
+						fmt.Fprintf(cmd.OutOrStdout(),
+							"\n--fix --dry-run: would attempt to fix %d issue(s); no files written.\n", n)
+					}
 				} else {
 					res, ferr := doctor.Fix(opts, issues)
 					if ferr != nil {
 						return ferr
 					}
-					fmt.Fprintf(cmd.OutOrStdout(),
-						"\nFixed %d issue(s) in %d file(s); %d issue(s) had no auto-fix.\n",
-						res.Fixed, len(res.Files), res.Skipped)
-					// Re-run so the exit code reflects the post-fix state.
+					if !jsonOut {
+						fmt.Fprintf(cmd.OutOrStdout(),
+							"\nFixed %d issue(s) in %d file(s); %d issue(s) had no auto-fix.\n",
+							res.Fixed, len(res.Files), res.Skipped)
+					}
 					issues, err = doctor.Run(opts)
 					if err != nil {
 						return err
 					}
+				}
+			} else if !jsonOut {
+				if err := doctor.Format(cmd.OutOrStdout(), issues); err != nil {
+					return err
+				}
+			}
+
+			if jsonOut {
+				if err := doctor.FormatJSON(cmd.OutOrStdout(), issues); err != nil {
+					return err
 				}
 			}
 
@@ -70,6 +91,7 @@ func newDoctorCmd() *cobra.Command {
 	}
 	cmd.Flags().BoolVar(&fix, "fix", false, "Apply auto-fixes for the trivially-fixable subset of issues")
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "With --fix, show what would change but do not write files")
+	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report to stdout instead of the text format")
 	return cmd
 }
 
