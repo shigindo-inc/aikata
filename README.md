@@ -215,10 +215,10 @@ aikata init my-project --preset standard --with-memory --no-interactive --force
 ```
 
 For an existing repository that already has `AGENTS.md`, the safer minimal
-path is to create `.ai/aikata.yaml` manually:
+path is to create `.aikata/aikata.yaml` manually:
 
 ```bash
-mkdir -p .ai
+mkdir -p .aikata
 ```
 
 ```yaml

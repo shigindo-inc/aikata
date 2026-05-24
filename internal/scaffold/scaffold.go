@@ -45,10 +45,10 @@ type Options struct {
 	// Stacks lists stack identifiers (e.g. "flutter") the project opts
 	// into. Templates branch on {{range .Stacks}} to include
 	// docs/stacks/<stack>.md cross-references; the values also flow
-	// into .ai/aikata.yaml's `stacks:` field for downstream tools.
+	// into .aikata/aikata.yaml's `stacks:` field for downstream tools.
 	Stacks []string
 	// AITools lists the AI-tool identifiers the project enables in its
-	// initial `.ai/aikata.yaml`. Empty defaults to `["claude"]` for
+	// initial `.aikata/aikata.yaml`. Empty defaults to `["claude"]` for
 	// backward compatibility with v0.2 init behaviour.
 	AITools []string
 	// Clock is the time source for template helpers; nil = time.Now.

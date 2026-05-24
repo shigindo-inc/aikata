@@ -45,15 +45,15 @@ and how tool-specific files (e.g. `CLAUDE.md`) relate to it.
 
 ### `.ai/`
 
-Legacy v0.1-v0.2 directory at the project root used to hold aikata's config
-file (`.ai/aikata.yaml`). ADR 0008 schedules a v0.3.x migration to the
-aikata-owned `.aikata/` namespace because `.ai/` is too generic for durable
-project state. During the v0.x line, commands should continue to read this
-legacy path as a fallback.
+Legacy v0.1-v0.3.1 directory at the project root used to hold aikata's
+config file (`.ai/aikata.yaml`). ADR 0008 moved current writes to the
+aikata-owned `.aikata/` namespace because `.ai/` is too generic for
+durable project state. During the v0.x line, commands should continue to
+read this legacy path as a fallback.
 
 ### `.aikata/`
 
-Planned v0.3.x directory at the project root for **aikata-owned durable
+Current v0.3.2+ directory at the project root for **aikata-owned durable
 configuration**, primarily `.aikata/aikata.yaml`. It replaces `.ai/` as the
 preferred config namespace while generated tool-facing artifacts continue to
 live in their native locations (`CLAUDE.md`, `.cursor/rules/`, etc.). See

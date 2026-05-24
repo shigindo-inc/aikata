@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-22
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -49,7 +49,7 @@ Concretely:
 1. **Codex is a no-op provider.** `CodexProvider.Files()` returns an
    empty map. `aikata generate` reports the no-op to stderr —
    `[codex] no files generated (reads AGENTS.md directly)` — so users
-   who enable `codex` in `.ai/aikata.yaml` are not left wondering
+   who enable `codex` in `.aikata/aikata.yaml` are not left wondering
    whether the command ran. The canonical `AGENTS.md` already
    satisfies Codex's discovery chain.
 2. **Cursor emits one file: `.cursor/rules/main.mdc`.** The body is a
@@ -76,7 +76,7 @@ Concretely:
   layer can surface per-provider file counts and emit the no-op
   notice. Existing callers updated; the registry interface
   (`Provider.Files`) is unchanged.
-- aikata's own `.ai/aikata.yaml` opts into `cursor` so the repo
+- aikata's own `.aikata/aikata.yaml` opts into `cursor` so the repo
   commits `.cursor/rules/main.mdc` for contributors who open the
   project in Cursor (consistent with ADR 0002 §"Operational status"
   for self-generated artifacts).

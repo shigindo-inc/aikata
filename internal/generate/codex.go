@@ -5,7 +5,7 @@ package generate
 // its 2026 spec — root + subdirectory walk plus an optional
 // AGENTS.override.md — so the canonical file already satisfies it.
 // See ADR 0005 for the pass-through rationale; the cli layer reports
-// the no-op to stderr so users who enable `codex` in .ai/aikata.yaml
+// the no-op to stderr so users who enable `codex` in .aikata/aikata.yaml
 // understand nothing was written.
 type CodexProvider struct{}
 
