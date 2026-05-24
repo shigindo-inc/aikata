@@ -11,8 +11,8 @@ import (
 func noSkip() promptSkip { return promptSkip{} }
 
 func TestRunPrompt_HappyPath(t *testing.T) {
-	// Order: name, preset, lang, ai-tools, memory.
-	in := strings.NewReader("myproj\nminimal\nja\nclaude,cursor\ny\n")
+	// Order: name, preset, lang, ai-tools, memory, ui, api, tdd, changelog.
+	in := strings.NewReader("myproj\nminimal\nja\nclaude,cursor\ny\ny\nn\ny\nn\n")
 	var out bytes.Buffer
 	got, err := runPrompt(in, &out, promptResult{Preset: "standard", Lang: "en"}, noSkip())
 	if err != nil {
@@ -33,8 +33,12 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 	if !got.WithMemory {
 		t.Errorf("WithMemory = false, want true")
 	}
+	if !got.WithUI || got.WithAPI || !got.WithTDD || got.WithChangelog {
+		t.Errorf("optional flags = %+v, want UI=true API=false TDD=true Changelog=false",
+			[4]bool{got.WithUI, got.WithAPI, got.WithTDD, got.WithChangelog})
+	}
 	prompts := out.String()
-	for _, needle := range []string{"Project name", "Preset", "Document language", "AI tools", "memory"} {
+	for _, needle := range []string{"Project name", "Preset", "Document language", "AI tools", "memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md"} {
 		if !strings.Contains(prompts, needle) {
 			t.Errorf("prompt output missing %q:\n%s", needle, prompts)
 		}
@@ -42,8 +46,9 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 }
 
 func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
-	// Five blanks accept every default.
-	in := strings.NewReader("myproj\n\n\n\n\n")
+	// Nine blanks (name + 4 existing + 4 new optional-component
+	// questions) accept every default.
+	in := strings.NewReader("myproj\n\n\n\n\n\n\n\n\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		Preset:     "standard",
@@ -67,10 +72,14 @@ func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
 	if !got.WithMemory {
 		t.Errorf("WithMemory default lost")
 	}
+	if got.WithUI || got.WithAPI || got.WithTDD || got.WithChangelog {
+		t.Errorf("new optional-component defaults clobbered to true: %+v",
+			[4]bool{got.WithUI, got.WithAPI, got.WithTDD, got.WithChangelog})
+	}
 }
 
 func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
-	in := strings.NewReader("standard\nen\nclaude\nn\n")
+	in := strings.NewReader("standard\nen\nclaude\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Preset: "minimal"}, noSkip())
 	if err != nil {
@@ -87,7 +96,7 @@ func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
 func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
 	// Lang and AITools were pinned via flags; the prompt should ask
 	// only about preset and memory.
-	in := strings.NewReader("myproj\nstandard\nn\n")
+	in := strings.NewReader("myproj\nstandard\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		Lang:    "ja",
@@ -155,7 +164,7 @@ func TestRunPrompt_NumericPresetChoices(t *testing.T) {
 		"4": "typescript",
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\n" + input + "\nen\nclaude\nn\n")
+		in := strings.NewReader("myproj\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
 		if err != nil {
@@ -178,7 +187,7 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 		"N":   false,
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\nstandard\nen\nclaude\n" + input + "\n")
+		in := strings.NewReader("myproj\nstandard\nen\nclaude\n" + input + "\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{}, noSkip())
 		if err != nil {
@@ -187,6 +196,50 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 		if got.WithMemory != expected {
 			t.Errorf("memory %q → got %v, want %v", input, got.WithMemory, expected)
 		}
+	}
+}
+
+func TestRunPrompt_OptionalComponentSkipsHonored(t *testing.T) {
+	// Pin every optional question via skip and provide no Y/N input
+	// for them. runPrompt must traverse without asking, keeping the
+	// supplied defaults intact.
+	in := strings.NewReader("myproj\nstandard\nen\nclaude\n")
+	var out bytes.Buffer
+	defaults := promptResult{
+		WithMemory:    true,
+		WithUI:        true,
+		WithAPI:       false,
+		WithTDD:       true,
+		WithChangelog: false,
+	}
+	skip := promptSkip{
+		WithMemory:    true,
+		WithUI:        true,
+		WithAPI:       true,
+		WithTDD:       true,
+		WithChangelog: true,
+	}
+	got, err := runPrompt(in, &out, defaults, skip)
+	if err != nil {
+		t.Fatalf("runPrompt: %v", err)
+	}
+	if got.WithMemory != true || got.WithUI != true || got.WithAPI != false ||
+		got.WithTDD != true || got.WithChangelog != false {
+		t.Errorf("skipped optional defaults clobbered: %+v", got)
+	}
+	for _, needle := range []string{"memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md"} {
+		if strings.Contains(out.String(), needle) {
+			t.Errorf("expected %q question to be skipped; got:\n%s", needle, out.String())
+		}
+	}
+}
+
+func TestRunPrompt_UnknownYesNoOnNewOptionalIsError(t *testing.T) {
+	in := strings.NewReader("myproj\nstandard\nen\nclaude\nn\nmaybe\n")
+	var out bytes.Buffer
+	_, err := runPrompt(in, &out, promptResult{}, noSkip())
+	if err == nil {
+		t.Fatalf("expected error for unknown yes/no on optional question")
 	}
 }
 

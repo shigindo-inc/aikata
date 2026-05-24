@@ -75,8 +75,9 @@ func TestInit_InteractivePromptHappyPath(t *testing.T) {
 	var out bytes.Buffer
 	cmd.SetOut(&out)
 	cmd.SetErr(&out)
-	// Name, preset, language, ai-tools, with-memory.
-	cmd.SetIn(strings.NewReader("interactiveproj\nminimal\nen\nclaude\nn\n"))
+	// Name, preset, language, ai-tools, with-memory, then 4 trailing
+	// `n` answers for with-ui / with-api / with-tdd / with-changelog.
+	cmd.SetIn(strings.NewReader("interactiveproj\nminimal\nen\nclaude\nn\nn\nn\nn\nn\n"))
 	cmd.SetArgs(nil)
 	if err := cmd.Execute(); err != nil {
 		t.Fatalf("interactive init: %v (out: %s)", err, out.String())
@@ -105,9 +106,9 @@ func TestInit_InteractiveAcceptsDefaults(t *testing.T) {
 	var out bytes.Buffer
 	cmd.SetOut(&out)
 	cmd.SetErr(&out)
-	// Provide name, then four empty lines to accept preset / language /
-	// ai-tools / memory defaults.
-	cmd.SetIn(strings.NewReader("defaultproj\n\n\n\n\n"))
+	// Provide name, then eight empty lines to accept preset / language /
+	// ai-tools / memory / ui / api / tdd / changelog defaults.
+	cmd.SetIn(strings.NewReader("defaultproj\n\n\n\n\n\n\n\n\n"))
 	cmd.SetArgs(nil)
 	if err := cmd.Execute(); err != nil {
 		t.Fatalf("interactive init (defaults): %v (out: %s)", err, out.String())
