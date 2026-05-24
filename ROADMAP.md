@@ -233,19 +233,32 @@ Shipped:
   to refuse to rewrite canonical project documents as a side
   effect.
 
-## v0.4.1 — Authoring ergonomics, second wave
+## v0.4.1 — Authoring ergonomics, second wave ✅ (released 2026-05-25)
 
-**Goal**: round out `aikata add` and the matching `aikata init`
-flags.
+Closes the second wave of `aikata add` and brings `aikata init` to
+flag / prompt parity.
 
-- [ ] `aikata add <component>` — **second wave**:
-      - `ai-tool`, `ui`, `api`, `tdd`, `changelog`.
-      - `ui` adds optional `UI.md` for UI / UX / product-design guidance;
-        do not introduce a generic `DESIGN.md` (ADR 0007).
-- [ ] `--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog` flags
-      on `aikata init`, matching the second-wave `aikata add` set.
-      When any new init flag lands, add the matching interactive prompt
-      in the same change so flag / prompt parity does not drift again.
+Shipped:
+
+- `aikata add <component>` — second wave: `ai-tool`, `ui`, `api`,
+  `tdd`, `changelog`. The four single-file components share a
+  `singleFile` helper so a future optional component is a one-line
+  registry entry. `ui` emits `UI.md` for UI / UX / product-design
+  guidance; the generic `DESIGN.md` is intentionally never
+  introduced (ADR 0007).
+- `aikata add ai-tool <name>` — post-init counterpart of
+  `--ai-tools`; validates against `internal/generate.KnownTools()`,
+  appends to `cfg.AITools` (sorted), and persists via `config.Save`.
+- `aikata init --with-ui` / `--with-api` / `--with-tdd` /
+  `--with-changelog` — flag parity with the second-wave components.
+  Each new flag has a matching interactive prompt (default N) so
+  flag / prompt parity stays in lockstep.
+- `scaffold.Run` dispatch refactored from a single hand-written
+  `WithMemory` if-block to a table covering memory + the four new
+  components. Every v0.4.0 golden tree remains byte-identical.
+- Repository dogfood: aikata's own configuration migrated from
+  `.ai/aikata.yaml` to `.aikata/aikata.yaml`; `aikata doctor` now
+  reports zero `config.legacy-path` warnings on the repo itself.
 
 Follow-up candidate for v0.4.x:
 

@@ -146,14 +146,12 @@ must do and the user-visible behavior. Implementation details live in
   write proposed files under `.aikata-proposed/` instead of overwriting,
   and exit with a non-error message.
 - In interactive mode (the default), ask: project name, language, AI tools,
-  stack preset, optional features (UI / API / TDD / monorepo), and OSS
-  intent. v0.3 covers project name, language, preset, AI tools, and the
-  long-term memory slot. The optional-feature questions
-  (`--with-ui` / `--with-api` / `--with-tdd` / `--with-changelog`)
-  land in v0.4.1 alongside their matching non-interactive flags; the
-  `extended` / OSS intent question remains scheduled for v1.0.
-  Questions whose flag was explicitly set on the command line are
-  silently skipped.
+  stack preset, and the optional-component questions (long-term memory,
+  UI, API, TDD, changelog). Each optional-component question maps 1:1
+  to its `--with-*` flag and defaults to N. Questions whose flag was
+  explicitly set on the command line are silently skipped. The
+  `extended` / OSS intent question remains scheduled for v1.0; the
+  `--monorepo` flag is scheduled for v0.6.
 - Default preset: `standard`. Default `--ai-tools`: `claude`. Default
   `--lang`: `en`.
 
