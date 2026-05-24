@@ -18,6 +18,20 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- ADR 0007 records the document-taxonomy decision that built-in presets
+  must not generate a generic `DESIGN.md`; product requirements stay in
+  `SPEC.md`, technical design in `ARCHITECTURE.md`, decision rationale in
+  ADRs, stack conventions in `docs/stacks/`, and UI / UX guidance in
+  optional `UI.md`.
+
+### Changed
+
+- `ARCHITECTURE.md` and `ROADMAP.md` now describe `UI.md` as the future
+  home for UI / UX / product-design guidance and explicitly steer future
+  work away from a catch-all `DESIGN.md`.
+
 ## [0.2.1] - 2026-05-24
 
 ### Added

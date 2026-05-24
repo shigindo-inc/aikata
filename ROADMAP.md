@@ -125,6 +125,17 @@ Claude-Code distribution surface in place.
 - [ ] ADR auto-numbering (next number = max existing + 1) — wired into
       the `aikata add adr` command that lands in v0.4, but the numbering
       helper ships now so doctor / scaffold can share it.
+- [ ] Normalize `aikata --version` output across install channels. `go
+      install` currently reports Go module versions with a `v` prefix
+      (`v0.2.1`), while GoReleaser binaries report `0.2.1`; prefer the
+      tagged form (`vX.Y.Z`) everywhere, likely by passing GoReleaser's
+      tag through ldflags or normalizing in `resolveVersion`.
+- [ ] Bring interactive `aikata init` prompts back to parity with the
+      supported non-interactive flags. At minimum, ask for document
+      language (`en|ja`) and AI-tool targets instead of only project name,
+      preset, and long-term memory. Audit the prompt against
+      [SPEC.md §4.1](./SPEC.md#41-aikata-init-name) and explicitly mark
+      any intentionally deferred questions.
 - [ ] `aikata completion bash | zsh | fish | pwsh` — cobra-generated
       shell completion. Documented in README "Install".
 - [ ] `aikata list presets | stacks | ai-tools` and
@@ -156,9 +167,13 @@ Claude-Code distribution surface in place.
 - [ ] `aikata add <component>` — **second wave** (lower individual
       leverage, useful for completeness):
       - `ai-tool`, `ui`, `api`, `tdd`, `changelog`.
+      - `ui` adds optional `UI.md` for UI / UX / product-design guidance;
+        do not introduce a generic `DESIGN.md` (ADR 0007).
 - [ ] `--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog` flags
       on `aikata init`, matching the second-wave `aikata add` set.
-      Skippable if `aikata add` is judged sufficient.
+      Skippable if `aikata add` is judged sufficient. When any new init
+      flag lands, add the matching interactive prompt in the same change
+      so flag / prompt parity does not drift again.
 - [ ] Investigate memory generate-projection (ADR-0004 option δ): how
       to mirror `docs/memory/*` into tool-specific channels (Claude
       `.claude/memory/`, Cursor `.cursor/rules/long-term/`). Record
