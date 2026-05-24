@@ -9,6 +9,7 @@ import (
 	"errors"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	"github.com/shigindo-inc/aikata/internal/cli"
 )
@@ -41,13 +42,26 @@ func effectiveVersion(linkedVersion string) string {
 
 func resolveVersion(linkedVersion string, info *debug.BuildInfo, ok bool) string {
 	if linkedVersion != "" && linkedVersion != devVersion {
-		return linkedVersion
+		return normalizeVersion(linkedVersion)
 	}
 	if ok && info != nil && info.Main.Version != "" && info.Main.Version != "(devel)" {
-		return info.Main.Version
+		return normalizeVersion(info.Main.Version)
 	}
 	if linkedVersion != "" {
 		return linkedVersion
 	}
 	return devVersion
+}
+
+// normalizeVersion forces release versions to a single canonical
+// "vX.Y.Z" shape. `go install` already returns the v-prefixed module
+// version, but GoReleaser ldflags inject the bare semver string and
+// custom build invocations may pass either form; normalizing at the
+// boundary keeps `aikata --version` output identical across channels.
+// The dev sentinel and empty strings are returned unchanged.
+func normalizeVersion(s string) string {
+	if s == "" || s == devVersion || strings.HasPrefix(s, "v") {
+		return s
+	}
+	return "v" + s
 }

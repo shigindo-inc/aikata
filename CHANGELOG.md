@@ -18,6 +18,65 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-24
+
+### Added
+
+- ADR 0007 records the document-taxonomy decision that built-in presets
+  must not generate a generic `DESIGN.md`; product requirements stay in
+  `SPEC.md`, technical design in `ARCHITECTURE.md`, decision rationale in
+  ADRs, stack conventions in `docs/stacks/`, and UI / UX guidance in
+  optional `UI.md`.
+- ADR 0008 schedules a v0.3.x migration of aikata-owned configuration
+  from `.ai/aikata.yaml` to `.aikata/aikata.yaml`. New `init` output
+  will write to the new path; readers fall back to the legacy `.ai/`
+  path with a deprecation warning through v0.x. `ARCHITECTURE.md` and
+  `GLOSSARY.md` are updated to describe both paths and `ROADMAP.md`
+  v0.3 lists the migration work item.
+- New `internal/adr` package centralizes the `NNNN-slug.md` ADR
+  filename convention. `Scan`, `Next`, and `Filename` will be reused
+  by the upcoming `aikata add adr` command (v0.4) and `aikata doctor`.
+- `aikata doctor` gains an `adr-numbering` check that reports
+  duplicate ADR numbers and gaps in the `0001..max` range at
+  `LevelInfo`. Findings stay advisory because the project may
+  legitimately retire a number.
+- `aikata init` exposes `--ai-tools` (comma-separated `claude | cursor
+  | codex`, default `claude`). The value flows into the generated
+  `.ai/aikata.yaml`. Unknown tools are rejected with a clear error.
+- `aikata init` interactive prompt is brought to parity with the
+  non-interactive flag surface for v0.3. It now asks about document
+  language and AI tools in addition to project name, preset, and
+  long-term memory. Questions whose flag was explicitly set on the
+  command line are silently skipped. The optional-feature questions
+  (UI / API / TDD / changelog) and OSS-intent question are recorded
+  as Q-PROMPT-01 in `docs/decisions/open-questions.md` and land
+  in v0.4 alongside their matching `--with-*` flags.
+- `aikata doctor --json` emits a versioned machine-readable report on
+  stdout. Schema version `1` with `issues[]` and `summary{errors,
+  warnings, info}`; `line` and `code` are omitted when empty. The
+  schema is documented in SPEC.md §4.3. Combine with `--fix` to get
+  the post-fix report on a clean stream.
+- `aikata doctor --fix` repairs the trivially-fixable subset of
+  issues: missing-frontmatter blocks are scaffolded with placeholder
+  values, missing required keys (`project`, `status`, `version`,
+  `updated`, `audience`) are appended into the existing block, and
+  stale `updated:` values are bumped to today. Combine with
+  `--dry-run` to preview the count without writing files. Other
+  findings (broken links, deprecated-ADR references, env-example
+  drift) remain manual.
+
+### Changed
+
+- `ARCHITECTURE.md` and `ROADMAP.md` now describe `UI.md` as the future
+  home for UI / UX / product-design guidance and explicitly steer future
+  work away from a catch-all `DESIGN.md`.
+- `aikata --version` output is now normalized to the v-prefixed tag
+  form (`vX.Y.Z`) across install channels. GoReleaser binaries
+  previously reported the bare semver string while `go install`
+  reported the v-prefixed module version; both paths now agree.
+  `cmd/aikata/main.go` guards the format defensively even when ldflags
+  pass an unprefixed string.
+
 ## [0.2.1] - 2026-05-24
 
 ### Added

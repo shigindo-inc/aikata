@@ -12,13 +12,10 @@ import (
 
 // newInitCmd builds the `aikata init` subcommand.
 //
-// MVP scope (Task 4):
-//   - `--preset minimal` is the only fully implemented preset.
-//   - Interactive prompts are not implemented; --no-interactive is required.
-//   - Output directory is always the current working directory.
-//
-// Future tasks will: add `standard` preset (Task 5), `--with-memory`
-// (Task 5A), and an interactive flow (Task 6).
+// v0.3 brings the interactive prompt to flag parity for `--lang` and
+// `--ai-tools` and exposes `--ai-tools` as a non-interactive flag for
+// the first time. Optional-feature flags (`--with-ui`, `--with-api`,
+// ...) and their prompts remain v0.4 work (see ROADMAP.md).
 func newInitCmd() *cobra.Command {
 	var (
 		preset        string
@@ -28,38 +25,51 @@ func newInitCmd() *cobra.Command {
 		dryRun        bool
 		lang          string
 		withMemory    bool
+		aiToolsCSV    string
 	)
 
 	cmd := &cobra.Command{
 		Use:   "init [name]",
 		Short: "Scaffold a new aikata project in the current directory",
 		Long: "Generate a coherent set of markdown documents for a new project.\n\n" +
-			"In non-interactive mode (--no-interactive, required for v0.1), the project\n" +
-			"name must be supplied either as the positional argument or via --name.\n" +
-			"The target directory is always the current working directory.",
+			"In non-interactive mode (--no-interactive, or when stdin is not\n" +
+			"a TTY), the project name must be supplied either as the positional\n" +
+			"argument or via --name. The target directory is always the current\n" +
+			"working directory.",
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 1 && name == "" {
 				name = args[0]
 			}
 
-			// Interactive when the user did not pass --no-interactive
-			// AND stdin is attached to a real terminal. Piped or
-			// redirected stdin auto-falls-back to non-interactive so
-			// CI invocations don't hang waiting for input.
+			aiTools, err := parseAITools(aiToolsCSV)
+			if err != nil {
+				return &ExitError{Code: 2, Err: err}
+			}
+
 			interactive := !noInteractive && isTTYFunc()
 			if interactive {
+				skip := promptSkip{
+					Preset:     cmd.Flags().Changed("preset"),
+					WithMemory: cmd.Flags().Changed("with-memory"),
+					Lang:       cmd.Flags().Changed("lang"),
+					AITools:    cmd.Flags().Changed("ai-tools"),
+				}
 				result, err := runPrompt(cmd.InOrStdin(), cmd.OutOrStdout(), promptResult{
 					Name:       name,
 					Preset:     preset,
 					WithMemory: withMemory,
-				})
+					Lang:       lang,
+					AITools:    aiTools,
+				}, skip)
 				if err != nil {
 					return &ExitError{Code: 2, Err: err}
 				}
 				name = result.Name
 				preset = result.Preset
 				withMemory = result.WithMemory
+				lang = result.Lang
+				aiTools = result.AITools
 			}
 
 			if name == "" {
@@ -83,6 +93,7 @@ func newInitCmd() *cobra.Command {
 				DryRun:      dryRun,
 				WithMemory:  withMemory,
 				Stacks:      stacksForPreset(preset),
+				AITools:     aiTools,
 				Stdout:      cmd.OutOrStdout(),
 			}
 
@@ -98,11 +109,12 @@ func newInitCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&preset, "preset", "standard", "preset name (minimal | standard | flutter | typescript)")
 	cmd.Flags().StringVar(&name, "name", "", "project name; overrides the positional argument when both are given")
-	cmd.Flags().BoolVar(&noInteractive, "no-interactive", false, "skip interactive prompts (required in v0.1)")
+	cmd.Flags().BoolVar(&noInteractive, "no-interactive", false, "skip interactive prompts")
 	cmd.Flags().BoolVar(&force, "force", false, "overwrite existing files in a non-empty target directory")
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "print the plan without writing files")
 	cmd.Flags().StringVar(&lang, "lang", "en", "document language (en | ja)")
 	cmd.Flags().BoolVar(&withMemory, "with-memory", false, "include long-term agent memory under docs/memory/ (ADR 0004)")
+	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .ai/aikata.yaml (claude | cursor | codex)")
 
 	return cmd
 }

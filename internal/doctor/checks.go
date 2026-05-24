@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/shigindo-inc/aikata/internal/adr"
 )
 
 // frontmatterKeys are the keys every markdown file must declare. memory
@@ -129,6 +131,7 @@ func checkFrontmatter(opts Options) ([]Issue, error) {
 		if lines == nil {
 			issues = append(issues, Issue{
 				Level: LevelError, File: rel, Line: 1,
+				Code: "frontmatter.missing",
 				Message: "missing YAML frontmatter (required keys: " +
 					strings.Join(frontmatterKeys, ", ") + ")",
 			})
@@ -138,6 +141,7 @@ func checkFrontmatter(opts Options) ([]Issue, error) {
 			if _, _, ok := frontmatterValue(lines, key); !ok {
 				issues = append(issues, Issue{
 					Level: LevelError, File: rel,
+					Code:    "frontmatter.missing-key." + key,
 					Message: fmt.Sprintf("frontmatter missing required key %q", key),
 				})
 			}
@@ -258,6 +262,48 @@ func checkADR(opts Options) ([]Issue, error) {
 	return issues, nil
 }
 
+// checkADRNumbering reports duplicate numbers and missing slots in the
+// 0001..max range. Findings are LevelInfo because the project may
+// intentionally retire a number; the advisory only flags them so a
+// human (or `aikata add adr` later on) can decide what to do.
+func checkADRNumbering(opts Options) ([]Issue, error) {
+	adrDir := filepath.Join(opts.TargetDir, "docs", "adr")
+	entries, err := adr.Scan(adrDir)
+	if err != nil {
+		return nil, err
+	}
+	if len(entries) == 0 {
+		return nil, nil
+	}
+	byNumber := make(map[int][]string, len(entries))
+	for _, e := range entries {
+		byNumber[e.Number] = append(byNumber[e.Number], e.Filename)
+	}
+	var issues []Issue
+	for _, e := range entries {
+		if len(byNumber[e.Number]) <= 1 {
+			continue
+		}
+		rel := filepath.ToSlash(filepath.Join("docs", "adr", e.Filename))
+		issues = append(issues, Issue{
+			Level: LevelInfo, File: rel,
+			Message: fmt.Sprintf("duplicate ADR number %04d", e.Number),
+		})
+	}
+	maxNum := entries[len(entries)-1].Number
+	dirRel := filepath.ToSlash(filepath.Join("docs", "adr"))
+	for n := 1; n <= maxNum; n++ {
+		if _, ok := byNumber[n]; ok {
+			continue
+		}
+		issues = append(issues, Issue{
+			Level: LevelInfo, File: dirRel,
+			Message: fmt.Sprintf("ADR number %04d is unused (gap below %04d)", n, maxNum),
+		})
+	}
+	return issues, nil
+}
+
 // checkMemory verifies docs/memory/<type>.md frontmatter's
 // memory_type matches the file name.
 func checkMemory(opts Options) ([]Issue, error) {
@@ -337,6 +383,7 @@ func checkUpdated(opts Options) ([]Issue, error) {
 		if t.Before(cutoff) {
 			issues = append(issues, Issue{
 				Level: LevelWarning, File: rel, Line: lineNum,
+				Code:    "updated.stale",
 				Message: fmt.Sprintf("updated %s is more than 365 days old", raw),
 			})
 		}

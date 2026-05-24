@@ -147,7 +147,11 @@ must do and the user-visible behavior. Implementation details live in
   and exit with a non-error message.
 - In interactive mode (the default), ask: project name, language, AI tools,
   stack preset, optional features (UI / API / TDD / monorepo), and OSS
-  intent.
+  intent. v0.3 covers project name, language, preset, AI tools, and the
+  long-term memory slot. The optional-feature questions and the
+  `extended` / OSS intent question land in v0.4 alongside their
+  matching non-interactive flags. Questions whose flag was explicitly
+  set on the command line are silently skipped.
 - Default preset: `standard`. Default `--ai-tools`: `claude`. Default
   `--lang`: `en`.
 
@@ -189,6 +193,31 @@ must do and the user-visible behavior. Implementation details live in
 - `error` (blocking) / `warning` / `info` levels.
 - Exit codes: 0 (no errors), 3 (errors found).
 - `--fix` auto-fixes safe issues (e.g. stale `updated:` after a known edit).
+- `--json` emits a machine-readable report on stdout. The schema is
+  versioned for forward compatibility:
+
+  ```json
+  {
+    "version": 1,
+    "issues": [
+      {
+        "level": "error",
+        "file": "SPEC.md",
+        "line": 12,
+        "code": "frontmatter.missing-key.version",
+        "message": "frontmatter missing required key \"version\""
+      }
+    ],
+    "summary": { "errors": 1, "warnings": 0, "info": 0 }
+  }
+  ```
+
+  `line` and `code` are omitted when empty so consumers do not need
+  to distinguish "missing field" from "zero value". When `--json` is
+  combined with `--fix`, the post-fix report is emitted (the text
+  pre-print is suppressed so the JSON stream stays clean). Errors
+  from cobra itself are written to stderr and never mixed into the
+  JSON stream.
 
 ### 4.4 `aikata generate`
 

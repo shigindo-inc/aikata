@@ -30,7 +30,11 @@ builds:
       - -trimpath
     ldflags:
       - -s -w
-      - -X main.version={{ .Version }}
+      # Inject the v-prefixed tag so the binary's --version output
+      # matches `go install` (which reports the v-prefixed module
+      # version via debug.ReadBuildInfo). normalizeVersion in
+      # cmd/aikata/main.go also guards this defensively.
+      - -X main.version=v{{ .Version }}
 
 archives:
   - id: aikata

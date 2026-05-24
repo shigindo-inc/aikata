@@ -1,7 +1,7 @@
 ---
 project: aikata
 status: draft
-version: 0.2.0
+version: 0.3.0
 updated: 2026-05-24
 audience: [human, agent]
 ---
@@ -112,19 +112,40 @@ Patch release tag `v0.2.1`. No new core features, no schema bump.
 
 ---
 
-## v0.3 — Fast follow-up (lightweight)
+## v0.3 — Fast follow-up (lightweight) ✅ (released 2026-05-24)
 
-**Goal**: close out the v0.2 surface with low-risk quality-of-life
-improvements that don't touch templates or presets, and put a minimal
-Claude-Code distribution surface in place.
+Closed out the v0.2 surface with low-risk core-CLI quality-of-life
+improvements. No template or preset content changed.
 
-- [ ] `aikata doctor --fix` for the trivially-fixable subset (bump
-      stale `updated:` to today, scaffold missing required frontmatter
-      keys). Non-trivial fixes stay manual.
-- [ ] `aikata doctor --json` machine-readable output.
-- [ ] ADR auto-numbering (next number = max existing + 1) — wired into
-      the `aikata add adr` command that lands in v0.4, but the numbering
-      helper ships now so doctor / scaffold can share it.
+Shipped in v0.3.0:
+
+- `aikata doctor --fix` repairs the trivially-fixable subset: missing
+  frontmatter blocks are scaffolded, missing required keys are
+  appended into the existing block, and stale `updated:` values are
+  bumped to today. `--dry-run` previews the count without writing.
+- `aikata doctor --json` emits a versioned (v1) machine-readable
+  report on stdout; the schema is documented in
+  [SPEC.md §4.3](./SPEC.md#43-aikata-doctor).
+- `aikata doctor adr-numbering` reports duplicate / gap ADR numbers
+  at `LevelInfo`. The numbering helper lives in `internal/adr/` and
+  will be reused by `aikata add adr` in v0.4.
+- `aikata --version` is normalized to `vX.Y.Z` across `go install`
+  and GoReleaser binaries. `cmd/aikata/main.go` also normalizes
+  defensively when ldflags pass a bare semver string.
+- `aikata init` interactive prompt is at flag parity for v0.3
+  (project name, preset, language, AI tools, long-term memory).
+  Questions whose flag was explicitly set on the CLI are silently
+  skipped. The `--ai-tools` flag itself is new (default `claude`).
+- `ROADMAP.md` joined the `standard` preset surface as the durable
+  when/sequence layer; `extended` reserved as the future heavier
+  preset name.
+- ADR 0007 (no generic `DESIGN.md`) and ADR 0008 (aikata-owned
+  `.aikata/` config namespace; migration scheduled for v0.3.x).
+
+Deferred to v0.3.x (not blocking v0.3.0):
+
+- [ ] `.ai/aikata.yaml` → `.aikata/aikata.yaml` migration per
+      [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md).
 - [ ] `aikata completion bash | zsh | fish | pwsh` — cobra-generated
       shell completion. Documented in README "Install".
 - [ ] `aikata list presets | stacks | ai-tools` and
@@ -136,9 +157,10 @@ Claude-Code distribution surface in place.
       repository and ships as a release asset. **No** slash commands,
       sub-agents, or hooks yet — distribution is "copy one file into
       `~/.claude/skills/`" so the surface stays tiny and reversible.
-- [ ] `CONTRIBUTING.md` added to this repository directly (not via the
-      v1.0 `--oss` flag) so external contributors have a clear entry
-      point now that aikata is public.
+- [ ] `CONTRIBUTING.md` added to this repository directly (before the
+      future `extended` preset grows an operational-readiness pack) so
+      external contributors have a clear entry point now that aikata is
+      public.
 
 ---
 
@@ -150,15 +172,19 @@ Claude-Code distribution surface in place.
       - `adr` — auto-numbered ADR skeleton (uses the v0.3 numbering
         helper).
       - `stack` — adds `docs/stacks/<name>.md` and updates
-        `.ai/aikata.yaml` `stacks:`.
+        `.aikata/aikata.yaml` `stacks:`.
       - `memory` — opt-in equivalent of `--with-memory` for projects
         that did not enable it at init time.
 - [ ] `aikata add <component>` — **second wave** (lower individual
       leverage, useful for completeness):
       - `ai-tool`, `ui`, `api`, `tdd`, `changelog`.
+      - `ui` adds optional `UI.md` for UI / UX / product-design guidance;
+        do not introduce a generic `DESIGN.md` (ADR 0007).
 - [ ] `--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog` flags
       on `aikata init`, matching the second-wave `aikata add` set.
-      Skippable if `aikata add` is judged sufficient.
+      Skippable if `aikata add` is judged sufficient. When any new init
+      flag lands, add the matching interactive prompt in the same change
+      so flag / prompt parity does not drift again.
 - [ ] Investigate memory generate-projection (ADR-0004 option δ): how
       to mirror `docs/memory/*` into tool-specific channels (Claude
       `.claude/memory/`, Cursor `.cursor/rules/long-term/`). Record
@@ -174,7 +200,7 @@ without losing the user's edits.
 - [ ] `aikata update` interactive diff-merge — the single largest
       feature on the roadmap. Carved out of v0.4 / v0.6 so it gets its
       own release cycle and doesn't drag packaging work with it.
-- [ ] Migration framework for `.ai/aikata.yaml` schema versions
+- [ ] Migration framework for `.aikata/aikata.yaml` schema versions
       (needed so `update` can rewrite older configs forward-compatibly).
 - [ ] Dogfooding gate becomes binding (see "Dogfooding milestone"
       below).
@@ -208,8 +234,8 @@ elsewhere, and scales to a monorepo.
 
 - [ ] Major AI tools all supported: Claude, Cursor, Codex, Gemini,
       Copilot, Windsurf.
-- [ ] `--oss` adds the OSS-readiness pack:
-      - `CONTRIBUTING.md`, `SECURITY.md`, `ROADMAP.md`
+- [ ] `--preset extended` adds the operational-readiness pack:
+      - `CONTRIBUTING.md`, `SECURITY.md`
       - `CODE_OF_CONDUCT.md` (Contributor Covenant)
       - `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.md`
       - `.github/PULL_REQUEST_TEMPLATE.md`
@@ -291,7 +317,7 @@ Pass criteria, all three must hold:
    `aikata generate` produces at the release commit.
 
 The aspirational long-form goal — "the aikata repository is fully
-reproducible by `aikata init --preset standard --oss --ai-tools claude,cursor`
+reproducible by `aikata init --preset extended --ai-tools claude,cursor`
 plus a manual `git diff` review" — stays as the v1.0 target.
 
 ---

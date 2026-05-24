@@ -226,6 +226,7 @@ aikata generate
   - [0004 — Long-Term Memory Slot](./docs/adr/0004-long-term-memory-slot.md)
   - [0005 — Cursor / Codex Pass-Through](./docs/adr/0005-cursor-codex-pass-through.md)
   - [0006 — Locale / Japanese Documentation Policy](./docs/adr/0006-locale-and-japanese-documentation-policy.md)
+  - [0007 — Do Not Generate a Generic `DESIGN.md`](./docs/adr/0007-no-generic-design-md.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
 ### AI-tool entry points

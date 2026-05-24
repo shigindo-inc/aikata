@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -148,10 +148,10 @@ the repository layout in §2 is the **producer**.
 
 | File / directory | Triggered by | First shipped | Purpose |
 |---|---|---|---|
-| `UI.md` | `--with-ui` or UI-style preset | v0.3 | UI / UX guidelines |
-| `API.md` | `--with-api` or API-style preset | v0.3 | API interface spec |
-| `docs/testing.md` | `--with-tdd` | v0.3 | Test strategy |
-| `CHANGELOG.md` | `--with-changelog` | v0.3 | Release notes |
+| `UI.md` | `--with-ui` or UI-style preset | v0.4 | UI / UX / product-design guidelines |
+| `API.md` | `--with-api` or API-style preset | v0.4 | API interface spec |
+| `docs/testing.md` | `--with-tdd` | v0.4 | Test strategy |
+| `CHANGELOG.md` | `--with-changelog` | v0.4 | Release notes |
 | `docs/memory/` (5 files) | `--with-memory` | v0.2 | Long-term agent memory (`user`, `feedback`, `project`, `reference` + `README`). See [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). |
 | `CONTRIBUTING.md` | `--oss` | v1.0 | Contributor guide |
 | `SECURITY.md` | `--oss` | v1.0 | Security policy |
@@ -169,9 +169,19 @@ the repository layout in §2 is the **producer**.
 - **`docs/adr/`** — one ADR per decision; never edited after `Accepted`.
 - **`docs/tasks/current.md`** — frequently rewritten by the agent; isolated.
 
+There is intentionally no generic `DESIGN.md` in built-in presets. Product
+requirements live in `SPEC.md`, technical design lives in
+`ARCHITECTURE.md`, decision rationale lives in ADRs, and UI / UX guidance
+belongs in optional `UI.md` when enabled. See
+[ADR 0007](./docs/adr/0007-no-generic-design-md.md).
+
 ---
 
 ## 4. Configuration File: `.ai/aikata.yaml`
+
+> **Path note**: v0.2 uses `.ai/aikata.yaml`. ADR 0008 schedules a
+> v0.3.x migration to `.aikata/aikata.yaml`, with readers falling back to
+> the legacy `.ai/` path during the v0.x line.
 
 ### 4.1 Schema (v1)
 
