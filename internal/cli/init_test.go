@@ -88,9 +88,9 @@ func TestInit_InteractivePromptHappyPath(t *testing.T) {
 	if !strings.Contains(string(body), "interactiveproj") {
 		t.Errorf("README does not carry interactive name:\n%s", body)
 	}
-	// minimal preset, so .ai/aikata.yaml must NOT exist.
-	if _, err := os.Stat(filepath.Join(tmp, ".ai", "aikata.yaml")); !os.IsNotExist(err) {
-		t.Errorf("minimal preset should not produce .ai/aikata.yaml: %v", err)
+	// minimal preset, so .aikata/aikata.yaml must NOT exist.
+	if _, err := os.Stat(filepath.Join(tmp, ".aikata", "aikata.yaml")); !os.IsNotExist(err) {
+		t.Errorf("minimal preset should not produce .aikata/aikata.yaml: %v", err)
 	}
 }
 
@@ -112,9 +112,9 @@ func TestInit_InteractiveAcceptsDefaults(t *testing.T) {
 	if err := cmd.Execute(); err != nil {
 		t.Fatalf("interactive init (defaults): %v (out: %s)", err, out.String())
 	}
-	// Default preset is standard, so .ai/aikata.yaml must exist.
-	if _, err := os.Stat(filepath.Join(tmp, ".ai", "aikata.yaml")); err != nil {
-		t.Errorf("default preset (standard) should produce .ai/aikata.yaml: %v", err)
+	// Default preset is standard, so .aikata/aikata.yaml must exist.
+	if _, err := os.Stat(filepath.Join(tmp, ".aikata", "aikata.yaml")); err != nil {
+		t.Errorf("default preset (standard) should produce .aikata/aikata.yaml: %v", err)
 	}
 	// Default with-memory is false.
 	if _, err := os.Stat(filepath.Join(tmp, "docs", "memory")); !os.IsNotExist(err) {
@@ -220,7 +220,7 @@ func TestInit_StandardPresetWritesAikataYaml(t *testing.T) {
 	if err != nil {
 		t.Fatalf("init standard: %v", err)
 	}
-	yamlPath := filepath.Join(tmp, ".ai", "aikata.yaml")
+	yamlPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
 	body, err := os.ReadFile(yamlPath)
 	if err != nil {
 		t.Fatalf("read aikata.yaml: %v", err)
@@ -269,10 +269,10 @@ func TestInit_DefaultPresetIsStandard(t *testing.T) {
 	if err != nil {
 		t.Fatalf("init with default preset: %v", err)
 	}
-	// The standard preset places aikata.yaml under .ai/, which the
+	// The standard preset places aikata.yaml under .aikata/, which the
 	// minimal preset does not produce.
-	if _, err := os.Stat(filepath.Join(tmp, ".ai", "aikata.yaml")); err != nil {
-		t.Errorf("expected .ai/aikata.yaml under default preset (standard), got %v", err)
+	if _, err := os.Stat(filepath.Join(tmp, ".aikata", "aikata.yaml")); err != nil {
+		t.Errorf("expected .aikata/aikata.yaml under default preset (standard), got %v", err)
 	}
 }
 

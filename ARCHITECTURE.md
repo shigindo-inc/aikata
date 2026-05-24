@@ -54,7 +54,7 @@ aikata/
 │   ├── scaffold/                # File generation (init / add)
 │   ├── doctor/                  # Consistency checks
 │   ├── generate/                # AI-tool-facing artifact generation
-│   ├── config/                  # .ai/aikata.yaml read/write
+│   ├── config/                  # .aikata/aikata.yaml read/write + path resolver
 │   ├── presets/                 # Preset registry
 │   └── templates/               # Template loader (wraps embed.FS)
 │       └── data/                # Embedded markdown templates (//go:embed all:data)
@@ -109,7 +109,7 @@ aikata/
 | `internal/scaffold` | Generate files for `init` and `add` | Reads templates, writes atomically. No knowledge of specific AI tools. |
 | `internal/doctor` | Consistency checks | Read-only by default; `--fix` writes. |
 | `internal/generate` | Produce AI-tool-facing artifacts | Per-tool plug-in interface. |
-| `internal/config` | Parse / write `.ai/aikata.yaml` | YAML schema and migration logic. |
+| `internal/config` | Parse / write `.aikata/aikata.yaml` | YAML schema and migration logic. |
 | `internal/presets` | Preset registry; merges presets with flags | Pure logic, no I/O. |
 | `internal/templates` | Wraps `embed.FS`, performs Go-template rendering | Knows about template syntax; not about presets. |
 
@@ -140,7 +140,7 @@ the repository layout in §2 is the **producer**.
 │   │   └── current.md     # Agent's working memory
 │   ├── troubleshooting.md
 │   └── prompts.md
-└── .ai/
+└── .aikata/
     └── aikata.yaml
 ```
 
@@ -177,11 +177,14 @@ belongs in optional `UI.md` when enabled. See
 
 ---
 
-## 4. Configuration File: `.ai/aikata.yaml`
+## 4. Configuration File: `.aikata/aikata.yaml`
 
-> **Path note**: v0.2 uses `.ai/aikata.yaml`. ADR 0008 schedules a
-> v0.3.x migration to `.aikata/aikata.yaml`, with readers falling back to
-> the legacy `.ai/` path during the v0.x line.
+> **Path note**: v0.3.2 onward writes `.aikata/aikata.yaml` per
+> [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md). The
+> legacy `.aikata/aikata.yaml` path remains read-only for projects from
+> v0.2 / v0.3.0 / v0.3.1 and is migrated automatically by
+> `aikata doctor --fix`; the fallback stays in place throughout the
+> v0.x line.
 
 ### 4.1 Schema (v1)
 
@@ -273,14 +276,14 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 ### 6.1 aikata's own repository
 
 - `CLAUDE.md`, `.cursor/rules/`, etc. are **committed** when they exist.
-- `.gitignore` does **not** include `.ai/`.
+- `.gitignore` does **not** include `.aikata/` (or the legacy `.ai/`).
 - Reason: a contributor cloning aikata must be able to open Claude Code /
   Cursor immediately. See
   [ADR 0003 — Do-No-Harm Policy](./docs/adr/0003-do-no-harm-policy.md).
 
 ### 6.2 Default for `aikata init` output
 
-- Generated AI-tool artifacts and `.ai/` **are** added to the target
+- Generated AI-tool artifacts and `.aikata/` **are** added to the target
   project's `.gitignore`.
 - The flag `--no-gitignore-generated` opts out.
 
@@ -382,7 +385,7 @@ Minimal, listed with rationale. Additions require a CHANGELOG entry.
 |---|---|---|
 | `github.com/spf13/cobra` | CLI framework | De-facto Go CLI standard. |
 | `github.com/charmbracelet/huh` | Interactive prompts | Used only when stdin is a TTY and `--no-interactive` is not set. |
-| `gopkg.in/yaml.v3` | YAML parser | For `.ai/aikata.yaml`. |
+| `gopkg.in/yaml.v3` | YAML parser | For `.aikata/aikata.yaml`. |
 | `github.com/charmbracelet/lipgloss` | Terminal styling | Behind `--no-color` opt-out (`NO_COLOR` env supported). |
 | `github.com/stretchr/testify` | Test assertions | Test-only (`require` / `assert`). |
 

@@ -114,7 +114,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "print the plan without writing files")
 	cmd.Flags().StringVar(&lang, "lang", "en", "document language (en | ja)")
 	cmd.Flags().BoolVar(&withMemory, "with-memory", false, "include long-term agent memory under docs/memory/ (ADR 0004)")
-	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .ai/aikata.yaml (claude | cursor | codex)")
+	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .aikata/aikata.yaml (claude | cursor | codex)")
 
 	return cmd
 }

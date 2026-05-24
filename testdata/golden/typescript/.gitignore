@@ -11,7 +11,7 @@
 # --- AI tool-generated artifacts ---
 # Regenerable from canonical AGENTS.md via `aikata generate`.
 # To commit them anyway, set docs.generate_gitignore: false in
-# .ai/aikata.yaml (or remove these lines manually).
+# .aikata/aikata.yaml (or remove these lines manually).
 CLAUDE.md
 .cursor/rules/
 .github/copilot-instructions.md

@@ -10,7 +10,7 @@
 
 # --- AI ツールが生成する成果物 ---
 # 規範 AGENTS.md から `aikata generate` で再生成可能。
-# 生成物もコミットしたい場合は .ai/aikata.yaml で
+# 生成物もコミットしたい場合は .aikata/aikata.yaml で
 # docs.generate_gitignore: false を設定するか、本ファイルから手動で
 # 当該行を削除する。
 CLAUDE.md
