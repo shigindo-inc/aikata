@@ -88,8 +88,8 @@ jobs:
   install-script:
     # Smoke-test scripts/install.sh against a known existing release.
     # Pinning AIKATA_VERSION avoids the unauthenticated GitHub API
-    # rate limit and keeps the test deterministic until v0.2.1 ships;
-    # bump the pin once a newer release is available.
+    # rate limit and keeps the test deterministic. Bump the pin to
+    # the latest release whenever a new tag ships.
     #
     # Security note: no untrusted event fields are interpolated. The
     # only env values are a static version string and a path derived
@@ -101,7 +101,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
-      AIKATA_VERSION: v0.2.0
+      AIKATA_VERSION: v0.2.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
