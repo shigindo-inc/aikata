@@ -15,9 +15,9 @@ import (
 // touching the filesystem.
 func newDoctorCmd() *cobra.Command {
 	var (
-		fix      bool
-		dryRun   bool
-		jsonOut  bool
+		fix     bool
+		dryRun  bool
+		jsonOut bool
 	)
 	cmd := &cobra.Command{
 		Use:   "doctor",
@@ -53,8 +53,10 @@ func newDoctorCmd() *cobra.Command {
 				if dryRun {
 					if !jsonOut {
 						n := countFixableIssues(issues)
-						fmt.Fprintf(cmd.OutOrStdout(),
-							"\n--fix --dry-run: would attempt to fix %d issue(s); no files written.\n", n)
+						if _, werr := fmt.Fprintf(cmd.OutOrStdout(),
+							"\n--fix --dry-run: would attempt to fix %d issue(s); no files written.\n", n); werr != nil {
+							return werr
+						}
 					}
 				} else {
 					res, ferr := doctor.Fix(opts, issues)
@@ -62,9 +64,11 @@ func newDoctorCmd() *cobra.Command {
 						return ferr
 					}
 					if !jsonOut {
-						fmt.Fprintf(cmd.OutOrStdout(),
+						if _, werr := fmt.Fprintf(cmd.OutOrStdout(),
 							"\nFixed %d issue(s) in %d file(s); %d issue(s) had no auto-fix.\n",
-							res.Fixed, len(res.Files), res.Skipped)
+							res.Fixed, len(res.Files), res.Skipped); werr != nil {
+							return werr
+						}
 					}
 					issues, err = doctor.Run(opts)
 					if err != nil {

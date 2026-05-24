@@ -268,7 +268,7 @@ func writeFileAtomic(path string, b []byte) error {
 		_ = os.Remove(tmpPath)
 	}()
 	if _, err := tmp.Write(b); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 		return err
 	}
 	if err := tmp.Close(); err != nil {

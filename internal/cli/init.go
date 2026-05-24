@@ -132,4 +132,3 @@ func stacksForPreset(preset string) []string {
 		return nil
 	}
 }
-

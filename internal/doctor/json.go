@@ -29,9 +29,9 @@ type jsonSummary struct {
 }
 
 type jsonReport struct {
-	Version int          `json:"version"`
-	Issues  []jsonIssue  `json:"issues"`
-	Summary jsonSummary  `json:"summary"`
+	Version int         `json:"version"`
+	Issues  []jsonIssue `json:"issues"`
+	Summary jsonSummary `json:"summary"`
 }
 
 // FormatJSON writes a machine-readable rendering of issues to w. The

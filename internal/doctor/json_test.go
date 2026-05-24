@@ -12,9 +12,9 @@ import (
 // map/interface{} decode — that path triggers a CWE-502 lint and, more
 // importantly, would let typo'd field names pass silently.
 type decodedReport struct {
-	Version int             `json:"version"`
-	Issues  []decodedIssue  `json:"issues"`
-	Summary decodedSummary  `json:"summary"`
+	Version int            `json:"version"`
+	Issues  []decodedIssue `json:"issues"`
+	Summary decodedSummary `json:"summary"`
 }
 
 type decodedIssue struct {
