@@ -6,6 +6,7 @@ import "sort"
 // irrelevant; All() returns a fresh slice sorted by Name so callers
 // can mutate freely.
 var registry = []Component{
+	Adr,
 	Memory,
 }
 
