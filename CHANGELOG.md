@@ -31,6 +31,13 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   path with a deprecation warning through v0.x. `ARCHITECTURE.md` and
   `GLOSSARY.md` are updated to describe both paths and `ROADMAP.md`
   v0.3 lists the migration work item.
+- New `internal/adr` package centralizes the `NNNN-slug.md` ADR
+  filename convention. `Scan`, `Next`, and `Filename` will be reused
+  by the upcoming `aikata add adr` command (v0.4) and `aikata doctor`.
+- `aikata doctor` gains an `adr-numbering` check that reports
+  duplicate ADR numbers and gaps in the `0001..max` range at
+  `LevelInfo`. Findings stay advisory because the project may
+  legitimately retire a number.
 
 ### Changed
 

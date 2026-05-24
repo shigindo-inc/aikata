@@ -63,6 +63,7 @@ var builtinChecks = []struct {
 	{"frontmatter", checkFrontmatter},
 	{"links", checkLinks},
 	{"adr", checkADR},
+	{"adr-numbering", checkADRNumbering},
 	{"memory", checkMemory},
 	{"updated", checkUpdated},
 	{"env", checkEnvExample},
