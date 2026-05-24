@@ -1,7 +1,7 @@
 ---
 project: aikata
 status: draft
-version: 0.3.0
+version: 0.3.1
 updated: 2026-05-24
 audience: [human, agent]
 ---
@@ -142,25 +142,37 @@ Shipped in v0.3.0:
 - ADR 0007 (no generic `DESIGN.md`) and ADR 0008 (aikata-owned
   `.aikata/` config namespace; migration scheduled for v0.3.x).
 
-Deferred to v0.3.x (not blocking v0.3.0):
+---
+
+## v0.3.1 — Discoverability & distribution surface ✅ (released 2026-05-24)
+
+Lightweight follow-up that closes out the discoverability and
+distribution items deferred from v0.3.0. No on-disk layout change.
+
+Shipped:
+
+- `aikata completion bash | zsh | fish | powershell` — cobra-generated
+  shell completion. README "Install" documents the activation snippets.
+- `aikata list presets | stacks | ai-tools` enumerates accepted
+  identifiers; `aikata describe preset <name>` returns the long-form
+  description. Both accept `--json` with the same versioned envelope
+  as `aikata doctor --json`. Reserved `extended` is surfaced now so
+  its v1.0 status is discoverable.
+- **Minimal Claude Code skill** — single `SKILL.md` under
+  `dist/claude-code/skill/`, shipped as the `aikata-skill.md` release
+  asset. No slash commands, sub-agents, or hooks yet; the v0.6 plugin
+  will extend rather than replace it.
+- `CONTRIBUTING.md` adds a human-friendly entry for external
+  contributors; `AGENTS.md` remains the canonical operational source.
+- ADR 0009 records the `aikata update` (CLI version) vs
+  `aikata sync` (project templates) split that v0.4 / v0.5 will land.
+
+Deferred to v0.3.2 (not blocking v0.3.1):
 
 - [ ] `.ai/aikata.yaml` → `.aikata/aikata.yaml` migration per
       [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md).
-- [ ] `aikata completion bash | zsh | fish | pwsh` — cobra-generated
-      shell completion. Documented in README "Install".
-- [ ] `aikata list presets | stacks | ai-tools` and
-      `aikata describe preset <name>` for discoverability without
-      touching templates.
-- [ ] **Minimal Claude Code skill** — a single `SKILL.md` that teaches
-      Claude when to call `aikata init / generate / doctor` and how to
-      read their output. Lives under `dist/claude-code/skill/` in this
-      repository and ships as a release asset. **No** slash commands,
-      sub-agents, or hooks yet — distribution is "copy one file into
-      `~/.claude/skills/`" so the surface stays tiny and reversible.
-- [ ] `CONTRIBUTING.md` added to this repository directly (before the
-      future `extended` preset grows an operational-readiness pack) so
-      external contributors have a clear entry point now that aikata is
-      public.
+      Reader fallback + auto-migrate on `aikata generate` + doctor
+      deprecation warning with `--fix` support.
 
 ---
 
@@ -301,7 +313,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.1 | ✅ | ✅ | — | — | — | — | — | — |
 | v0.2 | ✅ | ✅ | — | — | — | — | — | — |
 | v0.2.1 | ✅ | ✅ | ✅ | — | — | — | — | — |
-| v0.3 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
+| v0.3.0 | ✅ | ✅ | ✅ | — | — | — | — | — |
+| v0.3.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.5 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6 | ✅ | ✅ | ✅ | ✅ | ✅ | `npx aikata` | tap | — |
@@ -309,7 +322,7 @@ previous one (`go install` stays the canonical baseline).
 
 Plugin / skill scope grows monotonically too:
 
-- **v0.3** — "Claude knows when to shell out to aikata." One SKILL.md,
+- **v0.3.1** — "Claude knows when to shell out to aikata." One SKILL.md,
   no commands, no agents.
 - **v0.6** — adds `/aikata-init`, `/aikata-generate`, `/aikata-doctor`
   slash commands and is installable as a single plugin.
