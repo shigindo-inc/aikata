@@ -10,12 +10,12 @@ import (
 	"github.com/shigindo-inc/aikata/internal/scaffold"
 )
 
-// newInitCmd builds the `aikata init` subcommand.
-//
-// v0.3 brings the interactive prompt to flag parity for `--lang` and
-// `--ai-tools` and exposes `--ai-tools` as a non-interactive flag for
-// the first time. Optional-feature flags (`--with-ui`, `--with-api`,
-// ...) and their prompts remain v0.4 work (see ROADMAP.md).
+// newInitCmd builds the `aikata init` subcommand. v0.4.0 covers the
+// scaffolding-time surface (`--preset`, `--name`, `--lang`,
+// `--ai-tools`, `--with-memory`). Optional-feature flags
+// (`--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog`) and
+// their interactive prompts land in v0.4.1; the post-init authoring
+// counterpart lives behind `aikata add <component>` (this release).
 func newInitCmd() *cobra.Command {
 	var (
 		preset        string
