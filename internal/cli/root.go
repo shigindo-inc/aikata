@@ -13,7 +13,7 @@ func Execute(version string) error {
 }
 
 // newRootCmd constructs the root `aikata` command. Subcommands (init,
-// add, doctor, generate, update, list) will be attached here as they are
+// add, doctor, generate, sync, list) will be attached here as they are
 // implemented in later phases.
 func newRootCmd(version string) *cobra.Command {
 	cmd := &cobra.Command{
@@ -32,10 +32,18 @@ func newRootCmd(version string) *cobra.Command {
 	//   aikata version 0.0.1-dev
 	cmd.SetVersionTemplate("aikata version {{.Version}}\n")
 
+	// Hide cobra's auto-registered `completion` command so the in-tree
+	// implementation (with shell-specific activation examples in its
+	// Long help) is the only one users discover via `aikata --help`.
+	cmd.CompletionOptions.HiddenDefaultCmd = true
+
 	// Subcommands. Keep this list short; each subcommand owns its own file.
 	cmd.AddCommand(newInitCmd())
 	cmd.AddCommand(newGenerateCmd())
 	cmd.AddCommand(newDoctorCmd())
+	cmd.AddCommand(newCompletionCmd())
+	cmd.AddCommand(newListCmd())
+	cmd.AddCommand(newDescribeCmd())
 
 	return cmd
 }

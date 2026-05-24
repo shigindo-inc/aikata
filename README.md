@@ -122,6 +122,43 @@ not found after install.
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
 > land in v0.6 — see [ROADMAP.md](./ROADMAP.md).
 
+### Claude Code skill (optional, v0.3.1+)
+
+aikata ships a minimal Claude Code skill that teaches Claude when to
+call the CLI and how to parse `aikata doctor --json`. It is a single
+file — no slash commands, sub-agents, or hooks — so installing it is
+one copy:
+
+```bash
+mkdir -p ~/.claude/skills
+curl -fsSL -o ~/.claude/skills/aikata.md \
+  https://github.com/shigindo-inc/aikata/releases/latest/download/aikata-skill.md
+```
+
+See [`dist/README.md`](./dist/README.md) for offline install from a
+checkout and notes on the v0.6 plugin migration path.
+
+### Shell completion (v0.3.1+)
+
+`aikata completion <shell>` prints a completion script for `bash`, `zsh`,
+`fish`, or `powershell`. Activate it once per shell:
+
+```bash
+# Bash (current shell):
+source <(aikata completion bash)
+
+# Zsh (system-wide, with `autoload -Uz compinit; compinit` already in .zshrc):
+aikata completion zsh > "${fpath[1]}/_aikata"
+
+# Fish (per-user, persistent):
+aikata completion fish > ~/.config/fish/completions/aikata.fish
+
+# PowerShell:
+aikata completion powershell | Out-String | Invoke-Expression
+```
+
+Run `aikata completion --help` for additional install paths.
+
 ## Quickstart
 
 ```bash
@@ -249,17 +286,14 @@ For the comparison table, see [SPEC.md §1.3](./SPEC.md#13-differentiation).
 
 ## Contributing
 
-aikata follows the rules in [AGENTS.md](./AGENTS.md). The same rules
-apply to human and AI contributors. Highlights:
+External contributors: start from [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+It covers the quick-start build, where things live, the PR checklist,
+and the ADR workflow.
 
-- Conventional Commits (no AI signatures).
-- Tests required for new core logic.
-- New top-level files require an ADR.
-- The Do-No-Harm Policy ([ADR 0003](./docs/adr/0003-do-no-harm-policy.md))
-  applies to every optional feature.
-
-A `CONTRIBUTING.md` will land when aikata reaches public OSS status
-(v1.0 — see [ROADMAP.md](./ROADMAP.md)).
+Maintainers and AI agents: the canonical operational rules live in
+[AGENTS.md](./AGENTS.md). CONTRIBUTING.md is the human-friendly summary;
+AGENTS.md is what aikata itself dogfoods and what `aikata generate`
+projects into per-tool config files.
 
 ---
 

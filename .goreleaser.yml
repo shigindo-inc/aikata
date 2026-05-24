@@ -80,3 +80,8 @@ release:
   footer: |
     ---
     Released via [GoReleaser](https://goreleaser.com).
+  # Ship the Claude Code skill alongside the binaries so users can grab
+  # it directly from a release asset without cloning the repo.
+  extra_files:
+    - glob: dist/claude-code/skill/SKILL.md
+      name_template: aikata-skill.md

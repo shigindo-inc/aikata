@@ -21,7 +21,13 @@ go.work.sum
 /vendor/
 
 # --- Release artifacts ---
-/dist/
+# Goreleaser writes build output (archives, checksums, snapshots) into
+# ./dist/ by default. Ignore those, but keep the human-curated
+# dist/ subdirectories that ship as release assets (Claude Code skill,
+# future plugin payloads).
+/dist/*
+!/dist/README.md
+!/dist/claude-code/
 /bin/
 
 # --- aikata-specific ---

@@ -291,6 +291,22 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 - `curl -sSL https://aikata.dev/install.sh | sh`.
 - npm wrapper: `npx aikata` (post-v0.4).
 
+### 6.4 CLI self-update model (planned)
+
+- `aikata update` is reserved for updating the aikata CLI binary,
+  matching the user-facing convention established by Claude Code's
+  `claude update` (ADR 0009).
+- Native / installer-managed installs may update themselves by fetching
+  a signed or checksummed GitHub Release asset and replacing the aikata
+  binary atomically.
+- Package-manager installs remain package-manager-owned. `aikata update`
+  may print or, behind explicit opt-in, run `brew upgrade`, npm install,
+  or an equivalent manager command, but it must not overwrite a
+  package-manager-managed binary directly.
+- Installers should write small install-source metadata under the user's
+  data directory so the CLI can distinguish native, Homebrew, npm, Go,
+  and unknown installs before choosing an update path.
+
 ---
 
 ## 7. Error Handling & Logging
@@ -347,7 +363,9 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 ## 9. Security Considerations
 
 - **No network I/O** in core flows (`init`, `doctor`, `generate`).
-  `aikata update` may fetch templates over HTTPS only.
+  `aikata sync` may fetch templates over HTTPS only. `aikata update`
+  may fetch release metadata and release assets only when the user
+  explicitly asks to update or check for updates.
 - Pin all `go.sum` entries; reject `replace` directives in releases.
 - File generation refuses to write outside the working directory.
 - Templates execute with `text/template` (markdown output), not
