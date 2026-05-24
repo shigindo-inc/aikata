@@ -18,15 +18,36 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-05-24
+
+### Added
+
+- `aikata completion bash|zsh|fish|powershell` emits a cobra-generated
+  completion script. The Long help embeds activation snippets for each
+  shell so installation is one copy-paste.
+- `aikata list presets | stacks | ai-tools` enumerates the identifiers
+  init accepts; reserved `extended` is surfaced with a `(reserved)`
+  suffix so its v1.0 status is discoverable today.
+- `aikata describe preset <name>` returns the long-form description,
+  status, and supported languages. Both `list` and `describe` accept
+  `--json` with the same versioned envelope as
+  [`aikata doctor --json`](./SPEC.md#43-aikata-doctor).
+- `dist/claude-code/skill/SKILL.md` — a minimal Claude Code skill that
+  teaches Claude when to call `aikata init / generate / doctor` and how
+  to parse `aikata doctor --json`. Ships as the `aikata-skill.md`
+  release asset for one-line install with `curl`.
+- `CONTRIBUTING.md` adds a short human-friendly entry for external
+  contributors with the quick-start build, PR checklist, and ADR
+  workflow. `AGENTS.md` stays the canonical operational source.
+
 ### Changed
 
 - Roadmap / spec command semantics updated: `aikata update` is reserved
   for updating the aikata CLI itself, while the future template
-  diff-merge command is renamed to `aikata sync`. `aikata generate`
-  remains responsible for tool-specific generated artifacts and may only
-  point users toward `sync` when project templates are stale.
-- ADR 0009 records the command naming decision and the install-source
-  constraints for future `aikata update` behavior.
+  diff-merge command is renamed to `aikata sync`
+  ([ADR 0009](./docs/adr/0009-update-command-owns-cli-version-updates.md)).
+- README "Install" gains Shell completion and Claude Code skill
+  subsections; "Contributing" now points at the new CONTRIBUTING.md.
 
 ## [0.3.0] - 2026-05-24
 
