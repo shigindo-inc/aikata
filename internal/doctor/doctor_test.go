@@ -153,6 +153,25 @@ audience: [human, agent]
 	}
 }
 
+func TestCheckFrontmatter_SkipsSerenaLocalState(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+	serenaMemory := filepath.Join(tmp, ".serena", "memories", "core.md")
+	if err := os.MkdirAll(filepath.Dir(serenaMemory), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(serenaMemory, []byte("# Local Serena memory\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	issues := runDoctor(t, tmp)
+	for _, iss := range issues {
+		if strings.HasPrefix(iss.File, ".serena/") {
+			t.Fatalf("expected .serena files to be skipped, got issue: %+v", iss)
+		}
+	}
+}
+
 func TestCheckLinks_BrokenLinkIsError(t *testing.T) {
 	tmp := t.TempDir()
 	scaffoldHealthyProject(t, tmp)

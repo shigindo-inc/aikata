@@ -28,6 +28,51 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   installation context, `--lang ja` usage, and support-language
   expectations.
 
+### Changed
+
+- `ROADMAP.md` rewritten to reflect shipped milestones (Phase 1, v0.1,
+  v0.2 marked released with their actual deliverables) and resequenced
+  to split the previously-overloaded v0.3 into focused phases:
+  - **v0.2.1** — onboarding patch carrying only the `curl -fsSL ... | bash`
+    install script + README "Install" rewrite. External-only, no CLI
+    behaviour change, so it can ship ahead of the next feature cycle.
+  - **v0.3** — lightweight quality-of-life follow-up: `doctor --fix` /
+    `--json`, ADR auto-numbering helper, `aikata completion`,
+    `aikata list` / `describe`, the minimal Claude Code `SKILL.md`,
+    `CONTRIBUTING.md` for this repo.
+  - **v0.4** — authoring ergonomics: `aikata add` split into a
+    first-wave (`adr`, `stack`, `memory`) and second-wave (`ai-tool`,
+    `ui`, `api`, `tdd`, `changelog`); the matching `--with-*` init
+    flags; the memory generate-projection investigation.
+  - **v0.5** — `aikata update` interactive diff-merge gets its own
+    release cycle (the single largest feature on the roadmap).
+  - **v0.6** — packaging & distribution: `--monorepo`, npm wrapper,
+    Homebrew tap, Claude Code plugin (slash commands), conditional
+    memory-projection ship.
+  - **v1.0** — `--oss` flag pack expanded to include
+    `CODE_OF_CONDUCT.md` and GitHub issue / PR templates; plugin /
+    skill distribution explicitly extended to Cursor / Gemini / VS
+    Code.
+- `ROADMAP.md` "Dogfooding milestone" gate moved from v0.3 to v0.5 and
+  given three concrete pass criteria (doctor clean, `aikata init` build
+  in CI, generated AI-tool artifacts byte-identical) so it stops being
+  aspirational.
+- `ROADMAP.md` "Out-of-scope" gains an explicit deflection for "aikata
+  as a Claude Code *agent*" (distinct from skill or plugin) to prevent
+  future scope creep into runtime-personality territory.
+- `ROADMAP.md` "Distribution surface" matrix updated to track install
+  channels across v0.1 → v1.0 including the new v0.2.1 / v0.5 / v0.6
+  rows.
+- `README.md` install section restructured: a new top-level "Install"
+  block leads with the pre-built binary path (with per-platform asset
+  table and explicit checksum step) and labels it "Recommended — no
+  Go toolchain". `go install` is demoted to "From source" with the Go
+  1.21+ requirement called out explicitly. This addresses the
+  long-standing ambiguity that suggested Go was required to use aikata.
+- `docs/japanese-users.ja.md` mirrors the new install guidance with a
+  short Japanese summary pointing to the English table for per-asset
+  detail.
+
 ## [0.2.0] - 2026-05-23
 
 ### Fixed

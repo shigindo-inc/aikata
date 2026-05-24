@@ -45,20 +45,53 @@ For the long-form rationale, read [SPEC.md](./SPEC.md) §1.
 
 ---
 
+## Install
+
+aikata is a single static binary. **Go is not required to use aikata** —
+it is only required if you install from source.
+
+### Recommended — pre-built binary (no Go toolchain)
+
+Download the latest archive for your platform from the
+[Releases page](https://github.com/shigindo-inc/aikata/releases/latest):
+
+| OS | Architecture | Asset suffix |
+|---|---|---|
+| macOS | Apple Silicon | `_darwin_arm64.tar.gz` |
+| macOS | Intel | `_darwin_amd64.tar.gz` |
+| Linux | x86_64 | `_linux_amd64.tar.gz` |
+| Linux | arm64 | `_linux_arm64.tar.gz` |
+| Windows | x86_64 | `_windows_amd64.zip` |
+
+Extract, verify the checksum, then move the binary onto your `PATH`:
+
+```bash
+tar -xzf aikata_*_<os>_<arch>.tar.gz
+sha256sum -c checksums.txt 2>&1 | grep aikata    # optional but recommended
+mv aikata "$HOME/.local/bin/"                     # or /usr/local/bin (sudo)
+aikata --version
+```
+
+`checksums.txt` is published alongside the binaries in the same release.
+
+### From source — `go install` (requires Go 1.21+)
+
+```bash
+go install github.com/shigindo-inc/aikata/cmd/aikata@latest
+aikata --version
+```
+
+`go install` writes the binary to `$GOBIN` when it is set, otherwise to
+`$(go env GOPATH)/bin`. That directory must be in `PATH`; see
+[`docs/troubleshooting.md`](./docs/troubleshooting.md) if `aikata` is
+not found after install.
+
+> A one-line `curl -fsSL ... | bash` installer and a Homebrew tap land
+> in later releases — see [ROADMAP.md](./ROADMAP.md) v0.3 / v0.4.
+
 ## Quickstart
 
 ```bash
-# Install (one of):
-go install github.com/shigindo-inc/aikata/cmd/aikata@latest
-
-# Verify the install:
-aikata --version
-# If your build does not expose version metadata yet:
-aikata --help
-
-# Or download a pre-built binary from the latest GitHub Release:
-# https://github.com/shigindo-inc/aikata/releases
-
 # Scaffold a new project (interactive when stdin is a TTY):
 aikata init my-app
 
@@ -82,14 +115,6 @@ aikata generate
 # Check project consistency (v0.2):
 aikata doctor
 ```
-
-`go install` writes the binary to `$GOBIN` when it is set, otherwise to
-`$(go env GOPATH)/bin`. That directory must be in `PATH`; see
-[`docs/troubleshooting.md`](./docs/troubleshooting.md) if `aikata` is not
-found after install.
-
-> Homebrew tap and `curl -sSL` install script land in later releases —
-> see [ROADMAP.md](./ROADMAP.md).
 
 See [SPEC.md §4](./SPEC.md#4-functional-requirements-cli) for the full
 command surface.
