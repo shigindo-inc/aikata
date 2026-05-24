@@ -9,26 +9,47 @@ import (
 	"strings"
 )
 
-// promptResult holds the three values `aikata init` collects
-// interactively. Defaults flow in from the cobra flag values so the
-// user can accept them with an empty Enter.
+// promptResult holds the values `aikata init` collects interactively.
+// Defaults flow in from the cobra flag values so the user can accept
+// them with an empty Enter. v0.3 extended the set with Lang and
+// AITools to bring the prompt back to flag parity. See SPEC.md §4.1.
 type promptResult struct {
 	Name       string
 	Preset     string
 	WithMemory bool
+	Lang       string
+	AITools    []string
 }
 
-// runPrompt asks the user for the values needed by `aikata init`.
-// Already-set defaults are shown in brackets; pressing Enter keeps
-// them. Each question accepts a short string; the function does not
-// try to be a curses-style UI — it's deliberately bufio-based so
-// aikata stays Go-1.21 compatible and free of bubbletea-class
-// dependencies (see ARCHITECTURE.md §10 / Task 6 design note).
-func runPrompt(r io.Reader, w io.Writer, defaults promptResult) (promptResult, error) {
+// promptSkip lets the caller (init.go) tell runPrompt which fields
+// the user already pinned via an explicit flag. Skipped questions
+// keep the supplied default unchanged and produce no UI. The Name
+// field has no Skip — it is required and the prompt asks only when
+// the default is empty.
+type promptSkip struct {
+	Preset     bool
+	WithMemory bool
+	Lang       bool
+	AITools    bool
+}
+
+// validAITools enumerates the tool identifiers init accepts in v0.3.
+// Kept narrow on purpose; new tools opt in by adding a generator
+// under internal/generate/ and updating this list.
+var validAITools = map[string]struct{}{
+	"claude": {}, "cursor": {}, "codex": {},
+}
+
+// runPrompt asks the user for the values needed by `aikata init`. The
+// flow is deliberately bufio-based so aikata stays Go-1.21 compatible
+// and free of bubbletea-class dependencies (see ARCHITECTURE.md §10).
+// Defaults are shown in brackets; pressing Enter keeps the default.
+// Questions whose corresponding flag was explicitly supplied are
+// silently skipped via the `skip` argument.
+func runPrompt(r io.Reader, w io.Writer, defaults promptResult, skip promptSkip) (promptResult, error) {
 	sc := bufio.NewScanner(r)
 	result := defaults
 
-	// Project name — required.
 	if result.Name == "" {
 		got, err := readLine(sc, w, "Project name: ")
 		if err != nil {
@@ -40,8 +61,7 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult) (promptResult, e
 		result.Name = got
 	}
 
-	// Preset — Enter keeps the existing default.
-	{
+	if !skip.Preset {
 		prompt := fmt.Sprintf("Preset (standard | minimal | flutter | typescript) [%s]: ", result.Preset)
 		got, err := readLine(sc, w, prompt)
 		if err != nil {
@@ -63,8 +83,48 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult) (promptResult, e
 		}
 	}
 
-	// With-memory — defaults to N when withMemory==false, Y otherwise.
-	{
+	if !skip.Lang {
+		defLang := result.Lang
+		if defLang == "" {
+			defLang = "en"
+		}
+		prompt := fmt.Sprintf("Document language (en | ja) [%s]: ", defLang)
+		got, err := readLine(sc, w, prompt)
+		if err != nil {
+			return result, err
+		}
+		switch got {
+		case "":
+			result.Lang = defLang
+		case "en", "ja":
+			result.Lang = got
+		default:
+			return result, fmt.Errorf("prompt: unknown language %q (expected en | ja)", got)
+		}
+	}
+
+	if !skip.AITools {
+		defStr := strings.Join(result.AITools, ",")
+		if defStr == "" {
+			defStr = "claude"
+		}
+		prompt := fmt.Sprintf("AI tools (comma-separated; claude | cursor | codex) [%s]: ", defStr)
+		got, err := readLine(sc, w, prompt)
+		if err != nil {
+			return result, err
+		}
+		raw := got
+		if raw == "" {
+			raw = defStr
+		}
+		parsed, err := parseAITools(raw)
+		if err != nil {
+			return result, err
+		}
+		result.AITools = parsed
+	}
+
+	if !skip.WithMemory {
 		defStr := "N"
 		if result.WithMemory {
 			defStr = "Y"
@@ -87,6 +147,37 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult) (promptResult, e
 	}
 
 	return result, nil
+}
+
+// parseAITools normalizes a comma-separated tool list into a sorted,
+// de-duplicated slice with every entry validated against
+// validAITools. Empty inputs yield an error so the caller can re-ask;
+// runPrompt substitutes the default before calling this so end users
+// don't see that case.
+func parseAITools(raw string) ([]string, error) {
+	if strings.TrimSpace(raw) == "" {
+		return nil, errors.New("prompt: ai-tools list cannot be empty")
+	}
+	seen := map[string]struct{}{}
+	var out []string
+	for _, part := range strings.Split(raw, ",") {
+		tool := strings.ToLower(strings.TrimSpace(part))
+		if tool == "" {
+			continue
+		}
+		if _, ok := validAITools[tool]; !ok {
+			return nil, fmt.Errorf("prompt: unknown ai-tool %q (expected claude | cursor | codex)", tool)
+		}
+		if _, dup := seen[tool]; dup {
+			continue
+		}
+		seen[tool] = struct{}{}
+		out = append(out, tool)
+	}
+	if len(out) == 0 {
+		return nil, errors.New("prompt: ai-tools list resolved to empty after trimming")
+	}
+	return out, nil
 }
 
 // readLine prints the prompt to w and returns the user's trimmed

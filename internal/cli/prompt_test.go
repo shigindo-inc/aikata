@@ -2,14 +2,19 @@ package cli
 
 import (
 	"bytes"
+	"reflect"
 	"strings"
 	"testing"
 )
 
+// Default skip — every question is asked.
+func noSkip() promptSkip { return promptSkip{} }
+
 func TestRunPrompt_HappyPath(t *testing.T) {
-	in := strings.NewReader("myproj\nminimal\ny\n")
+	// Order: name, preset, lang, ai-tools, memory.
+	in := strings.NewReader("myproj\nminimal\nja\nclaude,cursor\ny\n")
 	var out bytes.Buffer
-	got, err := runPrompt(in, &out, promptResult{Preset: "standard"})
+	got, err := runPrompt(in, &out, promptResult{Preset: "standard", Lang: "en"}, noSkip())
 	if err != nil {
 		t.Fatalf("runPrompt: %v", err)
 	}
@@ -19,12 +24,17 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 	if got.Preset != "minimal" {
 		t.Errorf("Preset = %q, want %q", got.Preset, "minimal")
 	}
+	if got.Lang != "ja" {
+		t.Errorf("Lang = %q, want %q", got.Lang, "ja")
+	}
+	if !reflect.DeepEqual(got.AITools, []string{"claude", "cursor"}) {
+		t.Errorf("AITools = %v, want [claude cursor]", got.AITools)
+	}
 	if !got.WithMemory {
 		t.Errorf("WithMemory = false, want true")
 	}
-	// Prompts should mention the things they ask about.
 	prompts := out.String()
-	for _, needle := range []string{"Project name", "Preset", "memory"} {
+	for _, needle := range []string{"Project name", "Preset", "Document language", "AI tools", "memory"} {
 		if !strings.Contains(prompts, needle) {
 			t.Errorf("prompt output missing %q:\n%s", needle, prompts)
 		}
@@ -32,26 +42,37 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 }
 
 func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
-	in := strings.NewReader("myproj\n\n\n")
+	// Five blanks accept every default.
+	in := strings.NewReader("myproj\n\n\n\n\n")
 	var out bytes.Buffer
-	got, err := runPrompt(in, &out, promptResult{Preset: "standard", WithMemory: true})
+	defaults := promptResult{
+		Preset:     "standard",
+		Lang:       "en",
+		AITools:    []string{"claude"},
+		WithMemory: true,
+	}
+	got, err := runPrompt(in, &out, defaults, noSkip())
 	if err != nil {
 		t.Fatalf("runPrompt: %v", err)
 	}
 	if got.Preset != "standard" {
-		t.Errorf("blank preset input should keep default: got %q", got.Preset)
+		t.Errorf("Preset default lost: %q", got.Preset)
+	}
+	if got.Lang != "en" {
+		t.Errorf("Lang default lost: %q", got.Lang)
+	}
+	if !reflect.DeepEqual(got.AITools, []string{"claude"}) {
+		t.Errorf("AITools default lost: %v", got.AITools)
 	}
 	if !got.WithMemory {
-		t.Errorf("blank memory input should keep WithMemory=true default")
+		t.Errorf("WithMemory default lost")
 	}
 }
 
 func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
-	// Only two answers: preset and memory. Name is supplied via the
-	// defaults, so the prompt must not ask for it.
-	in := strings.NewReader("standard\nn\n")
+	in := strings.NewReader("standard\nen\nclaude\nn\n")
 	var out bytes.Buffer
-	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Preset: "minimal"})
+	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Preset: "minimal"}, noSkip())
 	if err != nil {
 		t.Fatalf("runPrompt: %v", err)
 	}
@@ -63,21 +84,66 @@ func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
 	}
 }
 
-func TestRunPrompt_EmptyNameIsError(t *testing.T) {
-	in := strings.NewReader("\nstandard\nn\n")
+func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
+	// Lang and AITools were pinned via flags; the prompt should ask
+	// only about preset and memory.
+	in := strings.NewReader("myproj\nstandard\nn\n")
 	var out bytes.Buffer
-	_, err := runPrompt(in, &out, promptResult{})
+	defaults := promptResult{
+		Lang:    "ja",
+		AITools: []string{"claude", "codex"},
+	}
+	got, err := runPrompt(in, &out, defaults, promptSkip{Lang: true, AITools: true})
+	if err != nil {
+		t.Fatalf("runPrompt: %v", err)
+	}
+	if got.Lang != "ja" {
+		t.Errorf("Lang clobbered by skipped prompt: %q", got.Lang)
+	}
+	if !reflect.DeepEqual(got.AITools, []string{"claude", "codex"}) {
+		t.Errorf("AITools clobbered by skipped prompt: %v", got.AITools)
+	}
+	if strings.Contains(out.String(), "Document language") {
+		t.Errorf("Lang question rendered despite skip:\n%s", out.String())
+	}
+	if strings.Contains(out.String(), "AI tools") {
+		t.Errorf("AI tools question rendered despite skip:\n%s", out.String())
+	}
+}
+
+func TestRunPrompt_EmptyNameIsError(t *testing.T) {
+	in := strings.NewReader("\nstandard\nen\nclaude\nn\n")
+	var out bytes.Buffer
+	_, err := runPrompt(in, &out, promptResult{}, noSkip())
 	if err == nil {
 		t.Fatalf("expected error for empty project name")
 	}
 }
 
 func TestRunPrompt_UnknownPresetIsError(t *testing.T) {
-	in := strings.NewReader("myproj\nflutter\n")
+	in := strings.NewReader("myproj\nrust\n")
 	var out bytes.Buffer
-	_, err := runPrompt(in, &out, promptResult{Preset: "standard"})
+	_, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
 	if err == nil {
 		t.Fatalf("expected error for unknown preset")
+	}
+}
+
+func TestRunPrompt_UnknownLanguageIsError(t *testing.T) {
+	in := strings.NewReader("myproj\nstandard\nfr\n")
+	var out bytes.Buffer
+	_, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
+	if err == nil {
+		t.Fatalf("expected error for unknown language")
+	}
+}
+
+func TestRunPrompt_UnknownAIToolIsError(t *testing.T) {
+	in := strings.NewReader("myproj\nstandard\nen\nclaude,jetbrains\n")
+	var out bytes.Buffer
+	_, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
+	if err == nil {
+		t.Fatalf("expected error for unknown ai-tool")
 	}
 }
 
@@ -85,11 +151,13 @@ func TestRunPrompt_NumericPresetChoices(t *testing.T) {
 	cases := map[string]string{
 		"1": "standard",
 		"2": "minimal",
+		"3": "flutter",
+		"4": "typescript",
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\n" + input + "\nn\n")
+		in := strings.NewReader("myproj\n" + input + "\nen\nclaude\nn\n")
 		var out bytes.Buffer
-		got, err := runPrompt(in, &out, promptResult{Preset: "standard"})
+		got, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
 		if err != nil {
 			t.Fatalf("runPrompt(%q): %v", input, err)
 		}
@@ -110,9 +178,9 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 		"N":   false,
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\nstandard\n" + input + "\n")
+		in := strings.NewReader("myproj\nstandard\nen\nclaude\n" + input + "\n")
 		var out bytes.Buffer
-		got, err := runPrompt(in, &out, promptResult{})
+		got, err := runPrompt(in, &out, promptResult{}, noSkip())
 		if err != nil {
 			t.Fatalf("runPrompt(%q): %v", input, err)
 		}
@@ -123,10 +191,36 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 }
 
 func TestRunPrompt_UnknownYesNoIsError(t *testing.T) {
-	in := strings.NewReader("myproj\nstandard\nmaybe\n")
+	in := strings.NewReader("myproj\nstandard\nen\nclaude\nmaybe\n")
 	var out bytes.Buffer
-	_, err := runPrompt(in, &out, promptResult{})
+	_, err := runPrompt(in, &out, promptResult{}, noSkip())
 	if err == nil {
 		t.Fatalf("expected error for unknown yes/no value")
+	}
+}
+
+func TestParseAITools_DedupAndSort(t *testing.T) {
+	got, err := parseAITools("cursor, claude ,Cursor,codex")
+	if err != nil {
+		t.Fatalf("parseAITools: %v", err)
+	}
+	want := []string{"cursor", "claude", "codex"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v (insertion-order de-duplication)", got, want)
+	}
+}
+
+func TestParseAITools_RejectsUnknown(t *testing.T) {
+	if _, err := parseAITools("claude,foo"); err == nil {
+		t.Fatalf("expected error for unknown tool")
+	}
+}
+
+func TestParseAITools_RejectsEmpty(t *testing.T) {
+	if _, err := parseAITools(""); err == nil {
+		t.Fatalf("expected error for empty list")
+	}
+	if _, err := parseAITools("  ,  "); err == nil {
+		t.Fatalf("expected error for whitespace-only list")
 	}
 }

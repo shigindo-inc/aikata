@@ -135,6 +135,27 @@ what unblocks a decision, and the latest update date.
 
 ---
 
+## Q-PROMPT
+
+### Q-PROMPT-01 — Optional-feature and OSS-intent prompts
+
+- **Status**: v0.3 brought the interactive `aikata init` prompt to
+  parity with the supported non-interactive flags (project name,
+  preset, language, AI tools, long-term memory). The optional-feature
+  questions (UI / API / TDD / changelog) and the OSS-intent question
+  remain unasked.
+- **Open part**: those questions should land in lockstep with their
+  matching non-interactive flags (`--with-ui`, `--with-api`,
+  `--with-tdd`, `--with-changelog`, `--preset extended`) so the prompt
+  never drifts away from the flag surface again.
+- **Leading**: add each question in the same change that introduces
+  its flag, with `--no-interactive` and explicit-flag detection
+  skipping it. Target v0.4 (see [ROADMAP.md](../../ROADMAP.md)).
+- **Unblocks**: v0.4 authoring-ergonomics work (the new `--with-*`
+  flags and `aikata add` second wave).
+
+---
+
 ## Q-NAME
 
 ### Q-NAME-01 — npm / PyPI / domain availability
