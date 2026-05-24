@@ -80,15 +80,7 @@ func newAddLeafCmd(c components.Component) *cobra.Command {
 				Stdout:      cmd.OutOrStdout(),
 				Stderr:      cmd.ErrOrStderr(),
 			}
-			if err := c.Add(ctx); err != nil {
-				if errors.Is(err, components.ErrAlreadyApplied) {
-					// Soft success — the component reported nothing to do
-					// and printed its own notice on Stderr already.
-					return nil
-				}
-				return err
-			}
-			return nil
+			return c.Add(ctx)
 		},
 	}
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "print the plan without writing files")

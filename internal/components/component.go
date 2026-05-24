@@ -1,7 +1,6 @@
 package components
 
 import (
-	"errors"
 	"io"
 	"time"
 
@@ -17,6 +16,11 @@ type Component interface {
 	Name() string
 	Description() string
 	Status() string
+	// Add executes the component's authoring operation. Contract:
+	//   - failure must leave the filesystem unchanged (all-or-nothing)
+	//   - idempotent when feasible (return nil + notice on Stderr when
+	//     there is nothing to do)
+	//   - dry-run support is the caller's responsibility via ctx.DryRun
 	Add(ctx AddContext) error
 }
 
@@ -60,8 +64,3 @@ func (c AddContext) Now() time.Time {
 	}
 	return time.Now()
 }
-
-// ErrAlreadyApplied signals that a component is already present in
-// the target project. Callers can treat this as a soft success
-// (idempotent add) by printing a notice and exiting 0.
-var ErrAlreadyApplied = errors.New("components: already applied")
