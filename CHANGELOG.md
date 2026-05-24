@@ -38,6 +38,11 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   duplicate ADR numbers and gaps in the `0001..max` range at
   `LevelInfo`. Findings stay advisory because the project may
   legitimately retire a number.
+- `aikata doctor --json` emits a versioned machine-readable report on
+  stdout. Schema version `1` with `issues[]` and `summary{errors,
+  warnings, info}`; `line` and `code` are omitted when empty. The
+  schema is documented in SPEC.md §4.3. Combine with `--fix` to get
+  the post-fix report on a clean stream.
 - `aikata doctor --fix` repairs the trivially-fixable subset of
   issues: missing-frontmatter blocks are scaffolded with placeholder
   values, missing required keys (`project`, `status`, `version`,
