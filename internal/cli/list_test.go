@@ -100,7 +100,10 @@ func TestListAITools(t *testing.T) {
 		}
 	}
 	// Order must be alphabetical: claude, codex, cursor.
-	if idxClaude, idxCodex, idxCursor := strings.Index(got, "claude"), strings.Index(got, "codex"), strings.Index(got, "cursor"); !(idxClaude < idxCodex && idxCodex < idxCursor) {
+	idxClaude := strings.Index(got, "claude")
+	idxCodex := strings.Index(got, "codex")
+	idxCursor := strings.Index(got, "cursor")
+	if idxClaude >= idxCodex || idxCodex >= idxCursor {
 		t.Errorf("list ai-tools: not alphabetically sorted\nfull: %s", got)
 	}
 }

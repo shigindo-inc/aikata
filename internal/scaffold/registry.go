@@ -19,6 +19,9 @@ type PresetInfo struct {
 	Languages []string
 }
 
+// Status values used by PresetInfo.Status. StatusActive marks a preset
+// that init can scaffold today; StatusReserved holds a name for a
+// future release.
 const (
 	StatusActive   = "active"
 	StatusReserved = "reserved"
