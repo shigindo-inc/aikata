@@ -18,6 +18,40 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-05-24
+
+### Changed
+
+- New projects scaffolded by `aikata init` now store their config at
+  `.aikata/aikata.yaml` instead of `.ai/aikata.yaml`, completing the
+  ADR 0008 migration scheduled in v0.3.0. Existing projects continue
+  to load from `.ai/aikata.yaml`; readers prefer the new path when
+  both are present.
+
+### Added
+
+- `internal/config` gains a path resolver
+  (`Resolve(root) (path, isLegacy, error)`) plus atomic move helper
+  `MoveLegacyToPrimary`, used by `aikata generate` and `aikata doctor`.
+- `aikata generate` auto-migrates `.ai/aikata.yaml` to
+  `.aikata/aikata.yaml` on first run when only the legacy path
+  exists, printing a single `notice:` line to stderr. Failures
+  degrade to a warning and the run continues against the legacy
+  file so user work is never blocked.
+- `aikata doctor` reports legacy-path projects as a warning with
+  `Code: "config.legacy-path"`. `aikata doctor --fix` performs the
+  same atomic move; the warning falls silent once the primary path
+  exists.
+- Template README / ARCHITECTURE / .gitignore strings for the
+  standard, flutter, and typescript presets reflect the new path
+  (English + Japanese template sets).
+
+### Removed
+
+- The hard-coded `.ai/aikata.yaml` string in `aikata generate`'s
+  error path is replaced by `config.PrimaryPath(target)`; the legacy
+  path keeps working through fallback only.
+
 ## [0.3.1] - 2026-05-24
 
 ### Added

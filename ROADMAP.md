@@ -1,7 +1,7 @@
 ---
 project: aikata
 status: draft
-version: 0.3.1
+version: 0.3.2
 updated: 2026-05-24
 audience: [human, agent]
 ---
@@ -167,12 +167,36 @@ Shipped:
 - ADR 0009 records the `aikata update` (CLI version) vs
   `aikata sync` (project templates) split that v0.4 / v0.5 will land.
 
-Deferred to v0.3.2 (not blocking v0.3.1):
+---
 
-- [ ] `.ai/aikata.yaml` → `.aikata/aikata.yaml` migration per
-      [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md).
-      Reader fallback + auto-migrate on `aikata generate` + doctor
-      deprecation warning with `--fix` support.
+## v0.3.2 — Config namespace migration ✅ (released 2026-05-24)
+
+Completes the ADR 0008 migration of aikata's own configuration file
+from `.ai/aikata.yaml` to `.aikata/aikata.yaml`. New projects write
+the new path immediately; existing projects continue to read from
+the legacy path via fallback and are migrated automatically the
+first time `aikata generate` or `aikata doctor --fix` runs.
+
+Shipped:
+
+- `aikata init` writes `.aikata/aikata.yaml`.
+- Reader fallback (`internal/config.Resolve`) keeps v0.2 / v0.3.0 /
+  v0.3.1 projects working unchanged; the primary path wins when both
+  exist.
+- `aikata generate` auto-migrates `.ai/` → `.aikata/` on first run
+  (atomic move via temp + rename) and prints a single `notice:` to
+  stderr. Migration failures degrade to a warning so a user's run is
+  never blocked.
+- `aikata doctor` reports legacy-path projects as a warning with
+  `Code: "config.legacy-path"`. `aikata doctor --fix` performs the
+  same atomic move. The warning falls silent once the primary path
+  exists.
+- Template README / ARCHITECTURE / .gitignore copy for the standard,
+  flutter, and typescript presets (English and Japanese) was rewritten
+  to mention the new path.
+
+The legacy fallback is intentionally kept throughout the v0.x line;
+the decision to retire it is scheduled for v1.0.
 
 ---
 
@@ -315,6 +339,7 @@ previous one (`go install` stays the canonical baseline).
 | v0.2.1 | ✅ | ✅ | ✅ | — | — | — | — | — |
 | v0.3.0 | ✅ | ✅ | ✅ | — | — | — | — | — |
 | v0.3.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
+| v0.3.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.5 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6 | ✅ | ✅ | ✅ | ✅ | ✅ | `npx aikata` | tap | — |
