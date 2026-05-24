@@ -159,6 +159,19 @@ aikata completion powershell | Out-String | Invoke-Expression
 
 Run `aikata completion --help` for additional install paths.
 
+### Stay current (v0.4.2+)
+
+```bash
+aikata update --check
+```
+
+`aikata update --check` reads the GitHub Releases API and reports
+whether a newer aikata is available; it never modifies the installed
+binary. Add `--json` for the machine-readable envelope shared with
+`aikata doctor --json`. Avoid running it in a CI loop — the
+unauthenticated API rate limit (60 req/h per IP) is shaped for
+human-invoked use. Native self-update is planned for v0.6.
+
 ## Quickstart
 
 ```bash

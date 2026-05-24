@@ -260,19 +260,29 @@ Shipped:
   `.ai/aikata.yaml` to `.aikata/aikata.yaml`; `aikata doctor` now
   reports zero `config.legacy-path` warnings on the repo itself.
 
-Follow-up candidate for v0.4.x:
+---
 
-- [ ] `aikata update --check` — opt-in release check against GitHub
-      Releases. This is the first narrow step toward Claude Code-style
-      update behavior without changing installed binaries.
-- [ ] Native installer metadata — record whether the current binary came
-      from the install script, Homebrew, npm, `go install`, or an
-      unknown source so a later `aikata update` can choose the safe
-      update path.
-- [ ] If the metadata and checksum flow are low-risk, ship native
-      installer-managed `aikata update`; package-manager installs should
-      be delegated to `brew upgrade`, npm, or the relevant manager rather
-      than overwritten directly (ADR 0009).
+## v0.4.2 — Update check ✅ (released 2026-05-25)
+
+Lightweight follow-up that lands the read-only half of the ADR 0009
+`aikata update` surface so users can discover newer releases without
+leaving the terminal. Binary self-update remains scheduled for v0.6
+alongside the installer-source metadata layer.
+
+Shipped:
+
+- `aikata update --check` — opt-in release check against the GitHub
+  Releases API. Reports current / latest version and prints generic
+  upgrade guidance covering `go install`, the install script, and
+  manual GitHub download. Does not modify the installed binary.
+- `aikata update` (no flag) — prints a notice that self-update is
+  planned for v0.6 and points users at `--check`; exits 0 so scripts
+  don't surface false failures.
+- `--json` envelope shared with `doctor` / `list` / `describe`:
+  `{version: 1, kind: "update-check", current, latest, status,
+  release_url}`.
+- New `internal/release/` package owns the HTTP boundary plus the
+  minimal semver comparison; v0.6 self-update will reuse both.
 
 ---
 
@@ -297,6 +307,17 @@ without losing the user's edits.
 elsewhere, and scales to a monorepo.
 
 - [ ] `--monorepo` initialization with nested `AGENTS.md` per app.
+- [ ] Native installer metadata — record whether the current binary
+      came from the install script, Homebrew, npm, `go install`, or
+      an unknown source so `aikata update` can choose the safe
+      upgrade path. Originally a v0.4.x follow-up; consolidated here
+      because the metadata layer is the foundation every channel in
+      this milestone needs.
+- [ ] Native installer-managed `aikata update` (self-update) — when
+      the metadata + checksum flow is low-risk, ship self-update for
+      install-script / direct GitHub Release binaries. Package-manager
+      installs (Homebrew / npm / `go install`) remain delegated to
+      their owning tool per ADR 0009.
 - [ ] npm wrapper for `npx aikata` distribution.
 - [ ] Homebrew tap (`shigindo-inc/tap/aikata`) published from the
       release workflow. The v0.2.1 `curl | bash` script remains the
@@ -371,6 +392,7 @@ previous one (`go install` stays the canonical baseline).
 | v0.3.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
+| v0.4.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.5 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6 | ✅ | ✅ | ✅ | ✅ | ✅ | `npx aikata` | tap | — |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |

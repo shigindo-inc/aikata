@@ -18,6 +18,48 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-05-25
+
+Lightweight follow-up that lands the read-only half of the ADR 0009
+`aikata update` surface. Self-update (binary overwrite) remains
+scheduled for v0.6 alongside installer-source metadata.
+
+### Added
+
+- `aikata update --check` — opt-in release check against
+  `api.github.com/repos/shigindo-inc/aikata/releases/latest`.
+  Reports the running version, the latest published release, and a
+  generic upgrade guidance block covering `go install`, the install
+  script, and manual GitHub Release download. Exits 0 on every
+  outcome (up-to-date / update-available / dev-build /
+  ahead-of-latest); only network or parse failures exit 1.
+- `aikata update --check --json` — versioned envelope matching the
+  shape used by `doctor` / `list` / `describe`:
+  `{version: 1, kind: "update-check", current, latest, status,
+  release_url}`.
+- `aikata update` (no flag) — prints a notice that self-update is
+  planned for v0.6 and directs users at `--check`. Exits 0.
+- New `internal/release` package — minimal in-house semver parser
+  and GitHub Releases client with an injectable endpoint for
+  tests. v0.6 self-update will reuse both.
+
+### Changed
+
+- ROADMAP: v0.4.1 follow-up list cleaned up. `--check` moved to the
+  shipped v0.4.2 section; installer-source metadata and
+  installer-managed self-update relocated to v0.6 packaging cycle so
+  they ship alongside the Homebrew / npm channels they depend on.
+
+### Notes
+
+- Pre-release / pseudo-version inputs (e.g. local `go build` from a
+  dirty checkout) are classified as dev-build for now. aikata does
+  not ship semver pre-releases yet; the comparator learns the
+  distinction when one does.
+- The GitHub API is hit unauthenticated. The 60 req/h rate limit is
+  ample for human-invoked use; avoid calling `aikata update --check`
+  from CI loops.
+
 ## [0.4.1] - 2026-05-25
 
 Second wave of v0.4 — closes the remaining five `aikata add`
