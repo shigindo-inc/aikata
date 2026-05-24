@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/shigindo-inc/aikata/internal/components"
 	"github.com/shigindo-inc/aikata/internal/scaffold"
 )
 
@@ -30,7 +31,51 @@ func newListCmd() *cobra.Command {
 	cmd.AddCommand(newListPresetsCmd())
 	cmd.AddCommand(newListStacksCmd())
 	cmd.AddCommand(newListAIToolsCmd())
+	cmd.AddCommand(newListComponentsCmd())
 	return cmd
+}
+
+func newListComponentsCmd() *cobra.Command {
+	var jsonOut bool
+	cmd := &cobra.Command{
+		Use:   "components",
+		Short: "List components addable via `aikata add`",
+		Long: "Enumerate every component the `aikata add` subcommand knows\n" +
+			"about. Reserved entries are surfaced with a `(reserved)` suffix\n" +
+			"in text output and a status field in --json so callers can\n" +
+			"discover names held for a future release.",
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			all := components.All()
+			items := make([]listItem, 0, len(all))
+			for _, c := range all {
+				items = append(items, listItem{
+					Name:        c.Name(),
+					Status:      c.Status(),
+					Description: c.Description(),
+				})
+			}
+			return writeList(cmd.OutOrStdout(), "components", items, jsonOut, formatComponentText)
+		},
+	}
+	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report instead of the text format")
+	return cmd
+}
+
+// formatComponentText mirrors formatPresetText — a `(reserved)`
+// suffix marks non-active entries so the human output carries the
+// same status signal the JSON envelope does.
+func formatComponentText(out io.Writer, items []listItem) error {
+	for _, it := range items {
+		suffix := ""
+		if it.Status == components.StatusReserved {
+			suffix = " (reserved)"
+		}
+		if _, err := fmt.Fprintf(out, "%s%s\n", it.Name, suffix); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 const listJSONSchemaVersion = 1
