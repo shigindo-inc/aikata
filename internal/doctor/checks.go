@@ -24,7 +24,7 @@ var skippedDirs = map[string]struct{}{
 	".git": {}, "node_modules": {}, "build": {}, "dist": {},
 	".dart_tool": {}, ".next": {}, "vendor": {}, ".turbo": {},
 	".cursor": {}, ".github": {}, "testdata": {}, ".remember": {},
-	".aikata-proposed": {},
+	".serena": {}, ".aikata-proposed": {},
 }
 
 // skippedFiles names individual *.md files doctor should not inspect.
