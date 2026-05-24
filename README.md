@@ -286,17 +286,14 @@ For the comparison table, see [SPEC.md §1.3](./SPEC.md#13-differentiation).
 
 ## Contributing
 
-aikata follows the rules in [AGENTS.md](./AGENTS.md). The same rules
-apply to human and AI contributors. Highlights:
+External contributors: start from [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+It covers the quick-start build, where things live, the PR checklist,
+and the ADR workflow.
 
-- Conventional Commits (no AI signatures).
-- Tests required for new core logic.
-- New top-level files require an ADR.
-- The Do-No-Harm Policy ([ADR 0003](./docs/adr/0003-do-no-harm-policy.md))
-  applies to every optional feature.
-
-A `CONTRIBUTING.md` will land when aikata reaches public OSS status
-(v1.0 — see [ROADMAP.md](./ROADMAP.md)).
+Maintainers and AI agents: the canonical operational rules live in
+[AGENTS.md](./AGENTS.md). CONTRIBUTING.md is the human-friendly summary;
+AGENTS.md is what aikata itself dogfoods and what `aikata generate`
+projects into per-tool config files.
 
 ---
 

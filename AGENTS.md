@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-24
 audience: agent
 ---
 
@@ -12,6 +12,11 @@ audience: agent
 > repository. Tool-specific files (`CLAUDE.md`, `.cursor/rules/`, …),
 > when present, are **generated** from this file. If they disagree, this
 > file wins. See [ADR 0002](./docs/adr/0002-agents-md-as-canonical.md).
+
+> Human contributors: start from
+> [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the friendlier quick-start
+> and PR checklist. This file is the operational source of truth and
+> the input to `aikata generate`; CONTRIBUTING.md is a summary.
 
 ---
 
