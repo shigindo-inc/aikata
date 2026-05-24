@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/shigindo-inc/aikata/internal/components"
 	"github.com/shigindo-inc/aikata/internal/config"
 	"github.com/shigindo-inc/aikata/internal/templates"
 )
@@ -61,7 +62,7 @@ func Run(opts Options) error {
 		return err
 	}
 
-	presetDir, langDir, err := resolveLangDir("presets/"+opts.Preset, opts.Lang, opts.Stdout)
+	langDir, err := resolveLangDir("presets/"+opts.Preset, opts.Lang, opts.Stdout)
 	if err != nil {
 		return err
 	}
@@ -72,10 +73,6 @@ func Run(opts Options) error {
 	if len(files) == 0 {
 		return fmt.Errorf("scaffold: preset %q has no templates", opts.Preset)
 	}
-	// renderAll trims the lang-scoped prefix (e.g. "presets/minimal/en/")
-	// to compute target paths, so files render to the same location
-	// regardless of language.
-	_ = presetDir
 
 	nonEmpty, err := isNonEmpty(opts.TargetDir)
 	if err != nil {
@@ -97,10 +94,21 @@ func Run(opts Options) error {
 		return err
 	}
 
-	// Opt-in long-term memory slot (ADR 0004). Adds docs/memory/*.md
-	// independent of preset choice.
-	if err := addMemoryArtifacts(opts, rendered); err != nil {
-		return err
+	// Opt-in long-term memory slot (ADR 0004). The renderer lives in
+	// internal/components so `aikata add memory` shares the same code
+	// path.
+	if opts.WithMemory {
+		memFiles, err := components.RenderMemory(components.MemoryParams{
+			Lang:        opts.Lang,
+			ProjectName: opts.ProjectName,
+			Clock:       opts.Clock,
+		})
+		if err != nil {
+			return fmt.Errorf("scaffold: %w", err)
+		}
+		for k, v := range memFiles {
+			rendered[k] = v
+		}
 	}
 
 	if opts.DryRun {
@@ -225,81 +233,25 @@ func renderAll(files []string, presetDir string, opts Options) (map[string]strin
 	return rendered, nil
 }
 
-// addMemoryArtifacts renders the docs/memory/*.md slot when WithMemory
-// is set. The memory templates live under `memory/<lang>/` in the
-// embedded FS (separate from `presets/`) so they compose with every
-// preset and language.
-//
-// Do-No-Harm (ADR 0003 / 0004): when WithMemory is false this is a
-// no-op and no memory references appear in the rendered output.
-func addMemoryArtifacts(opts Options, rendered map[string]string) error {
-	if !opts.WithMemory {
-		return nil
-	}
-	root, err := templates.FS()
+// resolveLangDir picks the language-scoped directory under base via
+// templates.LangDir and emits the fallback notice to stdout when the
+// requested language is unavailable. Returns the embed path to the
+// chosen lang subdirectory (e.g. "presets/standard/en").
+func resolveLangDir(base, lang string, stdout io.Writer) (string, error) {
+	langDir, fellBack, err := templates.LangDir(base, lang)
 	if err != nil {
-		return err
+		return "", fmt.Errorf("scaffold: %w", err)
 	}
-	_, langDir, err := resolveLangDir("memory", opts.Lang, opts.Stdout)
-	if err != nil {
-		return err
-	}
-	data := templateData(opts)
-	return fs.WalkDir(root, langDir, func(p string, d fs.DirEntry, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
-		}
-		if d.IsDir() {
-			return nil
-		}
-		if !strings.HasSuffix(p, ".tmpl") {
-			return nil
-		}
-		content, err := templates.Render(p, data, opts.Clock)
-		if err != nil {
-			return err
-		}
-		rel := "docs/memory/" + strings.TrimSuffix(strings.TrimPrefix(p, langDir+"/"), ".tmpl")
-		rendered[rel] = content
-		return nil
-	})
-}
-
-// resolveLangDir picks the language-scoped directory under base for
-// Lang, falling back to "en" when Lang is empty or its directory is
-// missing in the embedded FS. The fallback is reported via stdout (if
-// supplied) so users discovering the missing translation see it.
-//
-// Returns (base, base+"/"+chosenLang).
-func resolveLangDir(base, lang string, stdout io.Writer) (string, string, error) {
-	root, err := templates.FS()
-	if err != nil {
-		return "", "", err
-	}
-	chosen := lang
-	if chosen == "" {
-		chosen = "en"
-	}
-	target := base + "/" + chosen
-	if _, err := fs.Stat(root, target); err != nil {
-		if !errors.Is(err, fs.ErrNotExist) {
-			return "", "", fmt.Errorf("scaffold: stat %s: %w", target, err)
-		}
-		// Fall back to "en"; surface the substitution so users see it.
+	if fellBack {
 		if stdout == nil {
 			stdout = os.Stderr
 		}
-		if chosen != "en" {
-			if _, werr := fmt.Fprintf(stdout, "scaffold: language %q not available for %s, falling back to en\n", chosen, base); werr != nil {
-				return "", "", fmt.Errorf("scaffold: write fallback notice: %w", werr)
-			}
-		}
-		target = base + "/en"
-		if _, err := fs.Stat(root, target); err != nil {
-			return "", "", fmt.Errorf("scaffold: %s/en not found: %w", base, err)
+		if _, werr := fmt.Fprintf(stdout,
+			"scaffold: language %q not available for %s, falling back to en\n", lang, base); werr != nil {
+			return "", fmt.Errorf("scaffold: write fallback notice: %w", werr)
 		}
 	}
-	return base, target, nil
+	return langDir, nil
 }
 
 // writeAll persists rendered content to TargetDir. Files inherit 0644
