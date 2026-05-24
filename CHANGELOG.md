@@ -18,6 +18,59 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-05-25
+
+Second wave of v0.4 — closes the remaining five `aikata add`
+components and brings `aikata init`'s optional-feature flag set to
+flag / prompt parity. No breaking changes; defaults preserve the
+v0.4.0 init tree byte-identically.
+
+### Added
+
+- `aikata add ai-tool <name>` — post-init counterpart of `aikata
+  init --ai-tools`. Validates against `internal/generate.KnownTools()`,
+  appends the tool to `cfg.AITools` (sorted), and persists via
+  `config.Save`. Idempotent on re-run; the per-tool artifact is
+  materialized by the next `aikata generate`.
+- `aikata add ui` / `add api` / `add tdd` / `add changelog` — four
+  single-file optional components emitting `UI.md` / `API.md` /
+  `docs/testing.md` / `CHANGELOG.md` respectively. Each refuses to
+  clobber an existing file; re-run is a no-op + notice on Stderr.
+  Implemented through a shared `singleFile` helper so a future
+  optional component is a one-line registry entry.
+- `aikata init --with-ui` / `--with-api` / `--with-tdd` /
+  `--with-changelog` flags. Each gates the corresponding component
+  into the init-time tree. The matching interactive prompt asks one
+  y/N question per flag (default N); explicit flags silently skip
+  the question.
+
+### Changed
+
+- `scaffold.Run` dispatch for optional components is now a small
+  table (`optionalSpecs`) covering memory plus the four new
+  single-file components. Adding the next component is one row plus
+  its existing `components.Render<Name>` shim — scaffold itself
+  stays component-agnostic.
+- `internal/cli/prompt.go` consolidates the y/N questions behind a
+  shared `askYesNo` helper. The order matches `scaffold.Run`'s
+  dispatch table.
+- SPEC.md §4.1 and ARCHITECTURE.md §3.2 "First shipped: v0.4.1"
+  markers replaced with the as-shipped wording.
+- Repository dogfood: aikata's own configuration moved from
+  `.ai/aikata.yaml` to `.aikata/aikata.yaml`. The legacy resolver
+  fallback remains for downstream projects (retirement scheduled for
+  v1.0 per ADR 0008).
+
+### Verified
+
+- Every v0.4.0 golden tree (`standard` / `minimal` /
+  `flutter` / `typescript` / `*-with-memory*` / `*-ja*`) remains
+  byte-identical. New `standard-with-extras/` fixture covers the
+  four `--with-*` flags together.
+- `aikata doctor` on the aikata repository reports zero errors and
+  zero warnings post-merge (`config.legacy-path` warning falls
+  silent).
+
 ## [0.4.0] - 2026-05-24
 
 First wave of v0.4 — authoring ergonomics for existing aikata
