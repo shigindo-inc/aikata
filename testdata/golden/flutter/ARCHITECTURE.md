@@ -32,7 +32,7 @@ samplekata/
 ├── GLOSSARY.md
 ├── .env.example
 ├── .gitignore
-├── .ai/
+├── .aikata/
 │   └── aikata.yaml
 ├── docs/
 │   ├── adr/

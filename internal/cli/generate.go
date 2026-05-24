@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -15,8 +14,9 @@ import (
 
 // newGenerateCmd builds the `aikata generate` subcommand.
 //
-// MVP scope (Task 7): Claude only. Reads .ai/aikata.yaml in the current
-// directory, looks up each enabled AI tool's Provider, and writes the
+// Reads the project config (`.aikata/aikata.yaml` preferred, with
+// fallback to `.ai/aikata.yaml` for projects predating v0.3.2 / ADR
+// 0008), looks up each enabled AI tool's Provider, and writes the
 // produced artifacts under cwd. Existing files are overwritten — that
 // is the explicit contract; generated artifacts are disposable per
 // ADR 0002.
@@ -24,24 +24,50 @@ func newGenerateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate",
 		Short: "Regenerate per-AI-tool configuration files from canonical sources",
-		Long: "Reads .ai/aikata.yaml in the current directory and emits per-AI-tool artifacts\n" +
-			"(CLAUDE.md, etc.) from the canonical AGENTS.md. Existing files are overwritten;\n" +
-			"generated artifacts are disposable (ADR 0002).",
+		Long: "Reads the aikata config (.aikata/aikata.yaml, with fallback to .ai/aikata.yaml\n" +
+			"for projects predating v0.3.2) in the current directory and emits per-AI-tool\n" +
+			"artifacts (CLAUDE.md, etc.) from the canonical AGENTS.md. Existing files are\n" +
+			"overwritten; generated artifacts are disposable (ADR 0002).",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
 			if err != nil {
 				return fmt.Errorf("generate: getwd: %w", err)
 			}
-			cfgPath := filepath.Join(target, ".ai", "aikata.yaml")
-			body, err := os.ReadFile(cfgPath)
+			cfgPath, isLegacy, err := config.Resolve(target)
 			if err != nil {
 				if errors.Is(err, os.ErrNotExist) {
 					return &ExitError{
 						Code: 2,
-						Err:  fmt.Errorf("%s not found; run `aikata init` first or cd into an aikata project", cfgPath),
+						Err:  fmt.Errorf("%s not found; run `aikata init` first or cd into an aikata project", config.PrimaryPath(target)),
 					}
 				}
+				return fmt.Errorf("generate: locate config: %w", err)
+			}
+			if isLegacy {
+				moved, migrateErr := config.MoveLegacyToPrimary(target)
+				switch {
+				case migrateErr != nil:
+					// Best-effort: surface the failure as a warning and
+					// keep going with the legacy file so the user's run
+					// is not blocked. The next aikata doctor --fix can
+					// retry once the underlying issue is resolved.
+					if _, werr := fmt.Fprintf(cmd.ErrOrStderr(),
+						"warning: failed to migrate %s -> %s (ADR 0008): %v\n",
+						config.LegacyPath(target), config.PrimaryPath(target), migrateErr); werr != nil {
+						return werr
+					}
+				case moved:
+					cfgPath = config.PrimaryPath(target)
+					if _, werr := fmt.Fprintf(cmd.ErrOrStderr(),
+						"notice: migrated %s -> %s (ADR 0008)\n",
+						config.LegacyPath(target), cfgPath); werr != nil {
+						return werr
+					}
+				}
+			}
+			body, err := os.ReadFile(cfgPath)
+			if err != nil {
 				return fmt.Errorf("generate: read %s: %w", cfgPath, err)
 			}
 			cfg, err := config.Unmarshal(body)

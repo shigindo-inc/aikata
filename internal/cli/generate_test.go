@@ -25,7 +25,7 @@ func TestGenerate_RequiresAikataYaml(t *testing.T) {
 	chdir(t, tmp)
 	_, err := runGenerate(t)
 	if err == nil {
-		t.Fatalf("expected error when .ai/aikata.yaml is missing")
+		t.Fatalf("expected error when .aikata/aikata.yaml is missing")
 	}
 	var ee *ExitError
 	if !errors.As(err, &ee) || ee.Code != 2 {
@@ -36,7 +36,7 @@ func TestGenerate_RequiresAikataYaml(t *testing.T) {
 func TestGenerate_AfterInitProducesCLAUDE(t *testing.T) {
 	tmp := t.TempDir()
 	chdir(t, tmp)
-	// Scaffold a standard preset (which seeds .ai/aikata.yaml).
+	// Scaffold a standard preset (which seeds .aikata/aikata.yaml).
 	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
 		t.Fatalf("init: %v", err)
 	}
@@ -71,13 +71,13 @@ func TestGenerate_MinimalAfterInitProducesCLAUDE(t *testing.T) {
 	if _, err := runInit(t, "samplekata", "--preset", "minimal", "--no-interactive"); err != nil {
 		t.Fatalf("init: %v", err)
 	}
-	// minimal preset doesn't include .ai/aikata.yaml, so generate
+	// minimal preset doesn't include .aikata/aikata.yaml, so generate
 	// should fail with our exit-2 message. This documents that
 	// `aikata generate` currently requires the standard preset (or a
-	// hand-written .ai/aikata.yaml) — refining this is a v0.2 concern.
+	// hand-written .aikata/aikata.yaml) — refining this is a v0.2 concern.
 	_, err := runGenerate(t)
 	if err == nil {
-		t.Fatalf("expected error: minimal does not include .ai/aikata.yaml")
+		t.Fatalf("expected error: minimal does not include .aikata/aikata.yaml")
 	}
 	var ee *ExitError
 	if !errors.As(err, &ee) || ee.Code != 2 {
@@ -92,7 +92,7 @@ func TestGenerate_CursorAndCodex(t *testing.T) {
 		t.Fatalf("init: %v", err)
 	}
 	// Rewrite ai_tools to enable claude + cursor + codex.
-	yamlPath := filepath.Join(tmp, ".ai", "aikata.yaml")
+	yamlPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
 	orig, err := os.ReadFile(yamlPath)
 	if err != nil {
 		t.Fatalf("read aikata.yaml: %v", err)
@@ -118,6 +118,56 @@ func TestGenerate_CursorAndCodex(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(tmp, rel)); err != nil {
 			t.Errorf("expected %s to exist after generate: %v", rel, err)
 		}
+	}
+}
+
+// TestGenerate_AutoMigratesLegacyAI verifies that an aikata generate
+// run on a v0.2 / v0.3.0 / v0.3.1 project (config under .ai/) moves
+// the file to .aikata/ before processing and prints the migration
+// notice on stderr.
+func TestGenerate_AutoMigratesLegacyAI(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
+		t.Fatalf("init: %v", err)
+	}
+	// Move the freshly-init'd .aikata/aikata.yaml to .ai/aikata.yaml
+	// to simulate a project from before ADR 0008 landed.
+	newPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
+	oldDir := filepath.Join(tmp, ".ai")
+	oldPath := filepath.Join(oldDir, "aikata.yaml")
+	if err := os.MkdirAll(oldDir, 0o755); err != nil {
+		t.Fatalf("mkdir legacy: %v", err)
+	}
+	if err := os.Rename(newPath, oldPath); err != nil {
+		t.Fatalf("rename to legacy: %v", err)
+	}
+	// .aikata/ remains empty; remove it so Resolve picks the legacy
+	// path on the first call.
+	if err := os.Remove(filepath.Dir(newPath)); err != nil {
+		t.Fatalf("rm empty .aikata dir: %v", err)
+	}
+
+	out, err := runGenerate(t)
+	if err != nil {
+		t.Fatalf("generate: %v (out: %s)", err, out)
+	}
+	if !strings.Contains(out, "migrated") {
+		t.Errorf("expected migration notice in output, got:\n%s", out)
+	}
+	if _, err := os.Stat(newPath); err != nil {
+		t.Errorf("expected .aikata/aikata.yaml after migration: %v", err)
+	}
+	if _, err := os.Stat(oldPath); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("expected .ai/aikata.yaml gone after migration; got: %v", err)
+	}
+	// Second run should be a clean no-op (no notice, primary already present).
+	out, err = runGenerate(t)
+	if err != nil {
+		t.Fatalf("generate (second run): %v", err)
+	}
+	if strings.Contains(out, "migrated") || strings.Contains(out, "deprecated") {
+		t.Errorf("second run unexpectedly printed migration text:\n%s", out)
 	}
 }
 
