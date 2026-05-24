@@ -18,6 +18,8 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-24
+
 ### Added
 
 - ADR 0007 records the document-taxonomy decision that built-in presets

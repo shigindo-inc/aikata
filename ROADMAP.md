@@ -1,7 +1,7 @@
 ---
 project: aikata
 status: draft
-version: 0.2.0
+version: 0.3.0
 updated: 2026-05-24
 audience: [human, agent]
 ---
@@ -112,43 +112,40 @@ Patch release tag `v0.2.1`. No new core features, no schema bump.
 
 ---
 
-## v0.3 — Fast follow-up (lightweight)
+## v0.3 — Fast follow-up (lightweight) ✅ (released 2026-05-24)
 
-**Goal**: close out the v0.2 surface with low-risk quality-of-life
-improvements, complete the scoped config-directory migration from ADR 0008,
-and put a minimal Claude-Code distribution surface in place.
+Closed out the v0.2 surface with low-risk core-CLI quality-of-life
+improvements. No template or preset content changed.
 
-- [ ] `aikata doctor --fix` for the trivially-fixable subset (bump
-      stale `updated:` to today, scaffold missing required frontmatter
-      keys). Non-trivial fixes stay manual.
-- [ ] `aikata doctor --json` machine-readable output.
-- [ ] ADR auto-numbering (next number = max existing + 1) — wired into
-      the `aikata add adr` command that lands in v0.4, but the numbering
-      helper ships now so doctor / scaffold can share it.
-- [ ] Normalize `aikata --version` output across install channels. `go
-      install` currently reports Go module versions with a `v` prefix
-      (`v0.2.1`), while GoReleaser binaries report `0.2.1`; prefer the
-      tagged form (`vX.Y.Z`) everywhere, likely by passing GoReleaser's
-      tag through ldflags or normalizing in `resolveVersion`.
-- [ ] Bring interactive `aikata init` prompts back to parity with the
-      supported non-interactive flags. At minimum, ask for document
-      language (`en|ja`) and AI-tool targets instead of only project name,
-      preset, and long-term memory. Audit the prompt against
-      [SPEC.md §4.1](./SPEC.md#41-aikata-init-name) and explicitly mark
-      any intentionally deferred questions.
-- [ ] Migrate aikata-owned config from `.ai/aikata.yaml` to
-      `.aikata/aikata.yaml` per
-      [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md). New
-      `init` output should use `.aikata/`; readers should fall back to the
-      legacy `.ai/` path with a deprecation warning through v0.x.
-- [ ] Promote `ROADMAP.md` into the `standard` preset. It represents the
-      durable "when / sequence" layer alongside `SPEC.md` (what / why),
-      `ARCHITECTURE.md` (how), and ADRs (decision rationale), so it should
-      not be hidden behind a narrow `--with-roadmap` flag.
-- [ ] Reserve `extended` as the future heavier preset name. For v0.3.x, it
-      may be listed or accepted only as a future-use alias that prints a
-      clear message and falls back to `standard`; do not add heavy generated
-      content until its document set is justified.
+Shipped in v0.3.0:
+
+- `aikata doctor --fix` repairs the trivially-fixable subset: missing
+  frontmatter blocks are scaffolded, missing required keys are
+  appended into the existing block, and stale `updated:` values are
+  bumped to today. `--dry-run` previews the count without writing.
+- `aikata doctor --json` emits a versioned (v1) machine-readable
+  report on stdout; the schema is documented in
+  [SPEC.md §4.3](./SPEC.md#43-aikata-doctor).
+- `aikata doctor adr-numbering` reports duplicate / gap ADR numbers
+  at `LevelInfo`. The numbering helper lives in `internal/adr/` and
+  will be reused by `aikata add adr` in v0.4.
+- `aikata --version` is normalized to `vX.Y.Z` across `go install`
+  and GoReleaser binaries. `cmd/aikata/main.go` also normalizes
+  defensively when ldflags pass a bare semver string.
+- `aikata init` interactive prompt is at flag parity for v0.3
+  (project name, preset, language, AI tools, long-term memory).
+  Questions whose flag was explicitly set on the CLI are silently
+  skipped. The `--ai-tools` flag itself is new (default `claude`).
+- `ROADMAP.md` joined the `standard` preset surface as the durable
+  when/sequence layer; `extended` reserved as the future heavier
+  preset name.
+- ADR 0007 (no generic `DESIGN.md`) and ADR 0008 (aikata-owned
+  `.aikata/` config namespace; migration scheduled for v0.3.x).
+
+Deferred to v0.3.x (not blocking v0.3.0):
+
+- [ ] `.ai/aikata.yaml` → `.aikata/aikata.yaml` migration per
+      [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md).
 - [ ] `aikata completion bash | zsh | fish | pwsh` — cobra-generated
       shell completion. Documented in README "Install".
 - [ ] `aikata list presets | stacks | ai-tools` and
