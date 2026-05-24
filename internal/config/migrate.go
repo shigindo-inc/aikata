@@ -65,7 +65,7 @@ func MoveLegacyToPrimary(root string) (bool, error) {
 // file at path or defaults to perm.
 func writeAtomic(path string, body []byte, perm os.FileMode) error {
 	dir := filepath.Dir(path)
-	tmp, err := os.CreateTemp(dir, ".aikata-migrate-*")
+	tmp, err := os.CreateTemp(dir, ".aikata-tmp-*")
 	if err != nil {
 		return err
 	}
