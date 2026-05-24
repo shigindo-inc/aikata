@@ -25,12 +25,24 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   `SPEC.md`, technical design in `ARCHITECTURE.md`, decision rationale in
   ADRs, stack conventions in `docs/stacks/`, and UI / UX guidance in
   optional `UI.md`.
+- ADR 0008 schedules a v0.3.x migration of aikata-owned configuration
+  from `.ai/aikata.yaml` to `.aikata/aikata.yaml`. New `init` output
+  will write to the new path; readers fall back to the legacy `.ai/`
+  path with a deprecation warning through v0.x. `ARCHITECTURE.md` and
+  `GLOSSARY.md` are updated to describe both paths and `ROADMAP.md`
+  v0.3 lists the migration work item.
 
 ### Changed
 
 - `ARCHITECTURE.md` and `ROADMAP.md` now describe `UI.md` as the future
   home for UI / UX / product-design guidance and explicitly steer future
   work away from a catch-all `DESIGN.md`.
+- `aikata --version` output is now normalized to the v-prefixed tag
+  form (`vX.Y.Z`) across install channels. GoReleaser binaries
+  previously reported the bare semver string while `go install`
+  reported the v-prefixed module version; both paths now agree.
+  `cmd/aikata/main.go` guards the format defensively even when ldflags
+  pass an unprefixed string.
 
 ## [0.2.1] - 2026-05-24
 

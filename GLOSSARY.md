@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -45,10 +45,19 @@ and how tool-specific files (e.g. `CLAUDE.md`) relate to it.
 
 ### `.ai/`
 
-Directory at the project root used to hold **AI-tool-facing artifacts** and
-the aikata config file (`.ai/aikata.yaml`). By default `aikata init` adds
-`.ai/` to `.gitignore` of the **target project**, but aikata's own
-repository keeps `.ai/` tracked (see ADR 0003).
+Legacy v0.1-v0.2 directory at the project root used to hold aikata's config
+file (`.ai/aikata.yaml`). ADR 0008 schedules a v0.3.x migration to the
+aikata-owned `.aikata/` namespace because `.ai/` is too generic for durable
+project state. During the v0.x line, commands should continue to read this
+legacy path as a fallback.
+
+### `.aikata/`
+
+Planned v0.3.x directory at the project root for **aikata-owned durable
+configuration**, primarily `.aikata/aikata.yaml`. It replaces `.ai/` as the
+preferred config namespace while generated tool-facing artifacts continue to
+live in their native locations (`CLAUDE.md`, `.cursor/rules/`, etc.). See
+[ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md).
 
 ---
 
@@ -227,7 +236,7 @@ core code (this guides the v1.x plugin design).
 
 Design rule: at most **8 non-hidden files** at the project root after
 `aikata init --preset standard`. Dot-files (`.gitignore`, `.env.example`,
-`.ai/`) do not count. Enforced by `aikata doctor`.
+`.ai/`, `.aikata/`) do not count. Enforced by `aikata doctor`.
 
 ---
 

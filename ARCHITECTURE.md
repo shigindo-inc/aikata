@@ -179,6 +179,10 @@ belongs in optional `UI.md` when enabled. See
 
 ## 4. Configuration File: `.ai/aikata.yaml`
 
+> **Path note**: v0.2 uses `.ai/aikata.yaml`. ADR 0008 schedules a
+> v0.3.x migration to `.aikata/aikata.yaml`, with readers falling back to
+> the legacy `.ai/` path during the v0.x line.
+
 ### 4.1 Schema (v1)
 
 ```yaml
