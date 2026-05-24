@@ -131,6 +131,7 @@ func checkFrontmatter(opts Options) ([]Issue, error) {
 		if lines == nil {
 			issues = append(issues, Issue{
 				Level: LevelError, File: rel, Line: 1,
+				Code: "frontmatter.missing",
 				Message: "missing YAML frontmatter (required keys: " +
 					strings.Join(frontmatterKeys, ", ") + ")",
 			})
@@ -140,6 +141,7 @@ func checkFrontmatter(opts Options) ([]Issue, error) {
 			if _, _, ok := frontmatterValue(lines, key); !ok {
 				issues = append(issues, Issue{
 					Level: LevelError, File: rel,
+					Code:    "frontmatter.missing-key." + key,
 					Message: fmt.Sprintf("frontmatter missing required key %q", key),
 				})
 			}
@@ -381,6 +383,7 @@ func checkUpdated(opts Options) ([]Issue, error) {
 		if t.Before(cutoff) {
 			issues = append(issues, Issue{
 				Level: LevelWarning, File: rel, Line: lineNum,
+				Code:    "updated.stale",
 				Message: fmt.Sprintf("updated %s is more than 365 days old", raw),
 			})
 		}

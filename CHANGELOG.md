@@ -38,6 +38,14 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   duplicate ADR numbers and gaps in the `0001..max` range at
   `LevelInfo`. Findings stay advisory because the project may
   legitimately retire a number.
+- `aikata doctor --fix` repairs the trivially-fixable subset of
+  issues: missing-frontmatter blocks are scaffolded with placeholder
+  values, missing required keys (`project`, `status`, `version`,
+  `updated`, `audience`) are appended into the existing block, and
+  stale `updated:` values are bumped to today. Combine with
+  `--dry-run` to preview the count without writing files. Other
+  findings (broken links, deprecated-ADR references, env-example
+  drift) remain manual.
 
 ### Changed
 
