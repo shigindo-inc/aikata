@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -46,14 +46,22 @@ what unblocks a decision, and the latest update date.
 
 ### Q-DESIGN-03 — Multilingual document structure
 
-- Two-file duplication (`SPEC.md` + `SPEC.ja.md`) is high-maintenance.
-- Two candidates:
-  - **(a) Translation-table**: canonical `SPEC.md` in one language plus
-    a sidecar `i18n/spec.ja.json` of (paragraph hash → translation).
-  - **(b) On-demand LLM translation**: ship one language; the user (or
-    a future `aikata draft`) translates on demand.
-- **Leading**: (b) for v0.x; revisit at v1.x.
-- **Unblocks**: a real bilingual user trying both.
+- **Status**: Partially answered by
+  [ADR 0006](../adr/0006-locale-and-japanese-documentation-policy.md).
+  aikata's own repository keeps English canonical docs and adds a
+  focused Japanese access layer under `docs/`; generated project
+  templates remain first-class for both `en` and `ja`.
+- **Open part**: whether v1.x should add a bilingual same-file mode
+  (Japanese for humans + English for LLMs in one canonical document),
+  a translation-table sidecar, or an on-demand translation workflow.
+- **Leading**: keep bilingual same-file mode deferred through v0.x.
+  Validate the current split with real Japanese users first:
+  English repo docs, `docs/*.ja.md` access docs, and `--lang ja`
+  generated templates.
+- **Unblocks decision**: at least one real project that needs both
+  Japanese human-facing prose and English LLM-facing prose in the same
+  canonical file.
+- **Updated**: 2026-05-24.
 
 ### Q-DESIGN-04 — Preset composition (`--preset flutter --preset oss`)
 

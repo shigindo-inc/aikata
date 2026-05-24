@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-23
+updated: 2026-05-24
 audience: [human, agent]
 ---
 
@@ -17,6 +17,16 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+### Added
+
+- ADR 0006 records the locale policy: aikata's own repository keeps
+  English canonical documentation, `--lang ja` generated templates
+  remain first-class, and Japanese repository documentation is a focused
+  access layer rather than a full mirror.
+- `docs/japanese-users.ja.md` provides a Japanese entry point for
+  installation context, `--lang ja` usage, and support-language
+  expectations.
 
 ## [0.2.0] - 2026-05-23
 
