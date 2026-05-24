@@ -25,7 +25,7 @@ func TestGenerate_RequiresAikataYaml(t *testing.T) {
 	chdir(t, tmp)
 	_, err := runGenerate(t)
 	if err == nil {
-		t.Fatalf("expected error when .ai/aikata.yaml is missing")
+		t.Fatalf("expected error when .aikata/aikata.yaml is missing")
 	}
 	var ee *ExitError
 	if !errors.As(err, &ee) || ee.Code != 2 {
@@ -36,7 +36,7 @@ func TestGenerate_RequiresAikataYaml(t *testing.T) {
 func TestGenerate_AfterInitProducesCLAUDE(t *testing.T) {
 	tmp := t.TempDir()
 	chdir(t, tmp)
-	// Scaffold a standard preset (which seeds .ai/aikata.yaml).
+	// Scaffold a standard preset (which seeds .aikata/aikata.yaml).
 	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
 		t.Fatalf("init: %v", err)
 	}
@@ -71,13 +71,13 @@ func TestGenerate_MinimalAfterInitProducesCLAUDE(t *testing.T) {
 	if _, err := runInit(t, "samplekata", "--preset", "minimal", "--no-interactive"); err != nil {
 		t.Fatalf("init: %v", err)
 	}
-	// minimal preset doesn't include .ai/aikata.yaml, so generate
+	// minimal preset doesn't include .aikata/aikata.yaml, so generate
 	// should fail with our exit-2 message. This documents that
 	// `aikata generate` currently requires the standard preset (or a
-	// hand-written .ai/aikata.yaml) — refining this is a v0.2 concern.
+	// hand-written .aikata/aikata.yaml) — refining this is a v0.2 concern.
 	_, err := runGenerate(t)
 	if err == nil {
-		t.Fatalf("expected error: minimal does not include .ai/aikata.yaml")
+		t.Fatalf("expected error: minimal does not include .aikata/aikata.yaml")
 	}
 	var ee *ExitError
 	if !errors.As(err, &ee) || ee.Code != 2 {
@@ -92,7 +92,7 @@ func TestGenerate_CursorAndCodex(t *testing.T) {
 		t.Fatalf("init: %v", err)
 	}
 	// Rewrite ai_tools to enable claude + cursor + codex.
-	yamlPath := filepath.Join(tmp, ".ai", "aikata.yaml")
+	yamlPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
 	orig, err := os.ReadFile(yamlPath)
 	if err != nil {
 		t.Fatalf("read aikata.yaml: %v", err)

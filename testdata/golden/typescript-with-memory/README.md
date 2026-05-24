@@ -45,7 +45,7 @@ npm run build
 
 ## Configuration
 
-aikata stores its own settings under [`.ai/aikata.yaml`](./.ai/aikata.yaml).
+aikata stores its own settings under [`.aikata/aikata.yaml`](./.aikata/aikata.yaml).
 Environment variables expected by samplekata are documented in
 [`.env.example`](./.env.example).
 

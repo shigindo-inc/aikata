@@ -209,7 +209,7 @@ var expectedStandardFiles = []string{
 	"SPEC.md",
 	".env.example",
 	".gitignore",
-	".ai/aikata.yaml",
+	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
 	"docs/prompts.md",
 	"docs/tasks/current.md",
@@ -239,9 +239,9 @@ func TestRun_StandardAikataYamlContent(t *testing.T) {
 	if err := Run(standardOpts(tmp)); err != nil {
 		t.Fatalf("Run: %v", err)
 	}
-	body, err := os.ReadFile(filepath.Join(tmp, ".ai", "aikata.yaml"))
+	body, err := os.ReadFile(filepath.Join(tmp, ".aikata", "aikata.yaml"))
 	if err != nil {
-		t.Fatalf("read .ai/aikata.yaml: %v", err)
+		t.Fatalf("read .aikata/aikata.yaml: %v", err)
 	}
 	out := string(body)
 	for _, needle := range []string{
@@ -311,7 +311,7 @@ var expectedFlutterFiles = []string{
 	"SPEC.md",
 	".env.example",
 	".gitignore",
-	".ai/aikata.yaml",
+	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
 	"docs/prompts.md",
 	"docs/stacks/flutter.md",
@@ -342,9 +342,9 @@ func TestRun_FlutterAikataYamlIncludesStack(t *testing.T) {
 	if err := Run(flutterOpts(tmp)); err != nil {
 		t.Fatalf("Run: %v", err)
 	}
-	body, err := os.ReadFile(filepath.Join(tmp, ".ai", "aikata.yaml"))
+	body, err := os.ReadFile(filepath.Join(tmp, ".aikata", "aikata.yaml"))
 	if err != nil {
-		t.Fatalf("read .ai/aikata.yaml: %v", err)
+		t.Fatalf("read .aikata/aikata.yaml: %v", err)
 	}
 	out := string(body)
 	for _, needle := range []string{"version: 1", "name: samplekata", "stacks:", "- flutter"} {
@@ -465,7 +465,7 @@ var expectedTypescriptFiles = []string{
 	"SPEC.md",
 	".env.example",
 	".gitignore",
-	".ai/aikata.yaml",
+	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
 	"docs/prompts.md",
 	"docs/stacks/typescript.md",
@@ -496,9 +496,9 @@ func TestRun_TypescriptAikataYamlIncludesStack(t *testing.T) {
 	if err := Run(typescriptOpts(tmp)); err != nil {
 		t.Fatalf("Run: %v", err)
 	}
-	body, err := os.ReadFile(filepath.Join(tmp, ".ai", "aikata.yaml"))
+	body, err := os.ReadFile(filepath.Join(tmp, ".aikata", "aikata.yaml"))
 	if err != nil {
-		t.Fatalf("read .ai/aikata.yaml: %v", err)
+		t.Fatalf("read .aikata/aikata.yaml: %v", err)
 	}
 	out := string(body)
 	for _, needle := range []string{"version: 1", "name: samplekata", "stacks:", "- typescript"} {
