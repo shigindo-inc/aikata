@@ -18,6 +18,63 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-24
+
+First wave of v0.4 — authoring ergonomics for existing aikata
+projects. Users can now add ADRs, stack guides, and the long-term
+memory slot post-init without re-running `aikata init`.
+
+### Added
+
+- `aikata add <component>` — new cobra parent that dispatches to a
+  registry-driven set of components. The parent is open/closed: new
+  components register themselves and the leaf subcommand appears
+  automatically. Currently active components:
+  - `aikata add adr "<title>"` — auto-numbered ADR skeleton under
+    `docs/adr/NNNN-<slug>.md`. Title is slug-cased via the shared
+    `templates.Kebab` helper; numbering uses the v0.3 `internal/adr`
+    helper. Duplicate slugs (at any number) are refused.
+  - `aikata add stack <name>` — adds `docs/stacks/<name>.md` and
+    appends the stack to `.aikata/aikata.yaml` `stacks:`. Bundled
+    stacks (`flutter`, `typescript`) reuse their preset template;
+    re-running on an already-registered stack is a no-op + notice and
+    user-edited files are never clobbered.
+  - `aikata add memory` — opt-in equivalent of `aikata init
+    --with-memory` for projects that did not enable it at init time.
+    Idempotent: existing files are preserved.
+- `aikata list components` — enumerates the components registry with
+  the same versioned `--json` envelope as `list presets|stacks|ai-tools`.
+  Reserved entries show a `(reserved)` suffix in text output.
+- `aikata add --dry-run` — shared flag on every leaf subcommand;
+  prints the plan to stdout without writing.
+- `internal/components` — the SSOT for the components registry,
+  consumed by `aikata add`, `aikata list components`, and the
+  scaffold integration for `aikata init --with-memory`. The Memory
+  renderer previously hard-coded in `scaffold.addMemoryArtifacts`
+  now lives here so init-time and add-time emit byte-identical
+  output.
+- `internal/config.Save(root, cfg)` and `internal/config.Load(root)`
+  — atomic write / load pair used by the new add subcommands when
+  mutating `.aikata/aikata.yaml`.
+- `internal/templates.LangDir(base, lang)` and `templates.Kebab(s)`
+  — lifted out of scaffold so the components package can share one
+  implementation.
+- `docs/adr/0010-memory-projection-deferred-to-v0.6.md` — records
+  the v0.4 investigation of ADR-0004 option δ (mirroring
+  `docs/memory/` into Claude / Cursor memory channels). Decision:
+  ship the authoring surface in v0.4 (this release), defer the
+  projection itself to v0.6 where the per-tool plugin spec will
+  own it.
+
+### Changed
+
+- `internal/scaffold.Stacks()` is removed. The bundled stack list is
+  now sourced from `components.Stacks()` so listing and adding share
+  one slice (SSOT).
+- `scaffold.addMemoryArtifacts` is gone; `scaffold.Run` calls
+  `components.RenderMemory` instead. Existing init golden trees
+  remain byte-identical (verified by the unchanged scaffold tests).
+
 ## [0.3.2] - 2026-05-24
 
 ### Changed

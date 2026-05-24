@@ -1,7 +1,7 @@
 ---
 project: aikata
 status: draft
-version: 0.3.2
+version: 0.4.0
 updated: 2026-05-24
 audience: [human, agent]
 ---
@@ -200,38 +200,52 @@ the decision to retire it is scheduled for v1.0.
 
 ---
 
-## v0.4 — Authoring ergonomics
+## v0.4.0 — Authoring ergonomics, first wave ✅ (released 2026-05-24)
 
 **Goal**: editing an aikata project is as ergonomic as creating one.
 
-- [ ] `aikata add <component>` — **first wave** (highest user value):
-      - `adr` — auto-numbered ADR skeleton (uses the v0.3 numbering
-        helper).
-      - `stack` — adds `docs/stacks/<name>.md` and updates
-        `.aikata/aikata.yaml` `stacks:`.
-      - `memory` — opt-in equivalent of `--with-memory` for projects
-        that did not enable it at init time.
-- [ ] `aikata add <component>` — **second wave** (lower individual
-      leverage, useful for completeness):
+Shipped:
+
+- `aikata add <component>` cobra parent + registry-driven dispatch
+  (`internal/components`). The leaf subcommand for every new
+  component appears automatically; no per-component switch in
+  `add.go`.
+- `aikata add adr "<title>"` — auto-numbered ADR skeleton under
+  `docs/adr/NNNN-<slug>.md` using the v0.3 `internal/adr` helper.
+  Refuses to clobber an existing ADR sharing the same slug.
+- `aikata add stack <name>` — writes `docs/stacks/<name>.md` and
+  appends the stack to `.aikata/aikata.yaml` `stacks:`. Bundled
+  stacks (flutter, typescript) reuse their preset template.
+  Idempotent on re-run; user-edited files survive.
+- `aikata add memory` — opt-in equivalent of `aikata init
+  --with-memory` for projects that did not enable the memory slot
+  at init time.
+- `aikata list components` — registry listing with the same
+  versioned `--json` envelope as `list presets|stacks|ai-tools`.
+- `internal/config.Save / Load` — atomic read/write pair behind the
+  add commands' config mutations.
+- [ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0.6.md)
+  — defers memory generate-projection (ADR-0004 option δ) to v0.6
+  so the per-tool plugin work can own the spec.
+- Command vocabulary cleanup carried over from v0.3.1 / ADR 0009:
+  `aikata update` reserved for CLI self-update, future template
+  diff-merge renamed to `aikata sync`. `aikata generate` continues
+  to refuse to rewrite canonical project documents as a side
+  effect.
+
+## v0.4.1 — Authoring ergonomics, second wave
+
+**Goal**: round out `aikata add` and the matching `aikata init`
+flags.
+
+- [ ] `aikata add <component>` — **second wave**:
       - `ai-tool`, `ui`, `api`, `tdd`, `changelog`.
       - `ui` adds optional `UI.md` for UI / UX / product-design guidance;
         do not introduce a generic `DESIGN.md` (ADR 0007).
 - [ ] `--with-ui`, `--with-api`, `--with-tdd`, `--with-changelog` flags
       on `aikata init`, matching the second-wave `aikata add` set.
-      Skippable if `aikata add` is judged sufficient. When any new init
-      flag lands, add the matching interactive prompt in the same change
-      so flag / prompt parity does not drift again.
-- [ ] Investigate memory generate-projection (ADR-0004 option δ): how
-      to mirror `docs/memory/*` into tool-specific channels (Claude
-      `.claude/memory/`, Cursor `.cursor/rules/long-term/`). Record
-      findings in a new ADR; ship only if the cost is low.
-- [ ] Command vocabulary cleanup before the project-sync feature lands:
-      reserve `aikata update` for updating the aikata CLI itself, and
-      rename the future template diff-merge command to `aikata sync`.
-      `aikata generate` may detect stale templates and point users to
-      `aikata sync`, but it must not rewrite canonical project
-      documents as a side effect. See
-      [ADR 0009](./docs/adr/0009-update-command-owns-cli-version-updates.md).
+      When any new init flag lands, add the matching interactive prompt
+      in the same change so flag / prompt parity does not drift again.
 
 Follow-up candidate for v0.4.x:
 
@@ -279,9 +293,11 @@ elsewhere, and scales to a monorepo.
       commands under `dist/claude-code/plugin/`. Distributable through
       the public plugin marketplace once the upstream listing flow is
       stable; otherwise as a `git clone` + `.claude/plugins/` symlink.
-- [ ] If v0.4 investigation justified it: ship
-      `aikata generate --memory` for at least one AI-tool memory
-      channel (ADR-0004 option δ).
+- [ ] Memory generate-projection (ADR-0004 option δ): the
+      [v0.4 ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0.6.md)
+      deferred this decision to v0.6 specifically so the plugin spec
+      can own it. Ship only if the per-tool memory channel layouts
+      have stabilized by the v0.6 cycle.
 
 ---
 
@@ -340,7 +356,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.3.0 | ✅ | ✅ | ✅ | — | — | — | — | — |
 | v0.3.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.3.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
-| v0.4 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
+| v0.4.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
+| v0.4.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.5 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6 | ✅ | ✅ | ✅ | ✅ | ✅ | `npx aikata` | tap | — |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |

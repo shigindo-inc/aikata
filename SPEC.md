@@ -148,10 +148,12 @@ must do and the user-visible behavior. Implementation details live in
 - In interactive mode (the default), ask: project name, language, AI tools,
   stack preset, optional features (UI / API / TDD / monorepo), and OSS
   intent. v0.3 covers project name, language, preset, AI tools, and the
-  long-term memory slot. The optional-feature questions and the
-  `extended` / OSS intent question land in v0.4 alongside their
-  matching non-interactive flags. Questions whose flag was explicitly
-  set on the command line are silently skipped.
+  long-term memory slot. The optional-feature questions
+  (`--with-ui` / `--with-api` / `--with-tdd` / `--with-changelog`)
+  land in v0.4.1 alongside their matching non-interactive flags; the
+  `extended` / OSS intent question remains scheduled for v1.0.
+  Questions whose flag was explicitly set on the command line are
+  silently skipped.
 - Default preset: `standard`. Default `--ai-tools`: `claude`. Default
   `--lang`: `en`.
 

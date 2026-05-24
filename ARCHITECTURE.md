@@ -148,10 +148,10 @@ the repository layout in §2 is the **producer**.
 
 | File / directory | Triggered by | First shipped | Purpose |
 |---|---|---|---|
-| `UI.md` | `--with-ui` or UI-style preset | v0.4 | UI / UX / product-design guidelines |
-| `API.md` | `--with-api` or API-style preset | v0.4 | API interface spec |
-| `docs/testing.md` | `--with-tdd` | v0.4 | Test strategy |
-| `CHANGELOG.md` | `--with-changelog` | v0.4 | Release notes |
+| `UI.md` | `--with-ui` or UI-style preset | v0.4.1 | UI / UX / product-design guidelines |
+| `API.md` | `--with-api` or API-style preset | v0.4.1 | API interface spec |
+| `docs/testing.md` | `--with-tdd` | v0.4.1 | Test strategy |
+| `CHANGELOG.md` | `--with-changelog` | v0.4.1 | Release notes |
 | `docs/memory/` (5 files) | `--with-memory` | v0.2 | Long-term agent memory (`user`, `feedback`, `project`, `reference` + `README`). See [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). |
 | `CONTRIBUTING.md` | `--oss` | v1.0 | Contributor guide |
 | `SECURITY.md` | `--oss` | v1.0 | Security policy |
