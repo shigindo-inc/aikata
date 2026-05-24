@@ -8,8 +8,12 @@ import "sort"
 var registry = []Component{
 	Adr,
 	AITool,
+	API,
+	Changelog,
 	Memory,
 	Stack,
+	TDD,
+	UI,
 }
 
 // All returns the full component list, sorted by Name. The slice is
