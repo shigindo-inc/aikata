@@ -45,9 +45,22 @@ func newGenerateCmd() *cobra.Command {
 				return fmt.Errorf("generate: locate config: %w", err)
 			}
 			if isLegacy {
-				fmt.Fprintf(cmd.ErrOrStderr(),
-					"notice: %s is deprecated; move to %s (ADR 0008). aikata doctor --fix can do it for you.\n",
-					config.LegacyPath(target), config.PrimaryPath(target))
+				moved, migrateErr := config.MoveLegacyToPrimary(target)
+				switch {
+				case migrateErr != nil:
+					// Best-effort: surface the failure as a warning and
+					// keep going with the legacy file so the user's run
+					// is not blocked. The next aikata doctor --fix can
+					// retry once the underlying issue is resolved.
+					fmt.Fprintf(cmd.ErrOrStderr(),
+						"warning: failed to migrate %s -> %s (ADR 0008): %v\n",
+						config.LegacyPath(target), config.PrimaryPath(target), migrateErr)
+				case moved:
+					cfgPath = config.PrimaryPath(target)
+					fmt.Fprintf(cmd.ErrOrStderr(),
+						"notice: migrated %s -> %s (ADR 0008)\n",
+						config.LegacyPath(target), cfgPath)
+				}
 			}
 			body, err := os.ReadFile(cfgPath)
 			if err != nil {
