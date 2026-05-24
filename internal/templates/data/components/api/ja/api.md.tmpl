@@ -1,0 +1,25 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# API
+
+{{.ProjectName}} の外部 / 内部 API の表層。契約レベルの決定
+（形・命名・バージョニング・エラー意味論）に絞って記述する。
+一般的なアーキテクチャ判断は `ARCHITECTURE.md` または
+`docs/adr/` の ADR に置く。
+
+## エンドポイント (Endpoints)
+
+TODO — プロジェクトが公開するエンドポイント（または RPC メソッド、
+GraphQL 操作、イベントなど）を列挙する。各項目は、操作名・入力・
+出力・呼び出し元が依存可能な事前/事後条件を含める。
+
+## 規約 (Conventions)
+
+TODO — 命名、バージョニング、ページネーション、エラーエンベロープ、
+認証など、すべてのエンドポイントが従う契約レベルのルール。
