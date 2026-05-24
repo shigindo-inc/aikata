@@ -33,7 +33,7 @@ func Helpers(clock Clock) template.FuncMap {
 		"joinSlash": func(parts ...string) string {
 			return strings.Join(parts, "/")
 		},
-		"kebab": toKebab,
+		"kebab": Kebab,
 	}
 }
 
@@ -60,12 +60,12 @@ func Render(path string, data any, clock Clock) (string, error) {
 	return buf.String(), nil
 }
 
-// toKebab converts s to kebab-case: ASCII lowercase, with runs of
+// Kebab converts s to kebab-case: ASCII lowercase, with runs of
 // non-alphanumeric characters collapsed into a single '-'. Leading and
-// trailing hyphens are trimmed. Intended for project-name slugs in
-// templates; not Unicode-aware on purpose (those normalizations belong
-// in a different helper, if ever needed).
-func toKebab(s string) string {
+// trailing hyphens are trimmed. Intended for slug derivation (project
+// names, ADR titles, stack identifiers); not Unicode-aware on purpose
+// — those normalizations belong in a different helper, if ever needed.
+func Kebab(s string) string {
 	var b strings.Builder
 	pendingHyphen := false
 	wroteAny := false

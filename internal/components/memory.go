@@ -164,10 +164,3 @@ func printMemoryPlan(w io.Writer, targetDir string, rendered map[string]string) 
 	}
 	return nil
 }
-
-func stderr(ctx AddContext) io.Writer {
-	if ctx.Stderr != nil {
-		return ctx.Stderr
-	}
-	return os.Stderr
-}
