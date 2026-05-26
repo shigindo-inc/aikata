@@ -122,9 +122,23 @@ func Run(opts Options) (RunResult, error) {
 		opts.Stderr = os.Stderr
 	}
 
-	cfg, _, err := config.Load(opts.Root)
+	// Per ADR 0011 D3, sync owns the schema migration: read via
+	// LoadMigrated so any forward-migrations registered with
+	// `config.aikataYamlMigrators` run before the merge sees the
+	// payload. v0.5 ships with zero registered migrations, so the
+	// path is effectively a pass-through; v2+ schemas slot in as
+	// one-row additions to the registry.
+	cfg, migrated, err := config.LoadMigrated(opts.Root)
 	if err != nil {
+		if errors.Is(err, config.ErrFutureSchema) {
+			return RunResult{}, fmt.Errorf("sync: %w; upgrade aikata via `aikata update --check`", err)
+		}
 		return RunResult{}, fmt.Errorf("sync: load config: %w", err)
+	}
+	if migrated {
+		if _, werr := fmt.Fprintln(opts.Stderr, "sync: migrated .aikata/aikata.yaml to the current schema version"); werr != nil {
+			return RunResult{}, werr
+		}
 	}
 
 	// Manifest may be absent. --rebaseline replaces the empty
