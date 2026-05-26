@@ -18,6 +18,23 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`aikata sync --rebaseline` no longer writes conflict markers into
+  user-customised files.** In v0.6.0, running `--rebaseline` on a
+  pre-v0.5 project performed a 2-way diff between current on-disk
+  content and the upstream rendering, treating every customised file
+  as a conflict and wrapping it in `<<<<<<<` / `>>>>>>>` markers.
+  Rebaseline is now non-destructive: it writes the manifest from the
+  current upstream rendering (matching what `aikata init` would write
+  for a fresh project) and exits without touching any source file.
+  The user's customisations then appear as `user-only-edit` on the
+  next `aikata sync` and are preserved. See ADR 0011 (Rebaseline
+  ancestor choice) for the design rationale.
+- **`aikata sync` error message clarifies that `--rebaseline` is
+  non-destructive**, removing the v0.6.0 footgun where users feared
+  the recommended remediation would overwrite their files.
+
 ## [0.6.0] - 2026-05-26
 
 Packaging-and-distribution milestone (partial). Ships the
