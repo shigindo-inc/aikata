@@ -333,7 +333,8 @@ one-shell-line elsewhere, and scales to a monorepo.
 
 v0.6.0 ships the **agent-doable subset**. User-action channels
 (Homebrew tap, npm wrapper, marketplace listing) are tracked under
-v0.6.1 below.
+v0.6.2 below. v0.6.1 between them is reserved for a regression fix
+in `aikata sync --rebaseline` (see its own section).
 
 Shipped:
 
@@ -354,7 +355,7 @@ Shipped:
   `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`). Installable
   manually today (`cp -r dist/claude-code/plugin/*
   ~/.claude/plugins/aikata/`); marketplace listing is tracked in
-  v0.6.1.
+  v0.6.2.
 
 Deferred again to v0.7+ (no projection in v0.6):
 
@@ -367,10 +368,35 @@ Deferred again to v0.7+ (no projection in v0.6):
   reports `docs/memory/` ↔ tool-channel drift; a follow-up ADR will
   pick the then-stable layout and supersede ADR 0012.
 
-## v0.6.1 — Channel publication (user-blocked)
+## v0.6.1 — `aikata sync --rebaseline` regression fix
+
+Unscheduled patch release. v0.6.0's `--rebaseline` flag walked into
+the 2-way diff branch with an empty ancestor table, classified every
+customised file as a true conflict, and wrote `<<<<<<< / >>>>>>>`
+markers into source files — the exact opposite of "non-destructive
+seeding". v0.6.1 makes `--rebaseline` skip the merge entirely and
+write only `.aikata/manifest.yaml`, with the manifest's ancestor
+hashes seeded from the **upstream rendering** so the user's
+customisations register as `user-only-edit` on the next sync.
+
+Originally planned v0.6.1 work (channel publication) is shifted to
+v0.6.2 below; nothing else lands in v0.6.1 so the fix can be tagged
+and shipped without coupling.
+
+- [x] `internal/sync/sync.go` — non-destructive rebaseline path.
+- [x] `ErrNoManifest` message rewritten to spell out
+      "non-destructive".
+- [x] ADR 0011 gains a "Rebaseline ancestor choice" subsection
+      explaining why ancestor = upstream rendering (not on-disk
+      bytes).
+- [x] Four new tests in `internal/sync/sync_test.go` covering
+      byte-preservation, no-merge-ran invariant, dry-run, and the
+      post-rebaseline integration scenario.
+
+## v0.6.2 — Channel publication (user-blocked)
 
 Tracking the v0.6 items that need a maintainer action outside the
-aikata repo. None of these block v0.6.0 itself; they ship as a
+aikata repo. None of these block v0.6.0 / v0.6.1; they ship as a
 follow-up patch once the user-side prerequisites land.
 
 - [ ] **Homebrew tap** (`shigindo-inc/tap/aikata`) published from
@@ -460,7 +486,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.4.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.5.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
-| v0.6.1 | ✅ | ✅ | ✅ | minimal | marketplace | `npx aikata` | tap | — |
+| v0.6.1 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.6.2 | ✅ | ✅ | ✅ | minimal | marketplace | `npx aikata` | tap | — |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
