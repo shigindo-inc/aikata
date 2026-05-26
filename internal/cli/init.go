@@ -28,6 +28,7 @@ func newInitCmd() *cobra.Command {
 		withAPI       bool
 		withTDD       bool
 		withChangelog bool
+		withMonorepo  bool
 		aiToolsCSV    string
 	)
 
@@ -59,6 +60,7 @@ func newInitCmd() *cobra.Command {
 					WithAPI:       cmd.Flags().Changed("with-api"),
 					WithTDD:       cmd.Flags().Changed("with-tdd"),
 					WithChangelog: cmd.Flags().Changed("with-changelog"),
+					WithMonorepo:  cmd.Flags().Changed("monorepo"),
 					Lang:          cmd.Flags().Changed("lang"),
 					AITools:       cmd.Flags().Changed("ai-tools"),
 				}
@@ -70,6 +72,7 @@ func newInitCmd() *cobra.Command {
 					WithAPI:       withAPI,
 					WithTDD:       withTDD,
 					WithChangelog: withChangelog,
+					WithMonorepo:  withMonorepo,
 					Lang:          lang,
 					AITools:       aiTools,
 				}, skip)
@@ -83,6 +86,7 @@ func newInitCmd() *cobra.Command {
 				withAPI = result.WithAPI
 				withTDD = result.WithTDD
 				withChangelog = result.WithChangelog
+				withMonorepo = result.WithMonorepo
 				lang = result.Lang
 				aiTools = result.AITools
 			}
@@ -111,6 +115,7 @@ func newInitCmd() *cobra.Command {
 				WithAPI:       withAPI,
 				WithTDD:       withTDD,
 				WithChangelog: withChangelog,
+				WithMonorepo:  withMonorepo,
 				Stacks:        stacksForPreset(preset),
 				AITools:       aiTools,
 				Stdout:        cmd.OutOrStdout(),
@@ -137,6 +142,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&withAPI, "with-api", false, "include API interface spec at API.md")
 	cmd.Flags().BoolVar(&withTDD, "with-tdd", false, "include test strategy at docs/testing.md")
 	cmd.Flags().BoolVar(&withChangelog, "with-changelog", false, "include release notes at CHANGELOG.md")
+	cmd.Flags().BoolVar(&withMonorepo, "monorepo", false, "configure as a monorepo with nested apps/<name>/AGENTS.md files (v0.6+)")
 	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .aikata/aikata.yaml (claude | cursor | codex)")
 
 	return cmd

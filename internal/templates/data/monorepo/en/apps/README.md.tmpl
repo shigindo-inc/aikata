@@ -1,0 +1,43 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# `apps/` — Monorepo Applications
+
+Each subdirectory of `apps/` is one application within the
+{{.ProjectName}} monorepo. The expected structure for an app is:
+
+```
+apps/<your-app>/
+├── AGENTS.md          # rules specific to this app
+├── <source files>
+└── <build config>
+```
+
+`AGENTS.md` is the only file aikata cares about; the rest is owned by
+your stack (`package.json`, `pubspec.yaml`, `go.mod`, etc.).
+
+## Adding a new app
+
+Copy the `_example/` template and rename it:
+
+```bash
+cp -r apps/_example apps/my-new-app
+$EDITOR apps/my-new-app/AGENTS.md   # fill in stack, test runner, etc.
+```
+
+`_example/` itself is excluded from convention-following tooling
+because of its leading underscore. Do not delete the example — it is
+the template that the next contributor will copy.
+
+## Per-app rule scope
+
+Rules inside `apps/<name>/AGENTS.md` apply **only when the agent is
+working under `apps/<name>/`**. The repository-root `AGENTS.md` is
+always in effect; per-app rules add to it without replacing it.
+
+See [`docs/monorepo.md`](../docs/monorepo.md) for the full convention.
