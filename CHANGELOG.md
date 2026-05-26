@@ -18,6 +18,55 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-26
+
+Packaging-and-distribution milestone (partial). Ships the
+agent-doable subset of the v0.6 ROADMAP entry: monorepo
+scaffolding, install-source metadata foundation, and a Claude Code
+plugin scaffold. Homebrew tap, npm wrapper, and plugin-marketplace
+listing are tracked under v0.6.1 because they require maintainer
+actions outside this repo.
+
+### Added
+
+- `aikata init --monorepo` — scaffold a project as a monorepo with
+  nested per-app `AGENTS.md` files (`apps/_example/AGENTS.md`),
+  an `apps/README.md` quick-start, and `docs/monorepo.md` explainer.
+  Flips `features.monorepo: true` in `.aikata/aikata.yaml`.
+  Interactive prompt grew a matching question.
+- `internal/install` — Source enum + `Detect(exePath)`
+  reading build-time ldflag, sibling `aikata.install-source` file,
+  `runtime/debug.ReadBuildInfo`, then falling back to `unknown`.
+  aikata never writes the file; install channels own it.
+- `scripts/install.sh` — writes
+  `${INSTALL_DIR}/aikata.install-source` after placing the binary.
+- `dist/claude-code/plugin/` — plugin scaffold bundling the
+  v0.3.1 skill (byte-identical copy) with four slash commands:
+  `/aikata-init`, `/aikata-generate`, `/aikata-doctor`,
+  `/aikata-sync`. `plugin.json` enforces `requires.minVersion`
+  v0.6.0.
+- `docs/adr/0012-memory-projection-deferral-extended.md` — defers
+  memory projection past v0.6 with a concrete revisit trigger.
+  Supersedes ADR 0010's "ship in v0.6 if stable" guidance.
+
+### Changed
+
+- ROADMAP.md splits the v0.6 entry into v0.6.0 (this release) and
+  v0.6.1 (user-blocker channels: Homebrew tap, npm, marketplace,
+  `--apply` self-update). Distribution-surface table gains v0.6.0
+  and v0.6.1 rows.
+- README ADR index updated through ADR 0012.
+
+### Notes
+
+- `internal/install.Detect()` ships as the **recording** half only.
+  Native `aikata update --apply` self-update lands in v0.6.1
+  alongside Homebrew / npm channels so the upgrade flow can be
+  tested against real installs.
+- `--monorepo` is orthogonal to the v0.4 single-file components.
+  A `--monorepo --with-memory` project gets both layers without
+  special-case coupling.
+
 ## [0.5.0] - 2026-05-26
 
 Headline feature: `aikata sync`. A long-lived aikata project can now

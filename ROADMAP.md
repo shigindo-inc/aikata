@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-05-24
+updated: 2026-05-26
 audience: [human, agent]
 ---
 
@@ -326,32 +326,38 @@ Known limitations (v0.5.x follow-up candidates):
 
 ---
 
-## v0.6 — Packaging & distribution
+## v0.6.0 — Packaging & distribution (partial) ✅ (released 2026-05-26)
 
-**Goal**: aikata is one-click installable in Claude Code, one-shell-line
-elsewhere, and scales to a monorepo.
+**Goal**: aikata is one-click installable in Claude Code,
+one-shell-line elsewhere, and scales to a monorepo.
 
-- [ ] `--monorepo` initialization with nested `AGENTS.md` per app.
-- [ ] Native installer metadata — record whether the current binary
-      came from the install script, Homebrew, npm, `go install`, or
-      an unknown source so `aikata update` can choose the safe
-      upgrade path. Originally a v0.4.x follow-up; consolidated here
-      because the metadata layer is the foundation every channel in
-      this milestone needs.
-- [ ] Native installer-managed `aikata update` (self-update) — when
-      the metadata + checksum flow is low-risk, ship self-update for
-      install-script / direct GitHub Release binaries. Package-manager
-      installs (Homebrew / npm / `go install`) remain delegated to
-      their owning tool per ADR 0009.
-- [ ] npm wrapper for `npx aikata` distribution.
-- [ ] Homebrew tap (`shigindo-inc/tap/aikata`) published from the
-      release workflow. The v0.2.1 `curl | bash` script remains the
-      portable fallback.
-- [ ] **Claude Code plugin** — bundle the v0.3 skill with
-      `/aikata-init`, `/aikata-generate`, and `/aikata-doctor` slash
-      commands under `dist/claude-code/plugin/`. Distributable through
-      the public plugin marketplace once the upstream listing flow is
-      stable; otherwise as a `git clone` + `.claude/plugins/` symlink.
+v0.6.0 ships the **agent-doable subset**. User-action channels
+(Homebrew tap, npm wrapper, marketplace listing) are tracked under
+v0.6.1 below.
+
+Shipped:
+
+- `aikata init --monorepo` — nested `apps/<name>/AGENTS.md` plus
+  `docs/monorepo.md` explainer; `features.monorepo` flipped in
+  `.aikata/aikata.yaml`. v0.4 single-file components stay
+  orthogonal; users opt in independently. Per-app `AGENTS.md` files
+  are user-managed (aikata does not regenerate them).
+- `internal/install` — detection layer that records which channel
+  placed the binary (`github-release`, `install-script`,
+  `go-install`, `homebrew`, `npm`, `unknown`). Reads either a
+  build-time ldflag or `<install-dir>/aikata.install-source` (written
+  by `scripts/install.sh`). Foundation for a v0.6.x native
+  `aikata update --apply` self-update; the consuming side ships once
+  Homebrew / npm channels exist.
+- `dist/claude-code/plugin/` — Claude Code plugin scaffold bundling
+  the v0.3.1 skill with four slash commands (`/aikata-init`,
+  `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`). Installable
+  manually today (`cp -r dist/claude-code/plugin/*
+  ~/.claude/plugins/aikata/`); marketplace listing is tracked in
+  v0.6.1.
+
+Deferred again to v0.7+ (no projection in v0.6):
+
 - ~~Memory generate-projection (ADR-0004 option δ).~~ **Deferred
   again** by [ADR 0012](./docs/adr/0012-memory-projection-deferral-extended.md):
   the per-tool memory channel layouts have not stabilized between
@@ -360,6 +366,30 @@ elsewhere, and scales to a monorepo.
   without on-disk projection. Revisit when a documented dogfooder
   reports `docs/memory/` ↔ tool-channel drift; a follow-up ADR will
   pick the then-stable layout and supersede ADR 0012.
+
+## v0.6.1 — Channel publication (user-blocked)
+
+Tracking the v0.6 items that need a maintainer action outside the
+aikata repo. None of these block v0.6.0 itself; they ship as a
+follow-up patch once the user-side prerequisites land.
+
+- [ ] **Homebrew tap** (`shigindo-inc/tap/aikata`) published from
+      the release workflow. Requires creating the
+      `shigindo-inc/homebrew-tap` GitHub repo and adding the
+      `HOMEBREW_TAP_GITHUB_TOKEN` secret to this repo.
+- [ ] **npm wrapper** for `npx aikata` distribution. Requires npm
+      org credentials (`shigindo-inc` scope) configured as
+      `NPM_TOKEN`. v0.6.0 ships `internal/install`'s Source enum
+      pre-populated with `npm`; the wrapper just needs to publish.
+- [ ] **Claude Code marketplace listing**. Requires the upstream
+      plugin marketplace listing flow to be available + a
+      maintainer to submit aikata for review. Manual install path
+      stays supported regardless.
+- [ ] **Native installer-managed `aikata update --apply`** —
+      consume `internal/install.Detect()` and pick the safe upgrade
+      path per channel. Foundation already shipped in v0.6.0; the
+      `--apply` flag ships once each channel above is real enough
+      to test in CI.
 
 ---
 
@@ -377,11 +407,18 @@ elsewhere, and scales to a monorepo.
 - [ ] Stable preset & template schema (semver guarantee).
 - [ ] Official docs site (`aikata.dev`).
 - [ ] External preset repositories (`aikata add stack github.com/foo/bar`).
-- [ ] **Plugin / skill distribution beyond Claude** — Cursor custom modes
-      or rule packs, Gemini CLI extensions, a VS Code extension that
-      wraps the CLI. Per-tool scope is driven by H1 dogfooding evidence;
-      the Claude plugin (v0.6) defines the surface shape and the others
-      mirror it.
+- [ ] **Plugin / skill distribution beyond Claude** — publish aikata in
+      native distribution shapes where they are stable enough to support:
+      Cursor custom modes or rule packs, Codex skills / plugins,
+      Gemini CLI extensions, and a VS Code extension that wraps the CLI.
+      Per-tool scope is driven by H1 dogfooding evidence; the Claude
+      plugin (v0.6) defines the surface shape and the others mirror it
+      only where the platform concepts line up.
+- [ ] Third-party skill / plugin marketplace interop policy. Decide
+      whether aikata should only document recommended installer commands
+      (for example `npx skills add ...`) or also scaffold manifests for
+      curated team skill sets. See
+      [Q-ECOSYSTEM-04](./docs/decisions/open-questions.md#q-ecosystem-04--external-skill--plugin-marketplace-interop).
 
 ---
 
@@ -422,7 +459,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.4.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.5.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
-| v0.6 | ✅ | ✅ | ✅ | ✅ | ✅ | `npx aikata` | tap | — |
+| v0.6.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.6.1 | ✅ | ✅ | ✅ | minimal | marketplace | `npx aikata` | tap | — |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
@@ -431,10 +469,12 @@ Plugin / skill scope grows monotonically too:
   no commands, no agents.
 - **v0.6** — adds `/aikata-init`, `/aikata-generate`, `/aikata-doctor`
   slash commands and is installable as a single plugin.
-- **v1.0** — mirrors the v0.6 plugin shape into Cursor, Gemini CLI, and
-  a thin VS Code wrapper. Per-tool feature parity is not promised; the
-  promise is "you can discover and invoke aikata from your tool's native
-  surface."
+- **v1.0** — mirrors the v0.6 plugin shape into Codex, Cursor, Gemini
+  CLI, and a thin VS Code wrapper where each platform has a stable native
+  extension surface. Per-tool feature parity is not promised; the promise
+  is "you can discover and invoke aikata from your tool's native surface."
+  Installing arbitrary third-party skills remains an ecosystem question,
+  not part of the core CLI contract yet.
 
 ---
 

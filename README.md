@@ -196,6 +196,29 @@ resolution.
 See [ADR 0011](./docs/adr/0011-aikata-sync-design.md) for the full
 merge contract.
 
+### Monorepo layout (v0.6+)
+
+```bash
+aikata init my-workspace --preset standard --monorepo --no-interactive
+```
+
+`--monorepo` adds workspace-style scaffolding on top of the chosen
+preset: `apps/README.md` plus `apps/_example/AGENTS.md` (the per-app
+rule template) and `docs/monorepo.md` (the convention explainer).
+The root `AGENTS.md` still carries repository-wide invariants; per-app
+`AGENTS.md` files layer on top inside each `apps/<name>/` tree.
+
+Copy `apps/_example/` to `apps/<your-app>/` to bootstrap a new app:
+
+```bash
+cp -r apps/_example apps/web
+$EDITOR apps/web/AGENTS.md   # fill in stack, test runner, deployment target
+```
+
+aikata does not regenerate per-app `AGENTS.md` files; they are
+user-managed. `aikata generate` continues to write the root
+`CLAUDE.md` / `.cursor/rules/main.mdc` only.
+
 ## Quickstart
 
 ```bash
