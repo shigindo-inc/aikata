@@ -18,6 +18,79 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-26
+
+Headline feature: `aikata sync`. A long-lived aikata project can now
+pull newer template content without losing user edits. The merge is
+documented in ADR 0011 and lives in `internal/sync/`.
+
+### Added
+
+- `aikata sync` — 3-way diff-merge against `.aikata/manifest.yaml`.
+  User edits are preserved; upstream-only changes auto-apply; true
+  conflicts get git-merge-style file-level markers
+  (`<<<<<<<`, `|||||||`, `=======`, `>>>>>>>`). Exit code 2 when
+  conflicts were written so CI loops can distinguish "merge needed"
+  from "merge failed".
+- `aikata sync --rebaseline` — seeds a manifest from current on-disk
+  state for projects that pre-date v0.5. One-shot operation; the
+  next normal sync uses the just-seeded ancestor.
+- `aikata sync --dry-run` — preview the merge plan without writing
+  anything to disk. Exits 0 even when conflicts are reported so CI
+  can sample drift safely.
+- `aikata sync --json` — versioned envelope shared with `doctor` /
+  `list` / `describe` / `update`:
+  `{version: 1, kind: "sync", files: [...], summary: {...}}`.
+- `aikata doctor --strict` — treats warning-level findings as
+  exit-3 failures. Default behaviour (errors only) is unchanged; the
+  flag is opt-in and is what the new dogfood CI gate uses.
+- `internal/config/manifest.go` — `Manifest` / `ManifestFile` types,
+  `BuildManifest` (deterministic, path-sorted), Marshal / Unmarshal,
+  Save / Load (atomic write), `HashContent` (SHA-256, hex). Written
+  by `aikata init` at scaffold time and consumed by `aikata sync`.
+- `internal/config/schema_migrate.go` — `AikataYamlMigrator` registry
+  and `MigrateAikataYaml` / `LoadMigrated` entry points. v0.5 ships
+  with zero registered migrations (v1 is the only schema in the
+  wild); v2+ lands as one map row plus the migrator function.
+- `internal/sync/` — new package implementing the merge core
+  (`Run`, `classifyAndMerge`, `mergeThreeWay`, `conflictMarkers`,
+  `derivePlan` / `inferFlags`). The cobra layer is the only consumer.
+- `internal/scaffold.Render(opts)` — render-only sibling of `Run`
+  used by `aikata sync` to re-render upstream templates without
+  touching the filesystem. `Run` continues to do the full
+  scaffold-then-write flow via a shared `renderInto` core.
+- `docs/adr/0011-aikata-sync-design.md` — accepted ADR locking in
+  the four design decisions: templates-only scope (no generated
+  artifacts), `.aikata.conflict`-style markers, schema migration
+  built into `sync`, and `.aikata/manifest.yaml` as the 3-way
+  ancestor.
+
+### Changed
+
+- `aikata init` now writes `.aikata/manifest.yaml` alongside
+  `.aikata/aikata.yaml`. The manifest captures the SHA-256 of every
+  template-derived file at render time so `sync` can do a real 3-way
+  merge instead of a noisy 2-way diff.
+- CI workflow runs `aikata doctor --strict` on every OS leg and now
+  asserts `aikata generate` is byte-identical to the committed
+  `CLAUDE.md` / `.cursor/rules/main.mdc` (Unix legs; Windows skipped
+  for line-ending parity with the existing `go mod tidy` exception).
+  This makes the v0.5 dogfooding milestone binding rather than
+  advisory.
+
+### Notes
+
+- Files written by `aikata add <component>` post-init are not yet
+  appended to the manifest. They are visible to `aikata sync` only
+  through a 2-way diff against the latest template. Tracking issue
+  / v0.5.x follow-up.
+- Conflict markers are emitted at file granularity (the entire body
+  is wrapped). Line-level diff3 is deferred to a v0.5.x follow-up
+  pending real-world feedback.
+- Dogfood gate currently runs after build + tests. If a contributor's
+  edit forgets to rerun `aikata generate`, the byte-identical check
+  blocks the merge with an actionable diff.
+
 ## [0.4.2] - 2026-05-25
 
 Lightweight follow-up that lands the read-only half of the ADR 0009
