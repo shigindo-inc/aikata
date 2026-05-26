@@ -172,6 +172,30 @@ binary. Add `--json` for the machine-readable envelope shared with
 unauthenticated API rate limit (60 req/h per IP) is shaped for
 human-invoked use. Native self-update is planned for v0.6.
 
+### Keep in sync (v0.5+)
+
+```bash
+aikata sync
+```
+
+`aikata sync` performs a 3-way diff-merge between your project's
+current state, the templates as they were when aikata first wrote
+them (recorded in `.aikata/manifest.yaml`), and the freshly rendered
+upstream templates. User edits are preserved; upstream-only changes
+auto-apply; true conflicts are written back with git-merge-style
+markers (`<<<<<<<`, `|||||||`, `=======`, `>>>>>>>`) for manual
+resolution.
+
+- `aikata sync --dry-run` previews the merge plan without writing.
+- `aikata sync --rebaseline` seeds a manifest from current state for
+  projects that pre-date v0.5 (one-shot; subsequent runs need no
+  flag).
+- `aikata sync --json` emits a machine-readable report with the same
+  envelope shape as `doctor` / `list` / `update`.
+
+See [ADR 0011](./docs/adr/0011-aikata-sync-design.md) for the full
+merge contract.
+
 ## Quickstart
 
 ```bash

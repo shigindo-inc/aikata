@@ -286,18 +286,43 @@ Shipped:
 
 ---
 
-## v0.5 — `aikata sync`
+## v0.5 — `aikata sync` ✅ (released 2026-05-26)
 
 **Goal**: keep an aikata project current with the canonical templates
 without losing the user's edits.
 
-- [ ] `aikata sync` interactive diff-merge — the single largest
-      feature on the roadmap. Carved out of v0.4 / v0.6 so it gets its
-      own release cycle and doesn't drag packaging work with it.
-- [ ] Migration framework for `.aikata/aikata.yaml` schema versions
-      (needed so `sync` can rewrite older configs forward-compatibly).
-- [ ] Dogfooding gate becomes binding (see "Dogfooding milestone"
-      below).
+- `aikata sync` 3-way diff-merge against `.aikata/manifest.yaml`. The
+  init-time template hashes act as the common ancestor; user edits
+  are preserved, upstream-only changes auto-apply, true conflicts get
+  git-merge-style file-level markers. ADR 0011 documents the
+  contract.
+- `aikata sync --rebaseline` seeds a manifest from current on-disk
+  state for projects that pre-date v0.5.
+- `aikata sync --dry-run` previews the merge without writing.
+- `--json` envelope joins the family used by `doctor` / `list` /
+  `describe` / `update`:
+  `{version: 1, kind: "sync", files: [...], summary: {...}}`.
+- Schema migration framework (`internal/config.MigrateAikataYaml` /
+  `LoadMigrated`) wired into `sync.Run` per ADR 0011 D3. v0.5 ships
+  with the registry empty (only v1 exists); v2+ schemas land as a
+  one-row addition.
+- Dogfooding gate is now **binding**: `aikata doctor --strict` runs
+  on every CI build and treats warnings as exit-3 failures, and a
+  new `aikata generate is byte-identical` step `git diff --exit-code`
+  s the committed `CLAUDE.md` / `.cursor/rules/main.mdc` against
+  fresh `aikata generate` output.
+
+Known limitations (v0.5.x follow-up candidates):
+
+- `aikata add <component>` post-init does not yet append to the
+  manifest, so files it adds are visible to sync only via 2-way
+  diff. Init-time scaffolds cover the common drift case.
+- Conflicts are written at file granularity (entire body wrapped in
+  markers). Line-level diff3 is a follow-up if real-world feedback
+  shows the file-level form is too coarse.
+- `--rebaseline` assumes the `standard` preset when no manifest
+  exists; explicit `--preset` override lands later if anyone reports
+  a mismatch.
 
 ---
 
@@ -393,7 +418,7 @@ previous one (`go install` stays the canonical baseline).
 | v0.4.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4.1 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.4.2 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
-| v0.5 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
+| v0.5.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6 | ✅ | ✅ | ✅ | ✅ | ✅ | `npx aikata` | tap | — |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
