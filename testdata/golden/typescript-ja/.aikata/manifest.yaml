@@ -1,0 +1,28 @@
+version: 1
+preset: typescript
+lang: ja
+files:
+    - path: .env.example
+      sha256: 69c15138eb2b4fa9e5d06a6b1b1ec4d102c04e471796f4381f4b33e3de6542a0
+    - path: .gitignore
+      sha256: ff0abd589edc9440a8225ee1a1e7fa9c264f99cadf59a68d1269fb8796355915
+    - path: AGENTS.md
+      sha256: d51469708bcd8e9acc21dd3b88de03c4bf45688f408f27c5bc036b6e21bb17ae
+    - path: ARCHITECTURE.md
+      sha256: 7a7ee1e7bf04b6b2dae7bdec084a71722a26d9a38b362e0870d3f04f11a1dd3d
+    - path: GLOSSARY.md
+      sha256: b508c85b85ebd7d8c9c6ba14488342dc74f6d1036ade5ffa996c8d9401321171
+    - path: README.md
+      sha256: 0ffa92d0563fb894bccf62d37bfeb467100eaebbf86863e96351eeb25fa0ddff
+    - path: SPEC.md
+      sha256: c8bc2351177ac08420c36b5625ed8c58dd3eb6cc9a7899379a06caec943c415f
+    - path: docs/adr/0001-record-architecture-decisions.md
+      sha256: 8d438e6b74e29e2fa02f85e4f58f73f976e80fdfa844ee419864456f6cfb372e
+    - path: docs/prompts.md
+      sha256: 7b0eae336b40729ac666506b6720d086086489404ed3422c9bf9336107c0d7fa
+    - path: docs/stacks/typescript.md
+      sha256: 7b49979b2fc86d01527c89bfe33b67446228a7aaf5a9587eeee8ec75134a5c5a
+    - path: docs/tasks/current.md
+      sha256: d3f5e708e6abe8a4d598a1f07c32d9a153ab2fa08dc971cbb3388d6847c2ec41
+    - path: docs/troubleshooting.md
+      sha256: 1bdc8e7662f4a458a10a87107cde9efcdb8b02ef73981e459297b8c1737bc5b1

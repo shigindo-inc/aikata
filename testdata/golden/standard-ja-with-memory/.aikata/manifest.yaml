@@ -1,0 +1,36 @@
+version: 1
+preset: standard
+lang: ja
+files:
+    - path: .env.example
+      sha256: 1a36ef61d90fe7acb2f1de7d55a59aba3f4f22bcb6b1b3e143c4be3a362c8cc2
+    - path: .gitignore
+      sha256: c422068c5b43edafa711d32523732c26d95478f5726565fb99077d454f25aaee
+    - path: AGENTS.md
+      sha256: 27546aa36e39139fffa245a6cee06a6577289828024bfbf63a51ba7bbbcb5e6e
+    - path: ARCHITECTURE.md
+      sha256: 7e37911d0b536cc80ffc505ff82c8096607e1fedaaae46261d1089c954559031
+    - path: GLOSSARY.md
+      sha256: e976e0f7da5cfaca579b6506aac43bcd97bc9cd245bf9fcd28d982646976bdd5
+    - path: README.md
+      sha256: 1c22bbd6dfa07f8f46df26769bce295928a77f5a52217459d430e9eb8bfbfefd
+    - path: SPEC.md
+      sha256: ac1660368147aad87aec8e808ffb79a67780adef1f9197ba9460925d5fca6db2
+    - path: docs/adr/0001-record-architecture-decisions.md
+      sha256: 084f93d2834f8e3b38af161b25c2002b6146eb2b22723e3575bdee57eb870d92
+    - path: docs/memory/README.md
+      sha256: dbdcd46e66c05d161a059a835e792d03732f947df4869680f35b2d9de4db7a80
+    - path: docs/memory/feedback.md
+      sha256: 41f84b4a2e3b4bc79c315d075564c8193f0255868b014324c1c47b84d8af11fb
+    - path: docs/memory/project.md
+      sha256: 0825bfaefc6e86fb77d4aa4b05950a378471286fc16bf1d38234efcdbe9b91ef
+    - path: docs/memory/reference.md
+      sha256: 17604981a5996b42dc1835427c3725d2a921886c5970e7c091e73e5f6ab7c162
+    - path: docs/memory/user.md
+      sha256: 4ffd4eb6038ba08bd5d0a338dddfd15ec03e949cc7e01e422944a85f9da352cc
+    - path: docs/prompts.md
+      sha256: cf75a91cefc00cb0247d0fe4ba1be5ba01c98e03c6051fe532465e4044c20daf
+    - path: docs/tasks/current.md
+      sha256: 95eede2cb1879b5048334d877ab70cc07fd9104d39850becb8372baa2ae750fb
+    - path: docs/troubleshooting.md
+      sha256: 40d841b8d039e64433ab512c5782ef93e5eed5801c055f94c9bdbc3fe6474a60

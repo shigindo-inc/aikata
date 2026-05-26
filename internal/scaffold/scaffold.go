@@ -142,6 +142,21 @@ func Run(opts Options) error {
 		}
 	}
 
+	// Build the sync manifest (.aikata/manifest.yaml) from the
+	// just-rendered file set, excluding mutable / circular entries.
+	// ADR 0011 D4: future `aikata sync` reads this as the common
+	// ancestor for a 3-way merge. The manifest itself is added to
+	// `rendered` so writeAll and printDryRun treat it like any
+	// other emitted file.
+	manifestRel := config.PrimaryDir + "/" + config.ManifestFilename
+	configRel := config.PrimaryDir + "/" + config.Filename
+	manifest := config.BuildManifest(opts.Preset, opts.Lang, rendered, []string{manifestRel, configRel})
+	manifestBytes, err := config.MarshalManifest(manifest)
+	if err != nil {
+		return err
+	}
+	rendered[manifestRel] = string(manifestBytes)
+
 	if opts.DryRun {
 		return printDryRun(opts.Stdout, opts.TargetDir, rendered)
 	}

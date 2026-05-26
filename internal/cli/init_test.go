@@ -183,7 +183,7 @@ func TestInit_DryRunWritesNothing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("init dry-run: %v", err)
 	}
-	if !strings.Contains(out, "Would write 3 file(s)") {
+	if !strings.Contains(out, "Would write 4 file(s)") {
 		t.Errorf("dry-run output missing summary: %q", out)
 	}
 	entries, err := os.ReadDir(tmp)
