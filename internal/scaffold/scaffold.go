@@ -71,18 +71,6 @@ func Run(opts Options) error {
 		return err
 	}
 
-	langDir, err := resolveLangDir("presets/"+opts.Preset, opts.Lang, opts.Stdout)
-	if err != nil {
-		return err
-	}
-	files, err := listTemplateFiles(langDir)
-	if err != nil {
-		return err
-	}
-	if len(files) == 0 {
-		return fmt.Errorf("scaffold: preset %q has no templates", opts.Preset)
-	}
-
 	nonEmpty, err := isNonEmpty(opts.TargetDir)
 	if err != nil {
 		return err
@@ -91,16 +79,59 @@ func Run(opts Options) error {
 		return ErrTargetDirNotEmpty
 	}
 
-	rendered, err := renderAll(files, langDir, opts)
+	rendered, err := renderInto(opts)
 	if err != nil {
 		return err
+	}
+
+	if opts.DryRun {
+		return printDryRun(opts.Stdout, opts.TargetDir, rendered)
+	}
+
+	return writeAll(opts.TargetDir, rendered)
+}
+
+// Render returns the in-memory file set that Run would write, without
+// touching the filesystem and without enforcing the
+// "target directory empty" rule. `aikata sync` uses this entry point
+// to re-render upstream templates against the current project's
+// scaffold options so the merge has a fresh "theirs" side. Force and
+// DryRun in opts are ignored by Render; TargetDir is not read or
+// written.
+func Render(opts Options) (map[string]string, error) {
+	if err := opts.validate(); err != nil {
+		return nil, err
+	}
+	return renderInto(opts)
+}
+
+// renderInto is the shared rendering core for Run and Render. It does
+// every step Run performs except the empty-directory precheck and the
+// final writeAll / dry-run. The returned map is keyed by
+// target-relative path and includes `.aikata/manifest.yaml`.
+func renderInto(opts Options) (map[string]string, error) {
+	langDir, err := resolveLangDir("presets/"+opts.Preset, opts.Lang, opts.Stdout)
+	if err != nil {
+		return nil, err
+	}
+	files, err := listTemplateFiles(langDir)
+	if err != nil {
+		return nil, err
+	}
+	if len(files) == 0 {
+		return nil, fmt.Errorf("scaffold: preset %q has no templates", opts.Preset)
+	}
+
+	rendered, err := renderAll(files, langDir, opts)
+	if err != nil {
+		return nil, err
 	}
 
 	// Preset-specific post-render artifacts that aren't expressed as
 	// markdown templates. Keep this list short — when it grows past two
 	// or three branches, lift it into internal/presets.
 	if err := addPresetArtifacts(opts, rendered); err != nil {
-		return err
+		return nil, err
 	}
 
 	// Opt-in optional components. Each renderer lives in
@@ -135,7 +166,7 @@ func Run(opts Options) error {
 		}
 		files, err := spec.render()
 		if err != nil {
-			return fmt.Errorf("scaffold: %w", err)
+			return nil, fmt.Errorf("scaffold: %w", err)
 		}
 		for k, v := range files {
 			rendered[k] = v
@@ -144,24 +175,19 @@ func Run(opts Options) error {
 
 	// Build the sync manifest (.aikata/manifest.yaml) from the
 	// just-rendered file set, excluding mutable / circular entries.
-	// ADR 0011 D4: future `aikata sync` reads this as the common
-	// ancestor for a 3-way merge. The manifest itself is added to
-	// `rendered` so writeAll and printDryRun treat it like any
-	// other emitted file.
+	// ADR 0011 D4: `aikata sync` reads this as the common ancestor
+	// for the 3-way merge. The manifest itself is added to `rendered`
+	// so writeAll and printDryRun treat it like any other emitted
+	// file.
 	manifestRel := config.PrimaryDir + "/" + config.ManifestFilename
 	configRel := config.PrimaryDir + "/" + config.Filename
 	manifest := config.BuildManifest(opts.Preset, opts.Lang, rendered, []string{manifestRel, configRel})
 	manifestBytes, err := config.MarshalManifest(manifest)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	rendered[manifestRel] = string(manifestBytes)
-
-	if opts.DryRun {
-		return printDryRun(opts.Stdout, opts.TargetDir, rendered)
-	}
-
-	return writeAll(opts.TargetDir, rendered)
+	return rendered, nil
 }
 
 // addPresetArtifacts injects non-template files that a preset is
