@@ -18,6 +18,20 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-05-26
+
+Unscheduled patch release. Headline fix is `aikata sync --rebaseline`:
+v0.6.0 walked into a 2-way diff path with an empty ancestor table and
+silently wrote `<<<<<<<` / `>>>>>>>` conflict markers into every
+customised source file. v0.6.1 makes `--rebaseline` non-destructive
+(seeds the manifest only; never touches source files) and fixes a
+second `install.sh` footgun where an older `aikata` earlier on `$PATH`
+would silently shadow the freshly installed binary.
+
+The v0.6.1 ROADMAP slot was originally channel publication (Homebrew
+tap, npm, marketplace, native `update --apply`); that work shifts to
+v0.6.2.
+
 ### Fixed
 
 - **`aikata sync --rebaseline` no longer writes conflict markers into
@@ -30,10 +44,23 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   for a fresh project) and exits without touching any source file.
   The user's customisations then appear as `user-only-edit` on the
   next `aikata sync` and are preserved. See ADR 0011 (Rebaseline
-  ancestor choice) for the design rationale.
+  ancestor choice) for the design rationale. (#83)
 - **`aikata sync` error message clarifies that `--rebaseline` is
   non-destructive**, removing the v0.6.0 footgun where users feared
-  the recommended remediation would overwrite their files.
+  the recommended remediation would overwrite their files. (#83)
+- **`scripts/install.sh` warns when another `aikata` shadows the
+  freshly installed binary.** Previously a stale `~/go/bin/aikata`
+  earlier on `$PATH` would silently win over the newly installed
+  `~/.local/bin/aikata`, so `aikata --version` kept reporting the old
+  version after a successful install. The script now compares
+  `command -v aikata` against `${INSTALL_DIR}/${BINARY}` and prints a
+  remediation hint when they differ. (#82)
+
+### Changed
+
+- `dist/README.md` clarifies the supported scope of the `dist/`
+  directory for Codex skills and third-party skill marketplaces; no
+  behaviour change. (#81)
 
 ## [0.6.0] - 2026-05-26
 

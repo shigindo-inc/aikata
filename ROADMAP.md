@@ -368,7 +368,7 @@ Deferred again to v0.7+ (no projection in v0.6):
   reports `docs/memory/` ↔ tool-channel drift; a follow-up ADR will
   pick the then-stable layout and supersede ADR 0012.
 
-## v0.6.1 — `aikata sync --rebaseline` regression fix
+## v0.6.1 — `aikata sync --rebaseline` regression fix ✅ (released 2026-05-26)
 
 Unscheduled patch release. v0.6.0's `--rebaseline` flag walked into
 the 2-way diff branch with an empty ancestor table, classified every
@@ -392,6 +392,10 @@ and shipped without coupling.
 - [x] Four new tests in `internal/sync/sync_test.go` covering
       byte-preservation, no-merge-ran invariant, dry-run, and the
       post-rebaseline integration scenario.
+- [x] Hitchhiking on the same release: `scripts/install.sh` warns
+      when another `aikata` earlier on `$PATH` shadows the freshly
+      installed binary (#82); `dist/README.md` clarifies Codex /
+      third-party skill scope (#81).
 
 ## v0.6.2 — Channel publication (user-blocked)
 
