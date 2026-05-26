@@ -9,8 +9,17 @@ them as plain assets so users can copy them where they belong.
 ```
 dist/
 └── claude-code/
-    └── skill/
-        └── SKILL.md   ← minimal Claude Code skill (v0.3.1+)
+    ├── skill/
+    │   └── SKILL.md   ← minimal Claude Code skill (v0.3.1+)
+    └── plugin/
+        ├── plugin.json
+        ├── README.md
+        ├── skills/aikata.md   ← byte-identical copy of skill/SKILL.md
+        └── commands/
+            ├── aikata-init.md
+            ├── aikata-generate.md
+            ├── aikata-doctor.md
+            └── aikata-sync.md
 ```
 
 ## Claude Code skill
@@ -37,10 +46,24 @@ curl -fsSL -o ~/.claude/skills/aikata.md \
 Restart Claude Code, then ask it about scaffolding or regenerating an
 aikata project — it will pick up the skill automatically.
 
-A fuller distribution (slash commands `/aikata-init`, `/aikata-generate`,
-`/aikata-doctor`; sub-agents; hooks) lands in v0.6 as a Claude Code
-*plugin* under `dist/claude-code/plugin/`. The skill above is forward
-compatible — the plugin extends it rather than replacing it.
+## Claude Code plugin (v0.6+)
+
+The v0.6 release adds `dist/claude-code/plugin/` — a Claude Code
+plugin that bundles the same skill plus four slash commands:
+`/aikata-init`, `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`.
+
+To install it from a local checkout:
+
+```bash
+mkdir -p ~/.claude/plugins/aikata
+cp -r dist/claude-code/plugin/* ~/.claude/plugins/aikata/
+```
+
+Marketplace listing (one-click install) is deferred to a later v0.6.x
+release once the upstream listing flow is stable; the manual install
+above is the supported path today. The standalone skill at
+`dist/claude-code/skill/SKILL.md` continues to work for users who do
+not want the slash commands.
 
 ## Other tools
 
