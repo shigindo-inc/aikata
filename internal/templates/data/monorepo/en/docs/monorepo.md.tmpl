@@ -1,0 +1,66 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Monorepo conventions for {{.ProjectName}}
+
+{{.ProjectName}} is configured as a **monorepo** (`features.monorepo`
+in `.aikata/aikata.yaml`). aikata supports this layout by accepting
+**nested `AGENTS.md` files**, one per app, layered on top of the
+repository-root rules.
+
+## Layout
+
+```
+{{.ProjectName}}/
+├── AGENTS.md              # repository-wide rules (invariants)
+├── SPEC.md / ARCHITECTURE.md / GLOSSARY.md
+├── apps/
+│   ├── README.md          # how to add an app under apps/
+│   └── _example/
+│       └── AGENTS.md      # per-app rule template (copy to make new apps)
+└── docs/
+    └── monorepo.md        # this file
+```
+
+`apps/_example/` is a template, not a real app. Underscore-prefixed
+directories are skipped by tooling that walks `apps/`; copy it to
+`apps/<your-app>/` to start a new app under the monorepo.
+
+## Layered rules
+
+When an agent works inside `apps/<name>/`, both `AGENTS.md` files
+apply:
+
+1. `apps/<name>/AGENTS.md` carries app-specific rules (its stack, its
+   test runner, its deployment target, its style overrides).
+2. `AGENTS.md` at the repository root carries monorepo-wide rules
+   (cross-app coding conventions, shared CI, release policy, the
+   `aikata generate` contract).
+
+The root rules are inherited; the per-app rules **add to** the root,
+they do not replace it. When the two conflict, the per-app file wins
+within its directory tree because it is the more specific scope.
+
+## Why not one giant `AGENTS.md`?
+
+Because the rules that govern your Flutter app's pubspec workflow do
+not also govern your TypeScript SDK's `npm publish` flow. Splitting
+them keeps each file scannable and lets the agent load only what
+matters for the directory it is working in.
+
+If your project is small enough that one `AGENTS.md` would be fine,
+do not enable `--monorepo` — the flag is opt-in for a reason.
+
+## `aikata generate` in a monorepo
+
+`aikata generate` reads the **root** `AGENTS.md` and projects it into
+the per-tool files (`CLAUDE.md`, `.cursor/rules/main.mdc`) at the
+repository root. Per-app `AGENTS.md` files are user-managed; aikata
+does not regenerate them. Most AI tools (Claude Code, Cursor) already
+read nested `AGENTS.md` files natively, so no per-app projection is
+required.

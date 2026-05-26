@@ -11,8 +11,8 @@ import (
 func noSkip() promptSkip { return promptSkip{} }
 
 func TestRunPrompt_HappyPath(t *testing.T) {
-	// Order: name, preset, lang, ai-tools, memory, ui, api, tdd, changelog.
-	in := strings.NewReader("myproj\nminimal\nja\nclaude,cursor\ny\ny\nn\ny\nn\n")
+	// Order: name, preset, lang, ai-tools, memory, ui, api, tdd, changelog, monorepo.
+	in := strings.NewReader("myproj\nminimal\nja\nclaude,cursor\ny\ny\nn\ny\nn\nn\n")
 	var out bytes.Buffer
 	got, err := runPrompt(in, &out, promptResult{Preset: "standard", Lang: "en"}, noSkip())
 	if err != nil {
@@ -38,7 +38,7 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 			[4]bool{got.WithUI, got.WithAPI, got.WithTDD, got.WithChangelog})
 	}
 	prompts := out.String()
-	for _, needle := range []string{"Project name", "Preset", "Document language", "AI tools", "memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md"} {
+	for _, needle := range []string{"Project name", "Preset", "Document language", "AI tools", "memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md", "monorepo"} {
 		if !strings.Contains(prompts, needle) {
 			t.Errorf("prompt output missing %q:\n%s", needle, prompts)
 		}
@@ -46,9 +46,9 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 }
 
 func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
-	// Nine blanks (name + 4 existing + 4 new optional-component
-	// questions) accept every default.
-	in := strings.NewReader("myproj\n\n\n\n\n\n\n\n\n")
+	// Ten blanks (name + 4 existing + 4 v0.4 single-file + 1 v0.6
+	// monorepo question) accept every default.
+	in := strings.NewReader("myproj\n\n\n\n\n\n\n\n\n\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		Preset:     "standard",
@@ -79,7 +79,7 @@ func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
 }
 
 func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
-	in := strings.NewReader("standard\nen\nclaude\nn\nn\nn\nn\nn\n")
+	in := strings.NewReader("standard\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Preset: "minimal"}, noSkip())
 	if err != nil {
@@ -96,7 +96,7 @@ func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
 func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
 	// Lang and AITools were pinned via flags; the prompt should ask
 	// only about preset and memory.
-	in := strings.NewReader("myproj\nstandard\nn\nn\nn\nn\nn\n")
+	in := strings.NewReader("myproj\nstandard\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		Lang:    "ja",
@@ -164,7 +164,7 @@ func TestRunPrompt_NumericPresetChoices(t *testing.T) {
 		"4": "typescript",
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
 		if err != nil {
@@ -187,7 +187,7 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 		"N":   false,
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\nstandard\nen\nclaude\n" + input + "\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\nstandard\nen\nclaude\n" + input + "\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{}, noSkip())
 		if err != nil {
@@ -218,6 +218,7 @@ func TestRunPrompt_OptionalComponentSkipsHonored(t *testing.T) {
 		WithAPI:       true,
 		WithTDD:       true,
 		WithChangelog: true,
+		WithMonorepo:  true,
 	}
 	got, err := runPrompt(in, &out, defaults, skip)
 	if err != nil {
@@ -227,7 +228,7 @@ func TestRunPrompt_OptionalComponentSkipsHonored(t *testing.T) {
 		got.WithTDD != true || got.WithChangelog != false {
 		t.Errorf("skipped optional defaults clobbered: %+v", got)
 	}
-	for _, needle := range []string{"memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md"} {
+	for _, needle := range []string{"memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md", "monorepo"} {
 		if strings.Contains(out.String(), needle) {
 			t.Errorf("expected %q question to be skipped; got:\n%s", needle, out.String())
 		}

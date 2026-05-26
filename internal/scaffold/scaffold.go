@@ -42,6 +42,12 @@ type Options struct {
 	WithAPI       bool
 	WithTDD       bool
 	WithChangelog bool
+	// WithMonorepo enables the v0.6 monorepo layout: emits
+	// `docs/monorepo.md`, `apps/README.md`, and `apps/_example/AGENTS.md`,
+	// and flips `features.monorepo` to true in `.aikata/aikata.yaml`.
+	// Per-app `AGENTS.md` files are user-managed; aikata does not
+	// regenerate them.
+	WithMonorepo bool
 	// Stacks lists stack identifiers (e.g. "flutter") the project opts
 	// into. Templates branch on {{range .Stacks}} to include
 	// docs/stacks/<stack>.md cross-references; the values also flow
@@ -159,6 +165,13 @@ func renderInto(opts Options) (map[string]string, error) {
 		{opts.WithAPI, func() (map[string]string, error) { return components.RenderAPI(sfp) }},
 		{opts.WithTDD, func() (map[string]string, error) { return components.RenderTDD(sfp) }},
 		{opts.WithChangelog, func() (map[string]string, error) { return components.RenderChangelog(sfp) }},
+		{opts.WithMonorepo, func() (map[string]string, error) {
+			return components.RenderMonorepo(components.MonorepoParams{
+				Lang:        opts.Lang,
+				ProjectName: opts.ProjectName,
+				Clock:       opts.Clock,
+			})
+		}},
 	}
 	for _, spec := range optionalSpecs {
 		if !spec.enabled {
@@ -205,6 +218,9 @@ func addPresetArtifacts(opts Options, rendered map[string]string) error {
 		}
 		if len(opts.AITools) > 0 {
 			cfg.AITools = append([]string(nil), opts.AITools...)
+		}
+		if opts.WithMonorepo {
+			cfg.Features["monorepo"] = true
 		}
 		buf, err := config.Marshal(cfg)
 		if err != nil {

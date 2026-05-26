@@ -1,0 +1,56 @@
+---
+project: {{.ProjectName}}
+app: _example
+status: template
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# `_example` — App rule template
+
+> **This is a template, not a real app.** Copy `apps/_example/` to
+> `apps/<your-app>/` and replace the placeholder text below with the
+> rules that govern that app.
+
+This file shows what a per-app `AGENTS.md` looks like in a
+{{.ProjectName}}-style monorepo. The structure is intentionally short:
+the root `AGENTS.md` already carries the repository-wide invariants,
+so per-app files should only encode what is **different** about this
+app.
+
+## Stack
+
+_Describe the language / framework / runtime, e.g._
+
+- Language: TypeScript 5.x
+- Framework: Next.js 15
+- Package manager: pnpm
+
+## Workflows
+
+_Test runner, build command, deployment target, etc._
+
+- Test: `pnpm test`
+- Build: `pnpm build`
+- Deploy: GitHub Actions → Vercel preview on PR, production on main
+
+## App-specific rules
+
+_Override or extend the root `AGENTS.md` here for this app only._
+
+- The root rule "all timestamps in UTC" still applies; the app's
+  user-facing UI additionally renders them in the visitor's locale
+  via the `Intl.DateTimeFormat` boundary.
+- The root rule "single bundled PR per refactor" is relaxed here when
+  touching `apps/_example/migrations/` — each migration is its own
+  PR for review traceability.
+
+## Per-tool entry points
+
+- [`../../CLAUDE.md`](../../CLAUDE.md) — generated from the root
+  `AGENTS.md`. Claude Code automatically reads this file plus
+  whichever nested `AGENTS.md` covers the current working directory.
+
+_(Replace this file's content when you copy it to a real app. The
+template stays here for the next contributor.)_
