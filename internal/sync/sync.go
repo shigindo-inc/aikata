@@ -113,7 +113,7 @@ var ErrNoManifest = errors.New(
 		"  Run `aikata sync --rebaseline` to record current on-disk files as the\n" +
 		"  baseline. This is non-destructive — only the manifest is written;\n" +
 		"  no source files are modified. After that, `aikata sync` will pull\n" +
-		"  upstream template updates via 3-way merge.")
+		"  upstream template updates via 3-way merge")
 
 // Run performs one sync invocation against opts.Root. The return value
 // is non-nil even when conflicts were detected; callers map
