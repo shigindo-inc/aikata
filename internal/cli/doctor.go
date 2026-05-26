@@ -18,17 +18,18 @@ func newDoctorCmd() *cobra.Command {
 		fix     bool
 		dryRun  bool
 		jsonOut bool
+		strict  bool
 	)
 	cmd := &cobra.Command{
 		Use:   "doctor",
 		Short: "Check consistency of the aikata project in the current directory",
 		Long: "Run a suite of read-only checks against the project at the\n" +
 			"current working directory. Errors set exit code 3; warnings\n" +
-			"and infos do not. Pass --fix to apply the trivially-fixable\n" +
-			"subset (stale `updated:` bumps and missing-frontmatter scaffolds).\n" +
-			"Combine with --dry-run to preview the fix without writing.\n" +
-			"Pass --json to emit a machine-readable report instead of the\n" +
-			"human-readable text format.",
+			"and infos do not unless --strict is passed (warnings also exit 3).\n" +
+			"Pass --fix to apply the trivially-fixable subset (stale `updated:`\n" +
+			"bumps and missing-frontmatter scaffolds). Combine with --dry-run\n" +
+			"to preview the fix without writing. Pass --json to emit a\n" +
+			"machine-readable report instead of the human-readable text format.",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
@@ -90,13 +91,29 @@ func newDoctorCmd() *cobra.Command {
 			if doctor.HasErrors(issues) {
 				return &ExitError{Code: 3, Err: fmt.Errorf("doctor: %d issue(s) at error level", countErrors(issues))}
 			}
+			if strict {
+				if n := countWarnings(issues); n > 0 {
+					return &ExitError{Code: 3, Err: fmt.Errorf("doctor: --strict: %d issue(s) at warning level", n)}
+				}
+			}
 			return nil
 		},
 	}
 	cmd.Flags().BoolVar(&fix, "fix", false, "Apply auto-fixes for the trivially-fixable subset of issues")
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "With --fix, show what would change but do not write files")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report to stdout instead of the text format")
+	cmd.Flags().BoolVar(&strict, "strict", false, "Treat warnings as errors (exit 3 if any warning exists). Used by the v0.5+ dogfood CI gate.")
 	return cmd
+}
+
+func countWarnings(issues []doctor.Issue) int {
+	n := 0
+	for _, iss := range issues {
+		if iss.Level == doctor.LevelWarning {
+			n++
+		}
+	}
+	return n
 }
 
 func countErrors(issues []doctor.Issue) int {

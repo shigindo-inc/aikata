@@ -62,6 +62,51 @@ func TestDoctor_BrokenAGENTSLinkSetsExitCodeThree(t *testing.T) {
 	}
 }
 
+// TestDoctor_StrictTreatsWarningsAsErrors covers the v0.5+ dogfood
+// gate. A project with a stale `updated:` frontmatter triggers a
+// warning-level finding; --strict must turn that into exit 3 while
+// the plain run continues to exit 0.
+func TestDoctor_StrictTreatsWarningsAsErrors(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
+		t.Fatalf("init: %v", err)
+	}
+	// Plant a stale `updated:` value on README.md so the doctor's
+	// `updated.stale` warning fires (>365 days from any plausible
+	// current date). The exact `updated:` value scaffold writes
+	// depends on the test's wall clock, so rewrite the frontmatter
+	// rather than pattern-match on the date.
+	readmePath := filepath.Join(tmp, "README.md")
+	stale := []byte("---\nproject: samplekata\nstatus: draft\nversion: 0.0.1\nupdated: 2000-01-01\naudience: [human, agent]\n---\n\n# README.md\n")
+	if err := os.WriteFile(readmePath, stale, 0o644); err != nil {
+		t.Fatalf("write README.md: %v", err)
+	}
+
+	// Without --strict, warnings do not affect exit code.
+	if _, err := runDoctor(t); err != nil {
+		t.Errorf("non-strict doctor should not fail on a warning, got: %v", err)
+	}
+
+	// With --strict, the warning bumps exit to 3.
+	cmd := newDoctorCmd()
+	var buf bytes.Buffer
+	cmd.SetOut(&buf)
+	cmd.SetErr(&buf)
+	cmd.SetArgs([]string{"--strict"})
+	err := cmd.Execute()
+	if err == nil {
+		t.Fatalf("strict doctor should fail on a warning, got nil\n%s", buf.String())
+	}
+	var ee *ExitError
+	if !errors.As(err, &ee) || ee.Code != 3 {
+		t.Fatalf("strict doctor: expected ExitError code 3, got %v", err)
+	}
+	if !strings.Contains(err.Error(), "warning") {
+		t.Errorf("strict error message should mention warnings: %v", err)
+	}
+}
+
 func TestRootCmdShowsDoctorInHelp(t *testing.T) {
 	cmd := newRootCmd("0.0.1-test")
 	var buf bytes.Buffer

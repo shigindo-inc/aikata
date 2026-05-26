@@ -79,11 +79,25 @@ jobs:
 
       - name: aikata doctor (self-check, Unix)
         if: runner.os != 'Windows'
-        run: ./aikata doctor
+        # --strict turns warnings into errors so the v0.5+ dogfood
+        # gate (ROADMAP: "zero errors and zero warnings on the aikata
+        # repository at the release commit") is binding rather than
+        # advisory. Errors continue to exit 3; warnings now also do.
+        run: ./aikata doctor --strict
 
       - name: aikata doctor (self-check, Windows)
         if: runner.os == 'Windows'
-        run: .\aikata.exe doctor
+        run: .\aikata.exe doctor --strict
+
+      - name: aikata generate is byte-identical (Unix)
+        if: runner.os != 'Windows'
+        # v0.5+ dogfood gate: regenerating CLAUDE.md and the Cursor
+        # rule must not produce a diff against the committed
+        # artifacts. Any drift means AGENTS.md changed without
+        # rerunning `aikata generate` — block the merge.
+        run: |
+          ./aikata generate
+          git diff --exit-code -- CLAUDE.md .cursor/rules/main.mdc
 
   install-script:
     # Smoke-test scripts/install.sh against a known existing release.
