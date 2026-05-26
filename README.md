@@ -305,6 +305,7 @@ aikata generate
   - [0009 — Reserve `aikata update` for CLI Version Updates](./docs/adr/0009-update-command-owns-cli-version-updates.md)
   - [0010 — Memory Projection Deferred to v0.6](./docs/adr/0010-memory-projection-deferred-to-v0-6.md)
   - [0011 — `aikata sync` Design](./docs/adr/0011-aikata-sync-design.md)
+  - [0012 — Memory Projection Deferral Extended Past v0.6.0](./docs/adr/0012-memory-projection-deferral-extended.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
 ### AI-tool entry points

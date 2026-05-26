@@ -352,11 +352,14 @@ elsewhere, and scales to a monorepo.
       commands under `dist/claude-code/plugin/`. Distributable through
       the public plugin marketplace once the upstream listing flow is
       stable; otherwise as a `git clone` + `.claude/plugins/` symlink.
-- [ ] Memory generate-projection (ADR-0004 option δ): the
-      [v0.4 ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0-6.md)
-      deferred this decision to v0.6 specifically so the plugin spec
-      can own it. Ship only if the per-tool memory channel layouts
-      have stabilized by the v0.6 cycle.
+- ~~Memory generate-projection (ADR-0004 option δ).~~ **Deferred
+  again** by [ADR 0012](./docs/adr/0012-memory-projection-deferral-extended.md):
+  the per-tool memory channel layouts have not stabilized between
+  v0.4 and v0.6 and no dogfooding case has reported drift. The v0.6
+  Claude Code plugin's skill text covers the discoverability gap
+  without on-disk projection. Revisit when a documented dogfooder
+  reports `docs/memory/` ↔ tool-channel drift; a follow-up ADR will
+  pick the then-stable layout and supersede ADR 0012.
 
 ---
 
