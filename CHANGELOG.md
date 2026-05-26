@@ -154,7 +154,7 @@ memory slot post-init without re-running `aikata init`.
 - `internal/templates.LangDir(base, lang)` and `templates.Kebab(s)`
   — lifted out of scaffold so the components package can share one
   implementation.
-- `docs/adr/0010-memory-projection-deferred-to-v0.6.md` — records
+- `docs/adr/0010-memory-projection-deferred-to-v0-6.md` — records
   the v0.4 investigation of ADR-0004 option δ (mirroring
   `docs/memory/` into Claude / Cursor memory channels). Decision:
   ship the authoring surface in v0.4 (this release), defer the

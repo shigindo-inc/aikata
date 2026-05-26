@@ -277,6 +277,10 @@ aikata generate
   - [0005 — Cursor / Codex Pass-Through](./docs/adr/0005-cursor-codex-pass-through.md)
   - [0006 — Locale / Japanese Documentation Policy](./docs/adr/0006-locale-and-japanese-documentation-policy.md)
   - [0007 — Do Not Generate a Generic `DESIGN.md`](./docs/adr/0007-no-generic-design-md.md)
+  - [0008 — aikata-Owned Config Directory](./docs/adr/0008-aikata-owned-config-directory.md)
+  - [0009 — Reserve `aikata update` for CLI Version Updates](./docs/adr/0009-update-command-owns-cli-version-updates.md)
+  - [0010 — Memory Projection Deferred to v0.6](./docs/adr/0010-memory-projection-deferred-to-v0-6.md)
+  - [0011 — `aikata sync` Design](./docs/adr/0011-aikata-sync-design.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
 ### AI-tool entry points

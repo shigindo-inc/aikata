@@ -224,7 +224,7 @@ Shipped:
   versioned `--json` envelope as `list presets|stacks|ai-tools`.
 - `internal/config.Save / Load` — atomic read/write pair behind the
   add commands' config mutations.
-- [ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0.6.md)
+- [ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0-6.md)
   — defers memory generate-projection (ADR-0004 option δ) to v0.6
   so the per-tool plugin work can own the spec.
 - Command vocabulary cleanup carried over from v0.3.1 / ADR 0009:
@@ -328,7 +328,7 @@ elsewhere, and scales to a monorepo.
       the public plugin marketplace once the upstream listing flow is
       stable; otherwise as a `git clone` + `.claude/plugins/` symlink.
 - [ ] Memory generate-projection (ADR-0004 option δ): the
-      [v0.4 ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0.6.md)
+      [v0.4 ADR 0010](./docs/adr/0010-memory-projection-deferred-to-v0-6.md)
       deferred this decision to v0.6 specifically so the plugin spec
       can own it. Ship only if the per-tool memory channel layouts
       have stabilized by the v0.6 cycle.
