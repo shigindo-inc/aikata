@@ -142,8 +142,15 @@ func TestGenerate_AutoMigratesLegacyAI(t *testing.T) {
 	if err := os.Rename(newPath, oldPath); err != nil {
 		t.Fatalf("rename to legacy: %v", err)
 	}
-	// .aikata/ remains empty; remove it so Resolve picks the legacy
+	// `.aikata/manifest.yaml` is a v0.5+ artifact that did not exist
+	// in pre-ADR-0008 projects; drop it so the simulated legacy state
+	// matches what those versions actually produced. Then remove the
+	// (now empty) `.aikata/` directory so Resolve picks the legacy
 	// path on the first call.
+	manifestPath := filepath.Join(tmp, ".aikata", "manifest.yaml")
+	if err := os.Remove(manifestPath); err != nil && !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("rm manifest.yaml: %v", err)
+	}
 	if err := os.Remove(filepath.Dir(newPath)); err != nil {
 		t.Fatalf("rm empty .aikata dir: %v", err)
 	}

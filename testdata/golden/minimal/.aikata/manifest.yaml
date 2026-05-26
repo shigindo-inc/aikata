@@ -1,0 +1,10 @@
+version: 1
+preset: minimal
+lang: en
+files:
+    - path: AGENTS.md
+      sha256: ca55d3c71ec2c26a53cfca65a7a514f97b0193b6805cf8e0047f383268160afe
+    - path: README.md
+      sha256: e3151f0fcecc677f8a6e392bc6ed6747834b7fd83b9d40b0886250c1a88d1f69
+    - path: SPEC.md
+      sha256: ba65f038b98831447ff9775ec359e6a2863de13c9cd880933f5f5b3647c3b8a2

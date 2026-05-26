@@ -1,0 +1,20 @@
+version: 1
+preset: minimal
+lang: en
+files:
+    - path: AGENTS.md
+      sha256: ff315b64f5888e0f6b37c214e2f312c61c75bcc2f044550736b2655e5e6081e0
+    - path: README.md
+      sha256: e3151f0fcecc677f8a6e392bc6ed6747834b7fd83b9d40b0886250c1a88d1f69
+    - path: SPEC.md
+      sha256: ba65f038b98831447ff9775ec359e6a2863de13c9cd880933f5f5b3647c3b8a2
+    - path: docs/memory/README.md
+      sha256: be2b198ebee45fca6719e958120e21a0b1810617c37dff0ad80df13facd2b6c3
+    - path: docs/memory/feedback.md
+      sha256: c2f77db40cd5f6e9fd64e119746f43f4caabcbc58280bf1e2fd1cf2d4e97f2f6
+    - path: docs/memory/project.md
+      sha256: e496e16fba8943a36e09f8d89e6f546d2c5e3ffcb5c45450c240215cd0058e13
+    - path: docs/memory/reference.md
+      sha256: f9d8fa52e011fa210026f11e2db2cbc43f42e2aaf4c8d5ebb7e4c1f12844606d
+    - path: docs/memory/user.md
+      sha256: 8fb713600b76a8ed50abeca87118c37e9f29ad7d802056d5bf1be27bf4e6d55a

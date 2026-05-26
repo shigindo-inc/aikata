@@ -1,0 +1,38 @@
+version: 1
+preset: typescript
+lang: en
+files:
+    - path: .env.example
+      sha256: a8fd8bbb2244bfe35fbcdaf9b75b2313c6b524525a7c058acce2bab8542a413d
+    - path: .gitignore
+      sha256: a2ea8de22a808e17ed60998e74ac718601bed42ee589daf7191723bde0220295
+    - path: AGENTS.md
+      sha256: c47349a41c6a3d25ab0b40b1d82c13aae0687b455b337856417191e21248d74a
+    - path: ARCHITECTURE.md
+      sha256: 9acbf9cb1dd0fb7601f0c55d2176110c49b9a6bc088a867b31dd97051625f7d9
+    - path: GLOSSARY.md
+      sha256: dc1155deab759e5230a708e1dcef8a04cb5479494dca4e180599e7110bdbfb1a
+    - path: README.md
+      sha256: 00c9ce35c54ebe15016510da1f58f1929634c8ffee569878e76a30d911f65461
+    - path: SPEC.md
+      sha256: fb2ec41c92fa43533c7c22b3938e0e43c7d1bb5fb275e1ffda5e88126920bee9
+    - path: docs/adr/0001-record-architecture-decisions.md
+      sha256: d01d6255ec1d111509708059ca525cea28ac80fac9b2a9be0547d753dba8ce42
+    - path: docs/memory/README.md
+      sha256: be2b198ebee45fca6719e958120e21a0b1810617c37dff0ad80df13facd2b6c3
+    - path: docs/memory/feedback.md
+      sha256: c2f77db40cd5f6e9fd64e119746f43f4caabcbc58280bf1e2fd1cf2d4e97f2f6
+    - path: docs/memory/project.md
+      sha256: e496e16fba8943a36e09f8d89e6f546d2c5e3ffcb5c45450c240215cd0058e13
+    - path: docs/memory/reference.md
+      sha256: f9d8fa52e011fa210026f11e2db2cbc43f42e2aaf4c8d5ebb7e4c1f12844606d
+    - path: docs/memory/user.md
+      sha256: 8fb713600b76a8ed50abeca87118c37e9f29ad7d802056d5bf1be27bf4e6d55a
+    - path: docs/prompts.md
+      sha256: 0a258ad92dfee3738ee14399b795f6935b3db492d3ecc82eb19425f05093224a
+    - path: docs/stacks/typescript.md
+      sha256: a27c6261d8166149d16bf9efcbdafb2c9542586e05a35842caec7c7507400341
+    - path: docs/tasks/current.md
+      sha256: 6ac92075a5c4ce8b4b6e95f924383b05dc2f1aa0da30bea0d1c804f91daeccd7
+    - path: docs/troubleshooting.md
+      sha256: 56fecd72d68f4984a1810c995b08543af4f9e906ed89e2898ec1687cf1cf47e2

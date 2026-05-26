@@ -42,12 +42,13 @@ func TestRun_GeneratesAllMinimalFiles(t *testing.T) {
 			t.Errorf("%s is empty", name)
 		}
 	}
-	// No extra files for the minimal preset.
+	// Minimal preset writes its three markdown files plus the
+	// `.aikata/manifest.yaml` sync ancestor (ADR 0011 D4).
 	entries, err := os.ReadDir(tmp)
 	if err != nil {
 		t.Fatalf("ReadDir: %v", err)
 	}
-	if got, want := len(entries), 3; got != want {
+	if got, want := len(entries), 4; got != want {
 		t.Errorf("entry count = %d, want %d (%v)", got, want, entries)
 	}
 }
@@ -117,7 +118,7 @@ func TestRun_DryRunWritesNothing(t *testing.T) {
 		t.Errorf("dry-run should not write any files, found %v", entries)
 	}
 	out := buf.String()
-	if !strings.Contains(out, "Would write 3 file(s)") {
+	if !strings.Contains(out, "Would write 4 file(s)") {
 		t.Errorf("dry-run output missing summary line: %q", out)
 	}
 	for _, name := range []string{"README.md", "AGENTS.md", "SPEC.md"} {
