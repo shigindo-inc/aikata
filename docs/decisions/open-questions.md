@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-26
 audience: [human, agent]
 ---
 
@@ -225,6 +225,35 @@ what unblocks a decision, and the latest update date.
 - **Resolved**: MIT, recorded in
   [`LICENSE`](../../LICENSE) and [SPEC.md](../../SPEC.md).
 - Kept as a back-reference; will be removed in a future cleanup.
+
+### Q-ECOSYSTEM-04 — External skill / plugin marketplace interop
+
+- **Status**: Open. As of 2026-05-26 the surrounding ecosystem has
+  several overlapping distribution shapes:
+  - `npx skills add ...` from the open agent skills ecosystem installs
+    `SKILL.md` packages into many agent-specific locations, including
+    shared `.agents/skills/` layouts for "universal" agents.
+  - Claude Code has first-party Skills, Plugins, and plugin marketplaces
+    (`.claude/skills/`, plugin-bundled skills, and marketplace install
+    flows).
+  - Codex has Skills plus plugin manifests under `.codex-plugin/` and
+    marketplace catalogs under `.agents/plugins/marketplace.json`.
+  - Gemini CLI has extensions via `gemini-extension.json`, bundling
+    commands, MCP servers, hooks, sub-agents, themes, and agent skills.
+- **Question**: Should aikata remain a documentation scaffold that
+  points users at each tool's native installer, or should it also
+  scaffold / manage curated skill and plugin manifests for teams?
+- **Leading**: do **not** make aikata a general-purpose third-party
+  skill package manager in v0.x. Ship first-party aikata skills/plugins
+  only where they wrap the aikata CLI itself. For third-party skills,
+  document recommended commands or manifest locations, but avoid
+  installing remote code until a trust, pinning, update, and removal
+  model is captured in an ADR.
+- **Unblocks**: v1.0 plugin / skill distribution beyond Claude, any
+  future `aikata add skill-source ...` or team marketplace manifest
+  feature, and memory projection decisions that might depend on native
+  skill/plugin packaging.
+- **Updated**: 2026-05-26.
 
 ---
 
