@@ -133,6 +133,16 @@ main() {
     mv "${tmp}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
     chmod +x "${INSTALL_DIR}/${BINARY}"
 
+    # v0.6+: record the install source next to the binary so future
+    # `aikata update` (self-update, planned for a v0.6.x release) can
+    # pick the right upgrade path. aikata reads the first line of
+    # this file at runtime via `internal/install.Detect`. Older aikata
+    # binaries ignore the file harmlessly.
+    cat > "${INSTALL_DIR}/aikata.install-source" <<META
+install-script
+version=${version}
+META
+
     log "==> installed: ${INSTALL_DIR}/${BINARY}"
 
     case ":${PATH}:" in
