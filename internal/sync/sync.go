@@ -104,8 +104,16 @@ type Options struct {
 // ErrNoManifest signals that the project has never been initialized by
 // aikata, or predates the v0.5 manifest schema. The cobra layer maps
 // this to an actionable message: run `aikata sync --rebaseline` to
-// seed a manifest from current on-disk state.
-var ErrNoManifest = errors.New("sync: .aikata/manifest.yaml not found; run `aikata sync --rebaseline` once to seed it from the current project state")
+// seed a manifest from current on-disk state. The wording emphasises
+// that `--rebaseline` is non-destructive (only the manifest is written)
+// to avoid the v0.6.0 footgun where users feared their source files
+// would be overwritten.
+var ErrNoManifest = errors.New(
+	"sync: .aikata/manifest.yaml not found (project predates v0.5).\n" +
+		"  Run `aikata sync --rebaseline` to record current on-disk files as the\n" +
+		"  baseline. This is non-destructive — only the manifest is written;\n" +
+		"  no source files are modified. After that, `aikata sync` will pull\n" +
+		"  upstream template updates via 3-way merge")
 
 // Run performs one sync invocation against opts.Root. The return value
 // is non-nil even when conflicts were detected; callers map
@@ -141,9 +149,13 @@ func Run(opts Options) (RunResult, error) {
 		}
 	}
 
-	// Manifest may be absent. --rebaseline replaces the empty
-	// manifest with one seeded from current state so subsequent
-	// syncs can do a real 3-way merge.
+	// Manifest may be absent (project predates v0.5). --rebaseline is
+	// the only opt-in escape hatch; without it, refuse to proceed so
+	// the user has a chance to read the docs before any merge runs.
+	// The rebaseline path itself is handled below (after upstream is
+	// rendered) and is intentionally non-destructive: it writes the
+	// manifest from current disk state and exits without invoking the
+	// 3-way merge. See ADR 0011 D4.
 	var ancestor config.Manifest
 	manifestPresent := true
 	loaded, err := config.LoadManifest(opts.Root)
@@ -193,6 +205,35 @@ func Run(opts Options) (RunResult, error) {
 	configRel := config.PrimaryDir + "/" + config.Filename
 	delete(upstream, manifestRel)
 	delete(upstream, configRel)
+
+	// Rebaseline path (manifest absent + --rebaseline): write a
+	// manifest whose ancestor hashes are the current *upstream*
+	// rendering — the same manifest `aikata init` would have written
+	// for a fresh project at this aikata version — and exit without
+	// running the merge. No source file is touched.
+	//
+	// Why "upstream rendering" and not "current on-disk bytes":
+	// if the ancestor were the on-disk bytes, the very next sync
+	// would see `current == ancestor` and treat upstream-only changes
+	// as auto-applicable, overwriting the user's customisations. By
+	// seeding ancestor = upstream, the user's existing customisations
+	// register as `user-only-edit` on the next sync and are preserved.
+	// Conceptually: rebaseline pretends `aikata init` ran just now,
+	// without touching anything that's already on disk. This is a
+	// deliberate refinement of ADR 0011 D4's literal wording.
+	if !manifestPresent {
+		var result RunResult
+		if !opts.DryRun {
+			newManifest := config.BuildManifest(preset, lang, upstream, []string{manifestRel, configRel})
+			if err := config.SaveManifest(opts.Root, newManifest); err != nil {
+				return RunResult{}, fmt.Errorf("sync: save manifest: %w", err)
+			}
+		}
+		result.Notes = append(result.Notes,
+			"Manifest seeded from current upstream rendering. Source files were not modified.",
+			"Local customisations will appear as `user-only-edit` on the next `aikata sync` and be preserved.")
+		return result, nil
+	}
 
 	// Build a lookup of ancestor hashes keyed by path.
 	ancestorHash := make(map[string]string, len(ancestor.Files))

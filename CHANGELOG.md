@@ -18,14 +18,33 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`aikata sync --rebaseline` no longer writes conflict markers into
+  user-customised files.** In v0.6.0, running `--rebaseline` on a
+  pre-v0.5 project performed a 2-way diff between current on-disk
+  content and the upstream rendering, treating every customised file
+  as a conflict and wrapping it in `<<<<<<<` / `>>>>>>>` markers.
+  Rebaseline is now non-destructive: it writes the manifest from the
+  current upstream rendering (matching what `aikata init` would write
+  for a fresh project) and exits without touching any source file.
+  The user's customisations then appear as `user-only-edit` on the
+  next `aikata sync` and are preserved. See ADR 0011 (Rebaseline
+  ancestor choice) for the design rationale.
+- **`aikata sync` error message clarifies that `--rebaseline` is
+  non-destructive**, removing the v0.6.0 footgun where users feared
+  the recommended remediation would overwrite their files.
+
 ## [0.6.0] - 2026-05-26
 
 Packaging-and-distribution milestone (partial). Ships the
 agent-doable subset of the v0.6 ROADMAP entry: monorepo
 scaffolding, install-source metadata foundation, and a Claude Code
 plugin scaffold. Homebrew tap, npm wrapper, and plugin-marketplace
-listing are tracked under v0.6.1 because they require maintainer
-actions outside this repo.
+listing are tracked under v0.6.2 because they require maintainer
+actions outside this repo (originally scheduled for v0.6.1; that
+slot was reused for the `aikata sync --rebaseline` regression fix —
+see the [Unreleased] section).
 
 ### Added
 
@@ -52,15 +71,17 @@ actions outside this repo.
 ### Changed
 
 - ROADMAP.md splits the v0.6 entry into v0.6.0 (this release) and
-  v0.6.1 (user-blocker channels: Homebrew tap, npm, marketplace,
+  v0.6.2 (user-blocker channels: Homebrew tap, npm, marketplace,
   `--apply` self-update). Distribution-surface table gains v0.6.0
-  and v0.6.1 rows.
+  and v0.6.2 rows. (Originally v0.6.1; renumbered in a follow-up
+  patch that consumed the v0.6.1 slot for a `sync --rebaseline`
+  fix.)
 - README ADR index updated through ADR 0012.
 
 ### Notes
 
 - `internal/install.Detect()` ships as the **recording** half only.
-  Native `aikata update --apply` self-update lands in v0.6.1
+  Native `aikata update --apply` self-update lands in v0.6.2
   alongside Homebrew / npm channels so the upgrade flow can be
   tested against real installs.
 - `--monorepo` is orthogonal to the v0.4 single-file components.

@@ -252,6 +252,167 @@ func TestRun_Rebaseline_SeedsManifest(t *testing.T) {
 	}
 }
 
+// TestRun_Rebaseline_PreservesUserEdits asserts the regression that
+// motivated v0.6.1: with a pre-v0.5 project that has *customised*
+// source files, --rebaseline must NOT touch those files. The bytes on
+// disk before and after the rebaseline run must be byte-identical.
+// Also asserts that the manifest's recorded hash for the customised
+// file equals the *upstream rendering's* hash (not the customised
+// content's hash) — that's what makes the next sync classify the
+// customisation as `user-only-edit`.
+func TestRun_Rebaseline_PreservesUserEdits(t *testing.T) {
+	root := t.TempDir()
+	seedStandardProject(t, root)
+
+	// Customise AGENTS.md, then remove the manifest to simulate a
+	// project that pre-dates the v0.5 manifest schema.
+	agentsPath := filepath.Join(root, "AGENTS.md")
+	customContent := []byte("# AGENTS\n\nproject-specific override\n")
+	if err := os.WriteFile(agentsPath, customContent, 0o644); err != nil {
+		t.Fatalf("write custom AGENTS.md: %v", err)
+	}
+	if err := os.Remove(config.ManifestPath(root)); err != nil {
+		t.Fatalf("remove manifest: %v", err)
+	}
+
+	if _, err := Run(Options{Root: root, Rebaseline: true, Stdout: &bytes.Buffer{}, Stderr: &bytes.Buffer{}}); err != nil {
+		t.Fatalf("Run rebaseline: %v", err)
+	}
+
+	// Source file must be byte-identical to the pre-run content.
+	after, err := os.ReadFile(agentsPath)
+	if err != nil {
+		t.Fatalf("read AGENTS.md after rebaseline: %v", err)
+	}
+	if !bytes.Equal(after, customContent) {
+		t.Errorf("rebaseline modified AGENTS.md:\nbefore=%q\nafter =%q", customContent, after)
+	}
+
+	// Manifest must record the upstream rendering's hash for AGENTS.md,
+	// not the customised content's hash. This is the key invariant: on
+	// the next sync, current (custom) != ancestor (upstream) → classified
+	// as user-only-edit and preserved.
+	m, err := config.LoadManifest(root)
+	if err != nil {
+		t.Fatalf("load manifest after rebaseline: %v", err)
+	}
+	customHash := config.HashContent(customContent)
+	var agentsEntry *config.ManifestFile
+	for i, f := range m.Files {
+		if f.Path == "AGENTS.md" {
+			agentsEntry = &m.Files[i]
+			break
+		}
+	}
+	if agentsEntry == nil {
+		t.Fatalf("AGENTS.md missing from rebaselined manifest: %+v", m.Files)
+	}
+	if agentsEntry.SHA256 == customHash {
+		t.Errorf("manifest recorded customised hash as ancestor — next sync would overwrite it. got=%s", agentsEntry.SHA256)
+	}
+}
+
+// TestRun_Rebaseline_NoPerFileResults asserts that rebaseline never
+// runs the merge: the returned RunResult should have an empty Files
+// slice and zero counts (the human-readable notes carry the messaging
+// instead). This guards against accidental re-introduction of a
+// merge-style code path.
+func TestRun_Rebaseline_NoPerFileResults(t *testing.T) {
+	root := t.TempDir()
+	seedStandardProject(t, root)
+	if err := os.Remove(config.ManifestPath(root)); err != nil {
+		t.Fatalf("remove manifest: %v", err)
+	}
+
+	result, err := Run(Options{Root: root, Rebaseline: true, Stdout: &bytes.Buffer{}, Stderr: &bytes.Buffer{}})
+	if err != nil {
+		t.Fatalf("Run rebaseline: %v", err)
+	}
+	if len(result.Files) != 0 {
+		t.Errorf("rebaseline should not produce per-file outcomes, got %d entries: %+v", len(result.Files), result.Files)
+	}
+	if result.Conflicts != 0 || result.Applied != 0 || result.NoChange != 0 {
+		t.Errorf("rebaseline counters should all be zero, got %+v", result)
+	}
+	if len(result.Notes) == 0 {
+		t.Errorf("rebaseline should emit at least one note explaining the seed action")
+	}
+}
+
+// TestRun_Rebaseline_DryRun_DoesNotWriteManifest asserts that
+// --rebaseline --dry-run is a pure inspection: no manifest is written,
+// no source file is modified.
+func TestRun_Rebaseline_DryRun_DoesNotWriteManifest(t *testing.T) {
+	root := t.TempDir()
+	seedStandardProject(t, root)
+	if err := os.Remove(config.ManifestPath(root)); err != nil {
+		t.Fatalf("remove manifest: %v", err)
+	}
+
+	if _, err := Run(Options{Root: root, Rebaseline: true, DryRun: true, Stdout: &bytes.Buffer{}, Stderr: &bytes.Buffer{}}); err != nil {
+		t.Fatalf("Run rebaseline dry-run: %v", err)
+	}
+	if _, err := os.Stat(config.ManifestPath(root)); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("dry-run rebaseline should not create manifest, got stat err=%v", err)
+	}
+}
+
+// TestRun_PostRebaseline_PreservesEditsAsUserOnly is the integration
+// test that would have caught the v0.6.0 regression: after rebaseline,
+// the next plain `aikata sync` must classify customised files as
+// `user-only-edit` and leave their on-disk bytes alone. If ancestor
+// were recorded as the customised bytes (the obvious-but-wrong design),
+// the immediate follow-up sync would StatusUpstreamApplied and clobber
+// the customisation.
+func TestRun_PostRebaseline_PreservesEditsAsUserOnly(t *testing.T) {
+	root := t.TempDir()
+	seedStandardProject(t, root)
+
+	agentsPath := filepath.Join(root, "AGENTS.md")
+	customContent := []byte("# AGENTS\n\nproject-specific override\n")
+	if err := os.WriteFile(agentsPath, customContent, 0o644); err != nil {
+		t.Fatalf("write custom AGENTS.md: %v", err)
+	}
+	if err := os.Remove(config.ManifestPath(root)); err != nil {
+		t.Fatalf("remove manifest: %v", err)
+	}
+
+	if _, err := Run(Options{Root: root, Rebaseline: true, Stdout: &bytes.Buffer{}, Stderr: &bytes.Buffer{}}); err != nil {
+		t.Fatalf("rebaseline: %v", err)
+	}
+
+	// Now run a plain sync. AGENTS.md customisation must survive and
+	// be reported as user-only-edit.
+	result, err := Run(Options{Root: root, Stdout: &bytes.Buffer{}, Stderr: &bytes.Buffer{}})
+	if err != nil {
+		t.Fatalf("post-rebaseline sync: %v", err)
+	}
+	if result.Conflicts != 0 {
+		t.Errorf("post-rebaseline sync should not conflict, got %+v", result)
+	}
+
+	after, err := os.ReadFile(agentsPath)
+	if err != nil {
+		t.Fatalf("read AGENTS.md after sync: %v", err)
+	}
+	if !bytes.Equal(after, customContent) {
+		t.Errorf("post-rebaseline sync clobbered AGENTS.md:\nbefore=%q\nafter =%q", customContent, after)
+	}
+
+	var sawAgents bool
+	for _, f := range result.Files {
+		if f.Path == "AGENTS.md" {
+			sawAgents = true
+			if f.Status != StatusUserOnlyEdit {
+				t.Errorf("AGENTS.md status = %q, want %q", f.Status, StatusUserOnlyEdit)
+			}
+		}
+	}
+	if !sawAgents {
+		t.Errorf("AGENTS.md missing from post-rebaseline sync result: %+v", result.Files)
+	}
+}
+
 func TestInferFlags_PresenceBased(t *testing.T) {
 	m := config.Manifest{Files: []config.ManifestFile{
 		{Path: "AGENTS.md"},

@@ -40,7 +40,9 @@ func newSyncCmd() *cobra.Command {
 			"written back with git-style markers for manual resolution.\n\n" +
 			"Run `aikata sync --rebaseline` once in projects that pre-date\n" +
 			"the v0.5 manifest to seed the ancestor from current on-disk\n" +
-			"state.\n\n" +
+			"state. Rebaseline is non-destructive: it only writes\n" +
+			"`.aikata/manifest.yaml`; source files are not modified. A\n" +
+			"subsequent `aikata sync` then performs the actual 3-way merge.\n\n" +
 			"See docs/adr/0011-aikata-sync-design.md for the merge contract.",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -75,7 +77,7 @@ func newSyncCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "report the merge plan without writing to disk")
-	cmd.Flags().BoolVar(&rebaseline, "rebaseline", false, "seed a missing manifest from the current project state instead of erroring")
+	cmd.Flags().BoolVar(&rebaseline, "rebaseline", false, "seed a missing manifest from current on-disk state (non-destructive: no source files are modified)")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON envelope (shape: {version: 1, kind: \"sync\", ...})")
 	return cmd
 }

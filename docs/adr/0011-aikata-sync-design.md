@@ -151,11 +151,30 @@ reproduce the same 3-way merge.
 ### Negative
 
 - Existing v0.4.x projects do not have `.aikata/manifest.yaml`. `aikata
-  sync` falls back to 2-way diff for projects without a manifest and
-  prints a one-time notice recommending `aikata sync --rebaseline` to
-  seed a manifest from current state (rebaseline = "trust current
-  on-disk as the new ancestor"). Documented as a known limitation in
-  the v0.5.0 release notes.
+  sync` errors out for projects without a manifest and points the user
+  at `aikata sync --rebaseline`, which seeds the manifest from the
+  current **upstream rendering** (not from on-disk bytes — see
+  *Rebaseline ancestor choice* below). `--rebaseline` is intentionally
+  non-destructive: it writes only `.aikata/manifest.yaml` and never
+  modifies source files. Documented as a known limitation in the v0.5.0
+  release notes and revised in v0.6.1 after the v0.6.0 behaviour wrote
+  conflict markers into customised files.
+
+#### Rebaseline ancestor choice
+
+`--rebaseline` records the ancestor as **the upstream rendering at
+that moment** (the same content `aikata init` would have written for a
+fresh project at this aikata version), *not* the current on-disk bytes.
+
+Recording on-disk bytes as the ancestor would cause the next sync to
+treat them as "user has no edits" (because `current == ancestor`), and
+any upstream-only change would auto-apply — silently overwriting the
+user's customisations. Recording the upstream rendering as the ancestor
+makes those customisations register as `user-only-edit` on the next
+sync, which preserves them. This refines the parenthetical wording in
+earlier drafts ("trust current on-disk as the new ancestor"): the
+*files* on disk are trusted as-is (never touched by rebaseline), but
+the *manifest's ancestor hashes* must reflect upstream, not disk.
 - The manifest is one more file to commit; the user must not edit it
   by hand. This is documented in `.aikata/manifest.yaml`'s header
   comment.
