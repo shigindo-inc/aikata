@@ -67,7 +67,12 @@ not want the slash commands.
 
 ## Other tools
 
-Cursor custom modes, Gemini CLI extensions, and a thin VS Code wrapper
-are scoped to v1.0 (see [ROADMAP.md](../ROADMAP.md)). Until then, this
-directory will grow only when a new tool's distribution shape is
-stable enough to ship.
+Codex skills / plugins, Cursor custom modes or rule packs, Gemini CLI
+extensions, and a thin VS Code wrapper are scoped to v1.0 (see
+[ROADMAP.md](../ROADMAP.md)). Until then, this directory will grow only
+when a new tool's distribution shape is stable enough to ship.
+
+This directory is for first-party aikata distribution artifacts. It does
+not install or vendor third-party skill repositories such as those used
+with `npx skills add ...`; that interop question is tracked in
+[Q-ECOSYSTEM-04](../docs/decisions/open-questions.md#q-ecosystem-04--external-skill--plugin-marketplace-interop).
