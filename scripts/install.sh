@@ -146,7 +146,18 @@ META
     log "==> installed: ${INSTALL_DIR}/${BINARY}"
 
     case ":${PATH}:" in
-        *":${INSTALL_DIR}:"*) ;;
+        *":${INSTALL_DIR}:"*)
+            # INSTALL_DIR is on PATH; check that nothing else shadows our binary.
+            resolved=$(command -v "${BINARY}" 2>/dev/null || true)
+            if [ -n "$resolved" ] && [ "$resolved" != "${INSTALL_DIR}/${BINARY}" ]; then
+                log ""
+                log "warning: another '${BINARY}' is earlier on your \$PATH and will be used instead:"
+                log "           shadowing : ${resolved}"
+                log "           installed : ${INSTALL_DIR}/${BINARY}"
+                log "         remove the shadowing binary (e.g. 'rm ${resolved}') or reorder \$PATH"
+                log "         so that ${INSTALL_DIR} comes first, then run 'hash -r'."
+            fi
+            ;;
         *)
             log ""
             log "warning: ${INSTALL_DIR} is not on your \$PATH."
