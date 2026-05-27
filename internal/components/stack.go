@@ -137,6 +137,16 @@ func (stackComponent) Add(ctx AddContext) error {
 		if err := os.WriteFile(stackFile, []byte(rendered), 0o644); err != nil {
 			return fmt.Errorf("components: stack: write %s: %w", stackFile, err)
 		}
+		// Record the stack guide in the manifest so it joins the
+		// surface that `aikata sync` is responsible for (ADR 0014).
+		// Only registered when we actually emitted the file — if the
+		// user already had a customised copy on disk, we leave the
+		// manifest entry (if any) intact rather than rebasing it to
+		// the template hash.
+		stackRel := "docs/stacks/" + name + ".md"
+		if rerr := RecordInManifest(ctx.TargetDir, map[string]string{stackRel: rendered}); rerr != nil {
+			return rerr
+		}
 		if _, werr := fmt.Fprintf(stdout(ctx), "wrote %s\n", relFromTarget(ctx.TargetDir, stackFile)); werr != nil {
 			return werr
 		}

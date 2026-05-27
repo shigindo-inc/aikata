@@ -57,6 +57,14 @@ func (memoryComponent) Add(ctx AddContext) error {
 	if err != nil {
 		return err
 	}
+	// Record the rendered set in .aikata/manifest.yaml so the next
+	// `aikata sync` treats these paths as aikata-managed templates
+	// (ADR 0014). The hash is the template's, not the on-disk file's;
+	// any user customisation already on disk will register as
+	// user-only-edit on the next sync.
+	if err := RecordInManifest(ctx.TargetDir, rendered); err != nil {
+		return err
+	}
 	if written == 0 {
 		if _, werr := fmt.Fprintf(stderr(ctx),
 			"notice: memory already present (%d file(s) under docs/memory/); nothing to do\n", skipped); werr != nil {

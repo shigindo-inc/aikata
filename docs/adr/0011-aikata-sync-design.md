@@ -13,7 +13,8 @@ audience: [human, agent]
 - **Deciders**: aikata maintainers
 - **Related**: ADR 0003 (Do-No-Harm Policy), ADR 0008
   (`.aikata/` config namespace), ADR 0009 (`aikata update` reserved for
-  CLI version updates)
+  CLI version updates), ADR 0014 (manifest is a living record —
+  refines D4's "init-time ancestor" framing)
 
 ## Context
 
