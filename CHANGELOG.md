@@ -54,6 +54,13 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   may not have grown yet (especially for v0.4.x projects upgraded to
   v0.6.x). ADR 0013 spells out the precedence (CLI > manifest >
   aikata.yaml > defaults).
+- **`aikata add stack <name>` now records the stack guide in the
+  manifest even when `docs/stacks/<name>.md` already exists on
+  disk** (e.g. a v0.4.x project with a hand-rolled stack guide). The
+  manifest hash is the template's, not the on-disk content's — which
+  makes any user customisation register as `user-only-edit` on the
+  next sync rather than `upstream-added` / conflict. Restores
+  consistency with the singleFile / memory components (ADR 0014).
 - **`aikata sync` gained four one-off scope-override flags**:
   `--preset <name>` / `--lang <en|ja>` / `--stack <name>`
   (repeatable) / `--with-monorepo` (use `--with-monorepo=false` to
