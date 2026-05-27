@@ -52,6 +52,15 @@ func (s singleFile) Add(ctx AddContext) error {
 	if err != nil {
 		return err
 	}
+	// Register the rendered path in .aikata/manifest.yaml so the next
+	// `aikata sync` recognises it as an aikata-managed template
+	// (ADR 0014). Done regardless of whether the file was newly
+	// written or skipped: the manifest hash tracks the template's
+	// ancestor bytes, so any on-disk customisation registers as
+	// user-only-edit on the next sync rather than upstream-added.
+	if err := RecordInManifest(ctx.TargetDir, rendered); err != nil {
+		return err
+	}
 	if written == 0 {
 		if _, werr := fmt.Fprintf(stderr(ctx),
 			"notice: %s already present at %s; nothing to do\n", s.name, s.targetPath); werr != nil {

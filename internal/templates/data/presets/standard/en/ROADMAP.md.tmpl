@@ -1,0 +1,67 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# ROADMAP — {{.ProjectName}}
+
+> This document outlines **where {{.ProjectName}} is going** in rough
+> order. For **what & why**, read [SPEC.md](./SPEC.md). For **how**,
+> read [ARCHITECTURE.md](./ARCHITECTURE.md).
+>
+> Update this file whenever priorities shift. Agents read it to
+> understand current focus and upcoming work.
+
+---
+
+## How to read this file
+
+- **Milestones** group related work that ships together. They are not
+  promises — order changes as we learn.
+- **Status icons**: `✅` shipped, `🟡` in progress, `⬜` planned,
+  `❄️` deferred.
+- Items inside a milestone are roughly ordered by priority.
+
+---
+
+## v0.1 — Foundations
+
+⬜ _TODO: describe the minimum-viable end-to-end behaviour._
+
+- ⬜ TODO: first feature
+- ⬜ TODO: second feature
+
+## v0.2 — _TODO: next milestone name_
+
+⬜ _TODO: what does this milestone unlock?_
+
+- ⬜ TODO
+
+## v1.0 — Stable surface
+
+⬜ _TODO: what does "stable" mean for {{.ProjectName}}?_
+
+- ⬜ TODO: public API freeze
+- ⬜ TODO: documented upgrade path
+
+---
+
+## Out of scope
+
+_TODO: list adjacent ideas that are explicitly **not** planned. This
+helps reviewers and agents avoid suggesting them._
+
+- _TODO_
+
+---
+
+## Updating this file
+
+- Move done items to a `## Shipped` section or annotate them with `✅`
+  and the release tag.
+- When a milestone changes shape, prefer renaming over deletion so
+  history stays readable.
+- Run `aikata sync` periodically to pick up template improvements.

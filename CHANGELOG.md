@@ -18,6 +18,28 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **`ROADMAP.md` template** added to the `standard` / `flutter` /
+  `typescript` presets (ja + en). Scaffolded projects now ship with a
+  ROADMAP placeholder so agents have a first-class entry point for
+  "where is this project going?" alongside SPEC / ARCHITECTURE /
+  GLOSSARY. `minimal` preset is deliberately untouched. Existing
+  projects pick up the template via `aikata sync` once the next normal
+  3-way merge runs against the new manifest entry.
+
+### Fixed
+
+- **`aikata add <component>` now records the added files in
+  `.aikata/manifest.yaml`.** Previously `add memory` / `add ui` / `add
+  api` / `add tdd` / `add changelog` / `add stack <name>` wrote files
+  to disk but left the manifest stale, causing the next `aikata sync`
+  to treat those files as `upstream-added` and potentially overwrite
+  any user customisation. With the manifest updated alongside the
+  write, subsequent syncs correctly classify customisations as
+  `user-only-edit` and preserve them. New ADR 0014 documents this as
+  the "manifest is a living record" invariant.
+
 ## [0.6.1] - 2026-05-26
 
 Unscheduled patch release. Headline fix is `aikata sync --rebaseline`:

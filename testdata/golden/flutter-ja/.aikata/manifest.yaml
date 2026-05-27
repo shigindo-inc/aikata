@@ -14,6 +14,8 @@ files:
       sha256: a44b512cd12a2d081cc477d68df5f4de25feb291351f8c313d919b0d15938bf1
     - path: README.md
       sha256: cdc66c3bc238998d4db7826792439afeae7416912b98ac2fd544e2a302f13cbb
+    - path: ROADMAP.md
+      sha256: 0f2183949c5972eabe5e8d7fb89e6c56d2111de7693f31000bf6040dc1e159c5
     - path: SPEC.md
       sha256: 507bbf49c748510e7f1876dd1c604ca73421b9c914032ac09dd3a50ca410c2a7
     - path: docs/adr/0001-record-architecture-decisions.md
