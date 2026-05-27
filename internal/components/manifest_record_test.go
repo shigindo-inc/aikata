@@ -188,6 +188,66 @@ func TestRecordInManifest_Stack_RegistersGuide(t *testing.T) {
 	}
 }
 
+// TestRecordInManifest_Stack_RegistersGuideEvenWhenPresent asserts the
+// consistency fix that arrived alongside v0.6.3: when the stack guide
+// already exists on disk (typical for v0.4.x projects with hand-rolled
+// docs/stacks/<name>.md), `aikata add stack` must still record the
+// template hash in the manifest so the next sync classifies any
+// customisation as user-only-edit (matches singleFile / memory).
+func TestRecordInManifest_Stack_RegistersGuideEvenWhenPresent(t *testing.T) {
+	tmp := t.TempDir()
+	seedAikataConfig(t, tmp, "demo", "en")
+
+	// Plant a customised on-disk stack guide before running Add.
+	stackDir := filepath.Join(tmp, "docs", "stacks")
+	if err := os.MkdirAll(stackDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	customBody := []byte("# my custom flutter notes\n")
+	stackPath := filepath.Join(stackDir, "flutter.md")
+	if err := os.WriteFile(stackPath, customBody, 0o644); err != nil {
+		t.Fatalf("seed custom flutter.md: %v", err)
+	}
+
+	if err := Stack.Add(AddContext{
+		TargetDir:   tmp,
+		ProjectName: "demo",
+		Lang:        "en",
+		Clock:       fixedClock,
+		Args:        []string{"flutter"},
+		Stdout:      &bytes.Buffer{},
+		Stderr:      &bytes.Buffer{},
+	}); err != nil {
+		t.Fatalf("Add stack flutter (with pre-existing file): %v", err)
+	}
+
+	// File must NOT be overwritten with the template — user content wins.
+	got, err := os.ReadFile(stackPath)
+	if err != nil {
+		t.Fatalf("read flutter.md after Add: %v", err)
+	}
+	if !bytes.Equal(got, customBody) {
+		t.Errorf("Add overwrote user-customised flutter.md:\nbefore=%q\nafter =%q", customBody, got)
+	}
+
+	// Manifest must contain the entry — and its hash must equal the
+	// **template's** hash (not the customised body's), because that's
+	// the ancestor sync compares against.
+	m, err := config.LoadManifest(tmp)
+	if err != nil {
+		t.Fatalf("LoadManifest: %v", err)
+	}
+	if !manifestHasPath(m, "docs/stacks/flutter.md") {
+		t.Errorf("docs/stacks/flutter.md missing from manifest after `add stack` with pre-existing file; got %v", manifestPaths(m))
+	}
+	customHash := config.HashContent(customBody)
+	for _, f := range m.Files {
+		if f.Path == "docs/stacks/flutter.md" && f.SHA256 == customHash {
+			t.Errorf("manifest recorded the customised body's hash; expected the template's hash so next sync sees user-only-edit. got=%s", f.SHA256)
+		}
+	}
+}
+
 func manifestHasPath(m config.Manifest, path string) bool {
 	for _, f := range m.Files {
 		if f.Path == path {

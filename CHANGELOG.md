@@ -39,6 +39,36 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   write, subsequent syncs correctly classify customisations as
   `user-only-edit` and preserve them. New ADR 0014 documents this as
   the "manifest is a living record" invariant.
+- **`aikata sync --rebaseline` now honours `aikata.yaml`'s `stacks`
+  and `features.monorepo` / `features.tdd`** when seeding the
+  manifest. Previously the rebaseline path hard-coded
+  `preset="standard"` with all opt-ins false, silently dropping
+  per-project stack and monorepo preferences from the manifest. The
+  new scope-derivation hierarchy is documented in ADR 0013.
+
+### Changed
+
+- **`aikata sync` reads `aikata.yaml` even when the manifest is
+  present** and OR-merges its stacks / monorepo / tdd preferences on
+  top of `inferFlags`. This rescues post-init opt-ins the manifest
+  may not have grown yet (especially for v0.4.x projects upgraded to
+  v0.6.x). ADR 0013 spells out the precedence (CLI > manifest >
+  aikata.yaml > defaults).
+- **`aikata add stack <name>` now records the stack guide in the
+  manifest even when `docs/stacks/<name>.md` already exists on
+  disk** (e.g. a v0.4.x project with a hand-rolled stack guide). The
+  manifest hash is the template's, not the on-disk content's — which
+  makes any user customisation register as `user-only-edit` on the
+  next sync rather than `upstream-added` / conflict. Restores
+  consistency with the singleFile / memory components (ADR 0014).
+- **`aikata sync` gained four one-off scope-override flags**:
+  `--preset <name>` / `--lang <en|ja>` / `--stack <name>`
+  (repeatable) / `--with-monorepo` (use `--with-monorepo=false` to
+  force-disable). Overrides apply to a single invocation only and
+  are never written back to the manifest or `aikata.yaml`; the
+  prescribed way to make a change persistent stays
+  `aikata add <component>` or hand-editing `aikata.yaml`. See
+  ADR 0013.
 
 ## [0.6.1] - 2026-05-26
 

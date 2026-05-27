@@ -88,31 +88,26 @@ func (stackComponent) Add(ctx AddContext) error {
 	}
 
 	cfgHasStack := contains(cfg.Stacks, name)
-	if fileExists && cfgHasStack {
-		if _, werr := fmt.Fprintf(stderr(ctx),
-			"notice: stack %q already present (docs/stacks/%s.md + aikata.yaml)\n", name, name); werr != nil {
-			return werr
-		}
-		return nil
-	}
 
-	var rendered string
-	if !fileExists {
-		langDir, _, lerr := templates.LangDir("presets/"+name, ctx.Lang)
-		if lerr != nil {
-			return fmt.Errorf("components: stack: %w", lerr)
-		}
-		tmplPath := langDir + "/docs/stacks/" + name + ".md.tmpl"
-		data := map[string]any{
-			"ProjectName": ctx.ProjectName,
-			"Lang":        ctx.Lang,
-			"Stacks":      []string{name},
-		}
-		content, rerr := templates.Render(tmplPath, data, ctx.Clock)
-		if rerr != nil {
-			return fmt.Errorf("components: stack: render %s: %w", tmplPath, rerr)
-		}
-		rendered = content
+	// Always render the template — the rendered bytes are the
+	// manifest ancestor hash, regardless of whether the on-disk file
+	// already exists. This matches the singleFile / memory pattern
+	// (record template hash even for skipped writes) so user-customised
+	// stack guides register as `user-only-edit` on the next sync
+	// rather than upstream-added or conflict-markered.
+	langDir, _, lerr := templates.LangDir("presets/"+name, ctx.Lang)
+	if lerr != nil {
+		return fmt.Errorf("components: stack: %w", lerr)
+	}
+	tmplPath := langDir + "/docs/stacks/" + name + ".md.tmpl"
+	data := map[string]any{
+		"ProjectName": ctx.ProjectName,
+		"Lang":        ctx.Lang,
+		"Stacks":      []string{name},
+	}
+	rendered, rerr := templates.Render(tmplPath, data, ctx.Clock)
+	if rerr != nil {
+		return fmt.Errorf("components: stack: render %s: %w", tmplPath, rerr)
 	}
 
 	if ctx.DryRun {
@@ -137,20 +132,20 @@ func (stackComponent) Add(ctx AddContext) error {
 		if err := os.WriteFile(stackFile, []byte(rendered), 0o644); err != nil {
 			return fmt.Errorf("components: stack: write %s: %w", stackFile, err)
 		}
-		// Record the stack guide in the manifest so it joins the
-		// surface that `aikata sync` is responsible for (ADR 0014).
-		// Only registered when we actually emitted the file — if the
-		// user already had a customised copy on disk, we leave the
-		// manifest entry (if any) intact rather than rebasing it to
-		// the template hash.
-		stackRel := "docs/stacks/" + name + ".md"
-		if rerr := RecordInManifest(ctx.TargetDir, map[string]string{stackRel: rendered}); rerr != nil {
-			return rerr
-		}
 		if _, werr := fmt.Fprintf(stdout(ctx), "wrote %s\n", relFromTarget(ctx.TargetDir, stackFile)); werr != nil {
 			return werr
 		}
 	}
+
+	// Record the stack guide in the manifest unconditionally (ADR 0014).
+	// Even when the on-disk file pre-existed and we did not write,
+	// the manifest must track the template hash so the next sync
+	// classifies any user customisation as user-only-edit.
+	stackRel := "docs/stacks/" + name + ".md"
+	if rerr := RecordInManifest(ctx.TargetDir, map[string]string{stackRel: rendered}); rerr != nil {
+		return rerr
+	}
+
 	if !cfgHasStack {
 		cfg.Stacks = append(cfg.Stacks, name)
 		sort.Strings(cfg.Stacks)
@@ -159,6 +154,16 @@ func (stackComponent) Add(ctx AddContext) error {
 		}
 		if _, werr := fmt.Fprintf(stdout(ctx),
 			"updated .aikata/aikata.yaml stacks: += %q\n", name); werr != nil {
+			return werr
+		}
+	}
+
+	if fileExists && cfgHasStack {
+		// Fully idempotent: file present, cfg has the stack, manifest
+		// just refreshed. Mirror the original "nothing to do" notice so
+		// scripts that grep for it keep working.
+		if _, werr := fmt.Fprintf(stderr(ctx),
+			"notice: stack %q already present (docs/stacks/%s.md + aikata.yaml)\n", name, name); werr != nil {
 			return werr
 		}
 	}

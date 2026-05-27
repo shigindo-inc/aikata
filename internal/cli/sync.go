@@ -27,9 +27,13 @@ import (
 //   - 1: I/O or load error before the merge even ran.
 func newSyncCmd() *cobra.Command {
 	var (
-		dryRun     bool
-		rebaseline bool
-		jsonOut    bool
+		dryRun       bool
+		rebaseline   bool
+		jsonOut      bool
+		preset       string
+		lang         string
+		stacks       []string
+		withMonorepo bool
 	)
 	cmd := &cobra.Command{
 		Use:   "sync",
@@ -43,6 +47,11 @@ func newSyncCmd() *cobra.Command {
 			"state. Rebaseline is non-destructive: it only writes\n" +
 			"`.aikata/manifest.yaml`; source files are not modified. A\n" +
 			"subsequent `aikata sync` then performs the actual 3-way merge.\n\n" +
+			"Scope is derived from the manifest, then `.aikata/aikata.yaml`,\n" +
+			"then the CLI override flags (`--preset`, `--lang`, `--stack`,\n" +
+			"`--with-monorepo`). Overrides apply to this invocation only —\n" +
+			"they are not written back to either file. See ADR 0013 for\n" +
+			"the hierarchy and rationale.\n\n" +
 			"See docs/adr/0011-aikata-sync-design.md for the merge contract.",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -50,12 +59,40 @@ func newSyncCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("sync: getwd: %w", err)
 			}
+
+			// Capture only the flags the user actually changed so we
+			// can pass them through as overrides. `cmd.Flags().Changed`
+			// is the way to distinguish "user passed --foo=false" from
+			// "user did not pass --foo", which BoolVar alone cannot.
+			var (
+				presetPtr       *string
+				langPtr         *string
+				stacksPtr       *[]string
+				withMonorepoPtr *bool
+			)
+			if cmd.Flags().Changed("preset") {
+				presetPtr = &preset
+			}
+			if cmd.Flags().Changed("lang") {
+				langPtr = &lang
+			}
+			if cmd.Flags().Changed("stack") {
+				stacksPtr = &stacks
+			}
+			if cmd.Flags().Changed("with-monorepo") {
+				withMonorepoPtr = &withMonorepo
+			}
+
 			result, err := sync.Run(sync.Options{
-				Root:       target,
-				DryRun:     dryRun,
-				Rebaseline: rebaseline,
-				Stdout:     cmd.OutOrStdout(),
-				Stderr:     cmd.ErrOrStderr(),
+				Root:                 target,
+				DryRun:               dryRun,
+				Rebaseline:           rebaseline,
+				Stdout:               cmd.OutOrStdout(),
+				Stderr:               cmd.ErrOrStderr(),
+				OverridePreset:       presetPtr,
+				OverrideLang:         langPtr,
+				OverrideStacks:       stacksPtr,
+				OverrideWithMonorepo: withMonorepoPtr,
 			})
 			if err != nil {
 				if errors.Is(err, sync.ErrNoManifest) {
@@ -79,6 +116,13 @@ func newSyncCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "report the merge plan without writing to disk")
 	cmd.Flags().BoolVar(&rebaseline, "rebaseline", false, "seed a missing manifest from current on-disk state (non-destructive: no source files are modified)")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON envelope (shape: {version: 1, kind: \"sync\", ...})")
+	// Scope override flags (ADR 0013). Each one is a transient lens
+	// over this invocation only; the manifest and `aikata.yaml` are
+	// never rewritten by sync to record an override.
+	cmd.Flags().StringVar(&preset, "preset", "", "override the preset for this run (minimal | standard | flutter | typescript)")
+	cmd.Flags().StringVar(&lang, "lang", "", "override the rendering language for this run (en | ja)")
+	cmd.Flags().StringSliceVar(&stacks, "stack", nil, "override the stack list for this run; repeatable (e.g. --stack flutter --stack typescript)")
+	cmd.Flags().BoolVar(&withMonorepo, "with-monorepo", false, "override the monorepo opt-in for this run (use --with-monorepo=false to force-disable)")
 	return cmd
 }
 

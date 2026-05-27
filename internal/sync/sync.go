@@ -93,12 +93,24 @@ type RunResult struct {
 // Options controls one sync invocation. Root must be the project
 // directory; aikata reads `.aikata/aikata.yaml` and
 // `.aikata/manifest.yaml` from it.
+//
+// The Override* fields express one-off CLI scope overrides (ADR 0013).
+// Each is nil when the matching CLI flag was not passed; non-nil
+// values take precedence over both the manifest and `aikata.yaml`
+// for the current invocation only. The values are intentionally not
+// written back to disk — to make a change persistent, use
+// `aikata add` / hand-edit `aikata.yaml`.
 type Options struct {
 	Root       string
 	DryRun     bool
 	Rebaseline bool
 	Stdout     io.Writer
 	Stderr     io.Writer
+
+	OverridePreset       *string
+	OverrideLang         *string
+	OverrideStacks       *[]string
+	OverrideWithMonorepo *bool
 }
 
 // ErrNoManifest signals that the project has never been initialized by
@@ -170,27 +182,29 @@ func Run(opts Options) (RunResult, error) {
 		ancestor = loaded
 	}
 
-	// Determine which preset / lang / optional components to render.
-	// In normal mode, the manifest carries the original preset / lang
-	// and the file set tells us which optional components were
-	// enabled. In rebaseline mode we have no manifest, so we trust
-	// `.aikata/aikata.yaml`'s project.lang and pick `standard` as the
-	// safest default for the preset (the user can re-run with an
-	// explicit preset flag in a v0.5.x follow-up).
-	preset, lang, withFlags := derivePlan(ancestor, cfg, manifestPresent)
+	// Determine which preset / lang / optional components / stacks
+	// to render. The hierarchy is documented in ADR 0013:
+	// CLI overrides > manifest > `.aikata/aikata.yaml` > defaults.
+	preset, lang, withFlags, stacks := derivePlan(ancestor, cfg, manifestPresent, overrides{
+		Preset:       opts.OverridePreset,
+		Lang:         opts.OverrideLang,
+		Stacks:       opts.OverrideStacks,
+		WithMonorepo: opts.OverrideWithMonorepo,
+	})
 
 	scaffoldOpts := scaffold.Options{
 		ProjectName:   cfg.Project.Name,
 		Preset:        preset,
 		TargetDir:     opts.Root, // not read or written by Render
 		Lang:          lang,
-		Stacks:        append([]string(nil), cfg.Stacks...),
+		Stacks:        stacks,
 		AITools:       append([]string(nil), cfg.AITools...),
 		WithMemory:    withFlags.WithMemory,
 		WithUI:        withFlags.WithUI,
 		WithAPI:       withFlags.WithAPI,
 		WithTDD:       withFlags.WithTDD,
 		WithChangelog: withFlags.WithChangelog,
+		WithMonorepo:  withFlags.WithMonorepo,
 		Stdout:        opts.Stderr, // route any fallback notice to stderr
 	}
 	upstream, err := scaffold.Render(scaffoldOpts)
