@@ -18,6 +18,18 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-05-29
+
+Second sub-release of the v0.7.x line. Ships the purpose-based
+post-init command surface that the schema-v2 `components:` block in
+v0.7.0 unlocks. `aikata enable <capability>` is the new home for
+durable project features; `aikata new <artifact>` stamps one-off
+authoring scaffolds. The pre-v0.7.1 `aikata add <component>` is
+removed outright without a compatibility alias (ADR 0017). The
+third intent-scoped verb, `aikata expand <tier>`, is intentionally
+deferred until `extended` exists or a real project surfaces the
+need.
+
 ### Added
 
 - **Purpose-based post-init CLI split** (ADR 0017): `aikata enable
