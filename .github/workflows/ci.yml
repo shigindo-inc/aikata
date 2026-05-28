@@ -115,7 +115,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
-      AIKATA_VERSION: v0.6.1
+      AIKATA_VERSION: v0.6.2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
