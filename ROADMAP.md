@@ -333,8 +333,9 @@ one-shell-line elsewhere, and scales to a monorepo.
 
 v0.6.0 ships the **agent-doable subset**. User-action channels
 (Homebrew tap, npm wrapper, marketplace listing) are tracked under
-v0.6.2 below. v0.6.1 between them is reserved for a regression fix
-in `aikata sync --rebaseline` (see its own section).
+v0.6.4 below. v0.6.1 / v0.6.2 / v0.6.3 between them are unscheduled
+patch releases (rebaseline fix, ROADMAP & manifest hygiene, scope
+derivation) — see their own sections.
 
 Shipped:
 
@@ -355,7 +356,7 @@ Shipped:
   `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`). Installable
   manually today (`cp -r dist/claude-code/plugin/*
   ~/.claude/plugins/aikata/`); marketplace listing is tracked in
-  v0.6.2.
+  v0.6.4.
 
 Deferred again to v0.7+ (no projection in v0.6):
 
@@ -380,7 +381,7 @@ hashes seeded from the **upstream rendering** so the user's
 customisations register as `user-only-edit` on the next sync.
 
 Originally planned v0.6.1 work (channel publication) is shifted to
-v0.6.2 below; nothing else lands in v0.6.1 so the fix can be tagged
+v0.6.4 below; nothing else lands in v0.6.1 so the fix can be tagged
 and shipped without coupling.
 
 - [x] `internal/sync/sync.go` — non-destructive rebaseline path.
@@ -397,11 +398,52 @@ and shipped without coupling.
       installed binary (#82); `dist/README.md` clarifies Codex /
       third-party skill scope (#81).
 
-## v0.6.2 — Channel publication (user-blocked)
+## v0.6.2 — ROADMAP template & manifest hygiene ✅ (released 2026-05-28)
+
+Quality-of-life improvements built on the v0.6.1 base. Two
+coordinated changes:
+
+- A `ROADMAP.md` template is added to the `standard` / `flutter` /
+  `typescript` presets (ja + en). Scaffolded projects now have a
+  first-class place to describe their direction alongside SPEC /
+  ARCHITECTURE / GLOSSARY. `minimal` stays minimal.
+- `aikata add <component>` now writes entries to
+  `.aikata/manifest.yaml`, so subsequent `aikata sync` runs treat
+  add'd files as `user-only-edit` (preserving customisations)
+  instead of `upstream-added` (potentially overwriting them).
+
+ADR 0014 (`manifest is a living record`) ships alongside to make
+the new invariant explicit.
+
+- [x] `internal/templates/data/presets/{standard,flutter,typescript}/{en,ja}/ROADMAP.md.tmpl`
+      — 6 new template files.
+- [x] `internal/components/component.go` — new `RecordInManifest`
+      helper called from `memory.go` / `singlefile.go` / `stack.go`.
+- [x] `internal/components/manifest_record_test.go` — 6 new tests
+      covering happy path, idempotency, preservation, no-op without
+      `aikata.yaml`, and stack guide registration (both fresh-write
+      and file-pre-exists branches).
+- [x] `docs/adr/0014-manifest-living-record.md` — new ADR.
+
+## v0.6.3 — Sync scope derivation & CLI overrides 🟡 (in progress)
+
+Tracks the scope-derivation work merged on top of v0.6.2. `aikata
+sync` now reads scope from a small ordered hierarchy (defaults →
+`aikata.yaml` → manifest → CLI overrides) instead of the
+hard-coded "preset=standard / no opt-ins" rebaseline fallback. Four
+new one-off override flags (`--preset` / `--lang` / `--stack` /
+`--with-monorepo`) round out the surface. ADR 0013 documents the
+hierarchy and the transient-by-design semantics.
+
+Will tag once v0.6.2 ships and a `chore(release): prepare v0.6.3`
+PR lands.
+
+## v0.6.4 — Channel publication (user-blocked)
 
 Tracking the v0.6 items that need a maintainer action outside the
-aikata repo. None of these block v0.6.0 / v0.6.1; they ship as a
-follow-up patch once the user-side prerequisites land.
+aikata repo. None of these block v0.6.0 / v0.6.1 / v0.6.2 / v0.6.3;
+they ship as a follow-up patch once the user-side prerequisites
+land.
 
 - [ ] **Homebrew tap** (`shigindo-inc/tap/aikata`) published from
       the release workflow. Requires creating the
@@ -491,7 +533,9 @@ previous one (`go install` stays the canonical baseline).
 | v0.5.0 | ✅ | ✅ | ✅ | minimal | — | — | — | — |
 | v0.6.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.6.1 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
-| v0.6.2 | ✅ | ✅ | ✅ | minimal | marketplace | `npx aikata` | tap | — |
+| v0.6.2 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.6.3 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.6.4 | ✅ | ✅ | ✅ | minimal | marketplace | `npx aikata` | tap | — |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:

@@ -18,27 +18,8 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
-### Added
-
-- **`ROADMAP.md` template** added to the `standard` / `flutter` /
-  `typescript` presets (ja + en). Scaffolded projects now ship with a
-  ROADMAP placeholder so agents have a first-class entry point for
-  "where is this project going?" alongside SPEC / ARCHITECTURE /
-  GLOSSARY. `minimal` preset is deliberately untouched. Existing
-  projects pick up the template via `aikata sync` once the next normal
-  3-way merge runs against the new manifest entry.
-
 ### Fixed
 
-- **`aikata add <component>` now records the added files in
-  `.aikata/manifest.yaml`.** Previously `add memory` / `add ui` / `add
-  api` / `add tdd` / `add changelog` / `add stack <name>` wrote files
-  to disk but left the manifest stale, causing the next `aikata sync`
-  to treat those files as `upstream-added` and potentially overwrite
-  any user customisation. With the manifest updated alongside the
-  write, subsequent syncs correctly classify customisations as
-  `user-only-edit` and preserve them. New ADR 0014 documents this as
-  the "manifest is a living record" invariant.
 - **`aikata sync --rebaseline` now honours `aikata.yaml`'s `stacks`
   and `features.monorepo` / `features.tdd`** when seeding the
   manifest. Previously the rebaseline path hard-coded
@@ -70,6 +51,39 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   `aikata add <component>` or hand-editing `aikata.yaml`. See
   ADR 0013.
 
+## [0.6.2] - 2026-05-28
+
+Two coordinated quality-of-life improvements for the v0.6 line: a
+high-value `ROADMAP.md` preset template so scaffolded projects have a
+first-class place to describe their direction, and a fix that makes
+`aikata add <component>` write entries to `.aikata/manifest.yaml` so
+subsequent `aikata sync` runs correctly preserve customisations
+instead of treating add'd files as `upstream-added`. Scope-derivation
+work (ADR 0013) and the related override flags shipped under
+`[Unreleased]` and will tag as v0.6.3 next.
+
+### Added
+
+- **`ROADMAP.md` template** added to the `standard` / `flutter` /
+  `typescript` presets (ja + en). Scaffolded projects now ship with a
+  ROADMAP placeholder so agents have a first-class entry point for
+  "where is this project going?" alongside SPEC / ARCHITECTURE /
+  GLOSSARY. `minimal` preset is deliberately untouched. Existing
+  projects pick up the template via `aikata sync` once the next normal
+  3-way merge runs against the new manifest entry.
+
+### Fixed
+
+- **`aikata add <component>` now records the added files in
+  `.aikata/manifest.yaml`.** Previously `add memory` / `add ui` / `add
+  api` / `add tdd` / `add changelog` / `add stack <name>` wrote files
+  to disk but left the manifest stale, causing the next `aikata sync`
+  to treat those files as `upstream-added` and potentially overwrite
+  any user customisation. With the manifest updated alongside the
+  write, subsequent syncs correctly classify customisations as
+  `user-only-edit` and preserve them. New ADR 0014 documents this as
+  the "manifest is a living record" invariant.
+
 ## [0.6.1] - 2026-05-26
 
 Unscheduled patch release. Headline fix is `aikata sync --rebaseline`:
@@ -82,7 +96,8 @@ would silently shadow the freshly installed binary.
 
 The v0.6.1 ROADMAP slot was originally channel publication (Homebrew
 tap, npm, marketplace, native `update --apply`); that work shifts to
-v0.6.2.
+v0.6.4 (v0.6.2 became "ROADMAP & manifest hygiene", v0.6.3 became
+"sync scope derivation").
 
 ### Fixed
 
@@ -120,10 +135,11 @@ Packaging-and-distribution milestone (partial). Ships the
 agent-doable subset of the v0.6 ROADMAP entry: monorepo
 scaffolding, install-source metadata foundation, and a Claude Code
 plugin scaffold. Homebrew tap, npm wrapper, and plugin-marketplace
-listing are tracked under v0.6.2 because they require maintainer
-actions outside this repo (originally scheduled for v0.6.1; that
-slot was reused for the `aikata sync --rebaseline` regression fix —
-see the [Unreleased] section).
+listing are tracked under v0.6.4 because they require maintainer
+actions outside this repo (originally scheduled for v0.6.1, then
+v0.6.2; the v0.6.1 slot was reused for the `aikata sync --rebaseline`
+regression fix, v0.6.2 for ROADMAP & manifest hygiene, and v0.6.3
+for sync scope derivation — see the corresponding sections).
 
 ### Added
 
@@ -150,17 +166,17 @@ see the [Unreleased] section).
 ### Changed
 
 - ROADMAP.md splits the v0.6 entry into v0.6.0 (this release) and
-  v0.6.2 (user-blocker channels: Homebrew tap, npm, marketplace,
+  v0.6.4 (user-blocker channels: Homebrew tap, npm, marketplace,
   `--apply` self-update). Distribution-surface table gains v0.6.0
-  and v0.6.2 rows. (Originally v0.6.1; renumbered in a follow-up
-  patch that consumed the v0.6.1 slot for a `sync --rebaseline`
-  fix.)
+  and v0.6.4 rows. (Originally v0.6.1; renumbered through v0.6.2
+  and v0.6.3 as those slots were used for the rebaseline fix,
+  ROADMAP & manifest hygiene, and scope derivation respectively.)
 - README ADR index updated through ADR 0012.
 
 ### Notes
 
 - `internal/install.Detect()` ships as the **recording** half only.
-  Native `aikata update --apply` self-update lands in v0.6.2
+  Native `aikata update --apply` self-update lands in v0.6.4
   alongside Homebrew / npm channels so the upgrade flow can be
   tested against real installs.
 - `--monorepo` is orthogonal to the v0.4 single-file components.
