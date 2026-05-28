@@ -18,6 +18,16 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-05-28
+
+Scope-derivation release. `aikata sync` now reads from an ordered
+hierarchy (defaults → `.aikata/aikata.yaml` → `.aikata/manifest.yaml`
+→ CLI overrides) instead of the hard-coded "preset=standard / no
+opt-ins" rebaseline fallback that v0.6.1 left in place. Four new
+transient override flags round out the surface for one-off scope
+changes. ADR 0013 documents the hierarchy and the
+transient-by-design semantics.
+
 ### Fixed
 
 - **`aikata sync --rebaseline` now honours `aikata.yaml`'s `stacks`
