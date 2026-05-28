@@ -18,6 +18,53 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **Purpose-based post-init CLI split** (ADR 0017): `aikata enable
+  <capability>` persists durable project capabilities (memory, ui,
+  api, tdd, changelog, monorepo, stack `<name>`, ai-tool `<name>`)
+  and flips the corresponding schema-v2 `components.*` flag or
+  appends to `ai_tools:` / `stacks:`. `aikata new <artifact>` stamps
+  one-off authoring scaffolds (`adr "<title>"`).
+- `aikata enable monorepo` — schema-v2 capability wrapper around the
+  existing monorepo renderer. Flips `components.monorepo: true` in
+  `.aikata/aikata.yaml` and writes the `docs/monorepo.md` + `apps/`
+  scaffold.
+- `aikata list capabilities` and `aikata list artifacts` — separate
+  enumerations matching the `enable` / `new` split. Both share the
+  versioned `--json` envelope used by `doctor` / `update` / `sync`.
+
+### Changed
+
+- `enable`-tier components (memory, ui, api, tdd, changelog,
+  monorepo) now also set the matching schema-v2 `components.*` field
+  in `.aikata/aikata.yaml` via the new `EnableComponentInConfig`
+  helper. The v0.7.0 OR-merge picks up the explicit signal, so a
+  subsequent `aikata sync` no longer relies on manifest path
+  inference for components touched post-init.
+- `aikata enable stack` and `aikata enable ai-tool` switched from
+  `config.Load` to `config.LoadMigrated`, so the v1 → v2 lazy
+  migration (ADR 0016) runs as a side-effect of any post-init write
+  that touches `.aikata/aikata.yaml`.
+
+### Removed
+
+- **`aikata add <component>`** is removed without a compatibility
+  alias. Per ADR 0017, the v0.x window is small enough to absorb a
+  clean rename, and keeping the surface area small is more important
+  before v1.0. Users migrate to `aikata enable <capability>` for
+  durable features and `aikata new <artifact>` for authoring
+  scaffolds. `aikata list components` is replaced by
+  `aikata list capabilities` / `aikata list artifacts`.
+
+### Deferred
+
+- **`aikata expand <tier>`** stays unimplemented (ADR 0017): with
+  only `standard` as a meaningful target and the semantics still
+  open for projects init'd as `minimal`, the verb is held until
+  `extended` exists or a real project surfaces the need. The roadmap
+  reflects the deferral.
+
 ## [0.7.0] - 2026-05-29
 
 Schema-and-adoption hardening line opens. v0.7.0 lands the first item:

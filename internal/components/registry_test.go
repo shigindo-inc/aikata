@@ -20,28 +20,44 @@ func TestAll_ReturnsSortedSlice(t *testing.T) {
 }
 
 func TestGet_KnownAndUnknown(t *testing.T) {
-	c, ok := Get("memory")
+	c, ok := GetCapability("memory")
 	if !ok {
 		t.Fatal("expected memory to be registered")
 	}
 	if c.Status() != StatusActive {
 		t.Errorf("memory Status = %q, want active", c.Status())
 	}
-	if _, ok := Get("nope"); ok {
-		t.Error("expected Get(nope) to return false")
+	if _, ok := GetCapability("nope"); ok {
+		t.Error("expected GetCapability(nope) to return false")
 	}
 }
 
-func TestActiveNames_OnlyActive(t *testing.T) {
-	got := ActiveNames()
+func TestActiveCapabilityNames_OnlyActive(t *testing.T) {
+	got := ActiveCapabilityNames()
 	for _, n := range got {
-		c, ok := Get(n)
+		c, ok := GetCapability(n)
 		if !ok {
-			t.Errorf("ActiveNames returned unknown %q", n)
+			t.Errorf("ActiveCapabilityNames returned unknown %q", n)
 			continue
 		}
 		if c.Status() != StatusActive {
-			t.Errorf("ActiveNames included non-active %q", n)
+			t.Errorf("ActiveCapabilityNames included non-active %q", n)
 		}
+	}
+}
+
+func TestArtifacts_KnownAndUnknown(t *testing.T) {
+	c, ok := GetArtifact("adr")
+	if !ok {
+		t.Fatal("expected adr to be registered as an artifact")
+	}
+	if c.Status() != StatusActive {
+		t.Errorf("adr Status = %q, want active", c.Status())
+	}
+	if _, ok := GetCapability("adr"); ok {
+		t.Error("adr should not appear in Capabilities()")
+	}
+	if _, ok := GetArtifact("memory"); ok {
+		t.Error("memory should not appear in Artifacts()")
 	}
 }

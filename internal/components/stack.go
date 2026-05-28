@@ -71,7 +71,9 @@ func (stackComponent) Add(ctx AddContext) error {
 		return fmt.Errorf("components: stack: unknown stack %q (known: %s)", name, strings.Join(Stacks(), ", "))
 	}
 
-	cfg, _, err := config.Load(ctx.TargetDir)
+	// LoadMigrated picks up any pending v1 -> v2 schema migration (ADR
+	// 0016) so the subsequent config.Save lands at the current schema.
+	cfg, _, err := config.LoadMigrated(ctx.TargetDir)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("components: stack: aikata config not found at %s (run `aikata init` first)", config.PrimaryPath(ctx.TargetDir))

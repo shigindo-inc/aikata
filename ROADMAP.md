@@ -484,21 +484,43 @@ optional template scope.
       to the v2 shape; the schema bump is part of the golden tree.
 - [x] aikata's own `.aikata/aikata.yaml` migrated to v2 (dogfood).
 
-Remaining v0.7.x items (planned for v0.7.1 / v0.7.2):
+## v0.7.1 — Purpose-based CLI split ✅ (released 2026-05-29)
 
-- [ ] **Purpose-based CLI split** — replace the overloaded
-      `aikata add <component>` surface with clear commands that map to
-      user intent:
+Second sub-release of v0.7.x. Lands the post-init command surface
+that the schema-v2 `components:` block enables.
 
-      | Purpose | Command |
-      |---|---|
-      | Maintain and restore the already-declared aikata surface without changing durable intent | `aikata sync` |
-      | Persist project capabilities such as `memory`, `monorepo`, `stack <name>`, and `ai-tool <name>` | `aikata enable <capability>` |
-      | Persist a broader document tier such as `standard` or `extended`; `minimal` remains the baseline maintained by `sync`, not an expansion target | `aikata expand <tier>` |
-      | Create authoring artifacts such as ADRs | `aikata new <artifact>` |
+- [x] **`aikata enable <capability>`** — persists durable project
+      capabilities (memory, ui, api, tdd, changelog, monorepo, stack
+      `<name>`, ai-tool `<name>`). Each leaf renders the corresponding
+      files, records them in the manifest (ADR 0014), and flips the
+      matching schema-v2 `components.*` flag or appends to
+      `ai_tools:` / `stacks:` in `.aikata/aikata.yaml`.
+- [x] **`aikata new <artifact>`** — stamps one-off authoring scaffolds
+      (`adr "<title>"`). No durable schema flip.
+- [x] **`aikata add <component>` removed** without a compatibility
+      alias. Per ADR 0017 the pre-v1.0 surface drops it cleanly.
+- [x] `aikata list capabilities` / `aikata list artifacts` replace
+      the pre-v0.7.1 `list components`, mirroring the split. Both
+      keep the versioned `--json` envelope.
+- [x] **`aikata enable monorepo`** — new `monorepoComponent`
+      registered alongside the existing memory / ui / api / tdd /
+      changelog / stack / ai-tool capabilities.
+- [x] `enable`-tier flips the matching `components.*` flag via the
+      new `EnableComponentInConfig` helper, so `aikata sync` no
+      longer needs manifest path inference for components touched
+      post-init.
+- [x] `stack` / `ai-tool` switched from `config.Load` to
+      `config.LoadMigrated` so the v1 → v2 schema migration
+      (ADR 0016) runs as a side-effect of any enable-tier write.
+- [x] `docs/adr/0017-post-init-command-taxonomy.md` — new ADR;
+      Q-DESIGN-10 resolved.
+- [x] **`aikata expand <tier>` deferred**: with only `standard` as a
+      meaningful target and unclear semantics for minimal → standard
+      growth, the verb is held until `extended` exists or a real
+      project surfaces the need.
 
-      Do not add compatibility aliases for the pre-release `add`
-      shapes; keeping the surface small is more important before v1.0.
+Remaining v0.7.x items (planned for v0.7.2):
+
 - [ ] **Missing-file repair semantics** — define exactly how `sync`
       restores files that should exist for the declared baseline /
       enabled capabilities. It may add or update managed files through

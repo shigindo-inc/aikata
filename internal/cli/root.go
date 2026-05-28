@@ -12,9 +12,16 @@ func Execute(version string) error {
 	return root.Execute()
 }
 
-// newRootCmd constructs the root `aikata` command. Subcommands (init,
-// add, doctor, generate, sync, list) will be attached here as they are
-// implemented in later phases.
+// newRootCmd constructs the root `aikata` command. The post-init
+// surface follows the v0.7.1 purpose-based split (ADR 0017):
+//   - `enable <capability>` persists project features (memory, ui,
+//     monorepo, stack <name>, ai-tool <name>, ...).
+//   - `new <artifact>` creates one-off authoring scaffolds (adr).
+//   - `sync` maintains the already-declared surface.
+//   - `generate` re-renders per-AI-tool artifacts from AGENTS.md.
+//
+// There is no `add` parent — see ADR 0017 for the rationale on why
+// the pre-v1.0 surface drops it without an alias.
 func newRootCmd(version string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aikata",
@@ -39,7 +46,8 @@ func newRootCmd(version string) *cobra.Command {
 
 	// Subcommands. Keep this list short; each subcommand owns its own file.
 	cmd.AddCommand(newInitCmd())
-	cmd.AddCommand(newAddCmd())
+	cmd.AddCommand(newEnableCmd())
+	cmd.AddCommand(newNewCmd())
 	cmd.AddCommand(newGenerateCmd())
 	cmd.AddCommand(newDoctorCmd())
 	cmd.AddCommand(newCompletionCmd())

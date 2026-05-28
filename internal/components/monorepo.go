@@ -8,6 +8,66 @@ import (
 	"github.com/shigindo-inc/aikata/internal/templates"
 )
 
+// monorepoComponent provides the v0.6 monorepo scaffolding under
+// `docs/monorepo.md` plus the `apps/` skeleton. The same renderer is
+// invoked from `aikata init --monorepo` (preset-time) and
+// `aikata enable monorepo` (post-init), so the two flows cannot
+// drift. Schema-v2: enabling flips `components.monorepo` in
+// .aikata/aikata.yaml (ADR 0016).
+type monorepoComponent struct{}
+
+// Monorepo is the singleton instance registered in the capabilities
+// registry.
+var Monorepo Component = monorepoComponent{}
+
+func (monorepoComponent) Name() string { return "monorepo" }
+func (monorepoComponent) Description() string {
+	return "v0.6 monorepo layout: docs/monorepo.md + apps/ skeleton."
+}
+func (monorepoComponent) Status() string { return StatusActive }
+
+// Add renders the monorepo files for ctx.Lang under ctx.TargetDir.
+// Existing files are preserved so the command is idempotent. The
+// schema-v2 `components.monorepo` flag is flipped to true.
+func (monorepoComponent) Add(ctx AddContext) error {
+	if ctx.ProjectName == "" {
+		return fmt.Errorf("components: monorepo: project name is required")
+	}
+	if ctx.TargetDir == "" {
+		return fmt.Errorf("components: monorepo: target directory is required")
+	}
+	rendered, err := RenderMonorepo(MonorepoParams{
+		Lang:        ctx.Lang,
+		ProjectName: ctx.ProjectName,
+		Clock:       ctx.Clock,
+	})
+	if err != nil {
+		return err
+	}
+
+	if ctx.DryRun {
+		return printMemoryPlan(ctx.Stdout, ctx.TargetDir, rendered)
+	}
+
+	written, skipped, err := writeIfMissing(ctx.TargetDir, rendered)
+	if err != nil {
+		return err
+	}
+	if err := RecordInManifest(ctx.TargetDir, rendered); err != nil {
+		return err
+	}
+	if err := EnableComponentInConfig(ctx.TargetDir, "monorepo"); err != nil {
+		return err
+	}
+	if written == 0 {
+		if _, werr := fmt.Fprintf(stderr(ctx),
+			"notice: monorepo already present (%d file(s) under docs/ and apps/); nothing to do\n", skipped); werr != nil {
+			return werr
+		}
+	}
+	return nil
+}
+
 // MonorepoParams carries the inputs RenderMonorepo needs. Mirrors the
 // reduced shape used by MemoryParams / SingleFileParams.
 type MonorepoParams struct {
