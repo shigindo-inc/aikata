@@ -247,7 +247,7 @@ func TestRun_StandardAikataYamlContent(t *testing.T) {
 	}
 	out := string(body)
 	for _, needle := range []string{
-		"version: 1",
+		"version: 2",
 		"name: samplekata",
 		"lang: en",
 		"- claude",
@@ -350,7 +350,7 @@ func TestRun_FlutterAikataYamlIncludesStack(t *testing.T) {
 		t.Fatalf("read .aikata/aikata.yaml: %v", err)
 	}
 	out := string(body)
-	for _, needle := range []string{"version: 1", "name: samplekata", "stacks:", "- flutter"} {
+	for _, needle := range []string{"version: 2", "name: samplekata", "stacks:", "- flutter"} {
 		if !strings.Contains(out, needle) {
 			t.Errorf("aikata.yaml missing %q:\n%s", needle, out)
 		}
@@ -505,7 +505,7 @@ func TestRun_TypescriptAikataYamlIncludesStack(t *testing.T) {
 		t.Fatalf("read .aikata/aikata.yaml: %v", err)
 	}
 	out := string(body)
-	for _, needle := range []string{"version: 1", "name: samplekata", "stacks:", "- typescript"} {
+	for _, needle := range []string{"version: 2", "name: samplekata", "stacks:", "- typescript"} {
 		if !strings.Contains(out, needle) {
 			t.Errorf("aikata.yaml missing %q:\n%s", needle, out)
 		}

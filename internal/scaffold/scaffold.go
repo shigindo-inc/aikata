@@ -219,9 +219,15 @@ func addPresetArtifacts(opts Options, rendered map[string]string) error {
 		if len(opts.AITools) > 0 {
 			cfg.AITools = append([]string(nil), opts.AITools...)
 		}
-		if opts.WithMonorepo {
-			cfg.Features["monorepo"] = true
-		}
+		// Schema-v2: persist optional components as first-class fields
+		// so post-init commands and `aikata sync` read intent from one
+		// declarative source instead of inferring from manifest paths.
+		cfg.Components.Memory = opts.WithMemory
+		cfg.Components.UI = opts.WithUI
+		cfg.Components.API = opts.WithAPI
+		cfg.Components.TDD = opts.WithTDD
+		cfg.Components.Changelog = opts.WithChangelog
+		cfg.Components.Monorepo = opts.WithMonorepo
 		buf, err := config.Marshal(cfg)
 		if err != nil {
 			return err

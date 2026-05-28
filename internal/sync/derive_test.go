@@ -115,6 +115,69 @@ func TestDerivePlan_Manifest_AikataYamlORs(t *testing.T) {
 	}
 }
 
+// TestDerivePlan_SchemaV2_ComponentsOR verifies the v0.7.0 addition:
+// `cfg.Components.*` is OR-merged with whatever inferFlags or the
+// legacy `features.*` keys produce. Schema v2 fields are the
+// canonical signal; manifest path inference remains a safety net for
+// projects that have not yet been re-touched by a writer.
+func TestDerivePlan_SchemaV2_ComponentsOR(t *testing.T) {
+	// Manifest knows about UI.md only.
+	m := config.Manifest{
+		Version: 1,
+		Preset:  "standard",
+		Lang:    "en",
+		Files: []config.ManifestFile{
+			{Path: "UI.md"},
+		},
+	}
+	// Schema-v2 cfg declares memory + tdd + monorepo explicitly. UI is
+	// false in the schema but still inferable from the manifest; the
+	// OR-merge must keep UI true.
+	cfg := config.AikataYaml{
+		Version: 2,
+		Components: config.Components{
+			Memory:   true,
+			TDD:      true,
+			Monorepo: true,
+		},
+	}
+	_, _, flags, _ := derivePlan(m, cfg, true, overrides{})
+
+	if !flags.WithMemory {
+		t.Errorf("Components.Memory not honoured: %+v", flags)
+	}
+	if !flags.WithTDD {
+		t.Errorf("Components.TDD not honoured: %+v", flags)
+	}
+	if !flags.WithMonorepo {
+		t.Errorf("Components.Monorepo not honoured: %+v", flags)
+	}
+	if !flags.WithUI {
+		t.Errorf("UI must remain true via manifest OR-merge even when schema-v2 says false: %+v", flags)
+	}
+}
+
+// TestDerivePlan_SchemaV2_LegacyFeaturesStillRead is the v0.7.0
+// backwards-compatibility regression: a v1-shaped config (with
+// `features.tdd` and `features.monorepo`, no `components` block) must
+// keep producing the same scope, because the migrator runs on write
+// paths only — read-only callers like `aikata doctor` still see the
+// raw v1 payload.
+func TestDerivePlan_SchemaV2_LegacyFeaturesStillRead(t *testing.T) {
+	cfg := config.AikataYaml{
+		Version: 1,
+		Project: config.Project{Lang: "en"},
+		Features: map[string]bool{
+			"tdd":      true,
+			"monorepo": true,
+		},
+	}
+	_, _, flags, _ := derivePlan(config.Manifest{}, cfg, false, overrides{})
+	if !flags.WithTDD || !flags.WithMonorepo {
+		t.Errorf("legacy features.{tdd,monorepo} must still set flags pre-migration: %+v", flags)
+	}
+}
+
 // TestDerivePlan_Overrides_TakePrecedence verifies the ADR 0013
 // hierarchy: CLI override > manifest > aikata.yaml > defaults. Each
 // field is asserted independently so a regression in one path doesn't

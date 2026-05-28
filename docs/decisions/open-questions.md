@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-28
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
@@ -135,19 +135,13 @@ what unblocks a decision, and the latest update date.
 
 ### Q-DESIGN-09 — `.aikata/aikata.yaml` schema v2
 
-- **Status**: Open. v0.6.3 made `aikata sync` safer by deriving scope
-  from defaults, `aikata.yaml`, manifest paths, and CLI overrides. That
-  still leaves some durable choices implicit.
-- **Question**: Which optional components become explicit schema v2
-  fields, and how does v1 migrate without surprising existing projects?
-- **Leading**: add explicit durable flags for optional components that
-  affect template scope (`memory`, `ui`, `api`, `tdd`, `changelog`,
-  `monorepo`) while keeping v1 reads through the v0.x line. The v0.7
-  post-init commands should update files, manifest entries, and durable
-  config together where a stable field exists.
-- **Unblocks**: v0.7.x schema/adoption hardening, persistent
-  capability commands, and a safer v1.0 template schema guarantee.
-- **Updated**: 2026-05-28.
+- **Status**: Resolved by
+  [ADR 0016](../adr/0016-aikata-yaml-schema-v2.md) in v0.7.0. The
+  `components:` block records `memory`, `ui`, `api`, `tdd`,
+  `changelog`, and `monorepo` as first-class fields; the v1 → v2
+  migrator lifts `features.tdd` and `features.monorepo` automatically;
+  legacy v1 reads stay supported through the v0.x line.
+- Kept as a back-reference; will be removed in a future cleanup.
 
 ### Q-DESIGN-10 — Post-init command taxonomy
 

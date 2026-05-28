@@ -1,4 +1,4 @@
-version: 1
+version: 2
 project:
     name: aikata
     lang: en
@@ -7,10 +7,15 @@ ai_tools:
     - claude
     - cursor
     - codex
-features:
-    monorepo: false
-    obsidian_hints: false
+components:
+    memory: false
+    ui: false
+    api: false
     tdd: false
+    changelog: false
+    monorepo: false
+features:
+    obsidian_hints: false
 docs:
     # aikata's own repo overrides the target-project default and
     # commits generated artifacts (CLAUDE.md, .cursor/rules/, ...) so

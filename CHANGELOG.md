@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-28
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
@@ -17,6 +17,21 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+### Added
+
+- **`.aikata/aikata.yaml` schema v2** (ADR 0016): a typed `components:`
+  block (`memory`, `ui`, `api`, `tdd`, `changelog`, `monorepo`) records
+  optional template-scope intent declaratively, replacing manifest path
+  inference as the canonical source. A v1 → v2 migrator lifts the legacy
+  `features.tdd` / `features.monorepo` keys into the new block; legacy
+  v1 reads continue to work for the rest of the v0.x line so projects
+  upgrade lazily on the next writer run (`aikata generate`, `aikata
+  sync`, `aikata doctor --fix`).
+- `aikata sync` scope derivation OR-merges `cfg.Components.*` with the
+  existing manifest path inference and legacy `features.*` keys, so
+  schema-v2 projects, in-flight v1 projects, and projects with stale
+  manifests all converge to the same scope.
 
 ### Changed
 
