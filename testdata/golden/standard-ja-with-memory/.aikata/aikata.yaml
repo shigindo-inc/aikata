@@ -1,13 +1,18 @@
-version: 1
+version: 2
 project:
     name: samplekata
     lang: ja
 ai_tools:
     - claude
-features:
-    monorepo: false
-    obsidian_hints: false
+components:
+    memory: true
+    ui: false
+    api: false
     tdd: false
+    changelog: false
+    monorepo: false
+features:
+    obsidian_hints: false
 docs:
     generate_gitignore: true
     task_file_location: docs/tasks/current.md

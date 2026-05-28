@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
@@ -186,10 +186,10 @@ belongs in optional `UI.md` when enabled. See
 > `aikata doctor --fix`; the fallback stays in place throughout the
 > v0.x line.
 
-### 4.1 Schema (v1)
+### 4.1 Schema (v2)
 
 ```yaml
-version: 1                       # Required. Migration anchor.
+version: 2                       # Required. Migration anchor.
 project:
   name: my-app                   # Required. From `aikata init [name]`.
   lang: en                       # en | ja. Default: en.
@@ -203,10 +203,16 @@ ai_tools:                        # Empty list = no `aikata generate` output.
 stacks:                          # Empty list = stack-agnostic.
   - flutter
 
-features:                        # All default false.
+components:                      # Schema-v2 explicit template-scope flags.
+  memory: false                  # See ADR 0016. All default false.
+  ui: false
+  api: false
   tdd: false
-  obsidian_hints: false
+  changelog: false
   monorepo: false
+
+features:                        # Non-scope ergonomic toggles.
+  obsidian_hints: false
 
 docs:
   generate_gitignore: true       # Add generated artifacts to .gitignore.
@@ -227,9 +233,17 @@ overrides:                       # Per-tool fine-tuning.
 ### 4.2 Compatibility rules
 
 - `version` is **required**. Missing → error.
-- `aikata` must accept any future minor extension of v1 without crashing,
-  unknown keys logged as warnings.
-- `version: 2` triggers a migration path (no such migration in v0.x).
+- `aikata` must accept any future minor extension of the current version
+  without crashing; unknown keys are logged as warnings.
+- `version: 1` triggers the v1 → v2 forward migration in
+  `internal/config/schema_migrate.go` (ADR 0016). The migrator lifts
+  `features.tdd` / `features.monorepo` into `components:` and is applied
+  lazily — read-only callers see the in-memory v2 shape, and the
+  on-disk file is rewritten only when a writer (`aikata generate`,
+  `aikata sync`, `aikata doctor --fix`) persists it.
+- A future `version: 3` will land the same way: a forward migrator at
+  the corresponding registry slot, lazy rewrite, the legacy read
+  preserved through the v0.x line.
 
 ---
 

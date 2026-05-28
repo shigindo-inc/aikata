@@ -10,19 +10,27 @@ import (
 // pre-v0.3.2 `.ai/aikata.yaml` fallback) that this binary writes and
 // is expected to read. Bumped only when an incompatible schema
 // change ships (see ARCHITECTURE.md §4.2).
-const Version = 1
+//
+// v2 (v0.7.0) introduces the typed `components:` block so optional
+// template scope (`memory`, `ui`, `api`, `tdd`, `changelog`,
+// `monorepo`) is recorded explicitly instead of being inferred from
+// manifest paths. The v1 → v2 migrator in [schema_migrate.go] lifts
+// the corresponding entries out of `features:` and into the new
+// block; legacy projects continue to be readable via the migrator.
+const Version = 2
 
 // AikataYaml is the in-memory representation of the aikata config
 // file (`.aikata/aikata.yaml`, or the legacy `.ai/aikata.yaml`).
 // Field tags double as the YAML schema spec — keep them in sync with
 // ARCHITECTURE.md §4.1.
 type AikataYaml struct {
-	Version  int             `yaml:"version"`
-	Project  Project         `yaml:"project"`
-	AITools  []string        `yaml:"ai_tools,omitempty"`
-	Stacks   []string        `yaml:"stacks,omitempty"`
-	Features map[string]bool `yaml:"features,omitempty"`
-	Docs     Docs            `yaml:"docs,omitempty"`
+	Version    int             `yaml:"version"`
+	Project    Project         `yaml:"project"`
+	AITools    []string        `yaml:"ai_tools,omitempty"`
+	Stacks     []string        `yaml:"stacks,omitempty"`
+	Components Components      `yaml:"components"`
+	Features   map[string]bool `yaml:"features,omitempty"`
+	Docs       Docs            `yaml:"docs,omitempty"`
 }
 
 // Project carries the human-facing identity of the project.
@@ -32,18 +40,35 @@ type Project struct {
 	Description string `yaml:"description,omitempty"`
 }
 
+// Components is the schema-v2 explicit record of which optional
+// template-scope components a project has enabled. Pre-v2 projects
+// kept the same intent split across `features.tdd`,
+// `features.monorepo`, and manifest-path inference; v2 makes the
+// signal first-class so post-init commands and `aikata sync` can read
+// a single declarative source. See ADR 0016.
+type Components struct {
+	Memory    bool `yaml:"memory"`
+	UI        bool `yaml:"ui"`
+	API       bool `yaml:"api"`
+	TDD       bool `yaml:"tdd"`
+	Changelog bool `yaml:"changelog"`
+	Monorepo  bool `yaml:"monorepo"`
+}
+
 // Docs holds documentation-related preferences.
 type Docs struct {
 	GenerateGitignore bool   `yaml:"generate_gitignore"`
 	TaskFileLocation  string `yaml:"task_file_location"`
 }
 
-// Default returns a v1 AikataYaml seeded for the given project name and
-// language. The defaults match `aikata init --preset standard`:
+// Default returns an AikataYaml at the current schema version seeded
+// for the given project name and language. The defaults match
+// `aikata init --preset standard`:
 //
 //   - Only the `claude` AI tool is enabled by default.
 //   - No stacks selected.
-//   - All feature flags off.
+//   - All optional components off (schema-v2 `components` block).
+//   - All non-scope feature flags off (`obsidian_hints`).
 //   - Generated AI-tool artifacts are gitignored by default
 //     (target-project default — aikata's own repo overrides this per
 //     ADR 0003).
@@ -57,12 +82,11 @@ func Default(name, lang string) AikataYaml {
 			Name: name,
 			Lang: lang,
 		},
-		AITools: []string{"claude"},
-		Stacks:  nil,
+		AITools:    []string{"claude"},
+		Stacks:     nil,
+		Components: Components{},
 		Features: map[string]bool{
-			"tdd":            false,
 			"obsidian_hints": false,
-			"monorepo":       false,
 		},
 		Docs: Docs{
 			GenerateGitignore: true,

@@ -37,23 +37,29 @@ type overrides struct {
 //  1. CLI overrides (sticky for one invocation only).
 //  2. The manifest (init-time + post-init `aikata add` history, per
 //     ADR 0014).
-//  3. `.aikata/aikata.yaml` preferences (stacks, features.monorepo,
-//     features.tdd, project.lang).
+//  3. `.aikata/aikata.yaml` preferences (`components.*`, `stacks`,
+//     legacy `features.monorepo` / `features.tdd`, `project.lang`).
 //  4. Defaults (preset=standard, lang=en).
 //
 // In manifest-present mode the manifest is the primary source for
 // preset / lang / `--with-*` flags, but aikata.yaml's `stacks` and
-// `features.monorepo` / `features.tdd` are OR-merged on top — the
-// manifest records "files that exist", aikata.yaml records the
-// user's intent, and both signals together cover post-init opt-ins
-// the manifest may not have grown yet (especially for legacy
-// projects).
+// component flags are OR-merged on top — the manifest records "files
+// that exist", aikata.yaml records the user's intent, and both
+// signals together cover post-init opt-ins the manifest may not have
+// grown yet (especially for legacy projects).
 //
 // In rebaseline mode (manifest absent) the manifest contributes
 // nothing and aikata.yaml plus defaults carry the load. Per ADR 0011
 // D4, rebaseline writes a manifest using the **upstream rendering**
 // as the ancestor, so honouring aikata.yaml here is how the user's
 // preferences make it into that initial render.
+//
+// Schema-v2 (`components.*`) and the legacy `features.{tdd,monorepo}`
+// keys are both honoured during the v0.x compatibility window so
+// projects that have not yet been migrated by a write-side path do
+// not regress. The migrator in [config.MigrateAikataYaml] keeps
+// rewriting them into the new shape whenever a writer (`aikata
+// generate` / `aikata sync` / `aikata doctor --fix`) runs.
 func derivePlan(ancestor config.Manifest, cfg config.AikataYaml, manifestPresent bool, ov overrides) (
 	preset, lang string, flags withFlags, stacks []string,
 ) {
@@ -69,11 +75,32 @@ func derivePlan(ancestor config.Manifest, cfg config.AikataYaml, manifestPresent
 		}
 	}
 
-	// aikata.yaml: pull stacks and the small set of feature flags
-	// scaffold honours today (monorepo, tdd). Other Features keys
+	// aikata.yaml: pull stacks and the component flags scaffold
+	// honours. Schema-v2 `components.*` is the canonical source;
+	// pre-v2 `features.{tdd,monorepo}` is still OR-merged so projects
+	// that have not been touched by a writer since v0.6.x continue to
+	// pick up their existing intent. Other Features keys
 	// (`obsidian_hints`) are deliberately ignored — they have no
 	// scaffold-side effect.
 	stacks = append([]string(nil), cfg.Stacks...)
+	if cfg.Components.Memory {
+		flags.WithMemory = true
+	}
+	if cfg.Components.UI {
+		flags.WithUI = true
+	}
+	if cfg.Components.API {
+		flags.WithAPI = true
+	}
+	if cfg.Components.TDD {
+		flags.WithTDD = true
+	}
+	if cfg.Components.Changelog {
+		flags.WithChangelog = true
+	}
+	if cfg.Components.Monorepo {
+		flags.WithMonorepo = true
+	}
 	if cfg.Features != nil {
 		if cfg.Features["monorepo"] {
 			flags.WithMonorepo = true

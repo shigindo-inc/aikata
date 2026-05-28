@@ -39,12 +39,19 @@ func TestMarshal_StableShape(t *testing.T) {
 	}
 	out := string(body)
 	for _, needle := range []string{
-		"version: 1",
+		"version: 2",
 		"project:",
 		"name: samplekata",
 		"lang: en",
 		"ai_tools:",
 		"- claude",
+		"components:",
+		"memory: false",
+		"ui: false",
+		"api: false",
+		"tdd: false",
+		"changelog: false",
+		"monorepo: false",
 		"features:",
 		"docs:",
 		"generate_gitignore: true",

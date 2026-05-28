@@ -17,21 +17,13 @@ type AikataYamlMigrator func(node *yaml.Node) error
 
 // aikataYamlMigrators registers per-version forward migrations. A
 // migrator at index N upgrades version N payloads in place to version
-// N+1. v0.5 ships with the registry empty because v1 is the only
-// schema in the wild; v2 will land here as a one-line addition.
+// N+1.
 //
 // The registry sits at package scope so future migrations slot in
 // without changing call-site code. Migrations run sequentially from
 // the payload's current version up to Version.
 var aikataYamlMigrators = map[int]AikataYamlMigrator{
-	// Example shape, kept commented so the extension pattern is
-	// obvious when v2 actually lands:
-	//
-	//   1: func(node *yaml.Node) error {
-	//       // …mutate node so it satisfies the v2 schema…
-	//       setVersionField(node, 2)
-	//       return nil
-	//   },
+	1: migrateV1ToV2,
 }
 
 // ErrFutureSchema signals that the on-disk aikata.yaml carries a
@@ -120,6 +112,170 @@ func LoadMigrated(root string) (AikataYaml, bool, error) {
 		}
 	}
 	return cfg, migrated, nil
+}
+
+// migrateV1ToV2 lifts the schema-v1 `features.tdd` and
+// `features.monorepo` keys into the schema-v2 `components` block and
+// stamps `version: 2`. Components that v1 had no schema slot for
+// (memory, ui, api, changelog) start as `false`; `aikata sync` keeps
+// inferring them from manifest paths in the meantime so legacy
+// projects do not lose their scope at the migration boundary. See
+// ADR 0016.
+func migrateV1ToV2(doc *yaml.Node) error {
+	root := documentRoot(doc)
+	if root == nil {
+		return fmt.Errorf("config: migrate v1 -> v2: document has no root mapping")
+	}
+
+	liftedTDD := liftMapKeyBool(root, "features", "tdd")
+	liftedMono := liftMapKeyBool(root, "features", "monorepo")
+	if isMapEmpty(root, "features") {
+		removeMapKey(root, "features")
+	}
+
+	upsertComponentsBlock(root, liftedTDD, liftedMono)
+	setMapKey(root, "version", scalarInt(2))
+	return nil
+}
+
+// documentRoot returns the top-level mapping node of a parsed YAML
+// document, or nil when the document is empty or non-mapping.
+func documentRoot(doc *yaml.Node) *yaml.Node {
+	if doc == nil || len(doc.Content) == 0 {
+		return nil
+	}
+	root := doc.Content[0]
+	if root.Kind != yaml.MappingNode {
+		return nil
+	}
+	return root
+}
+
+// findMapValue returns the value node paired with key on a mapping
+// node, or nil when absent. Caller must own the mapping node.
+func findMapValue(m *yaml.Node, key string) *yaml.Node {
+	if m == nil || m.Kind != yaml.MappingNode {
+		return nil
+	}
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		if m.Content[i].Value == key {
+			return m.Content[i+1]
+		}
+	}
+	return nil
+}
+
+// removeMapKey deletes the key/value pair for key from a mapping node.
+// Reports whether a pair was removed.
+func removeMapKey(m *yaml.Node, key string) bool {
+	if m == nil || m.Kind != yaml.MappingNode {
+		return false
+	}
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		if m.Content[i].Value == key {
+			m.Content = append(m.Content[:i], m.Content[i+2:]...)
+			return true
+		}
+	}
+	return false
+}
+
+// setMapKey inserts or replaces a key/value pair on a mapping node.
+// New keys are appended at the end; existing keys keep their position.
+func setMapKey(m *yaml.Node, key string, value *yaml.Node) {
+	if m == nil || m.Kind != yaml.MappingNode {
+		return
+	}
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		if m.Content[i].Value == key {
+			m.Content[i+1] = value
+			return
+		}
+	}
+	m.Content = append(m.Content, scalarString(key), value)
+}
+
+// liftMapKeyBool reads a nested `<parent>.<key>` scalar as a bool,
+// removes the inner key, and returns the value. Returns false when
+// either level is missing or the scalar is not parseable as bool.
+func liftMapKeyBool(root *yaml.Node, parent, key string) bool {
+	p := findMapValue(root, parent)
+	if p == nil || p.Kind != yaml.MappingNode {
+		return false
+	}
+	v := findMapValue(p, key)
+	if v == nil {
+		return false
+	}
+	var b bool
+	if err := v.Decode(&b); err != nil {
+		removeMapKey(p, key)
+		return false
+	}
+	removeMapKey(p, key)
+	return b
+}
+
+// isMapEmpty reports whether the mapping at key has no remaining
+// child pairs. Returns false when the key is absent or not a mapping.
+func isMapEmpty(root *yaml.Node, key string) bool {
+	v := findMapValue(root, key)
+	if v == nil || v.Kind != yaml.MappingNode {
+		return false
+	}
+	return len(v.Content) == 0
+}
+
+// upsertComponentsBlock ensures a `components:` mapping exists with
+// all six v2 fields, seeded from the lifted v1 features.
+func upsertComponentsBlock(root *yaml.Node, tdd, monorepo bool) {
+	existing := findMapValue(root, "components")
+	if existing != nil && existing.Kind == yaml.MappingNode {
+		// Honour any v2-shaped block already present; only fill the
+		// fields the user hasn't set yet.
+		ensureBoolKey(existing, "memory", false)
+		ensureBoolKey(existing, "ui", false)
+		ensureBoolKey(existing, "api", false)
+		ensureBoolKey(existing, "tdd", tdd)
+		ensureBoolKey(existing, "changelog", false)
+		ensureBoolKey(existing, "monorepo", monorepo)
+		return
+	}
+	block := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
+	block.Content = append(block.Content,
+		scalarString("memory"), scalarBool(false),
+		scalarString("ui"), scalarBool(false),
+		scalarString("api"), scalarBool(false),
+		scalarString("tdd"), scalarBool(tdd),
+		scalarString("changelog"), scalarBool(false),
+		scalarString("monorepo"), scalarBool(monorepo),
+	)
+	setMapKey(root, "components", block)
+}
+
+// ensureBoolKey sets key=value on a mapping when key is missing.
+// Existing keys are left untouched.
+func ensureBoolKey(m *yaml.Node, key string, value bool) {
+	if findMapValue(m, key) != nil {
+		return
+	}
+	m.Content = append(m.Content, scalarString(key), scalarBool(value))
+}
+
+func scalarString(v string) *yaml.Node {
+	return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: v}
+}
+
+func scalarBool(v bool) *yaml.Node {
+	s := "false"
+	if v {
+		s = "true"
+	}
+	return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!bool", Value: s}
+}
+
+func scalarInt(v int) *yaml.Node {
+	return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!int", Value: fmt.Sprintf("%d", v)}
 }
 
 // readVersionField inspects the top-level `version:` scalar of a
