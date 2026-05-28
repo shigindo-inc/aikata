@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-21
+updated: 2026-05-28
 audience: [human, agent]
 memory_type: feedback
 ---
@@ -66,6 +66,13 @@ sessions and approaches the user has explicitly validated. See
   "重要な検討事項とか何か懸念等あればそれについてもユーザーに質問しつつ
   対応したい" — translate to: pause and surface trade-offs, do not
   silently choose.
+- [2026-05-28] **Do not silently delete aikata files/folders.** Even
+  when a command narrows scope or a file is no longer part of the
+  current generated surface, aikata must not remove it without an
+  explicit, previewable cleanup operation.
+- [2026-05-28] **No compatibility aliases for pre-v1 CLI cleanup unless
+  explicitly requested.** The user prefers a smaller, clearer command
+  surface over preserving pre-release `aikata add` spellings.
 
 ## Scope discipline
 

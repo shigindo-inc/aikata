@@ -22,6 +22,12 @@ dist/
             └── aikata-sync.md
 ```
 
+Planned first-party wrapper directories (ADR 0015):
+
+- `dist/universal-skill/` — v0.8.x package for `npx skills add ...`.
+- `dist/codex/`, `dist/cursor/`, `dist/gemini-cli/` — v1.0 native
+  wrappers where the platform shape is stable enough.
+
 ## Claude Code skill
 
 The single `SKILL.md` teaches Claude when to call `aikata init`,
@@ -59,11 +65,19 @@ mkdir -p ~/.claude/plugins/aikata
 cp -r dist/claude-code/plugin/* ~/.claude/plugins/aikata/
 ```
 
-Marketplace listing (one-click install) is deferred to a later v0.6.x
-release once the upstream listing flow is stable; the manual install
-above is the supported path today. The standalone skill at
+Marketplace listing (one-click install) is deferred to v0.8.x once the
+upstream listing flow is stable; the manual install above is the
+supported path today. The standalone skill at
 `dist/claude-code/skill/SKILL.md` continues to work for users who do
 not want the slash commands.
+
+## Universal skill (planned v0.8.x)
+
+ADR 0015 schedules a first-party universal skill package for installers
+such as `npx skills add ... --agent universal`. It will live under
+`dist/universal-skill/` unless the installer requires a publication
+mirror repository. The package teaches agents how to invoke aikata; it
+does not install third-party skills.
 
 ## Other tools
 

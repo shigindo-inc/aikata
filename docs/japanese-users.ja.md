@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -46,7 +46,7 @@ aikata init my-app --preset standard --lang ja --no-interactive
 - **Go ユーザー向け**: `go install github.com/shigindo-inc/aikata/cmd/aikata@latest`
   （Go 1.21 以上）。`$(go env GOPATH)/bin` が PATH に入っている必要が
   あります。
-- **今後の予定**: Homebrew tap と `npx aikata` は v0.6 で対応予定です。
+- **今後の予定**: Homebrew tap と `npx aikata` は v0.8.x に延期しました。
   [ROADMAP.md](../ROADMAP.md) を参照してください。
 
 Flutter / TypeScript プリセットでも同じ指定が使えます。

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-26
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -133,6 +133,48 @@ what unblocks a decision, and the latest update date.
   code). Plugin interface deferred to v1.x.
 - **Unblocks**: writing the Flutter preset.
 
+### Q-DESIGN-09 — `.aikata/aikata.yaml` schema v2
+
+- **Status**: Open. v0.6.3 made `aikata sync` safer by deriving scope
+  from defaults, `aikata.yaml`, manifest paths, and CLI overrides. That
+  still leaves some durable choices implicit.
+- **Question**: Which optional components become explicit schema v2
+  fields, and how does v1 migrate without surprising existing projects?
+- **Leading**: add explicit durable flags for optional components that
+  affect template scope (`memory`, `ui`, `api`, `tdd`, `changelog`,
+  `monorepo`) while keeping v1 reads through the v0.x line. The v0.7
+  post-init commands should update files, manifest entries, and durable
+  config together where a stable field exists.
+- **Unblocks**: v0.7.x schema/adoption hardening, persistent
+  capability commands, and a safer v1.0 template schema guarantee.
+- **Updated**: 2026-05-28.
+
+### Q-DESIGN-10 — Post-init command taxonomy
+
+- **Status**: Direction chosen for v0.7 planning; still needs
+  implementation design.
+- **Question**: How should aikata expose post-init changes without
+  making users choose from low-level implementation components?
+- **Leading**: split by user intent instead of keeping one overloaded
+  `aikata add <component>` command.
+
+  | Purpose | Command |
+  |---|---|
+  | Maintain and restore the already-declared aikata surface | `sync` |
+  | Persist capabilities (`memory`, `monorepo`, `stack <name>`, `ai-tool <name>`) | `enable` |
+  | Persist a broader document tier (`standard`, `extended`); `minimal` is the baseline maintained by `sync`, not an expansion target | `expand` |
+  | Create authoring artifacts (`adr "<title>"`) | `new` |
+
+- **Compatibility**: do not add compatibility aliases for the current
+  pre-release `add` command shapes. Simpler surface area matters more
+  than backward compatibility before v1.0.
+- **Safety**: no command may silently delete files or directories
+  because a surface was narrowed or a generated target is no longer in
+  scope. Cleanup, if ever added, must be explicit and previewable.
+- **Unblocks**: v0.7.x CLI cleanup, schema v2 command wiring, and
+  clearer help text ("for this purpose, use this command").
+- **Updated**: 2026-05-28.
+
 ---
 
 ## Q-PROMPT
@@ -228,8 +270,10 @@ what unblocks a decision, and the latest update date.
 
 ### Q-ECOSYSTEM-04 — External skill / plugin marketplace interop
 
-- **Status**: Open. As of 2026-05-26 the surrounding ecosystem has
-  several overlapping distribution shapes:
+- **Status**: Partially resolved by
+  [ADR 0015](../adr/0015-first-party-skill-plugin-distribution.md).
+  As of 2026-05-28 the surrounding ecosystem has several overlapping
+  distribution shapes:
   - `npx skills add ...` from the open agent skills ecosystem installs
     `SKILL.md` packages into many agent-specific locations, including
     shared `.agents/skills/` layouts for "universal" agents.
@@ -240,20 +284,22 @@ what unblocks a decision, and the latest update date.
     marketplace catalogs under `.agents/plugins/marketplace.json`.
   - Gemini CLI has extensions via `gemini-extension.json`, bundling
     commands, MCP servers, hooks, sub-agents, themes, and agent skills.
-- **Question**: Should aikata remain a documentation scaffold that
-  points users at each tool's native installer, or should it also
-  scaffold / manage curated skill and plugin manifests for teams?
-- **Leading**: do **not** make aikata a general-purpose third-party
-  skill package manager in v0.x. Ship first-party aikata skills/plugins
-  only where they wrap the aikata CLI itself. For third-party skills,
-  document recommended commands or manifest locations, but avoid
-  installing remote code until a trust, pinning, update, and removal
-  model is captured in an ADR.
+- **Resolved part**: aikata will ship first-party wrappers that teach
+  agents how to use the aikata CLI. `npx skills add ... --agent
+  universal` support is planned for v0.8.x, with source artifacts under
+  `dist/`. aikata will not be distributed as an "aikata agent"
+  personality.
+- **Open part**: should aikata ever scaffold / manage curated
+  third-party skill and plugin manifests for teams?
+- **Leading**: no third-party skill package management in v0.x. For
+  third-party skills, document recommended commands or manifest
+  locations, but avoid installing remote code until a trust, pinning,
+  update, and removal model is captured in a future ADR.
 - **Unblocks**: v1.0 plugin / skill distribution beyond Claude, any
   future `aikata add skill-source ...` or team marketplace manifest
   feature, and memory projection decisions that might depend on native
   skill/plugin packaging.
-- **Updated**: 2026-05-26.
+- **Updated**: 2026-05-28.
 
 ---
 
