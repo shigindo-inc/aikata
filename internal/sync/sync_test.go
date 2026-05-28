@@ -422,19 +422,10 @@ func TestRun_UpstreamRemoved_DoesNotDelete(t *testing.T) {
 	root := t.TempDir()
 	seedStandardProject(t, root)
 
-	// Narrow scope: drop GLOSSARY.md from the future upstream by
-	// switching the manifest to claim the project is on `minimal`
-	// (which renders no GLOSSARY.md). The on-disk file remains.
-	manifest, err := config.LoadManifest(root)
-	if err != nil {
-		t.Fatalf("load manifest: %v", err)
-	}
-	for i := range manifest.Files {
-		if manifest.Files[i].Path == "GLOSSARY.md" {
-			// keep the entry intentionally
-		}
-	}
-
+	// Narrow scope: the override below switches sync's render side to
+	// `minimal` (which produces no GLOSSARY.md), simulating a user who
+	// shrank scope after init. The manifest still lists GLOSSARY.md;
+	// the on-disk file must survive.
 	glossaryPath := filepath.Join(root, "GLOSSARY.md")
 	before, err := os.ReadFile(glossaryPath)
 	if err != nil {
