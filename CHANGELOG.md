@@ -18,6 +18,19 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-05-29
+
+Schema-and-adoption hardening line opens. v0.7.0 lands the first item:
+`.aikata/aikata.yaml` schema v2 with an explicit `components:` block.
+Optional template-scope (`memory`, `ui`, `api`, `tdd`, `changelog`,
+`monorepo`) is now recorded declaratively instead of being inferred
+from manifest file paths. A v1 → v2 forward migrator runs lazily — the
+first writer (`aikata generate`, `aikata sync`, `aikata doctor --fix`)
+that touches an existing project rewrites the file into the new
+shape, and legacy v1 reads continue to work through the rest of the
+v0.x line. ADR 0016 documents the schema and the migration
+framework's extension point.
+
 ### Added
 
 - **`.aikata/aikata.yaml` schema v2** (ADR 0016): a typed `components:`
@@ -46,11 +59,17 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   "aikata agent" as a runtime personality.
 - ROADMAP: add v0.7.x as a focused schema/adoption hardening line
   before v0.8.x channel publication and v1.0. The planned scope is
-  schema v2, missing persistent opt-in commands such as `add monorepo`,
-  and existing-repo adoption guidance; memory projection and third-party
-  skill catalog management stay out of v0.7.x.
-- Open questions: add Q-DESIGN-09 to track `.aikata/aikata.yaml`
-  schema v2 decisions before implementation.
+  schema v2, the purpose-based `enable` / `expand` / `new` CLI split,
+  missing-file repair semantics for `aikata sync`, an existing-repo
+  adoption guide, and managed-append semantics for project-owned
+  generic files such as `.gitignore`; memory projection and
+  third-party skill catalog management stay out of v0.7.x.
+- ADR 0003: record the planned application of managed-block append
+  rules to project-owned generic files such as `.gitignore`; the
+  exact block marker text and target file list defer to a follow-up
+  ADR in v0.7.2.
+- Open questions: add Q-INTEROP-04 to track managed-append rules for
+  existing generic files. Q-DESIGN-09 is resolved by ADR 0016.
 
 ## [0.6.3] - 2026-05-28
 

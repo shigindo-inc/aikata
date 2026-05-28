@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-05-28
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
@@ -452,18 +452,40 @@ rebaseline fallback. Four new one-off override flags (`--preset` /
       manifest entry even when the on-disk stack guide already
       exists, matching the singleFile / memory pattern.
 
-## v0.7.x — Schema & adoption hardening (planned)
+## v0.7.x — Schema & adoption hardening (in progress)
 
 **Goal**: reduce inference before the v1.0 stable surface. v0.6.x made
 `sync` safer by deriving scope from `aikata.yaml`, manifest paths, and
 CLI overrides; v0.7.x should make durable intent explicit and simplify
 the post-init command surface before the first stable CLI contract.
 
-- [ ] **`.aikata/aikata.yaml` schema v2** — add explicit durable flags
-      for optional components currently inferred from manifest paths
-      (`memory`, `ui`, `api`, `tdd`, `changelog`, `monorepo`). Keep a
-      v1 → v2 migration in `internal/config` and preserve v1 reads
-      through the v0.x line.
+## v0.7.0 — Schema v2 ✅ (released 2026-05-29)
+
+First sub-release of the v0.7.x line. Lands the schema bump so the
+remaining v0.7.x items can build on a declarative source of truth for
+optional template scope.
+
+- [x] **`.aikata/aikata.yaml` schema v2** — a typed `components:`
+      block records `memory`, `ui`, `api`, `tdd`, `changelog`, and
+      `monorepo` as first-class fields. A v1 → v2 forward migrator
+      lifts the legacy `features.tdd` / `features.monorepo` keys
+      into the new block; migration is lazy (only writers persist),
+      so v1 reads continue to work through the rest of the v0.x line.
+- [x] `aikata sync` scope derivation OR-merges `cfg.Components.*`
+      with manifest path inference and the legacy `features.*` keys
+      so schema-v2 projects, in-flight v1 projects, and projects with
+      stale manifests all converge to the same scope.
+- [x] `internal/scaffold/scaffold.go` persists `Options.With*` into
+      `Components` on init, removing the path-inference dependency
+      for freshly-scaffolded projects.
+- [x] `docs/adr/0016-aikata-yaml-schema-v2.md` — new ADR; Q-DESIGN-09
+      resolved.
+- [x] Every `testdata/golden/*/.aikata/aikata.yaml` fixture rewritten
+      to the v2 shape; the schema bump is part of the golden tree.
+- [x] aikata's own `.aikata/aikata.yaml` migrated to v2 (dogfood).
+
+Remaining v0.7.x items (planned for v0.7.1 / v0.7.2):
+
 - [ ] **Purpose-based CLI split** — replace the overloaded
       `aikata add <component>` surface with clear commands that map to
       user intent:
