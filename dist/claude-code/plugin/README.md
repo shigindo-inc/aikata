@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.6.0
-updated: 2026-05-26
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -46,8 +46,8 @@ marketplace requires:
 2. A maintainer to submit aikata for review.
 
 The plugin is functional as a manual `~/.claude/plugins/aikata`
-install today (v0.6); marketplace listing lands in a v0.6.x or v1.0
-release once the upstream flow is stable.
+install today (v0.6); marketplace listing is deferred to v0.8.x or
+later once the upstream flow is stable.
 
 ## Relationship to the v0.3.1 skill
 

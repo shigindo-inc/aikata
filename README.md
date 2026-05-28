@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -120,7 +120,7 @@ aikata --version
 not found after install.
 
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
-> land in v0.6 — see [ROADMAP.md](./ROADMAP.md).
+> are deferred to v0.8.x — see [ROADMAP.md](./ROADMAP.md).
 
 ### Claude Code skill (optional, v0.3.1+)
 
@@ -170,7 +170,7 @@ whether a newer aikata is available; it never modifies the installed
 binary. Add `--json` for the machine-readable envelope shared with
 `aikata doctor --json`. Avoid running it in a CI loop — the
 unauthenticated API rate limit (60 req/h per IP) is shaped for
-human-invoked use. Native self-update is planned for v0.6.
+human-invoked use. Native self-update is planned for v0.8.x.
 
 ### Keep in sync (v0.5+)
 
@@ -331,6 +331,7 @@ aikata generate
   - [0012 — Memory Projection Deferral Extended Past v0.6.0](./docs/adr/0012-memory-projection-deferral-extended.md)
   - [0013 — `aikata sync` Scope Derivation Hierarchy](./docs/adr/0013-sync-scope-derivation.md)
   - [0014 — `.aikata/manifest.yaml` is a Living Record](./docs/adr/0014-manifest-living-record.md)
+  - [0015 — First-party Skill and Plugin Distribution](./docs/adr/0015-first-party-skill-plugin-distribution.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 
 ### AI-tool entry points

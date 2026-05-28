@@ -1,5 +1,5 @@
 // Package install records and reads metadata about how the running
-// aikata binary was installed. v0.6 establishes the surface so v0.6.x
+// aikata binary was installed. v0.6 establishes the surface so v0.8.x
 // or later releases that ship native `aikata update` (self-update)
 // can pick the right upgrade path per install channel (ADR 0009).
 //
@@ -51,9 +51,9 @@ const (
 	// github.com/shigindo-inc/aikata/cmd/aikata@<version>`.
 	SourceGoInstall Source = "go-install"
 	// SourceHomebrew covers `brew install shigindo-inc/tap/aikata`
-	// (v0.6+ Homebrew tap; placeholder until the formula ships).
+	// (v0.8.x+ Homebrew tap; placeholder until the formula ships).
 	SourceHomebrew Source = "homebrew"
-	// SourceNpm covers `npx aikata` / `npm i -g aikata` (v0.6+ npm
+	// SourceNpm covers `npx aikata` / `npm i -g aikata` (v0.8.x+ npm
 	// wrapper; placeholder until the wrapper ships).
 	SourceNpm Source = "npm"
 )

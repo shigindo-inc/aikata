@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -17,6 +17,25 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+### Changed
+
+- ROADMAP: move the pending channel-publication work (Homebrew tap,
+  npm wrapper / `npx aikata`, Claude Code marketplace listing, and
+  native `aikata update --apply`) out of the v0.6.x line and into
+  v0.8.x. v0.6.x is now closed at v0.6.3 unless a critical patch is
+  needed.
+- ADR 0015: accept first-party aikata skill / plugin / extension
+  distribution as CLI wrappers, schedule universal `npx skills add`
+  support for v0.8.x, keep source artifacts under `dist/`, and reject
+  "aikata agent" as a runtime personality.
+- ROADMAP: add v0.7.x as a focused schema/adoption hardening line
+  before v0.8.x channel publication and v1.0. The planned scope is
+  schema v2, missing persistent opt-in commands such as `add monorepo`,
+  and existing-repo adoption guidance; memory projection and third-party
+  skill catalog management stay out of v0.7.x.
+- Open questions: add Q-DESIGN-09 to track `.aikata/aikata.yaml`
+  schema v2 decisions before implementation.
 
 ## [0.6.3] - 2026-05-28
 
@@ -105,9 +124,9 @@ second `install.sh` footgun where an older `aikata` earlier on `$PATH`
 would silently shadow the freshly installed binary.
 
 The v0.6.1 ROADMAP slot was originally channel publication (Homebrew
-tap, npm, marketplace, native `update --apply`); that work shifts to
-v0.6.4 (v0.6.2 became "ROADMAP & manifest hygiene", v0.6.3 became
-"sync scope derivation").
+tap, npm, marketplace, native `update --apply`); that work was later
+deferred to v0.8.x (v0.6.2 became "ROADMAP & manifest hygiene",
+v0.6.3 became "sync scope derivation").
 
 ### Fixed
 
@@ -145,11 +164,11 @@ Packaging-and-distribution milestone (partial). Ships the
 agent-doable subset of the v0.6 ROADMAP entry: monorepo
 scaffolding, install-source metadata foundation, and a Claude Code
 plugin scaffold. Homebrew tap, npm wrapper, and plugin-marketplace
-listing are tracked under v0.6.4 because they require maintainer
-actions outside this repo (originally scheduled for v0.6.1, then
-v0.6.2; the v0.6.1 slot was reused for the `aikata sync --rebaseline`
-regression fix, v0.6.2 for ROADMAP & manifest hygiene, and v0.6.3
-for sync scope derivation — see the corresponding sections).
+listing are deferred to v0.8.x because they require maintainer actions
+outside this repo. The v0.6.1 slot was reused for the
+`aikata sync --rebaseline` regression fix, v0.6.2 for ROADMAP &
+manifest hygiene, and v0.6.3 for sync scope derivation — see the
+corresponding sections.
 
 ### Added
 
@@ -175,18 +194,17 @@ for sync scope derivation — see the corresponding sections).
 
 ### Changed
 
-- ROADMAP.md splits the v0.6 entry into v0.6.0 (this release) and
-  v0.6.4 (user-blocker channels: Homebrew tap, npm, marketplace,
-  `--apply` self-update). Distribution-surface table gains v0.6.0
-  and v0.6.4 rows. (Originally v0.6.1; renumbered through v0.6.2
-  and v0.6.3 as those slots were used for the rebaseline fix,
-  ROADMAP & manifest hygiene, and scope derivation respectively.)
+- ROADMAP.md splits the v0.6 entry into the repository-local v0.6.0
+  release and a later channel-publication line (now v0.8.x:
+  Homebrew tap, npm, marketplace, `--apply` self-update). The
+  distribution-surface table records v0.6.0 and the deferred channel
+  row separately.
 - README ADR index updated through ADR 0012.
 
 ### Notes
 
 - `internal/install.Detect()` ships as the **recording** half only.
-  Native `aikata update --apply` self-update lands in v0.6.4
+  Native `aikata update --apply` self-update lands in v0.8.x
   alongside Homebrew / npm channels so the upgrade flow can be
   tested against real installs.
 - `--monorepo` is orthogonal to the v0.4 single-file components.
@@ -591,9 +609,11 @@ memory slot post-init without re-running `aikata init`.
     flags; the memory generate-projection investigation.
   - **v0.5** — `aikata sync` interactive diff-merge gets its own
     release cycle (the single largest feature on the roadmap).
-  - **v0.6** — packaging & distribution: `--monorepo`, npm wrapper,
-    Homebrew tap, Claude Code plugin (slash commands), conditional
-    memory-projection ship.
+  - **v0.6** — repository-local packaging work: `--monorepo`, Claude
+    Code plugin scaffold (slash commands), install-source metadata, and
+    the memory-projection deferral decision.
+  - **v0.8.x** — channel publication: npm wrapper, Homebrew tap,
+    Claude Code marketplace listing, native `update --apply`.
   - **v1.0** — `--oss` flag pack expanded to include
     `CODE_OF_CONDUCT.md` and GitHub issue / PR templates; plugin /
     skill distribution explicitly extended to Cursor / Gemini / VS

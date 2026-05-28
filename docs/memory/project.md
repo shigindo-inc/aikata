@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-21
+updated: 2026-05-28
 audience: [human, agent]
 memory_type: project
 ---
@@ -105,3 +105,10 @@ stakeholders, and current "north stars." See
 
 - [2026-05-21] H1–H4 from [SPEC.md §7](../../SPEC.md#7-hypotheses-to-validate)
   are the success criteria for v0.3. Re-read before v0.3 planning.
+- [2026-05-28] **Post-init CLI direction for v0.7**: move away from
+  one overloaded `aikata add <component>` surface. Use purpose-based
+  commands instead: `sync` maintains/restores declared files,
+  `enable` persists capabilities, `expand` widens document tiers, and
+  `new` creates authoring artifacts. Tracked in
+  [ROADMAP.md v0.7.x](../../ROADMAP.md#v07x--schema--adoption-hardening-planned)
+  and Q-DESIGN-10.

@@ -54,6 +54,9 @@ Thumbs.db
 # --- Remember plugin (local-only memory) ---
 /.remember/
 
+# --- Claude Code local state ---
+/.claude/scheduled_tasks.lock
+
 # --- MCP server local state (per-developer, not part of aikata) ---
 # Serena MCP writes project-local config / memories here when it activates
 # against this repo from a developer's Claude Code environment. aikata

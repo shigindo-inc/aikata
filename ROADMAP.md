@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-05-26
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -332,10 +332,11 @@ Known limitations (v0.5.x follow-up candidates):
 one-shell-line elsewhere, and scales to a monorepo.
 
 v0.6.0 ships the **agent-doable subset**. User-action channels
-(Homebrew tap, npm wrapper, marketplace listing) are tracked under
-v0.6.4 below. v0.6.1 / v0.6.2 / v0.6.3 between them are unscheduled
-patch releases (rebaseline fix, ROADMAP & manifest hygiene, scope
-derivation) — see their own sections.
+(Homebrew tap, npm wrapper, marketplace listing) are deferred to the
+v0.8.x channel-publication line so v0.6.x can close on repository-local
+work. v0.6.1 / v0.6.2 / v0.6.3 are unscheduled patch releases
+(rebaseline fix, ROADMAP & manifest hygiene, scope derivation) — see
+their own sections.
 
 Shipped:
 
@@ -348,15 +349,16 @@ Shipped:
   placed the binary (`github-release`, `install-script`,
   `go-install`, `homebrew`, `npm`, `unknown`). Reads either a
   build-time ldflag or `<install-dir>/aikata.install-source` (written
-  by `scripts/install.sh`). Foundation for a v0.6.x native
-  `aikata update --apply` self-update; the consuming side ships once
-  Homebrew / npm channels exist.
+  by `scripts/install.sh`). Foundation for a v0.8.x native
+  `aikata update --apply` self-update; the consuming side ships in
+  the v0.8.x channel-publication line once Homebrew / npm channels
+  exist.
 - `dist/claude-code/plugin/` — Claude Code plugin scaffold bundling
   the v0.3.1 skill with four slash commands (`/aikata-init`,
   `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`). Installable
   manually today (`cp -r dist/claude-code/plugin/*
-  ~/.claude/plugins/aikata/`); marketplace listing is tracked in
-  v0.6.4.
+  ~/.claude/plugins/aikata/`); marketplace listing is deferred to
+  v0.8.x.
 
 Deferred again to v0.7+ (no projection in v0.6):
 
@@ -380,9 +382,9 @@ write only `.aikata/manifest.yaml`, with the manifest's ancestor
 hashes seeded from the **upstream rendering** so the user's
 customisations register as `user-only-edit` on the next sync.
 
-Originally planned v0.6.1 work (channel publication) is shifted to
-v0.6.4 below; nothing else lands in v0.6.1 so the fix can be tagged
-and shipped without coupling.
+Originally planned v0.6.1 work (channel publication) is deferred to
+v0.8.x; nothing else lands in v0.6.1 so the fix can be tagged and
+shipped without coupling.
 
 - [x] `internal/sync/sync.go` — non-destructive rebaseline path.
 - [x] `ErrNoManifest` message rewritten to spell out
@@ -450,12 +452,58 @@ rebaseline fallback. Four new one-off override flags (`--preset` /
       manifest entry even when the on-disk stack guide already
       exists, matching the singleFile / memory pattern.
 
-## v0.6.4 — Channel publication (user-blocked)
+## v0.7.x — Schema & adoption hardening (planned)
 
-Tracking the v0.6 items that need a maintainer action outside the
-aikata repo. None of these block v0.6.0 / v0.6.1 / v0.6.2 / v0.6.3;
-they ship as a follow-up patch once the user-side prerequisites
-land.
+**Goal**: reduce inference before the v1.0 stable surface. v0.6.x made
+`sync` safer by deriving scope from `aikata.yaml`, manifest paths, and
+CLI overrides; v0.7.x should make durable intent explicit and simplify
+the post-init command surface before the first stable CLI contract.
+
+- [ ] **`.aikata/aikata.yaml` schema v2** — add explicit durable flags
+      for optional components currently inferred from manifest paths
+      (`memory`, `ui`, `api`, `tdd`, `changelog`, `monorepo`). Keep a
+      v1 → v2 migration in `internal/config` and preserve v1 reads
+      through the v0.x line.
+- [ ] **Purpose-based CLI split** — replace the overloaded
+      `aikata add <component>` surface with clear commands that map to
+      user intent:
+
+      | Purpose | Command |
+      |---|---|
+      | Maintain and restore the already-declared aikata surface without changing durable intent | `aikata sync` |
+      | Persist project capabilities such as `memory`, `monorepo`, `stack <name>`, and `ai-tool <name>` | `aikata enable <capability>` |
+      | Persist a broader document tier such as `standard` or `extended`; `minimal` remains the baseline maintained by `sync`, not an expansion target | `aikata expand <tier>` |
+      | Create authoring artifacts such as ADRs | `aikata new <artifact>` |
+
+      Do not add compatibility aliases for the pre-release `add`
+      shapes; keeping the surface small is more important before v1.0.
+- [ ] **Missing-file repair semantics** — define exactly how `sync`
+      restores files that should exist for the declared baseline /
+      enabled capabilities. It may add or update managed files through
+      the existing non-destructive merge contract, but it must never
+      delete files or directories merely because they are no longer in
+      scope. Any future cleanup feature must be explicit, previewable,
+      and separately documented.
+- [ ] **Existing-repo adoption guide** — document the recommended
+      migration path for repositories that already have `AGENTS.md`,
+      `CLAUDE.md`, or `.cursor/rules/` before running aikata. Prefer
+      documentation over a lossy `aikata adopt` parser unless a real
+      project needs automation.
+- [ ] **Do not include** memory projection, third-party skill catalog
+      management, or new remote template fetching in v0.7.x. Those need
+      separate dogfooding evidence / ADRs.
+
+No v0.9.x line is reserved today. If v0.7.x and v0.8.x expose upgrade
+or compatibility issues, v0.9.x should be an RC / stabilization line;
+otherwise the next planned milestone after v0.8.x is v1.0.
+
+---
+
+## v0.8.x — Channel publication (pending)
+
+Tracking the distribution-channel items that need maintainer action
+outside the aikata repo. These no longer block the v0.6.x line; v0.6.x
+closes at v0.6.3 unless a critical patch is needed.
 
 - [ ] **Homebrew tap** (`shigindo-inc/tap/aikata`) published from
       the release workflow. Requires creating the
@@ -463,15 +511,20 @@ land.
       `HOMEBREW_TAP_GITHUB_TOKEN` secret to this repo.
 - [ ] **npm wrapper** for `npx aikata` distribution. Requires npm
       org credentials (`shigindo-inc` scope) configured as
-      `NPM_TOKEN`. v0.6.0 ships `internal/install`'s Source enum
+      `NPM_TOKEN`. v0.6.0 shipped `internal/install`'s Source enum
       pre-populated with `npm`; the wrapper just needs to publish.
 - [ ] **Claude Code marketplace listing**. Requires the upstream
       plugin marketplace listing flow to be available + a
       maintainer to submit aikata for review. Manual install path
       stays supported regardless.
+- [ ] **Universal `npx skills add` package** for first-party aikata
+      usage guidance. Source files live under `dist/` per
+      [ADR 0015](./docs/adr/0015-first-party-skill-plugin-distribution.md);
+      a publication mirror is allowed only if the installer requires
+      a dedicated repository shape.
 - [ ] **Native installer-managed `aikata update --apply`** —
       consume `internal/install.Detect()` and pick the safe upgrade
-      path per channel. Foundation already shipped in v0.6.0; the
+      path per channel. Foundation shipped in v0.6.0; the
       `--apply` flag ships once each channel above is real enough
       to test in CI.
 
@@ -498,10 +551,10 @@ land.
       Per-tool scope is driven by H1 dogfooding evidence; the Claude
       plugin (v0.6) defines the surface shape and the others mirror it
       only where the platform concepts line up.
-- [ ] Third-party skill / plugin marketplace interop policy. Decide
-      whether aikata should only document recommended installer commands
-      (for example `npx skills add ...`) or also scaffold manifests for
-      curated team skill sets. See
+- [ ] Third-party skill / plugin marketplace interop policy. ADR 0015
+      resolves first-party wrapper distribution; this remaining item is
+      only about whether aikata should ever scaffold manifests for
+      curated third-party team skill sets. See
       [Q-ECOSYSTEM-04](./docs/decisions/open-questions.md#q-ecosystem-04--external-skill--plugin-marketplace-interop).
 
 ---
@@ -547,7 +600,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.6.1 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.6.2 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.6.3 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
-| v0.6.4 | ✅ | ✅ | ✅ | minimal | marketplace | `npx aikata` | tap | — |
+| v0.7.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.8.x | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
@@ -556,6 +610,12 @@ Plugin / skill scope grows monotonically too:
   no commands, no agents.
 - **v0.6** — adds `/aikata-init`, `/aikata-generate`, `/aikata-doctor`
   slash commands and is installable as a single plugin.
+- **v0.7.x** — no new distribution channel; schema / adoption hardening
+  only.
+- **v0.8.x** — adds channel publication and a first-party universal
+  skill package for `npx skills add ... --agent universal`. The package
+  wraps the aikata CLI; it does not install arbitrary third-party
+  skills.
 - **v1.0** — mirrors the v0.6 plugin shape into Codex, Cursor, Gemini
   CLI, and a thin VS Code wrapper where each platform has a stable native
   extension surface. Per-tool feature parity is not promised; the promise
