@@ -680,3 +680,37 @@ func TestRun_WithoutMemory_NoMemoryFootprint(t *testing.T) {
 		})
 	}
 }
+
+// TestRun_ForcedInit_MergesExistingGitignore pins the v0.7.2
+// managed-append integration (ADR 0018): when --force is set and
+// the target already contains a `.gitignore`, the scaffold writes
+// the aikata-owned block in place via internal/managed.ApplyBlock,
+// preserving every user-owned line outside the markers.
+func TestRun_ForcedInit_MergesExistingGitignore(t *testing.T) {
+	tmp := t.TempDir()
+	userBefore := []byte("# user content\nuser.local\n.cache/\n")
+	if err := os.WriteFile(filepath.Join(tmp, ".gitignore"), userBefore, 0o644); err != nil {
+		t.Fatalf("seed .gitignore: %v", err)
+	}
+
+	opts := standardOpts(tmp)
+	opts.Force = true
+	if err := Run(opts); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	body, err := os.ReadFile(filepath.Join(tmp, ".gitignore"))
+	if err != nil {
+		t.Fatalf("read merged .gitignore: %v", err)
+	}
+	got := string(body)
+	if !strings.Contains(got, "user.local") {
+		t.Errorf("user content was dropped by managed-append merge:\n%s", got)
+	}
+	if !strings.Contains(got, "# >>> aikata managed >>>") {
+		t.Errorf("aikata block marker missing from merged .gitignore:\n%s", got)
+	}
+	if !strings.Contains(got, "/.aikata-proposed/") {
+		t.Errorf("aikata-owned entry missing from merged .gitignore:\n%s", got)
+	}
+}

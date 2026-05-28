@@ -413,6 +413,61 @@ func TestRun_PostRebaseline_PreservesEditsAsUserOnly(t *testing.T) {
 	}
 }
 
+// TestRun_UpstreamRemoved_DoesNotDelete pins the ADR 0019 invariant:
+// when a path is in the manifest (so aikata once authored it) and
+// the upstream rendering no longer includes it (scope narrowed), the
+// on-disk file is left untouched. No `os.Remove`, no write, just a
+// notice via FileResult.Status = StatusUpstreamRemoved.
+func TestRun_UpstreamRemoved_DoesNotDelete(t *testing.T) {
+	root := t.TempDir()
+	seedStandardProject(t, root)
+
+	// Narrow scope: the override below switches sync's render side to
+	// `minimal` (which produces no GLOSSARY.md), simulating a user who
+	// shrank scope after init. The manifest still lists GLOSSARY.md;
+	// the on-disk file must survive.
+	glossaryPath := filepath.Join(root, "GLOSSARY.md")
+	before, err := os.ReadFile(glossaryPath)
+	if err != nil {
+		t.Fatalf("read GLOSSARY.md before: %v", err)
+	}
+
+	minimal := "minimal"
+	result, err := Run(Options{
+		Root:           root,
+		Stdout:         &bytes.Buffer{},
+		Stderr:         &bytes.Buffer{},
+		OverridePreset: &minimal,
+	})
+	if err != nil {
+		t.Fatalf("Run with --preset minimal override: %v", err)
+	}
+
+	// On-disk GLOSSARY.md must survive.
+	after, err := os.ReadFile(glossaryPath)
+	if err != nil {
+		t.Fatalf("read GLOSSARY.md after sync: %v (file must not be deleted, ADR 0019)", err)
+	}
+	if !bytes.Equal(before, after) {
+		t.Errorf("GLOSSARY.md bytes mutated by sync (file was upstream-removed but content changed):\nbefore: %q\nafter: %q", before, after)
+	}
+
+	// And the FileResult should classify it as upstream-removed,
+	// not as a delete.
+	var seen bool
+	for _, f := range result.Files {
+		if f.Path == "GLOSSARY.md" {
+			seen = true
+			if f.Status != StatusUpstreamRemoved {
+				t.Errorf("GLOSSARY.md status = %v, want %v", f.Status, StatusUpstreamRemoved)
+			}
+		}
+	}
+	if !seen {
+		t.Errorf("GLOSSARY.md missing from FileResult set: %+v", result.Files)
+	}
+}
+
 func TestInferFlags_PresenceBased(t *testing.T) {
 	m := config.Manifest{Files: []config.ManifestFile{
 		{Path: "AGENTS.md"},

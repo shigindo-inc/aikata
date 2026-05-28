@@ -12,6 +12,7 @@ import (
 
 	"github.com/shigindo-inc/aikata/internal/components"
 	"github.com/shigindo-inc/aikata/internal/config"
+	"github.com/shigindo-inc/aikata/internal/managed"
 	"github.com/shigindo-inc/aikata/internal/templates"
 )
 
@@ -352,6 +353,13 @@ func resolveLangDir(base, lang string, stdout io.Writer) (string, error) {
 // and intermediate directories are created with 0755. Atomic per-file
 // via the standard library; a partial failure may leave some files
 // already written (acceptable for v0.1 MVP, see SPEC §5.1).
+//
+// Special-case `.gitignore` (and similar files governed by ADR 0018):
+// when the target already exists, the file is preserved and the
+// aikata-owned portion is merged in place via the managed-block
+// writer. Other paths use the simple overwrite path. The managed list
+// is intentionally narrow today — extend it only after the merge
+// rules are pinned for each new target (ROADMAP v0.7.x).
 func writeAll(targetDir string, rendered map[string]string) error {
 	if err := os.MkdirAll(targetDir, 0o755); err != nil {
 		return fmt.Errorf("scaffold: mkdir %s: %w", targetDir, err)
@@ -364,11 +372,53 @@ func writeAll(targetDir string, rendered map[string]string) error {
 		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
 			return fmt.Errorf("scaffold: mkdir %s: %w", filepath.Dir(full), err)
 		}
-		if err := os.WriteFile(full, []byte(rendered[rel]), 0o644); err != nil {
+		body, werr := contentForWrite(full, rel, rendered[rel])
+		if werr != nil {
+			return fmt.Errorf("scaffold: prepare %s: %w", full, werr)
+		}
+		if err := os.WriteFile(full, body, 0o644); err != nil {
 			return fmt.Errorf("scaffold: write %s: %w", full, err)
 		}
 	}
 	return nil
+}
+
+// contentForWrite returns the bytes writeAll should persist for one
+// rendered (path, content) pair. For aikata-managed-append paths
+// (today `.gitignore`) the on-disk file is merged in place so the
+// user's existing content survives — ADR 0018. For everything else
+// the rendered content is returned verbatim.
+func contentForWrite(fullPath, rel, rendered string) ([]byte, error) {
+	if !isManagedAppendPath(rel) {
+		return []byte(rendered), nil
+	}
+	existing, err := os.ReadFile(fullPath)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			// Fresh write — emit the template as-is so a clean
+			// `aikata init` looks identical to v0.7.1. Existing-dir
+			// merges go through the ApplyBlock branch below.
+			return []byte(rendered), nil
+		}
+		return nil, fmt.Errorf("read existing %s: %w", fullPath, err)
+	}
+	merged, err := managed.ApplyBlock(existing, []byte(rendered))
+	if err != nil {
+		return nil, fmt.Errorf("merge managed block in %s: %w", fullPath, err)
+	}
+	return merged, nil
+}
+
+// isManagedAppendPath reports whether rel (a target-relative slash
+// path) should flow through the managed-block writer instead of the
+// straight overwrite path. The list is small on purpose; expanding it
+// requires an ADR 0018 update.
+func isManagedAppendPath(rel string) bool {
+	switch rel {
+	case ".gitignore":
+		return true
+	}
+	return false
 }
 
 func printDryRun(w io.Writer, target string, rendered map[string]string) error {

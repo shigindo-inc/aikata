@@ -18,6 +18,37 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **Managed-block append writer for project-owned files** (ADR 0018):
+  the new `internal/managed/` package exposes `ApplyBlock` /
+  `HasBlock`, framing the aikata-owned section between
+  `# >>> aikata managed >>>` / `# <<< aikata managed <<<` markers.
+  Idempotent re-runs converge; malformed-input refuses rather than
+  silently corrupting the file.
+- `aikata init --force` against an existing `.gitignore` merges the
+  aikata-owned block in place instead of overwriting user-owned
+  entries. The scaffold layer routes `.gitignore` through the
+  managed writer when the target file already exists; fresh inits
+  emit the template as-is.
+- `aikata sync` missing-file repair semantics are now an explicit
+  contract (ADR 0019): sync may add or refresh managed files but
+  must never silently delete on scope narrowing. The pre-v0.7.2
+  behaviour was already correct; the ADR pins it and a new test
+  (`TestRun_UpstreamRemoved_DoesNotDelete`) guards against
+  regression.
+- `docs/adoption.md` — adoption guide for repositories that already
+  have `AGENTS.md`, hand-written `CLAUDE.md` / `.cursor/rules/`, a
+  `.gitignore`, `docs/memory/`, or a legacy `.ai/` config before
+  running aikata.
+
+### Changed
+
+- `internal/scaffold/scaffold.go` `writeAll` consults a new
+  `isManagedAppendPath` allowlist before each write; only
+  `.gitignore` is on the list today. Adding a new managed-append
+  target requires an ADR 0018 update.
+
 ## [0.7.1] - 2026-05-29
 
 Second sub-release of the v0.7.x line. Ships the purpose-based
