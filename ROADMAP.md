@@ -425,18 +425,30 @@ the new invariant explicit.
       and file-pre-exists branches).
 - [x] `docs/adr/0014-manifest-living-record.md` — new ADR.
 
-## v0.6.3 — Sync scope derivation & CLI overrides 🟡 (in progress)
+## v0.6.3 — Sync scope derivation & CLI overrides ✅ (released 2026-05-28)
 
-Tracks the scope-derivation work merged on top of v0.6.2. `aikata
-sync` now reads scope from a small ordered hierarchy (defaults →
-`aikata.yaml` → manifest → CLI overrides) instead of the
-hard-coded "preset=standard / no opt-ins" rebaseline fallback. Four
-new one-off override flags (`--preset` / `--lang` / `--stack` /
-`--with-monorepo`) round out the surface. ADR 0013 documents the
-hierarchy and the transient-by-design semantics.
+Scope-derivation release. `aikata sync` now reads scope from a small
+ordered hierarchy (defaults → `aikata.yaml` → manifest → CLI
+overrides) instead of the hard-coded "preset=standard / no opt-ins"
+rebaseline fallback. Four new one-off override flags (`--preset` /
+`--lang` / `--stack` / `--with-monorepo`) round out the surface.
 
-Will tag once v0.6.2 ships and a `chore(release): prepare v0.6.3`
-PR lands.
+- [x] `internal/sync/plan.go` — `derivePlan` extended with
+      `overrides` parameter and `aikata.yaml` reads; `inferFlags`
+      gains a monorepo rule.
+- [x] `internal/sync/sync.go` — `Options` gains four `Override*`
+      pointer fields, threaded through to `scaffold.Options`.
+- [x] `internal/cli/sync.go` — new `--preset` / `--lang` /
+      `--stack` (repeatable) / `--with-monorepo` flags guarded by
+      `cmd.Flags().Changed(...)`.
+- [x] `internal/sync/derive_test.go` — 7 new test cases covering
+      the hierarchy at the function level plus integration cases
+      via `Run` (override changes scope; overrides do not mutate
+      manifest).
+- [x] `docs/adr/0013-sync-scope-derivation.md` — new ADR.
+- [x] Stack consistency follow-up: `aikata add stack` records the
+      manifest entry even when the on-disk stack guide already
+      exists, matching the singleFile / memory pattern.
 
 ## v0.6.4 — Channel publication (user-blocked)
 
