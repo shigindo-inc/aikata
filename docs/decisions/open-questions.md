@@ -244,6 +244,23 @@ what unblocks a decision, and the latest update date.
   an `aikata adopt <file>` command (v0.4?) could parse the user's file
   into the canonical `AGENTS.md` skeleton.
 
+### Q-INTEROP-04 — Managed append rules for existing generic files
+
+- `aikata init`, `aikata generate`, and future adoption flows often need
+  to write small aikata-owned entries into project-owned files such as
+  `.gitignore`. Rewriting those files from scratch is too destructive
+  for existing repositories.
+- **Leading**: introduce a shared managed-block writer. The first target
+  is `.gitignore`, where aikata appends or refreshes only the aikata
+  section for `.aikata-proposed/` and generated AI-tool artifacts.
+  Existing user entries stay untouched, and repeat runs must not
+  duplicate lines.
+- **Open**: exact block marker text, whether `.aikata/` itself belongs
+  in target-project `.gitignore` by default, how
+  `docs.generate_gitignore: false` suppresses the writer, and which
+  UPPERCASE.md files, if any, are safe for managed-block append rather
+  than proposal / sync handling.
+
 ---
 
 ## Q-ECOSYSTEM

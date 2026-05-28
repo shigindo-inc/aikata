@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-20
+updated: 2026-05-28
 audience: [human, agent]
 ---
 
@@ -59,6 +59,16 @@ For each opt-in feature, the following must hold:
 | **Monorepo** | Single-project layout by default. `--monorepo` introduces `apps/*/AGENTS.md`; the root structure does not change for non-monorepo users. |
 | **AI tools** | `--ai-tools` defaults to `claude`. Cursor / Codex / etc. dirs are not created unless explicitly enabled. |
 | **Language** | `--lang en` by default (maximum reach). `--lang ja` produces a parallel template set; the user is never forced into bilingual maintenance. |
+
+### Planned application: generic project-owned files
+
+Files that commonly pre-exist in a repository, such as `.gitignore`,
+are user-owned even when aikata needs to add a few required entries.
+Future init / generate / adoption work should preserve those files and
+append or refresh only a clearly marked aikata-managed block. The exact
+file list and block semantics remain tracked in
+[`open-questions.md`](../decisions/open-questions.md#q-interop-04--managed-append-rules-for-existing-generic-files)
+until they are promoted into a dedicated ADR.
 
 ### Consequences of the policy on aikata itself
 

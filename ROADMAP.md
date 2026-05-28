@@ -489,6 +489,14 @@ the post-init command surface before the first stable CLI contract.
       `CLAUDE.md`, or `.cursor/rules/` before running aikata. Prefer
       documentation over a lossy `aikata adopt` parser unless a real
       project needs automation.
+- [ ] **Managed append semantics for project-owned generic files** —
+      `.gitignore` and similarly common project files must not be
+      rewritten from scratch when aikata only needs to add aikata-owned
+      entries. Introduce an idempotent managed-block writer that can
+      append or refresh the aikata section while preserving user-owned
+      content. Start with `.gitignore`; expand to UPPERCASE.md files
+      only after the target list and merge rules are resolved in
+      open questions / an ADR.
 - [ ] **Do not include** memory projection, third-party skill catalog
       management, or new remote template fetching in v0.7.x. Those need
       separate dogfooding evidence / ADRs.
