@@ -18,6 +18,18 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-05-29
+
+Closes the v0.7.x line. Three loosely-coupled items shipped
+together: an idempotent managed-block append writer for
+`.gitignore` (ADR 0018), an explicit no-silent-delete contract for
+`aikata sync` (ADR 0019), and an existing-repo adoption guide
+(`docs/adoption.md`). `aikata init --force` against a repository
+with a hand-written `.gitignore` now merges the aikata-owned block
+in place instead of overwriting user-owned entries. v0.7.x is
+considered closed at v0.7.2 unless a critical patch is needed; the
+next planned line is v0.8.x (channel publication).
+
 ### Added
 
 - **Managed-block append writer for project-owned files** (ADR 0018):
