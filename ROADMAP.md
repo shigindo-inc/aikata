@@ -519,31 +519,51 @@ that the schema-v2 `components:` block enables.
       growth, the verb is held until `extended` exists or a real
       project surfaces the need.
 
-Remaining v0.7.x items (planned for v0.7.2):
+## v0.7.2 — Adoption, repair, managed append ✅ (released 2026-05-29)
 
-- [ ] **Missing-file repair semantics** — define exactly how `sync`
-      restores files that should exist for the declared baseline /
-      enabled capabilities. It may add or update managed files through
-      the existing non-destructive merge contract, but it must never
-      delete files or directories merely because they are no longer in
-      scope. Any future cleanup feature must be explicit, previewable,
-      and separately documented.
-- [ ] **Existing-repo adoption guide** — document the recommended
-      migration path for repositories that already have `AGENTS.md`,
-      `CLAUDE.md`, or `.cursor/rules/` before running aikata. Prefer
-      documentation over a lossy `aikata adopt` parser unless a real
-      project needs automation.
-- [ ] **Managed append semantics for project-owned generic files** —
-      `.gitignore` and similarly common project files must not be
-      rewritten from scratch when aikata only needs to add aikata-owned
-      entries. Introduce an idempotent managed-block writer that can
-      append or refresh the aikata section while preserving user-owned
-      content. Start with `.gitignore`; expand to UPPERCASE.md files
-      only after the target list and merge rules are resolved in
-      open questions / an ADR.
-- [ ] **Do not include** memory projection, third-party skill catalog
-      management, or new remote template fetching in v0.7.x. Those need
-      separate dogfooding evidence / ADRs.
+Closes the v0.7.x line. Three loosely-coupled items shipped together:
+the `aikata sync` no-silent-delete contract (ADR 0019), the existing-
+repo adoption guide, and the managed-block append writer for
+project-owned files like `.gitignore` (ADR 0018).
+
+- [x] **Missing-file repair semantics** (ADR 0019) — `aikata sync`
+      may add or refresh managed files via the existing
+      `StatusUpstreamAdded` / `StatusUpstreamApplied` branches; it
+      must never delete files merely because they fell out of scope.
+      `StatusUpstreamRemoved` and `StatusUserDeleted` already emit no
+      write — the ADR pins the contract and a new sync test
+      (`TestRun_UpstreamRemoved_DoesNotDelete`) guards against
+      regression.
+- [x] **Existing-repo adoption guide** — `docs/adoption.md` covers
+      the five concrete scenarios users actually hit
+      (`AGENTS.md` already exists, hand-written `CLAUDE.md` or
+      `.cursor/rules/`, hand-written `.gitignore`, pre-existing
+      `docs/memory/`, legacy `.ai/` config). Per the
+      documentation-first stance no `aikata adopt` parser is built.
+- [x] **Managed-block append for `.gitignore`** (ADR 0018) — new
+      `internal/managed/` package writes the aikata-owned section
+      between `# >>> aikata managed >>>` / `# <<< aikata managed <<<`
+      markers; the scaffold layer routes `.gitignore` through it
+      when the target file already exists. Idempotent re-runs
+      converge.
+- [x] `aikata init --force` against an existing `.gitignore` no
+      longer destroys user-owned entries. The integration is
+      intentionally narrow (init only); `aikata sync` continues to
+      use the 3-way merge for `.gitignore`, with the user-only-edit
+      preservation already working. Wider integration (sync + the
+      no-`--force` path) tracked beyond v0.7.x.
+
+No v0.7.3 line is reserved today. v0.7.x closes at v0.7.2 unless a
+critical patch is needed. v0.8.x covers channel publication; v1.0
+covers the stable surface (see below).
+
+Out of v0.7.x intentionally:
+
+- Memory projection (deferred again by ADR 0012).
+- Third-party skill catalog management.
+- New remote template fetching.
+- An `aikata expand <tier>` verb — deferred per ADR 0017 until
+  `extended` exists or a real project surfaces the need.
 
 No v0.9.x line is reserved today. If v0.7.x and v0.8.x expose upgrade
 or compatibility issues, v0.9.x should be an RC / stabilization line;

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-28
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
@@ -219,6 +219,23 @@ aikata does not regenerate per-app `AGENTS.md` files; they are
 user-managed. `aikata generate` continues to write the root
 `CLAUDE.md` / `.cursor/rules/main.mdc` only.
 
+### Adopting aikata in an existing repository (v0.7.2+)
+
+Already have `AGENTS.md`, a hand-written `CLAUDE.md`, or a
+`.gitignore` you care about? See
+[`docs/adoption.md`](./docs/adoption.md) for the recommended
+migration paths. Highlights:
+
+- `aikata init` without `--force` proposes its scaffold into
+  `.aikata-proposed/` so nothing of yours is overwritten.
+- `aikata init --force` against an existing `.gitignore` merges
+  the aikata-owned block in place via the
+  [ADR 0018](./docs/adr/0018-managed-append-for-project-owned-files.md)
+  managed-block writer.
+- `aikata sync` may add or refresh managed files but never
+  silently deletes them when scope narrows
+  ([ADR 0019](./docs/adr/0019-sync-missing-file-repair-semantics.md)).
+
 ## Quickstart
 
 ```bash
@@ -332,7 +349,12 @@ aikata generate
   - [0013 — `aikata sync` Scope Derivation Hierarchy](./docs/adr/0013-sync-scope-derivation.md)
   - [0014 — `.aikata/manifest.yaml` is a Living Record](./docs/adr/0014-manifest-living-record.md)
   - [0015 — First-party Skill and Plugin Distribution](./docs/adr/0015-first-party-skill-plugin-distribution.md)
+  - [0016 — `.aikata/aikata.yaml` schema v2](./docs/adr/0016-aikata-yaml-schema-v2.md)
+  - [0017 — Post-init Command Taxonomy: enable / new (no add)](./docs/adr/0017-post-init-command-taxonomy.md)
+  - [0018 — Managed-block Append for Project-owned Files](./docs/adr/0018-managed-append-for-project-owned-files.md)
+  - [0019 — `aikata sync` Missing-file Repair Semantics](./docs/adr/0019-sync-missing-file-repair-semantics.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
+- [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 
 ### AI-tool entry points
 

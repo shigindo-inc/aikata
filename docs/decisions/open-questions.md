@@ -233,20 +233,24 @@ what unblocks a decision, and the latest update date.
 
 ### Q-INTEROP-04 — Managed append rules for existing generic files
 
-- `aikata init`, `aikata generate`, and future adoption flows often need
-  to write small aikata-owned entries into project-owned files such as
-  `.gitignore`. Rewriting those files from scratch is too destructive
-  for existing repositories.
-- **Leading**: introduce a shared managed-block writer. The first target
-  is `.gitignore`, where aikata appends or refreshes only the aikata
-  section for `.aikata-proposed/` and generated AI-tool artifacts.
-  Existing user entries stay untouched, and repeat runs must not
-  duplicate lines.
-- **Open**: exact block marker text, whether `.aikata/` itself belongs
-  in target-project `.gitignore` by default, how
-  `docs.generate_gitignore: false` suppresses the writer, and which
-  UPPERCASE.md files, if any, are safe for managed-block append rather
-  than proposal / sync handling.
+- **Status**: Partially resolved by
+  [ADR 0018](../adr/0018-managed-append-for-project-owned-files.md)
+  in v0.7.2. The shared managed-block writer ships in
+  `internal/managed/`; `.gitignore` is the first integration point
+  (init-time only). Block markers are
+  `# >>> aikata managed >>>` / `# <<< aikata managed <<<`, modelled
+  after the conda-init / shell-init convention.
+  `docs.generate_gitignore: false` continues to suppress the writer
+  for `.gitignore` entirely.
+- **Open part**: (1) whether `aikata sync` should also route
+  `.gitignore` through the managed writer (it currently uses the
+  3-way merge), (2) whether UPPERCASE.md files (CONTRIBUTING.md,
+  SECURITY.md, ...) are safe targets for managed-block append, and
+  (3) whether `.aikata/` itself belongs in the target-project
+  `.gitignore` by default.
+- **Unblocks**: future expansion of the managed-append target list
+  and the `aikata sync` integration follow-up.
+- **Updated**: 2026-05-29.
 
 ---
 
