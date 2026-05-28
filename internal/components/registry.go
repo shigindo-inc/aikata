@@ -2,33 +2,61 @@ package components
 
 import "sort"
 
-// registry holds every component the binary ships with. Order here is
-// irrelevant; All() returns a fresh slice sorted by Name so callers
-// can mutate freely.
-var registry = []Component{
-	Adr,
+// capabilities is the set of components exposed by
+// `aikata enable <capability>` (v0.7.1, ADR 0017). Each capability
+// represents a persistent project feature: schema-v2 component flags
+// (memory, ui, api, tdd, changelog, monorepo), stack registrations,
+// and AI-tool enrolments.
+var capabilities = []Component{
 	AITool,
 	API,
 	Changelog,
 	Memory,
+	Monorepo,
 	Stack,
 	TDD,
 	UI,
 }
 
-// All returns the full component list, sorted by Name. The slice is
-// freshly built on every call.
-func All() []Component {
-	out := append([]Component(nil), registry...)
+// artifacts is the set of components exposed by
+// `aikata new <artifact>` (v0.7.1, ADR 0017). Each artifact is an
+// authoring scaffold (ADRs, future templates) that adds a single
+// file without flipping any durable project flag.
+var artifacts = []Component{
+	Adr,
+}
+
+// Capabilities returns the enable-tier components sorted by Name.
+// The slice is freshly built so callers can mutate freely.
+func Capabilities() []Component {
+	out := append([]Component(nil), capabilities...)
 	sort.Slice(out, func(i, j int) bool { return out[i].Name() < out[j].Name() })
 	return out
 }
 
-// Get returns the Component registered under name, or (nil, false) if
-// no such component exists. Lookups are case-sensitive; component
-// names are lowercase by convention.
-func Get(name string) (Component, bool) {
-	for _, c := range registry {
+// Artifacts returns the new-tier components sorted by Name.
+func Artifacts() []Component {
+	out := append([]Component(nil), artifacts...)
+	sort.Slice(out, func(i, j int) bool { return out[i].Name() < out[j].Name() })
+	return out
+}
+
+// All returns every registered component (capabilities + artifacts)
+// sorted by Name. Retained as a transitional convenience for
+// internals that don't yet care about the enable/new split.
+func All() []Component {
+	combined := make([]Component, 0, len(capabilities)+len(artifacts))
+	combined = append(combined, capabilities...)
+	combined = append(combined, artifacts...)
+	sort.Slice(combined, func(i, j int) bool { return combined[i].Name() < combined[j].Name() })
+	return combined
+}
+
+// GetCapability returns the capability registered under name, or
+// (nil, false) if no such capability exists. Lookups are
+// case-sensitive; capability names are lowercase by convention.
+func GetCapability(name string) (Component, bool) {
+	for _, c := range capabilities {
 		if c.Name() == name {
 			return c, true
 		}
@@ -36,12 +64,34 @@ func Get(name string) (Component, bool) {
 	return nil, false
 }
 
-// ActiveNames returns the names of components whose Status is
-// StatusActive, sorted alphabetically. Used by cli layers that only
-// want add-able identifiers (e.g. unknown-name error messages).
-func ActiveNames() []string {
+// GetArtifact returns the artifact registered under name, or
+// (nil, false) if no such artifact exists.
+func GetArtifact(name string) (Component, bool) {
+	for _, c := range artifacts {
+		if c.Name() == name {
+			return c, true
+		}
+	}
+	return nil, false
+}
+
+// ActiveCapabilityNames returns the names of active capabilities,
+// sorted. Used by the cli layer's unknown-name error messages.
+func ActiveCapabilityNames() []string {
 	var out []string
-	for _, c := range registry {
+	for _, c := range capabilities {
+		if c.Status() == StatusActive {
+			out = append(out, c.Name())
+		}
+	}
+	sort.Strings(out)
+	return out
+}
+
+// ActiveArtifactNames returns the names of active artifacts, sorted.
+func ActiveArtifactNames() []string {
+	var out []string
+	for _, c := range artifacts {
 		if c.Status() == StatusActive {
 			out = append(out, c.Name())
 		}

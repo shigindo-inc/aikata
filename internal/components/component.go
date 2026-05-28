@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/shigindo-inc/aikata/internal/config"
@@ -159,6 +160,73 @@ func RecordInManifest(targetDir string, rendered map[string]string) error {
 
 	if err := config.SaveManifest(targetDir, m); err != nil {
 		return fmt.Errorf("components: RecordInManifest: %w", err)
+	}
+	return nil
+}
+
+// EnableComponentInConfig flips the schema-v2 `components.<field>` bool
+// in `.aikata/aikata.yaml` and persists. Called by enable-tier
+// components (memory, ui, api, tdd, changelog, monorepo) so the
+// declarative record stays in sync with the on-disk rendering
+// (ADR 0016).
+//
+// Contract:
+//
+//   - No-op when `.aikata/aikata.yaml` is absent (same "never mint
+//     config in someone else's project" stance as RecordInManifest;
+//     ADR 0003).
+//   - Idempotent: if the field is already true, returns nil without I/O.
+//   - Picks up any v1 → v2 migration via LoadMigrated, so the persisted
+//     file always lands at the current schema version after an enable.
+//   - Unknown field names are a programmer error and return an error.
+func EnableComponentInConfig(targetDir string, field string) error {
+	if targetDir == "" {
+		return fmt.Errorf("components: EnableComponentInConfig: target directory is required")
+	}
+	cfg, _, err := config.LoadMigrated(targetDir)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("components: enable %s: load config: %w", field, err)
+	}
+	field = strings.ToLower(field)
+	switch field {
+	case "memory":
+		if cfg.Components.Memory {
+			return nil
+		}
+		cfg.Components.Memory = true
+	case "ui":
+		if cfg.Components.UI {
+			return nil
+		}
+		cfg.Components.UI = true
+	case "api":
+		if cfg.Components.API {
+			return nil
+		}
+		cfg.Components.API = true
+	case "tdd":
+		if cfg.Components.TDD {
+			return nil
+		}
+		cfg.Components.TDD = true
+	case "changelog":
+		if cfg.Components.Changelog {
+			return nil
+		}
+		cfg.Components.Changelog = true
+	case "monorepo":
+		if cfg.Components.Monorepo {
+			return nil
+		}
+		cfg.Components.Monorepo = true
+	default:
+		return fmt.Errorf("components: enable: unknown components.* field %q", field)
+	}
+	if err := config.Save(targetDir, cfg); err != nil {
+		return fmt.Errorf("components: enable %s: save config: %w", field, err)
 	}
 	return nil
 }

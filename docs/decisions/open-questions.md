@@ -145,29 +145,22 @@ what unblocks a decision, and the latest update date.
 
 ### Q-DESIGN-10 — Post-init command taxonomy
 
-- **Status**: Direction chosen for v0.7 planning; still needs
-  implementation design.
-- **Question**: How should aikata expose post-init changes without
-  making users choose from low-level implementation components?
-- **Leading**: split by user intent instead of keeping one overloaded
-  `aikata add <component>` command.
-
-  | Purpose | Command |
-  |---|---|
-  | Maintain and restore the already-declared aikata surface | `sync` |
-  | Persist capabilities (`memory`, `monorepo`, `stack <name>`, `ai-tool <name>`) | `enable` |
-  | Persist a broader document tier (`standard`, `extended`); `minimal` is the baseline maintained by `sync`, not an expansion target | `expand` |
-  | Create authoring artifacts (`adr "<title>"`) | `new` |
-
-- **Compatibility**: do not add compatibility aliases for the current
-  pre-release `add` command shapes. Simpler surface area matters more
-  than backward compatibility before v1.0.
-- **Safety**: no command may silently delete files or directories
-  because a surface was narrowed or a generated target is no longer in
-  scope. Cleanup, if ever added, must be explicit and previewable.
-- **Unblocks**: v0.7.x CLI cleanup, schema v2 command wiring, and
-  clearer help text ("for this purpose, use this command").
-- **Updated**: 2026-05-28.
+- **Status**: Partially resolved by
+  [ADR 0017](../adr/0017-post-init-command-taxonomy.md) in v0.7.1.
+  `aikata enable <capability>` (memory, ui, api, tdd, changelog,
+  monorepo, stack `<name>`, ai-tool `<name>`) and
+  `aikata new <artifact>` (adr) ship; the pre-v0.7.1 `aikata add`
+  parent is removed without aliases. `aikata expand <tier>` is
+  intentionally deferred until `extended` exists or a real project
+  surfaces a minimal → standard growth need.
+- **Open part**: the `aikata expand` semantics for projects that
+  were init'd with `aikata init --preset minimal` (which writes no
+  `.aikata/aikata.yaml` today). When `extended` becomes a real tier
+  target, the verb gains a second use case and the open semantics
+  are easier to settle.
+- **Unblocks**: v1.0 surface freeze once `expand` is decided one way
+  or the other.
+- **Updated**: 2026-05-29.
 
 ---
 

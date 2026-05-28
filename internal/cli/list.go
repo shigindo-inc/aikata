@@ -31,22 +31,27 @@ func newListCmd() *cobra.Command {
 	cmd.AddCommand(newListPresetsCmd())
 	cmd.AddCommand(newListStacksCmd())
 	cmd.AddCommand(newListAIToolsCmd())
-	cmd.AddCommand(newListComponentsCmd())
+	cmd.AddCommand(newListCapabilitiesCmd())
+	cmd.AddCommand(newListArtifactsCmd())
 	return cmd
 }
 
-func newListComponentsCmd() *cobra.Command {
+// newListCapabilitiesCmd enumerates the components addable via
+// `aikata enable <capability>` (memory, ui, monorepo, stack, ...).
+// Replaces the pre-v0.7.1 `list components` listing, which conflated
+// capabilities and artifacts under a single registry.
+func newListCapabilitiesCmd() *cobra.Command {
 	var jsonOut bool
 	cmd := &cobra.Command{
-		Use:   "components",
-		Short: "List components addable via `aikata add`",
-		Long: "Enumerate every component the `aikata add` subcommand knows\n" +
+		Use:   "capabilities",
+		Short: "List capabilities enable-able via `aikata enable`",
+		Long: "Enumerate every capability the `aikata enable` subcommand knows\n" +
 			"about. Reserved entries are surfaced with a `(reserved)` suffix\n" +
 			"in text output and a status field in --json so callers can\n" +
 			"discover names held for a future release.",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			all := components.All()
+			all := components.Capabilities()
 			items := make([]listItem, 0, len(all))
 			for _, c := range all {
 				items = append(items, listItem{
@@ -55,7 +60,35 @@ func newListComponentsCmd() *cobra.Command {
 					Description: c.Description(),
 				})
 			}
-			return writeList(cmd.OutOrStdout(), "components", items, jsonOut, formatComponentText)
+			return writeList(cmd.OutOrStdout(), "capabilities", items, jsonOut, formatComponentText)
+		},
+	}
+	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report instead of the text format")
+	return cmd
+}
+
+// newListArtifactsCmd enumerates the components addable via
+// `aikata new <artifact>` (adr today; future template scaffolds).
+func newListArtifactsCmd() *cobra.Command {
+	var jsonOut bool
+	cmd := &cobra.Command{
+		Use:   "artifacts",
+		Short: "List artifacts creatable via `aikata new`",
+		Long: "Enumerate every artifact scaffold the `aikata new` subcommand\n" +
+			"knows about. Reserved entries are surfaced with a `(reserved)`\n" +
+			"suffix in text output and a status field in --json.",
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			all := components.Artifacts()
+			items := make([]listItem, 0, len(all))
+			for _, c := range all {
+				items = append(items, listItem{
+					Name:        c.Name(),
+					Status:      c.Status(),
+					Description: c.Description(),
+				})
+			}
+			return writeList(cmd.OutOrStdout(), "artifacts", items, jsonOut, formatComponentText)
 		},
 	}
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report instead of the text format")

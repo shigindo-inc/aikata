@@ -61,6 +61,12 @@ func (s singleFile) Add(ctx AddContext) error {
 	if err := RecordInManifest(ctx.TargetDir, rendered); err != nil {
 		return err
 	}
+	// Schema-v2: flip the corresponding `components.<name>` flag. The
+	// singleFile component name matches the schema field name 1:1
+	// (ui, api, tdd, changelog) so no translation is needed.
+	if err := EnableComponentInConfig(ctx.TargetDir, s.name); err != nil {
+		return err
+	}
 	if written == 0 {
 		if _, werr := fmt.Fprintf(stderr(ctx),
 			"notice: %s already present at %s; nothing to do\n", s.name, s.targetPath); werr != nil {

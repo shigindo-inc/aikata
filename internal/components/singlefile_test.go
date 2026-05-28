@@ -162,10 +162,10 @@ func TestSingleFile_RequiresProjectName(t *testing.T) {
 
 func TestSingleFile_RegistryListsAllSingleFileNames(t *testing.T) {
 	want := []string{"api", "changelog", "tdd", "ui"}
-	got := ActiveNames()
+	got := ActiveCapabilityNames()
 	for _, w := range want {
 		if !containsString(got, w) {
-			t.Errorf("ActiveNames() missing %q; got %v", w, got)
+			t.Errorf("ActiveCapabilityNames() missing %q; got %v", w, got)
 		}
 	}
 }

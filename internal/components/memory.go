@@ -65,6 +65,9 @@ func (memoryComponent) Add(ctx AddContext) error {
 	if err := RecordInManifest(ctx.TargetDir, rendered); err != nil {
 		return err
 	}
+	if err := EnableComponentInConfig(ctx.TargetDir, "memory"); err != nil {
+		return err
+	}
 	if written == 0 {
 		if _, werr := fmt.Fprintf(stderr(ctx),
 			"notice: memory already present (%d file(s) under docs/memory/); nothing to do\n", skipped); werr != nil {
