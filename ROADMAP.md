@@ -593,7 +593,7 @@ Out of v0.7.3 (deferred):
 - `aikata sync` exclusion. sync is manifest-driven; revisit if a
   user reports the analogous noise.
 
-## v0.7.4 — Retire legacy `.ai/` config fallback (planned)
+## v0.7.4 — Retire legacy `.ai/` config fallback ✅ (released 2026-05-29)
 
 Pre-v1 cleanup release. v0.3.2 moved aikata-owned config to
 `.aikata/aikata.yaml`; v0.7.4 removes the remaining path-level
