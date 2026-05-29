@@ -40,7 +40,8 @@ var skippedFiles = map[string]struct{}{
 // walkMarkdown invokes fn for every regular *.md file under
 // opts.TargetDir, returning the slash-separated path relative to
 // TargetDir. Skipped directories and generated artifact files are
-// excluded.
+// excluded, as are paths matching any user-configured
+// opts.Excludes glob (see ADR 0021).
 func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 	return filepath.WalkDir(opts.TargetDir, func(p string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -62,11 +63,15 @@ func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 		if err != nil {
 			return err
 		}
+		relSlash := filepath.ToSlash(rel)
+		if MatchAny(opts.Excludes, relSlash) {
+			return nil
+		}
 		body, err := os.ReadFile(p)
 		if err != nil {
 			return err
 		}
-		return fn(filepath.ToSlash(rel), body)
+		return fn(relSlash, body)
 	})
 }
 

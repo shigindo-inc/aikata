@@ -1,11 +1,14 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/shigindo-inc/aikata/internal/config"
 	"github.com/shigindo-inc/aikata/internal/doctor"
 )
 
@@ -36,7 +39,11 @@ func newDoctorCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("doctor: getwd: %w", err)
 			}
-			opts := doctor.Options{TargetDir: target}
+			excludes, err := loadDoctorExcludes(target)
+			if err != nil {
+				return err
+			}
+			opts := doctor.Options{TargetDir: target, Excludes: excludes}
 			issues, err := doctor.Run(opts)
 			if err != nil {
 				return err
@@ -104,6 +111,21 @@ func newDoctorCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report to stdout instead of the text format")
 	cmd.Flags().BoolVar(&strict, "strict", false, "Treat warnings as errors (exit 3 if any warning exists). Used by the v0.5+ dogfood CI gate.")
 	return cmd
+}
+
+// loadDoctorExcludes reads `.aikata/aikata.yaml` (primary or legacy
+// path) and returns its `doctor.exclude` glob list. Non-aikata
+// directories yield a nil slice and no error so non-init'd trees
+// keep running through doctor unchanged. See ADR 0021.
+func loadDoctorExcludes(target string) ([]string, error) {
+	cfg, _, err := config.Load(target)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("doctor: load config: %w", err)
+	}
+	return cfg.Doctor.Exclude, nil
 }
 
 func countWarnings(issues []doctor.Issue) int {

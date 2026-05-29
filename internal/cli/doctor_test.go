@@ -107,6 +107,51 @@ func TestDoctor_StrictTreatsWarningsAsErrors(t *testing.T) {
 	}
 }
 
+// TestDoctor_ConfigExcludeSuppressesPluginErrors covers ADR 0021.
+// A SKILL.md under plugins/ (Claude Code plugin layout, frontmatter
+// is `name`+`description` only) produces frontmatter errors out of
+// the box. Adding `doctor.exclude: ["plugins/**"]` to the project's
+// `.aikata/aikata.yaml` must make doctor exit 0.
+func TestDoctor_ConfigExcludeSuppressesPluginErrors(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
+		t.Fatalf("init: %v", err)
+	}
+	pluginDir := filepath.Join(tmp, "plugins", "job-search", "skills", "mock")
+	if err := os.MkdirAll(pluginDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	skillBody := []byte("---\nname: mock\ndescription: practice interviews.\n---\n\n# Mock\n")
+	if err := os.WriteFile(filepath.Join(pluginDir, "SKILL.md"), skillBody, 0o644); err != nil {
+		t.Fatalf("write SKILL.md: %v", err)
+	}
+
+	// Without exclude → expect exit 3.
+	if _, err := runDoctor(t); err == nil {
+		t.Fatalf("doctor should fail on plugins/SKILL.md without exclude")
+	}
+
+	// Append doctor.exclude to .aikata/aikata.yaml and rerun.
+	cfgPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
+	cfgBody, err := os.ReadFile(cfgPath)
+	if err != nil {
+		t.Fatalf("read aikata.yaml: %v", err)
+	}
+	cfgBody = append(cfgBody, []byte("doctor:\n  exclude:\n    - plugins/**\n")...)
+	if err := os.WriteFile(cfgPath, cfgBody, 0o644); err != nil {
+		t.Fatalf("write aikata.yaml: %v", err)
+	}
+
+	out, err := runDoctor(t)
+	if err != nil {
+		t.Fatalf("doctor should succeed with exclude, got %v\n%s", err, out)
+	}
+	if strings.Contains(out, "plugins/") {
+		t.Errorf("excluded path should not appear in doctor output:\n%s", out)
+	}
+}
+
 func TestRootCmdShowsDoctorInHelp(t *testing.T) {
 	cmd := newRootCmd("0.0.1-test")
 	var buf bytes.Buffer

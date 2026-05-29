@@ -31,6 +31,7 @@ type AikataYaml struct {
 	Components Components      `yaml:"components"`
 	Features   map[string]bool `yaml:"features,omitempty"`
 	Docs       Docs            `yaml:"docs,omitempty"`
+	Doctor     Doctor          `yaml:"doctor,omitempty"`
 }
 
 // Project carries the human-facing identity of the project.
@@ -59,6 +60,20 @@ type Components struct {
 type Docs struct {
 	GenerateGitignore bool   `yaml:"generate_gitignore"`
 	TaskFileLocation  string `yaml:"task_file_location"`
+}
+
+// Doctor holds optional tuning for `aikata doctor`. The zero value
+// preserves the pre-v0.7.3 behaviour exactly (no extra exclusions
+// beyond the hardcoded `skippedDirs` / `skippedFiles` baselines in
+// `internal/doctor`). See ADR 0021.
+type Doctor struct {
+	// Exclude is a list of glob patterns evaluated against the
+	// slash-form path relative to the project root. Matching paths
+	// are skipped at the markdown-walk layer, exempting them from
+	// `checkFrontmatter`, `checkUpdated`, and `checkGlossary`
+	// uniformly. Supported tokens: `*` (single segment), `**`
+	// (recursive), and literals.
+	Exclude []string `yaml:"exclude,omitempty"`
 }
 
 // Default returns an AikataYaml at the current schema version seeded

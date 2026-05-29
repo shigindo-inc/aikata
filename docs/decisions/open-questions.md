@@ -311,6 +311,26 @@ what unblocks a decision, and the latest update date.
 
 ---
 
+## Q-DOCTOR
+
+### Q-DOCTOR-01 — Scope and exclusion semantics for `aikata doctor`
+
+- **Status**: Resolved by
+  [ADR 0021](../adr/0021-doctor-scope-and-exclusion.md) in v0.7.3.
+  `.aikata/aikata.yaml` gains an optional top-level `doctor:` block
+  with an `exclude:` glob list. Matching paths are skipped at the
+  `walkMarkdown` layer so `checkFrontmatter`, `checkUpdated`, and
+  `checkGlossary` all honour the exclusion consistently. The matcher
+  (`*` / `**` / literal, no extra dep) lives in
+  `internal/doctor/glob.go`. The hardcoded `skippedDirs` /
+  `skippedFiles` baselines remain and the user list is additive.
+  aikata ships zero default exclusions; the ADR documents
+  recommended snippets for Claude Code plugin layouts.
+- Kept as a back-reference; will be removed in a future cleanup.
+- **Updated**: 2026-05-29.
+
+---
+
 ## Q-HYPOTHESES (to validate via dogfooding)
 
 These map to [SPEC.md §7](../../SPEC.md#7-hypotheses-to-validate).
