@@ -78,18 +78,18 @@ aikata --version
 
 From v0.8.1, releases are signed with [cosign](https://docs.sigstore.dev/)
 keyless signing. `checksums.txt` is signed via GitHub OIDC — no
-long-lived key — and the release carries `checksums.txt.pem` (the
-short-lived Fulcio certificate) and `checksums.txt.sig` (the signature).
-Each archive also ships a syft-generated SBOM (`<archive>.sbom.json`).
+long-lived key — and the release carries `checksums.txt.sigstore.json`,
+a Sigstore bundle that combines the short-lived Fulcio certificate and
+the signature (cosign v3 format). Each archive also ships a
+syft-generated SBOM (`<archive>.sbom.json`).
 
 To verify the checksum file's signature before trusting it (and, through
-it, every archive it lists), download `checksums.txt`,
-`checksums.txt.pem`, and `checksums.txt.sig`, then run:
+it, every archive it lists), download `checksums.txt` and
+`checksums.txt.sigstore.json`, then run (cosign v2.4+/v3):
 
 ```bash
 cosign verify-blob checksums.txt \
-  --certificate checksums.txt.pem \
-  --signature checksums.txt.sig \
+  --bundle checksums.txt.sigstore.json \
   --certificate-identity-regexp '^https://github.com/shigindo-inc/aikata/\.github/workflows/release\.yml@refs/tags/v' \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 ```
