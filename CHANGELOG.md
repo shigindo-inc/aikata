@@ -18,12 +18,20 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-05-29
+
+Pre-v1 cleanup patch that retires the legacy `.ai/aikata.yaml`
+compatibility layer introduced before v0.3.2. The stable surface now
+has a single config location: `.aikata/aikata.yaml`. ADR 0020 records
+the decision.
+
 ### Removed
 
-- For the next v0.7.x patch release, remove the `.ai/aikata.yaml`
-  compatibility layer. The runtime now accepts only `.aikata/aikata.yaml`;
-  `aikata generate` no longer auto-migrates `.ai/`, and `aikata
-  doctor --fix` no longer emits or repairs `config.legacy-path`.
+- The `.ai/aikata.yaml` compatibility layer. The runtime now accepts
+  only `.aikata/aikata.yaml`; `aikata generate` no longer auto-migrates
+  `.ai/`, and `aikata doctor --fix` no longer emits or repairs
+  `config.legacy-path`. Projects still on `.ai/aikata.yaml` must move
+  the file to `.aikata/aikata.yaml` manually (a one-time `git mv`).
   ADR 0020 documents the cleanup.
 
 ## [0.7.3] - 2026-05-29
