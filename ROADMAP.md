@@ -694,7 +694,7 @@ Low-risk repository guardrails. No change to the binary or templates.
       explicit rule and add an Agent Contributions section that
       cross-references the SECURITY.md Agent Safety constraints.
 
-### v0.8.1 — Supply-chain signing (planned)
+### v0.8.1 — Supply-chain signing ✅ (released 2026-05-29)
 
 Release-pipeline hardening. Split from v0.8.0 so a pipeline change
 cannot destabilise the governance work, and tagged separately.

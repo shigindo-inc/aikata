@@ -18,6 +18,14 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-05-29
+
+Supply-chain hardening of the release pipeline (ADR 0023). No change to
+the binary or generated templates. Validated end-to-end via a
+`v0.8.1-rc` prerelease: keyless signing produces
+`checksums.txt.sigstore.json` and `cosign verify-blob --bundle` returns
+`Verified OK`.
+
 ### Added
 
 - **Supply-chain signing** (v0.8.1, ADR 0023) — release-pipeline
