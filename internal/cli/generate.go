@@ -14,19 +14,16 @@ import (
 
 // newGenerateCmd builds the `aikata generate` subcommand.
 //
-// Reads the project config (`.aikata/aikata.yaml` preferred, with
-// fallback to `.ai/aikata.yaml` for projects predating v0.3.2 / ADR
-// 0008), looks up each enabled AI tool's Provider, and writes the
-// produced artifacts under cwd. Existing files are overwritten — that
-// is the explicit contract; generated artifacts are disposable per
-// ADR 0002.
+// Reads the project config (`.aikata/aikata.yaml`), looks up each
+// enabled AI tool's Provider, and writes the produced artifacts under
+// cwd. Existing files are overwritten — that is the explicit
+// contract; generated artifacts are disposable per ADR 0002.
 func newGenerateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate",
 		Short: "Regenerate per-AI-tool configuration files from canonical sources",
-		Long: "Reads the aikata config (.aikata/aikata.yaml, with fallback to .ai/aikata.yaml\n" +
-			"for projects predating v0.3.2) in the current directory and emits per-AI-tool\n" +
-			"artifacts (CLAUDE.md, etc.) from the canonical AGENTS.md. Existing files are\n" +
+		Long: "Reads the aikata config (.aikata/aikata.yaml) in the current directory\n" +
+			"and emits per-AI-tool artifacts (CLAUDE.md, etc.) from the canonical AGENTS.md. Existing files are\n" +
 			"overwritten; generated artifacts are disposable (ADR 0002).",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -34,7 +31,7 @@ func newGenerateCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("generate: getwd: %w", err)
 			}
-			cfgPath, isLegacy, err := config.Resolve(target)
+			cfgPath, err := config.Resolve(target)
 			if err != nil {
 				if errors.Is(err, os.ErrNotExist) {
 					return &ExitError{
@@ -43,28 +40,6 @@ func newGenerateCmd() *cobra.Command {
 					}
 				}
 				return fmt.Errorf("generate: locate config: %w", err)
-			}
-			if isLegacy {
-				moved, migrateErr := config.MoveLegacyToPrimary(target)
-				switch {
-				case migrateErr != nil:
-					// Best-effort: surface the failure as a warning and
-					// keep going with the legacy file so the user's run
-					// is not blocked. The next aikata doctor --fix can
-					// retry once the underlying issue is resolved.
-					if _, werr := fmt.Fprintf(cmd.ErrOrStderr(),
-						"warning: failed to migrate %s -> %s (ADR 0008): %v\n",
-						config.LegacyPath(target), config.PrimaryPath(target), migrateErr); werr != nil {
-						return werr
-					}
-				case moved:
-					cfgPath = config.PrimaryPath(target)
-					if _, werr := fmt.Fprintf(cmd.ErrOrStderr(),
-						"notice: migrated %s -> %s (ADR 0008)\n",
-						config.LegacyPath(target), cfgPath); werr != nil {
-						return werr
-					}
-				}
 			}
 			body, err := os.ReadFile(cfgPath)
 			if err != nil {

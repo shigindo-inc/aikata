@@ -53,7 +53,7 @@ func TestStackAdd_HappyPathWritesFileAndUpdatesConfig(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(tmp, "docs/stacks/flutter.md")); err != nil {
 		t.Errorf("expected docs/stacks/flutter.md to exist: %v", err)
 	}
-	cfg, _, err := config.Load(tmp)
+	cfg, err := config.Load(tmp)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestStackAdd_FileExistsButCfgMissingUpdatesCfgOnly(t *testing.T) {
 	if string(body) != "custom" {
 		t.Errorf("user-customized file was overwritten; got %q", string(body))
 	}
-	cfg, _, err := config.Load(tmp)
+	cfg, err := config.Load(tmp)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -170,7 +170,7 @@ func TestStackAdd_DryRunDoesNotWrite(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(tmp, "docs/stacks/typescript.md")); !os.IsNotExist(err) {
 		t.Errorf("expected docs/stacks/typescript.md not to exist after --dry-run; got err=%v", err)
 	}
-	cfg, _, _ := config.Load(tmp)
+	cfg, _ := config.Load(tmp)
 	if contains(cfg.Stacks, "typescript") {
 		t.Errorf("expected cfg.Stacks not to be modified after --dry-run; got %v", cfg.Stacks)
 	}

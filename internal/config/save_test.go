@@ -20,12 +20,9 @@ func TestSave_RoundTrip(t *testing.T) {
 		t.Fatalf("expected primary config to exist: %v", err)
 	}
 
-	got, isLegacy, err := Load(tmp)
+	got, err := Load(tmp)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
-	}
-	if isLegacy {
-		t.Error("Load reported isLegacy=true for primary-only project")
 	}
 	if !reflect.DeepEqual(got, cfg) {
 		t.Errorf("round-trip diff:\n got=%+v\nwant=%+v", got, cfg)
@@ -42,7 +39,7 @@ func TestSave_OverwritesExistingPrimary(t *testing.T) {
 	if err := Save(tmp, second); err != nil {
 		t.Fatalf("second Save: %v", err)
 	}
-	got, _, err := Load(tmp)
+	got, err := Load(tmp)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -88,7 +85,7 @@ func TestSave_AtomicLeavesNoPartialOnFailure(t *testing.T) {
 
 func TestLoad_NotExistMapsToOsError(t *testing.T) {
 	tmp := t.TempDir()
-	_, _, err := Load(tmp)
+	_, err := Load(tmp)
 	if err == nil {
 		t.Fatal("expected error for missing config")
 	}
@@ -97,56 +94,48 @@ func TestLoad_NotExistMapsToOsError(t *testing.T) {
 	}
 }
 
-func TestLoad_FallsBackToLegacy(t *testing.T) {
+func TestLoad_AIOnlyReturnsErrNotExist(t *testing.T) {
 	tmp := t.TempDir()
-	if err := os.MkdirAll(filepath.Join(tmp, LegacyDir), 0o755); err != nil {
-		t.Fatalf("mkdir legacy: %v", err)
-	}
 	cfg := Default("legacy-project", "en")
 	body, err := Marshal(cfg)
 	if err != nil {
 		t.Fatalf("Marshal: %v", err)
 	}
-	if err := os.WriteFile(LegacyPath(tmp), body, 0o644); err != nil {
-		t.Fatalf("write legacy file: %v", err)
+	path := filepath.Join(tmp, ".ai", Filename)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("mkdir .ai: %v", err)
+	}
+	if err := os.WriteFile(path, body, 0o644); err != nil {
+		t.Fatalf("write .ai/aikata.yaml: %v", err)
 	}
 
-	got, isLegacy, err := Load(tmp)
-	if err != nil {
-		t.Fatalf("Load: %v", err)
-	}
-	if !isLegacy {
-		t.Error("expected isLegacy=true when only legacy file exists")
-	}
-	if got.Project.Name != "legacy-project" {
-		t.Errorf("Project.Name = %q, want legacy-project", got.Project.Name)
+	if _, err := Load(tmp); !os.IsNotExist(err) {
+		t.Fatalf("Load: err = %v, want not-exist", err)
 	}
 }
 
-func TestLoad_PrefersPrimaryWhenBothExist(t *testing.T) {
+func TestLoad_IgnoresAIWhenPrimaryExists(t *testing.T) {
 	tmp := t.TempDir()
 	primary := Default("primary-project", "en")
 	if err := Save(tmp, primary); err != nil {
 		t.Fatalf("Save primary: %v", err)
 	}
-	if err := os.MkdirAll(filepath.Join(tmp, LegacyDir), 0o755); err != nil {
-		t.Fatalf("mkdir legacy: %v", err)
+	aiDir := filepath.Join(tmp, ".ai")
+	if err := os.MkdirAll(aiDir, 0o755); err != nil {
+		t.Fatalf("mkdir .ai: %v", err)
 	}
 	legacy := Default("legacy-project", "en")
 	body, err := Marshal(legacy)
 	if err != nil {
 		t.Fatalf("Marshal: %v", err)
 	}
-	if err := os.WriteFile(LegacyPath(tmp), body, 0o644); err != nil {
-		t.Fatalf("write legacy: %v", err)
+	if err := os.WriteFile(filepath.Join(aiDir, Filename), body, 0o644); err != nil {
+		t.Fatalf("write .ai/aikata.yaml: %v", err)
 	}
 
-	got, isLegacy, err := Load(tmp)
+	got, err := Load(tmp)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
-	}
-	if isLegacy {
-		t.Error("Load reported isLegacy=true even though primary exists")
 	}
 	if got.Project.Name != "primary-project" {
 		t.Errorf("Project.Name = %q, want primary-project", got.Project.Name)

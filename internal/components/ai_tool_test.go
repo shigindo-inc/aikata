@@ -31,7 +31,7 @@ func TestAIToolAdd_HappyPathAppendsToConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Add: %v", err)
 	}
-	cfg, _, err := config.Load(tmp)
+	cfg, err := config.Load(tmp)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -55,7 +55,7 @@ func TestAIToolAdd_SortsResult(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("Add: %v", err)
 	}
-	cfg, _, _ := config.Load(tmp)
+	cfg, _ := config.Load(tmp)
 	if got, want := cfg.AITools, []string{"claude", "cursor"}; !equalSlice(got, want) {
 		t.Errorf("expected sorted AITools=%v; got %v", want, got)
 	}
@@ -97,7 +97,7 @@ func TestAIToolAdd_AlreadyEnabledIsNoOp(t *testing.T) {
 	if !strings.Contains(stderr.String(), "already enabled") {
 		t.Errorf("expected idempotent notice; got %q", stderr.String())
 	}
-	cfg, _, _ := config.Load(tmp)
+	cfg, _ := config.Load(tmp)
 	if got, want := len(cfg.AITools), 2; got != want {
 		t.Errorf("expected AITools length unchanged at %d; got %d (%v)", want, got, cfg.AITools)
 	}
@@ -131,7 +131,7 @@ func TestAIToolAdd_DryRunDoesNotWrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Add: %v", err)
 	}
-	cfg, _, _ := config.Load(tmp)
+	cfg, _ := config.Load(tmp)
 	if contains(cfg.AITools, "cursor") {
 		t.Errorf("expected cfg.AITools not to be modified after --dry-run; got %v", cfg.AITools)
 	}

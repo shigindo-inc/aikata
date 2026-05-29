@@ -195,8 +195,8 @@ Shipped:
   flutter, and typescript presets (English and Japanese) was rewritten
   to mention the new path.
 
-The legacy fallback is intentionally kept throughout the v0.x line;
-the decision to retire it is scheduled for v1.0.
+This fallback was later retired in the planned v0.7.4 cleanup
+([ADR 0020](./docs/adr/0020-retire-ai-config-fallback.md)).
 
 ---
 
@@ -538,7 +538,7 @@ project-owned files like `.gitignore` (ADR 0018).
       the five concrete scenarios users actually hit
       (`AGENTS.md` already exists, hand-written `CLAUDE.md` or
       `.cursor/rules/`, hand-written `.gitignore`, pre-existing
-      `docs/memory/`, legacy `.ai/` config). Per the
+      `docs/memory/`, historical `.ai/` config). Per the
       documentation-first stance no `aikata adopt` parser is built.
 - [x] **Managed-block append for `.gitignore`** (ADR 0018) — new
       `internal/managed/` package writes the aikata-owned section
@@ -593,9 +593,29 @@ Out of v0.7.3 (deferred):
 - `aikata sync` exclusion. sync is manifest-driven; revisit if a
   user reports the analogous noise.
 
-v0.7.x is considered closed at v0.7.3 unless a further critical
-patch is needed. v0.8.x covers channel publication; v1.0 covers
-the stable surface (see below).
+## v0.7.4 — Retire legacy `.ai/` config fallback (planned)
+
+Pre-v1 cleanup release. v0.3.2 moved aikata-owned config to
+`.aikata/aikata.yaml`; v0.7.4 removes the remaining path-level
+compatibility branch so the stable surface has a single config
+location.
+
+- [x] **Remove `.ai/aikata.yaml` reads** — `internal/config.Resolve`
+      accepts only `.aikata/aikata.yaml`; commands no longer fall
+      back to `.ai/`.
+- [x] **Delete automatic migration** — remove `MoveLegacyToPrimary`
+      and the `aikata generate` / `aikata doctor --fix`
+      auto-migration paths. Users with old projects manually move
+      `.ai/aikata.yaml` to `.aikata/aikata.yaml`.
+- [x] **Drop `config.legacy-path` doctor check** — doctor no longer
+      warns about or fixes `.ai/`; `.ai/` is treated as user-owned or
+      third-party state.
+- [x] **Document the cleanup** — ADR 0020 records the decision, and
+      the adoption guide keeps `.ai/` only as historical migration
+      context.
+
+v0.8.x covers channel publication; v1.0 covers the stable surface
+(see below).
 
 Out of v0.7.x intentionally:
 
