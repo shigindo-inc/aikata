@@ -1,0 +1,10 @@
+# Maintainer review is required on aikata's sensitive surface: CI and
+# automation, the canonical operating manual, the security policy, the
+# release pipeline, the roadmap, and the architecture decision records.
+# Paths are listed per ADR 0022 (v0.8.0 governance hardening).
+/.github/         @Tomoshi3104
+/AGENTS.md        @Tomoshi3104
+/SECURITY.md      @Tomoshi3104
+/.goreleaser.yml  @Tomoshi3104
+/ROADMAP.md       @Tomoshi3104
+/docs/adr/        @Tomoshi3104
