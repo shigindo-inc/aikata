@@ -18,6 +18,8 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-05-29
+
 Patch release that lets `aikata doctor` step out of the way for
 subtrees that follow a different markdown frontmatter contract —
 in particular Claude Code plugin layouts at
