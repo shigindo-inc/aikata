@@ -70,15 +70,18 @@ sboms:
 # SHA-256 of every archive, so a verified checksum file transitively
 # authenticates all artifacts. The release workflow grants
 # `id-token: write` and installs cosign; no long-lived key exists.
-# Produces checksums.txt.pem (Fulcio cert) and checksums.txt.sig.
-# See ADR 0023 and the README "Verifying a release" section.
+#
+# cosign v3 (installed by cosign-installer) defaults to the new bundle
+# format: the separate --output-certificate / --output-signature flags
+# are deprecated and ignored, so we emit a single Sigstore bundle
+# (checksums.txt.sigstore.json) via --bundle. See ADR 0023 and the
+# README "Verifying a release signature" section.
 signs:
   - cmd: cosign
-    certificate: "${artifact}.pem"
+    signature: "${artifact}.sigstore.json"
     args:
       - sign-blob
-      - "--output-certificate=${certificate}"
-      - "--output-signature=${signature}"
+      - "--bundle=${signature}"
       - "${artifact}"
       - "--yes"
     artifacts: checksum

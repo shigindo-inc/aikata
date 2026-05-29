@@ -45,9 +45,12 @@ Harden the release pipeline along three axes.
 Sign `checksums.txt` with [cosign](https://docs.sigstore.dev/) **keyless**
 signing via GitHub OIDC. The release workflow gains `id-token: write`;
 cosign mints a short-lived Fulcio certificate bound to the workflow
-identity and records the signature in the Rekor transparency log. The
-release uploads `checksums.txt.pem` (certificate) and `checksums.txt.sig`
-(signature).
+identity and records the signature in the Rekor transparency log. cosign
+v3 (installed by `cosign-installer`) emits the new Sigstore **bundle**
+format, so the release uploads a single `checksums.txt.sigstore.json`
+that combines the certificate and signature (`--bundle`); the older
+separate `--output-certificate` / `--output-signature` flags are
+deprecated and ignored under v3.
 
 Signing only `checksums.txt` is sufficient: it lists the SHA-256 of every
 archive, so a verified checksum file transitively authenticates all
