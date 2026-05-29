@@ -699,19 +699,24 @@ Low-risk repository guardrails. No change to the binary or templates.
 Release-pipeline hardening. Split from v0.8.0 so a pipeline change
 cannot destabilise the governance work, and tagged separately.
 
-- [ ] **Cosign keyless signing** of release artifacts + `checksums.txt`
-      via GitHub OIDC (`id-token: write` added to `release.yml`). No
-      long-lived key to manage.
-- [ ] **SBOM generation** (syft via GoReleaser `sboms:`), shipped as a
-      release asset.
-- [ ] **SHA-pin GitHub Actions** — pin `actions/checkout`,
-      `actions/setup-go`, `golangci/golangci-lint-action`, and
-      `goreleaser/goreleaser-action` to full commit SHAs (version in a
-      trailing comment); Dependabot keeps them current.
-- [ ] **Verification docs** — README + `scripts/install.sh` notes for
-      verifying signatures (`cosign verify-blob`).
-- [ ] **ADR 0023** — records the signing-mechanism decision (keyless
-      cosign vs GPG) at implementation time.
+- [x] **Cosign keyless signing** of `checksums.txt` via GitHub OIDC
+      (`id-token: write` added to `release.yml`; cosign installed in the
+      job). Signing the checksum file transitively authenticates every
+      archive. No long-lived key to manage.
+- [x] **SBOM generation** (syft via GoReleaser `sboms:`), one SPDX SBOM
+      per archive shipped as a release asset; syft installed in the job.
+- [x] **SHA-pin GitHub Actions** — `actions/checkout`,
+      `actions/setup-go`, `golangci/golangci-lint-action`,
+      `goreleaser/goreleaser-action`, `sigstore/cosign-installer`, and
+      `anchore/sbom-action` pinned to full commit SHAs (version in a
+      trailing comment); Dependabot keeps them current. A new
+      `goreleaser-check` CI job runs `goreleaser check` on every PR so a
+      bad `.goreleaser.yml` fails in review, not at tag-push.
+- [x] **Verification docs** — README "Verifying a release signature"
+      section + a `scripts/install.sh` note (`cosign verify-blob`); the
+      installer stays dependency-free.
+- [x] **ADR 0023** — records the signing-mechanism decision (keyless
+      cosign over GPG/long-lived key), SBOM, and SHA-pinning.
 
 Out of v0.8.x intentionally:
 
