@@ -74,6 +74,31 @@ aikata --version
 
 `checksums.txt` is published alongside the binaries in the same release.
 
+### Verifying a release signature (v0.8.1+)
+
+From v0.8.1, releases are signed with [cosign](https://docs.sigstore.dev/)
+keyless signing. `checksums.txt` is signed via GitHub OIDC — no
+long-lived key — and the release carries `checksums.txt.pem` (the
+short-lived Fulcio certificate) and `checksums.txt.sig` (the signature).
+Each archive also ships a syft-generated SBOM (`<archive>.sbom.json`).
+
+To verify the checksum file's signature before trusting it (and, through
+it, every archive it lists), download `checksums.txt`,
+`checksums.txt.pem`, and `checksums.txt.sig`, then run:
+
+```bash
+cosign verify-blob checksums.txt \
+  --certificate checksums.txt.pem \
+  --signature checksums.txt.sig \
+  --certificate-identity-regexp '^https://github.com/shigindo-inc/aikata/\.github/workflows/release\.yml@refs/tags/v' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+A `Verified OK` confirms the checksum file was produced by aikata's
+release workflow on a tag. After that, `sha256sum -c checksums.txt`
+authenticates the archive itself. Verification is optional; the manual
+`sha256sum -c` check above remains sufficient for integrity.
+
 ### Convenience — install script (Linux / macOS, v0.2.1+)
 
 For a one-line install, the project ships a POSIX shell script that

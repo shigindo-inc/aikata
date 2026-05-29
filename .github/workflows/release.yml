@@ -2,12 +2,17 @@
 #
 # Triggered by a `v*` tag push (e.g. `git tag -a v0.1.0 -m "..."`
 # followed by `git push origin v0.1.0`). GoReleaser builds the cross-
-# platform binaries described in `.goreleaser.yml` and uploads them
-# as a GitHub Release.
+# platform binaries described in `.goreleaser.yml`, generates an SBOM
+# per archive (syft), signs checksums.txt with keyless cosign, and
+# uploads everything as a GitHub Release.
 #
-# Security note: no untrusted event fields are interpolated into any
-# `run:` step. Only the workflow's default GITHUB_TOKEN is used as
-# a secret, which GoReleaser needs to create the release.
+# Security notes:
+#   - No untrusted event fields are interpolated into any `run:` step.
+#   - `id-token: write` mints a short-lived OIDC token so cosign can
+#     sign keylessly (no long-lived signing key). `contents: write`
+#     lets GoReleaser create the release.
+#   - Third-party actions are pinned to full commit SHAs (Dependabot
+#     keeps them current). See ADR 0023.
 name: release
 
 on:
@@ -17,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # keyless cosign signing via GitHub OIDC
 
 jobs:
   goreleaser:
@@ -24,21 +30,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           # GoReleaser inspects git history (tags, changelog, etc.)
           # and refuses to run on a shallow clone.
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version: "1.21"
           check-latest: true
           cache: true
 
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      - name: Install syft
+        uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6
         with:
           distribution: goreleaser
           version: "~> v2"

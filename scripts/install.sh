@@ -8,6 +8,14 @@
 # Supported targets: linux/{amd64,arm64}, darwin/{amd64,arm64}.
 # Windows users: download the .zip manually from the Releases page.
 #
+# SHA-256 against checksums.txt is the integrity check this script
+# performs (no extra tooling required). From v0.8.1 the release also
+# signs checksums.txt with keyless cosign; for a stronger provenance
+# guarantee, verify checksums.txt.sig / checksums.txt.pem with cosign
+# as documented in the README "Verifying a release signature" section.
+# This script intentionally stays dependency-free and does not require
+# cosign.
+#
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/shigindo-inc/aikata/main/scripts/install.sh | sh
 #   # or pin a version (avoids the GitHub /releases/latest API call):
