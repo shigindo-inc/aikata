@@ -131,11 +131,18 @@ the file layout under `docs/memory/` is conventional.
 ## Scenario 5 — repo has an existing config under `.ai/`
 
 aikata v0.3.2 moved its config from `.ai/aikata.yaml` to
-`.aikata/aikata.yaml` (ADR 0008). The legacy path is still readable
-through the v0.x line: `aikata generate`, `aikata sync`, and
-`aikata doctor --fix` migrate the file automatically on the next
-write. No manual action required unless you want to nudge the
-migration earlier — `aikata doctor --fix` is the fast path.
+`.aikata/aikata.yaml` (ADR 0008). v0.7.4 removes the legacy read
+fallback (ADR 0020), so migrate the file manually before running
+newer aikata commands:
+
+```sh
+mkdir -p .aikata
+mv .ai/aikata.yaml .aikata/aikata.yaml
+rmdir .ai 2>/dev/null || true
+```
+
+If `.ai/` contains other user-owned files, keep the directory and
+move only `aikata.yaml`.
 
 ## What aikata never does during adoption
 

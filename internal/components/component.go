@@ -120,7 +120,7 @@ func RecordInManifest(targetDir string, rendered map[string]string) error {
 		// else's project, which violates Do-No-Harm (ADR 0003); we
 		// no-op instead. The file write has already happened by the
 		// caller, so nothing is left dangling.
-		cfg, _, cerr := config.Load(targetDir)
+		cfg, cerr := config.Load(targetDir)
 		if cerr != nil {
 			if errors.Is(cerr, fs.ErrNotExist) {
 				return nil

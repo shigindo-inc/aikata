@@ -180,11 +180,10 @@ belongs in optional `UI.md` when enabled. See
 ## 4. Configuration File: `.aikata/aikata.yaml`
 
 > **Path note**: v0.3.2 onward writes `.aikata/aikata.yaml` per
-> [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md). The
-> legacy `.ai/aikata.yaml` path remains read-only for projects from
-> v0.2 / v0.3.0 / v0.3.1 and is migrated automatically by
-> `aikata doctor --fix`; the fallback stays in place throughout the
-> v0.x line.
+> [ADR 0008](./docs/adr/0008-aikata-owned-config-directory.md).
+> v0.7.4 removes the pre-v0.3.2 `.ai/aikata.yaml` fallback per
+> [ADR 0020](./docs/adr/0020-retire-ai-config-fallback.md); the only
+> supported config path is `.aikata/aikata.yaml`.
 
 ### 4.1 Schema (v2)
 
@@ -242,8 +241,7 @@ overrides:                       # Per-tool fine-tuning.
   on-disk file is rewritten only when a writer (`aikata generate`,
   `aikata sync`, `aikata doctor --fix`) persists it.
 - A future `version: 3` will land the same way: a forward migrator at
-  the corresponding registry slot, lazy rewrite, the legacy read
-  preserved through the v0.x line.
+  the corresponding registry slot and lazy rewrite.
 
 ---
 
@@ -290,7 +288,7 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 ### 6.1 aikata's own repository
 
 - `CLAUDE.md`, `.cursor/rules/`, etc. are **committed** when they exist.
-- `.gitignore` does **not** include `.aikata/` (or the legacy `.ai/`).
+- `.gitignore` does **not** include `.aikata/`.
 - Reason: a contributor cloning aikata must be able to open Claude Code /
   Cursor immediately. See
   [ADR 0003 — Do-No-Harm Policy](./docs/adr/0003-do-no-harm-policy.md).

@@ -48,8 +48,9 @@ and how tool-specific files (e.g. `CLAUDE.md`) relate to it.
 Legacy v0.1-v0.3.1 directory at the project root used to hold aikata's
 config file (`.ai/aikata.yaml`). ADR 0008 moved current writes to the
 aikata-owned `.aikata/` namespace because `.ai/` is too generic for
-durable project state. During the v0.x line, commands should continue to
-read this legacy path as a fallback.
+durable project state. ADR 0020 removes the read fallback in v0.7.4;
+the term remains here as historical context for old repositories and
+release notes.
 
 ### `.aikata/`
 

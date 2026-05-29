@@ -60,7 +60,7 @@ func newEnableLeafCmd(c components.Component) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("enable %s: getwd: %w", c.Name(), err)
 			}
-			cfg, _, err := config.Load(target)
+			cfg, err := config.Load(target)
 			if err != nil {
 				if errors.Is(err, os.ErrNotExist) {
 					return &ExitError{

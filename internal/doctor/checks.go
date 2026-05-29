@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/shigindo-inc/aikata/internal/adr"
-	"github.com/shigindo-inc/aikata/internal/config"
 )
 
 // frontmatterKeys are the keys every markdown file must declare. memory
@@ -514,34 +513,4 @@ func checkGlossary(opts Options) ([]Issue, error) {
 		}
 	}
 	return issues, nil
-}
-
-// checkConfigPath warns when a project still stores its aikata config
-// at the legacy .ai/aikata.yaml path. Emitted only when .aikata/
-// is absent, matching the migration shape from ADR 0008 — once the
-// primary path exists, the legacy file is either stale or
-// user-managed and doctor should not nag.
-func checkConfigPath(opts Options) ([]Issue, error) {
-	_, isLegacy, err := config.Resolve(opts.TargetDir)
-	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			// Not an aikata project at all (or pre-init). Not doctor's
-			// concern.
-			return nil, nil
-		}
-		return nil, err
-	}
-	if !isLegacy {
-		return nil, nil
-	}
-	return []Issue{{
-		Level: LevelWarning,
-		File:  filepath.ToSlash(filepath.Join(config.LegacyDir, config.Filename)),
-		Code:  "config.legacy-path",
-		Message: fmt.Sprintf(
-			"%s is deprecated; move to %s (ADR 0008). aikata doctor --fix can do it for you.",
-			filepath.ToSlash(filepath.Join(config.LegacyDir, config.Filename)),
-			filepath.ToSlash(filepath.Join(config.PrimaryDir, config.Filename)),
-		),
-	}}, nil
 }

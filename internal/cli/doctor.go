@@ -113,12 +113,12 @@ func newDoctorCmd() *cobra.Command {
 	return cmd
 }
 
-// loadDoctorExcludes reads `.aikata/aikata.yaml` (primary or legacy
-// path) and returns its `doctor.exclude` glob list. Non-aikata
-// directories yield a nil slice and no error so non-init'd trees
-// keep running through doctor unchanged. See ADR 0021.
+// loadDoctorExcludes reads `.aikata/aikata.yaml` and returns its
+// `doctor.exclude` glob list. Non-aikata directories yield a nil
+// slice and no error so non-init'd trees keep running through doctor
+// unchanged. See ADR 0021.
 func loadDoctorExcludes(target string) ([]string, error) {
-	cfg, _, err := config.Load(target)
+	cfg, err := config.Load(target)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return nil, nil

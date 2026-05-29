@@ -78,16 +78,15 @@ func MigrateAikataYaml(data []byte) (AikataYaml, bool, error) {
 	return cfg, migrated, nil
 }
 
-// LoadMigrated reads `.aikata/aikata.yaml` (preferring the primary
-// path, falling back to the legacy `.ai/` directory) and runs
-// MigrateAikataYaml. If migrations were applied, the upgraded YAML is
-// written back to disk so subsequent commands see the modern schema.
+// LoadMigrated reads `.aikata/aikata.yaml` and runs MigrateAikataYaml.
+// If migrations were applied, the upgraded YAML is written back to
+// disk so subsequent commands see the modern schema.
 //
 // This is the entry point `aikata sync` uses; per ADR 0011 D3, schema
 // migration is built into sync rather than living in a separate
 // command.
 func LoadMigrated(root string) (AikataYaml, bool, error) {
-	path, _, err := Resolve(root)
+	path, err := Resolve(root)
 	if err != nil {
 		return AikataYaml{}, false, err
 	}

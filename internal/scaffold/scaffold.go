@@ -208,9 +208,7 @@ func renderInto(opts Options) (map[string]string, error) {
 // expected to ship alongside its markdown set. The standard and
 // stack-flavored presets emit a struct-driven `.aikata/aikata.yaml`
 // so downstream tooling (aikata generate, doctor) has structured
-// config. The path moved from `.ai/` to `.aikata/` in v0.3.2 per
-// ADR 0008; existing projects keep reading from `.ai/` via the
-// resolver in internal/config.
+// config.
 func addPresetArtifacts(opts Options, rendered map[string]string) error {
 	if opts.Preset == "standard" || opts.Preset == "flutter" || opts.Preset == "typescript" {
 		cfg := config.Default(opts.ProjectName, opts.Lang)

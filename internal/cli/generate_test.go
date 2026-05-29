@@ -121,32 +121,21 @@ func TestGenerate_CursorAndCodex(t *testing.T) {
 	}
 }
 
-// TestGenerate_AutoMigratesLegacyAI verifies that an aikata generate
-// run on a v0.2 / v0.3.0 / v0.3.1 project (config under .ai/) moves
-// the file to .aikata/ before processing and prints the migration
-// notice on stderr.
-func TestGenerate_AutoMigratesLegacyAI(t *testing.T) {
+func TestGenerate_DoesNotReadAIConfig(t *testing.T) {
 	tmp := t.TempDir()
 	chdir(t, tmp)
 	if _, err := runInit(t, "samplekata", "--preset", "standard", "--no-interactive"); err != nil {
 		t.Fatalf("init: %v", err)
 	}
-	// Move the freshly-init'd .aikata/aikata.yaml to .ai/aikata.yaml
-	// to simulate a project from before ADR 0008 landed.
 	newPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
 	oldDir := filepath.Join(tmp, ".ai")
 	oldPath := filepath.Join(oldDir, "aikata.yaml")
 	if err := os.MkdirAll(oldDir, 0o755); err != nil {
-		t.Fatalf("mkdir legacy: %v", err)
+		t.Fatalf("mkdir .ai: %v", err)
 	}
 	if err := os.Rename(newPath, oldPath); err != nil {
-		t.Fatalf("rename to legacy: %v", err)
+		t.Fatalf("rename to .ai: %v", err)
 	}
-	// `.aikata/manifest.yaml` is a v0.5+ artifact that did not exist
-	// in pre-ADR-0008 projects; drop it so the simulated legacy state
-	// matches what those versions actually produced. Then remove the
-	// (now empty) `.aikata/` directory so Resolve picks the legacy
-	// path on the first call.
 	manifestPath := filepath.Join(tmp, ".aikata", "manifest.yaml")
 	if err := os.Remove(manifestPath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("rm manifest.yaml: %v", err)
@@ -156,25 +145,15 @@ func TestGenerate_AutoMigratesLegacyAI(t *testing.T) {
 	}
 
 	out, err := runGenerate(t)
-	if err != nil {
-		t.Fatalf("generate: %v (out: %s)", err, out)
+	if err == nil {
+		t.Fatalf("expected generate to fail without .aikata/aikata.yaml; out: %s", out)
 	}
-	if !strings.Contains(out, "migrated") {
-		t.Errorf("expected migration notice in output, got:\n%s", out)
+	var ee *ExitError
+	if !errors.As(err, &ee) || ee.Code != 2 {
+		t.Fatalf("expected ExitError code 2, got: %v", err)
 	}
-	if _, err := os.Stat(newPath); err != nil {
-		t.Errorf("expected .aikata/aikata.yaml after migration: %v", err)
-	}
-	if _, err := os.Stat(oldPath); !errors.Is(err, os.ErrNotExist) {
-		t.Errorf("expected .ai/aikata.yaml gone after migration; got: %v", err)
-	}
-	// Second run should be a clean no-op (no notice, primary already present).
-	out, err = runGenerate(t)
-	if err != nil {
-		t.Fatalf("generate (second run): %v", err)
-	}
-	if strings.Contains(out, "migrated") || strings.Contains(out, "deprecated") {
-		t.Errorf("second run unexpectedly printed migration text:\n%s", out)
+	if _, err := os.Stat(oldPath); err != nil {
+		t.Errorf(".ai/aikata.yaml should be left untouched: %v", err)
 	}
 }
 

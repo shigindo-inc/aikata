@@ -2,13 +2,13 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
 # ADR 0008 - Use `.aikata/` for aikata-owned Configuration
 
-- **Status**: Accepted
+- **Status**: Superseded by [ADR 0020](./0020-retire-ai-config-fallback.md)
 - **Date**: 2026-05-24
 - **Deciders**: aikata maintainers
 - **Related**: ADR 0003 (Do-No-Harm Policy)

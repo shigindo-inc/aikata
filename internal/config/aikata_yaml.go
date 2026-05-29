@@ -6,10 +6,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Version is the schema version of `.aikata/aikata.yaml` (and the
-// pre-v0.3.2 `.ai/aikata.yaml` fallback) that this binary writes and
-// is expected to read. Bumped only when an incompatible schema
-// change ships (see ARCHITECTURE.md §4.2).
+// Version is the schema version of `.aikata/aikata.yaml` that this
+// binary writes and is expected to read. Bumped only when an
+// incompatible schema change ships (see ARCHITECTURE.md §4.2).
 //
 // v2 (v0.7.0) introduces the typed `components:` block so optional
 // template scope (`memory`, `ui`, `api`, `tdd`, `changelog`,
@@ -19,8 +18,7 @@ import (
 // block; legacy projects continue to be readable via the migrator.
 const Version = 2
 
-// AikataYaml is the in-memory representation of the aikata config
-// file (`.aikata/aikata.yaml`, or the legacy `.ai/aikata.yaml`).
+// AikataYaml is the in-memory representation of `.aikata/aikata.yaml`.
 // Field tags double as the YAML schema spec — keep them in sync with
 // ARCHITECTURE.md §4.1.
 type AikataYaml struct {
