@@ -1,12 +1,26 @@
 version: 2
 updates:
   # Keep the SHA-pinned GitHub Actions (v0.8.1 onward) current.
+  # Group every action bump into a single PR so one run produces one PR
+  # instead of one-per-action, and run monthly to cut churn.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   # Track Go module updates (cobra, gopkg.in/yaml.v3, and transitive deps).
+  # Group all module bumps into a single PR; security updates still open
+  # on their own so they are not delayed by the monthly cadence.
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      gomod:
+        patterns:
+          - "*"
