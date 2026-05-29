@@ -333,7 +333,7 @@ one-shell-line elsewhere, and scales to a monorepo.
 
 v0.6.0 ships the **agent-doable subset**. User-action channels
 (Homebrew tap, npm wrapper, marketplace listing) are deferred to the
-v0.8.x channel-publication line so v0.6.x can close on repository-local
+v0.9.x channel-publication line so v0.6.x can close on repository-local
 work. v0.6.1 / v0.6.2 / v0.6.3 are unscheduled patch releases
 (rebaseline fix, ROADMAP & manifest hygiene, scope derivation) — see
 their own sections.
@@ -349,16 +349,16 @@ Shipped:
   placed the binary (`github-release`, `install-script`,
   `go-install`, `homebrew`, `npm`, `unknown`). Reads either a
   build-time ldflag or `<install-dir>/aikata.install-source` (written
-  by `scripts/install.sh`). Foundation for a v0.8.x native
+  by `scripts/install.sh`). Foundation for a v0.9.x native
   `aikata update --apply` self-update; the consuming side ships in
-  the v0.8.x channel-publication line once Homebrew / npm channels
+  the v0.9.x channel-publication line once Homebrew / npm channels
   exist.
 - `dist/claude-code/plugin/` — Claude Code plugin scaffold bundling
   the v0.3.1 skill with four slash commands (`/aikata-init`,
   `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`). Installable
   manually today (`cp -r dist/claude-code/plugin/*
   ~/.claude/plugins/aikata/`); marketplace listing is deferred to
-  v0.8.x.
+  v0.9.x.
 
 Deferred again to v0.7+ (no projection in v0.6):
 
@@ -383,7 +383,7 @@ hashes seeded from the **upstream rendering** so the user's
 customisations register as `user-only-edit` on the next sync.
 
 Originally planned v0.6.1 work (channel publication) is deferred to
-v0.8.x; nothing else lands in v0.6.1 so the fix can be tagged and
+v0.9.x; nothing else lands in v0.6.1 so the fix can be tagged and
 shipped without coupling.
 
 - [x] `internal/sync/sync.go` — non-destructive rebaseline path.
@@ -614,8 +614,11 @@ location.
       the adoption guide keeps `.ai/` only as historical migration
       context.
 
-v0.8.x covers channel publication; v1.0 covers the stable surface
-(see below).
+v0.7.x is considered closed at v0.7.3 (with v0.7.4 as an optional
+cleanup tail) unless a further critical patch is needed. v0.8.x
+covers security & governance hardening of the aikata repository
+itself; v0.9.x covers channel publication; v1.0 covers the stable
+surface (see below).
 
 Out of v0.7.x intentionally:
 
@@ -625,17 +628,101 @@ Out of v0.7.x intentionally:
 - An `aikata expand <tier>` verb — deferred per ADR 0017 until
   `extended` exists or a real project surfaces the need.
 
-No v0.9.x line is reserved today. If v0.7.x and v0.8.x expose upgrade
-or compatibility issues, v0.9.x should be an RC / stabilization line;
-otherwise the next planned milestone after v0.8.x is v1.0.
+v0.9.x is the channel-publication line (Homebrew / npm / marketplace /
+native self-update); it was previously numbered v0.8.x and moved back
+one minor when the security & governance hardening line was inserted
+ahead of it (ADR 0022). The next planned milestone after v0.9.x is
+v1.0. No separate RC / stabilization line is reserved today; if v0.8.x
+or v0.9.x expose upgrade or compatibility issues, a stabilization line
+can be inserted before v1.0 at that point.
 
 ---
 
-## v0.8.x — Channel publication (pending)
+## v0.8.x — Security & governance hardening (pending)
+
+**Goal**: bring the aikata *repository itself* up to the governance and
+supply-chain bar expected of a publicly published OSS project before the
+v0.9.x channel-publication line widens its distribution footprint. Scope
+is deliberately limited to aikata's own repo posture; the operational-
+readiness *templates* that `aikata init --preset extended` scaffolds for
+*user* projects (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
+issue / PR templates) remain a v1.0 item and are intentionally not pulled
+forward here. ADR 0022 records the re-sequencing decision and why this
+line was inserted ahead of channel publication.
+
+The security review that motivated this line found no exploitable
+vulnerability in aikata's code, install script, or CI — the gaps are
+governance and supply-chain hardening, mirroring guardrails already in
+place in the sibling `personal-skills` repo.
+
+### v0.8.0 — Governance & secret-scan (planned)
+
+Low-risk repository guardrails. No change to the binary or templates.
+
+- [ ] **`SECURITY.md`** — private vulnerability disclosure via GitHub
+      Security Advisories, security expectations (never commit `.env`,
+      credentials, tokens, or private keys; use placeholders), and an
+      **Agent Safety** section: AI agents must not push to protected
+      branches, merge without human approval, weaken `CODEOWNERS` /
+      validation, or add remote-code-execution behaviour without an
+      ADR + review. Carries the standard aikata five-key frontmatter so
+      `aikata doctor --strict` stays green without an exclusion.
+- [ ] **`.github/CODEOWNERS`** — require maintainer review on the
+      security-sensitive surface: `/.github/`, `/AGENTS.md`,
+      `/SECURITY.md`, `/.goreleaser.yml`, `/ROADMAP.md`, and
+      `/docs/adr/`.
+- [ ] **Secret / privacy scan CI** — a new workflow (or `ci.yml` job)
+      asserting `.env` / `.env.local` are absent and grepping tracked
+      files for key material (`BEGIN (RSA|OPENSSH|PRIVATE)`,
+      `api_key=`, `client_secret=`, `refresh_token=`), local user paths
+      (`/Users/...`, `~/Workspace`), and private emails. Tailored to
+      aikata; the `personal-skills` personal-profile denylist is **not**
+      ported. Pattern definitions are placed so the scanner does not
+      flag its own source.
+- [ ] **`.github/dependabot.yml`** — weekly `github-actions` and
+      `gomod` update checks.
+- [ ] **`.gitignore` hardening** — add `.env.local`, `*.local.yaml`,
+      `*.local.yml` (the committed `.aikata/aikata.yaml` does not match
+      these, so dogfooding is unaffected).
+- [ ] **`CONTRIBUTING.md`** — state "no direct pushes to `main`" as an
+      explicit rule and add an Agent Contributions section that
+      cross-references the SECURITY.md Agent Safety constraints.
+
+### v0.8.1 — Supply-chain signing (planned)
+
+Release-pipeline hardening. Split from v0.8.0 so a pipeline change
+cannot destabilise the governance work, and tagged separately.
+
+- [ ] **Cosign keyless signing** of release artifacts + `checksums.txt`
+      via GitHub OIDC (`id-token: write` added to `release.yml`). No
+      long-lived key to manage.
+- [ ] **SBOM generation** (syft via GoReleaser `sboms:`), shipped as a
+      release asset.
+- [ ] **SHA-pin GitHub Actions** — pin `actions/checkout`,
+      `actions/setup-go`, `golangci/golangci-lint-action`, and
+      `goreleaser/goreleaser-action` to full commit SHAs (version in a
+      trailing comment); Dependabot keeps them current.
+- [ ] **Verification docs** — README + `scripts/install.sh` notes for
+      verifying signatures (`cosign verify-blob`).
+- [ ] **ADR 0023** — records the signing-mechanism decision (keyless
+      cosign vs GPG) at implementation time.
+
+Out of v0.8.x intentionally:
+
+- Code-level defense-in-depth (`filepath.IsLocal()`, `gosec`). The
+  review found aikata's code already safe; revisit only if a concrete
+  issue surfaces.
+- `--preset extended` governance templates (stay at v1.0).
+
+---
+
+## v0.9.x — Channel publication (pending)
 
 Tracking the distribution-channel items that need maintainer action
 outside the aikata repo. These no longer block the v0.6.x line; v0.6.x
-closes at v0.6.3 unless a critical patch is needed.
+closes at v0.6.3 unless a critical patch is needed. Previously numbered
+v0.8.x; moved back one minor when the v0.8.x security & governance
+hardening line was inserted ahead of it (ADR 0022).
 
 - [ ] **Homebrew tap** (`shigindo-inc/tap/aikata`) published from
       the release workflow. Requires creating the
@@ -733,7 +820,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.6.2 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.6.3 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.7.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
-| v0.8.x | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
+| v0.8.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.9.x | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
@@ -744,7 +832,9 @@ Plugin / skill scope grows monotonically too:
   slash commands and is installable as a single plugin.
 - **v0.7.x** — no new distribution channel; schema / adoption hardening
   only.
-- **v0.8.x** — adds channel publication and a first-party universal
+- **v0.8.x** — no new distribution channel; security & governance
+  hardening of the aikata repository only (ADR 0022).
+- **v0.9.x** — adds channel publication and a first-party universal
   skill package for `npx skills add ... --agent universal`. The package
   wraps the aikata CLI; it does not install arbitrary third-party
   skills.

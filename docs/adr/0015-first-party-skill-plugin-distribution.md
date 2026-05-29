@@ -66,7 +66,7 @@ dist/
 ├── claude-code/
 │   ├── skill/
 │   └── plugin/
-├── universal-skill/        # planned v0.8.x
+├── universal-skill/        # planned v0.9.x
 ├── codex/                  # planned v1.0
 ├── cursor/                 # planned v1.0
 └── gemini-cli/             # planned v1.0
@@ -78,9 +78,9 @@ layout. In that case, the generated / copied mirror must point back to
 this repository as the canonical source. Personal skill repositories are
 not part of aikata's release surface.
 
-### 3. Add universal `npx skills add` distribution in v0.8.x
+### 3. Add universal `npx skills add` distribution in v0.9.x
 
-The v0.8.x channel-publication line will include a first-party universal
+The v0.9.x channel-publication line will include a first-party universal
 skill package installable via a command in the shape of:
 
 ```bash

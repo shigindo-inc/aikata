@@ -294,7 +294,7 @@ what unblocks a decision, and the latest update date.
     commands, MCP servers, hooks, sub-agents, themes, and agent skills.
 - **Resolved part**: aikata will ship first-party wrappers that teach
   agents how to use the aikata CLI. `npx skills add ... --agent
-  universal` support is planned for v0.8.x, with source artifacts under
+  universal` support is planned for v0.9.x, with source artifacts under
   `dist/`. aikata will not be distributed as an "aikata agent"
   personality.
 - **Open part**: should aikata ever scaffold / manage curated
