@@ -120,7 +120,7 @@ aikata --version
 not found after install.
 
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
-> are deferred to v0.8.x — see [ROADMAP.md](./ROADMAP.md).
+> are deferred to v0.9.x — see [ROADMAP.md](./ROADMAP.md).
 
 ### Claude Code skill (optional, v0.3.1+)
 
@@ -170,7 +170,7 @@ whether a newer aikata is available; it never modifies the installed
 binary. Add `--json` for the machine-readable envelope shared with
 `aikata doctor --json`. Avoid running it in a CI loop — the
 unauthenticated API rate limit (60 req/h per IP) is shaped for
-human-invoked use. Native self-update is planned for v0.8.x.
+human-invoked use. Native self-update is planned for v0.9.x.
 
 ### Keep in sync (v0.5+)
 
