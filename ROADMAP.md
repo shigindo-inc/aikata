@@ -659,7 +659,7 @@ place in the sibling `personal-skills` repo.
 
 Low-risk repository guardrails. No change to the binary or templates.
 
-- [ ] **`SECURITY.md`** — private vulnerability disclosure via GitHub
+- [x] **`SECURITY.md`** — private vulnerability disclosure via GitHub
       Security Advisories, security expectations (never commit `.env`,
       credentials, tokens, or private keys; use placeholders), and an
       **Agent Safety** section: AI agents must not push to protected
@@ -667,24 +667,30 @@ Low-risk repository guardrails. No change to the binary or templates.
       validation, or add remote-code-execution behaviour without an
       ADR + review. Carries the standard aikata five-key frontmatter so
       `aikata doctor --strict` stays green without an exclusion.
-- [ ] **`.github/CODEOWNERS`** — require maintainer review on the
+- [x] **`.github/CODEOWNERS`** — require maintainer review on the
       security-sensitive surface: `/.github/`, `/AGENTS.md`,
       `/SECURITY.md`, `/.goreleaser.yml`, `/ROADMAP.md`, and
       `/docs/adr/`.
-- [ ] **Secret / privacy scan CI** — a new workflow (or `ci.yml` job)
-      asserting `.env` / `.env.local` are absent and grepping tracked
-      files for key material (`BEGIN (RSA|OPENSSH|PRIVATE)`,
-      `api_key=`, `client_secret=`, `refresh_token=`), local user paths
-      (`/Users/...`, `~/Workspace`), and private emails. Tailored to
-      aikata; the `personal-skills` personal-profile denylist is **not**
-      ported. Pattern definitions are placed so the scanner does not
-      flag its own source.
-- [ ] **`.github/dependabot.yml`** — weekly `github-actions` and
+- [x] **Secret / privacy scan gate** — realised as a Go test in
+      `internal/repolint` (no runtime code; not in the binary) that runs
+      inside the existing `go test ./...` CI matrix on all three OSes,
+      avoiding a separate workflow and shell-escaping fragility. It
+      asserts `.env` / `.env.local` (and any `*.local*`) are not tracked
+      and scans tracked files for key material (PEM `PRIVATE KEY`
+      headers; `api_key` / `client_secret` / `refresh_token`
+      assignments with a value), local user paths (`/Users/...`,
+      `~/Workspace/...`), and private emails. Patterns are tightened to
+      require the *shape of a real leak*, so the project's own prose
+      documenting them does not self-trip; a table-driven self-test
+      proves on every run that no pattern is silently dead. The
+      `personal-skills` personal-profile denylist is **not** ported
+      (aikata holds no personal data).
+- [x] **`.github/dependabot.yml`** — weekly `github-actions` and
       `gomod` update checks.
-- [ ] **`.gitignore` hardening** — add `.env.local`, `*.local.yaml`,
+- [x] **`.gitignore` hardening** — add `.env.local`, `*.local.yaml`,
       `*.local.yml` (the committed `.aikata/aikata.yaml` does not match
       these, so dogfooding is unaffected).
-- [ ] **`CONTRIBUTING.md`** — state "no direct pushes to `main`" as an
+- [x] **`CONTRIBUTING.md`** — state "no direct pushes to `main`" as an
       explicit rule and add an Agent Contributions section that
       cross-references the SECURITY.md Agent Safety constraints.
 

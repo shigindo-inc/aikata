@@ -50,6 +50,8 @@ Thumbs.db
 .env
 .env.local
 *.local
+*.local.yaml
+*.local.yml
 
 # --- Remember plugin (local-only memory) ---
 /.remember/

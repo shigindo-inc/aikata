@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-29
 audience: [human, agent]
 ---
 
@@ -68,8 +68,12 @@ this is the canonical-locale policy in
 
 ## Pull-request checklist
 
-1. **Branch off `main`.** PRs target `main` directly unless the
-   maintainer points you at an integration branch (e.g. `feat/v0.3.x`).
+1. **Branch off `main`; never push to it directly.** Every public
+   change — maintainers included — lands through a reviewed PR. PRs
+   target `main` unless the maintainer points you at an integration
+   branch (e.g. `feat/v0.3.x`). `CODEOWNERS` gates the sensitive
+   surface (`/.github/`, `/AGENTS.md`, `/SECURITY.md`,
+   `/.goreleaser.yml`, `/ROADMAP.md`, `/docs/adr/`).
 2. **Commit and PR text are English.** This applies even if the
    in-issue conversation is in another language.
 3. **Tests.** Add or update tests for code changes. New behaviour
@@ -108,6 +112,31 @@ promote one to a full ADR when consensus emerges.
 aikata uses GoReleaser triggered by `v*` tags on `main`. The release
 flow is described in `ARCHITECTURE.md` §6 and is enforced by
 `.github/workflows/`. Contributors should not push tags directly.
+
+---
+
+## Never commit secrets
+
+Do not add `.env`, `.env.local`, `*.local.yaml` / `*.local.yml`,
+credentials, tokens, private keys, or absolute local paths containing a
+user identifier. `.gitignore` keeps the common cases out, and a CI
+secret-scan (`internal/repolint`, run under `go test ./...`) fails the
+build if any are force-added. Use `.env.example`-style placeholders for
+illustrative configuration. See [SECURITY.md](./SECURITY.md) for the
+full policy and private disclosure path.
+
+---
+
+## Agent Contributions
+
+aikata is built with AI agents and welcomes AI-assisted changes **when a
+human maintainer reviews the final diff before merge.** Agents must
+follow `AGENTS.md` and the Agent Safety section of
+[SECURITY.md](./SECURITY.md): no direct pushes to protected branches, no
+self-merge without human approval, no weakening of the review or
+validation gates (`CODEOWNERS`, the secret-scan, `aikata doctor
+--strict`, the `aikata generate` byte-identity check), and no AI
+attribution trailers in commit messages (`AGENTS.md` rule 6).
 
 ---
 

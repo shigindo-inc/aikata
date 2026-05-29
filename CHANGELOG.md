@@ -18,6 +18,35 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **Security & governance hardening** (v0.8.0, ADR 0022) — brings the
+  aikata repository itself up to the governance bar for a published OSS
+  project. No change to the binary or generated templates.
+  - `SECURITY.md` — private disclosure via GitHub Security Advisories,
+    secret-handling expectations, and an **Agent Safety** section.
+  - `.github/CODEOWNERS` — maintainer review required on the sensitive
+    surface (`/.github/`, `/AGENTS.md`, `/SECURITY.md`,
+    `/.goreleaser.yml`, `/ROADMAP.md`, `/docs/adr/`).
+  - Secret / privacy scan gate — a Go test in `internal/repolint`
+    (test-only, not in the binary) runs under the existing
+    `go test ./...` CI matrix. It rejects tracked `.env` / `*.local*`
+    files and scans tracked content for PEM private-key headers,
+    credential assignments, local user paths, and private emails.
+    Patterns require the shape of a real leak so the repo's own docs do
+    not self-trip, and a self-test proves no pattern is silently dead.
+  - `.github/dependabot.yml` — weekly `github-actions` and `gomod`
+    checks.
+  - `CONTRIBUTING.md` — explicit "no direct pushes to `main`" rule and
+    an Agent Contributions section cross-referencing SECURITY.md.
+
+### Changed
+
+- `.gitignore` now also ignores `*.local.yaml` and `*.local.yml`
+  (alongside the existing `.env`, `.env.local`, `*.local`). The
+  committed `.aikata/aikata.yaml` does not match these, so dogfooding is
+  unaffected.
+
 ## [0.7.4] - 2026-05-29
 
 Pre-v1 cleanup patch that retires the legacy `.ai/aikata.yaml`
