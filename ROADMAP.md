@@ -655,7 +655,7 @@ vulnerability in aikata's code, install script, or CI — the gaps are
 governance and supply-chain hardening, mirroring guardrails already in
 place in the sibling `personal-skills` repo.
 
-### v0.8.0 — Governance & secret-scan (planned)
+### v0.8.0 — Governance & secret-scan ✅ (released 2026-05-29)
 
 Low-risk repository guardrails. No change to the binary or templates.
 

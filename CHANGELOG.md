@@ -18,6 +18,14 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-05-29
+
+Security & governance hardening of the aikata repository itself
+(ADR 0022), ahead of the v0.9.x channel-publication line. All changes
+are repo-meta or test-only; the binary and generated templates are
+unchanged. Supply-chain signing (cosign + SBOM + SHA-pinned Actions) is
+the separate v0.8.1 line.
+
 ### Added
 
 - **Security & governance hardening** (v0.8.0, ADR 0022) — brings the
