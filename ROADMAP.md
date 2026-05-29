@@ -553,9 +553,49 @@ project-owned files like `.gitignore` (ADR 0018).
       preservation already working. Wider integration (sync + the
       no-`--force` path) tracked beyond v0.7.x.
 
-No v0.7.3 line is reserved today. v0.7.x closes at v0.7.2 unless a
-critical patch is needed. v0.8.x covers channel publication; v1.0
-covers the stable surface (see below).
+## v0.7.3 — Doctor scope and exclusion ✅ (released 2026-05-29)
+
+Patch release driven by a user report from `personal-skills`
+(v0.6.1 baseline): `aikata doctor` flagged 62 spurious frontmatter
+errors against a Claude Code plugin tree (`plugins/<name>/skills/<name>/SKILL.md`,
+whose frontmatter is Anthropic's `name` + `description` only).
+aikata itself sidesteps the same problem only because `dist/` is in
+the hardcoded `skippedDirs` — a blind spot for users with the
+mirror layout.
+
+Shipped:
+
+- **Configurable doctor exclusion** (ADR 0021): `.aikata/aikata.yaml`
+  gains an optional top-level `doctor:` block with an `exclude:`
+  glob list. Matching paths skip `checkFrontmatter` /
+  `checkUpdated` / `checkGlossary` uniformly. User-supplied
+  excludes are additive with the hardcoded
+  `skippedDirs` / `skippedFiles` baselines. Zero default
+  exclusions ship; ADR documents recommended snippets for Claude
+  Code plugin layouts.
+- `internal/doctor/glob.go` — small in-tree matcher (`*`, `**`,
+  literals). No new external dependency. doublestar /
+  `filepath.Match` recorded as Alternatives Considered.
+- `internal/doctor.Options.Excludes []string`, threaded by
+  `internal/cli/doctor.go` from `config.Load` (non-mutating —
+  `aikata doctor` without `--fix` stays read-only).
+- Q-DOCTOR-01 resolved by ADR 0021.
+
+Out of v0.7.3 (deferred):
+
+- `doctor.frontmatter_required_paths` (reverse-include
+  specification). Held until a real user requests the symmetric
+  "only check docs/**" knob.
+- Auto-detection of known plugin layouts. Held until per-tool
+  plugin specs stabilise (see ADR 0015).
+- Severity downgrade for non-aikata subtrees. Interacts with
+  `--strict` and deserves its own ADR if pursued.
+- `aikata sync` exclusion. sync is manifest-driven; revisit if a
+  user reports the analogous noise.
+
+v0.7.x is considered closed at v0.7.3 unless a further critical
+patch is needed. v0.8.x covers channel publication; v1.0 covers
+the stable surface (see below).
 
 Out of v0.7.x intentionally:
 

@@ -50,6 +50,14 @@ type Options struct {
 	// Now overrides time.Now for the stale-updated check; zero value
 	// resolves to time.Now() at Run time.
 	Now time.Time
+	// Excludes is an optional list of glob patterns evaluated against
+	// the slash-form path relative to TargetDir. Markdown files whose
+	// relative path matches any pattern are skipped by walkMarkdown
+	// and therefore by checkFrontmatter, checkUpdated, and
+	// checkGlossary. Supported tokens: `*`, `**`, and literals; see
+	// internal/doctor/glob.go. The zero value (nil slice) preserves
+	// the pre-v0.7.3 behaviour. See ADR 0021.
+	Excludes []string
 }
 
 // Check is the contract every individual check function implements.

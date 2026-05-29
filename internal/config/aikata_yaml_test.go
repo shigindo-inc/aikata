@@ -84,6 +84,41 @@ func TestMarshalRoundtrip(t *testing.T) {
 	}
 }
 
+func TestMarshal_OmitsDoctorWhenEmpty(t *testing.T) {
+	y := Default("samplekata", "en")
+	body, err := Marshal(y)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	if strings.Contains(string(body), "doctor:") {
+		t.Errorf("default marshal should omit empty doctor block; got:\n%s", body)
+	}
+}
+
+func TestMarshalRoundtrip_PreservesDoctorExclude(t *testing.T) {
+	original := Default("roundtrip", "en")
+	original.Doctor.Exclude = []string{"plugins/**", "**/SKILL.md"}
+	body, err := Marshal(original)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	if !strings.Contains(string(body), "doctor:") {
+		t.Errorf("doctor block should be marshalled when Exclude is set; got:\n%s", body)
+	}
+	parsed, err := Unmarshal(body)
+	if err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+	if got, want := parsed.Doctor.Exclude, original.Doctor.Exclude; len(got) != len(want) {
+		t.Fatalf("Doctor.Exclude length = %d, want %d (got %v)", len(got), len(want), got)
+	}
+	for i, p := range original.Doctor.Exclude {
+		if parsed.Doctor.Exclude[i] != p {
+			t.Errorf("Doctor.Exclude[%d] = %q, want %q", i, parsed.Doctor.Exclude[i], p)
+		}
+	}
+}
+
 func TestUnmarshal_MissingVersionIsError(t *testing.T) {
 	_, err := Unmarshal([]byte("project:\n  name: x\n  lang: en\n"))
 	if err == nil {

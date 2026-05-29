@@ -18,6 +18,41 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+Patch release that lets `aikata doctor` step out of the way for
+subtrees that follow a different markdown frontmatter contract —
+in particular Claude Code plugin layouts at
+`plugins/<name>/skills/<name>/SKILL.md`. A new optional
+`doctor.exclude:` glob list in `.aikata/aikata.yaml` filters paths
+at the markdown-walk layer, so `checkFrontmatter`, `checkUpdated`,
+and `checkGlossary` all honour the exclusion uniformly (ADR 0021).
+
+### Added
+
+- **Configurable doctor exclusion** (ADR 0021): a new optional
+  top-level `doctor:` block in `.aikata/aikata.yaml` accepts an
+  `exclude:` list of glob patterns. Matching paths are skipped at
+  the markdown-walk layer so `checkFrontmatter`, `checkUpdated`,
+  and `checkGlossary` all honour the exclusion consistently. The
+  hardcoded `skippedDirs` / `skippedFiles` baselines remain in
+  place; user-supplied excludes are additive. aikata ships zero
+  default exclusions — the ADR documents recommended snippets for
+  Claude Code plugin layouts (`plugins/**`,
+  `**/.claude-plugin/**`, `**/SKILL.md`).
+- `internal/doctor/glob.go` — small in-tree matcher supporting
+  `*` (single segment), `**` (recursive), and literals. No new
+  external dependency; doublestar / filepath.Match are recorded as
+  Alternatives Considered in ADR 0021.
+
+### Changed
+
+- `internal/doctor.Options` gains an `Excludes []string` field
+  (zero-value `nil` preserves pre-v0.7.3 behaviour).
+- `internal/cli/doctor.go` reads `.aikata/aikata.yaml` via
+  `config.Load` (non-mutating) before each `doctor.Run` invocation
+  and threads `Doctor.Exclude` into `Options.Excludes`. Missing or
+  unreadable config falls back to an empty list so non-init'd
+  trees keep running through doctor unchanged.
+
 ## [0.7.2] - 2026-05-29
 
 Closes the v0.7.x line. Three loosely-coupled items shipped

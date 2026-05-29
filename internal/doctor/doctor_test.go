@@ -368,6 +368,90 @@ audience: [human, agent]
 	}
 }
 
+func TestExcludes_SuppressFrontmatterUpdatedAndGlossary(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+
+	// A SKILL.md without aikata frontmatter (Claude Code plugin
+	// layout). Without exclusion this triggers
+	// `frontmatter.missing` errors. It also contains an obvious
+	// `orphan-term` reference; if the glossary check still sees
+	// it, the existing TestCheckGlossary_UnusedTermIsInfo would
+	// no longer find the info issue.
+	pluginDir := filepath.Join(tmp, "plugins", "job-search", "skills", "mock")
+	if err := os.MkdirAll(pluginDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	skillBody := `---
+name: mock-interview
+description: Use when the user practices interviews.
+---
+
+# Mock interview
+
+orphan-term is mentioned here.
+`
+	if err := os.WriteFile(filepath.Join(pluginDir, "SKILL.md"), []byte(skillBody), 0o644); err != nil {
+		t.Fatalf("write SKILL.md: %v", err)
+	}
+	// A stale-dated file under plugins/ would trip checkUpdated
+	// without exclusion.
+	staleBody := `---
+name: legacy
+description: legacy reference.
+updated: 2024-01-01
+---
+
+# legacy
+`
+	if err := os.WriteFile(filepath.Join(pluginDir, "references.md"), []byte(staleBody), 0o644); err != nil {
+		t.Fatalf("write references.md: %v", err)
+	}
+
+	// Sanity: without exclude, the SKILL.md error is reported.
+	t.Run("without exclude reports errors", func(t *testing.T) {
+		issues, err := Run(Options{TargetDir: tmp, Now: fixedNow()})
+		if err != nil {
+			t.Fatalf("Run: %v", err)
+		}
+		var sawFrontmatter bool
+		for _, iss := range issues {
+			if strings.HasPrefix(iss.File, "plugins/") && iss.Level == LevelError {
+				sawFrontmatter = true
+			}
+		}
+		if !sawFrontmatter {
+			t.Errorf("expected at least one error under plugins/ without exclude, got:\n%+v", issues)
+		}
+	})
+
+	// With exclude, no plugins/ issue should remain at any level,
+	// and the glossary check's orphan-term info should still fire
+	// (the SKILL.md mention is excluded from the corpus).
+	t.Run("with exclude suppresses all checks", func(t *testing.T) {
+		issues, err := Run(Options{
+			TargetDir: tmp,
+			Now:       fixedNow(),
+			Excludes:  []string{"plugins/**"},
+		})
+		if err != nil {
+			t.Fatalf("Run: %v", err)
+		}
+		var sawGlossaryOrphan bool
+		for _, iss := range issues {
+			if strings.HasPrefix(iss.File, "plugins/") {
+				t.Errorf("excluded path still reported: %+v", iss)
+			}
+			if iss.File == "GLOSSARY.md" && iss.Level == LevelInfo && strings.Contains(iss.Message, "orphan-term") {
+				sawGlossaryOrphan = true
+			}
+		}
+		if !sawGlossaryOrphan {
+			t.Errorf("excluded corpus should not satisfy glossary reference; expected orphan-term info to still fire, got:\n%+v", issues)
+		}
+	})
+}
+
 func TestFormat_RendersAllLevels(t *testing.T) {
 	issues := []Issue{
 		{Level: LevelError, File: "a.md", Line: 5, Message: "boom"},
