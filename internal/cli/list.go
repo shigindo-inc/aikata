@@ -160,7 +160,7 @@ func newListStacksCmd() *cobra.Command {
 	var jsonOut bool
 	cmd := &cobra.Command{
 		Use:   "stacks",
-		Short: "List known stack identifiers (paired with --preset)",
+		Short: "List known stack identifiers (paired with --scope standard via --stack)",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			items := make([]listItem, 0)

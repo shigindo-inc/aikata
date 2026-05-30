@@ -18,6 +18,51 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-05-30
+
+CLI surface correction: `aikata init`'s fused `--preset` enum is split
+into the orthogonal `--scope` (documentation breadth) and `--stack`
+(target technology) axes, alongside the existing `--lang` (ADR 0024).
+A pre-v1.0 stable-surface change interleaved into the 0.8.x number space
+(not part of the v0.8.0 / v0.8.1 security theme). Ships the final flag
+*shape* and the `--preset` deprecation window; it does **not** add new
+buildable `scope × stack` combinations — the four preset template trees
+are independently authored, so unlocking new combinations needs a
+deferred template refactor (ADR 0024 Scope boundary).
+
+### Added
+
+- **`--scope` flag** — documentation scope (`minimal | standard`;
+  default `standard`). `extended` stays reserved (ADR 0017).
+- **`--stack` flag** — target stack, multi-valued in syntax (repeatable
+  / comma-separated; `flutter | typescript`). Empty = stack-agnostic.
+  Writes the existing `aikata.yaml` `stacks:` list directly (no schema
+  bump). v0.8.2 accepts a single stack paired with `--scope standard`.
+- Interactive `aikata init` now asks **scope** then **stack** (never
+  "preset").
+
+### Changed
+
+- **`--preset` is now a deprecated alias** for `--scope` / `--stack`
+  (removed in v1.0): `minimal`/`standard` → `--scope`,
+  `flutter`/`typescript` → `--scope standard --stack <name>`. Using it
+  prints a one-line deprecation notice to stderr; combining it with
+  `--scope`/`--stack` is an error. Existing `--preset` invocations keep
+  producing byte-identical output.
+- `(scope, stack)` resolves only to the four combinations that have a
+  template tree (`minimal`, `standard`, `standard+flutter`,
+  `standard+typescript`); `minimal`+stack, multi-stack, and `extended`
+  return an explicit "not yet supported" error instead of a half-wired
+  fallback.
+- GLOSSARY gains `scope` / `stack` terms and reframes `preset` as the
+  deprecated alias; README / SPEC / ARCHITECTURE / `docs/` examples use
+  the `--scope` / `--stack` vocabulary.
+
+### Removed
+
+- Internal `stacksForPreset` helper — the CLI now resolves the
+  `(scope, stacks)` axes to a template tree directly.
+
 ## [0.8.1] - 2026-05-29
 
 Supply-chain hardening of the release pipeline (ADR 0023). No change to

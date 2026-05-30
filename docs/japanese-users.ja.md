@@ -20,7 +20,7 @@ aikata は、AI コーディング時代のプロジェクトに必要な Markdo
 利用者プロジェクトのドキュメントは `--lang ja` で日本語にできます。
 
 ```bash
-aikata init my-app --preset standard --lang ja --no-interactive
+aikata init my-app --scope standard --lang ja --no-interactive
 ```
 
 ## インストール
@@ -52,8 +52,8 @@ aikata init my-app --preset standard --lang ja --no-interactive
 Flutter / TypeScript プリセットでも同じ指定が使えます。
 
 ```bash
-aikata init my-flutter-app --preset flutter --lang ja --no-interactive
-aikata init my-ts-app --preset typescript --lang ja --no-interactive
+aikata init my-flutter-app --scope standard --stack flutter --lang ja --no-interactive
+aikata init my-ts-app --scope standard --stack typescript --lang ja --no-interactive
 ```
 
 ## 読む順番

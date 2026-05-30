@@ -15,7 +15,8 @@ import (
 // sync with the `--with-*` flag set.
 type promptResult struct {
 	Name          string
-	Preset        string
+	Scope         string
+	Stack         string
 	WithMemory    bool
 	WithUI        bool
 	WithAPI       bool
@@ -32,7 +33,8 @@ type promptResult struct {
 // field has no Skip — it is required and the prompt asks only when
 // the default is empty.
 type promptSkip struct {
-	Preset        bool
+	Scope         bool
+	Stack         bool
 	WithMemory    bool
 	WithUI        bool
 	WithAPI       bool
@@ -71,8 +73,34 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult, skip promptSkip)
 		result.Name = got
 	}
 
-	if !skip.Preset {
-		prompt := fmt.Sprintf("Preset (standard | minimal | flutter | typescript) [%s]: ", result.Preset)
+	if !skip.Scope {
+		defScope := result.Scope
+		if defScope == "" {
+			defScope = "standard"
+		}
+		prompt := fmt.Sprintf("Scope (standard | minimal) [%s]: ", defScope)
+		got, err := readLine(sc, w, prompt)
+		if err != nil {
+			return result, err
+		}
+		switch got {
+		case "":
+			result.Scope = defScope
+		case "standard", "1":
+			result.Scope = "standard"
+		case "minimal", "2":
+			result.Scope = "minimal"
+		default:
+			return result, fmt.Errorf("prompt: unknown scope %q (expected standard | minimal)", got)
+		}
+	}
+
+	if !skip.Stack {
+		label := result.Stack
+		if label == "" {
+			label = "none"
+		}
+		prompt := fmt.Sprintf("Stack (none | flutter | typescript) [%s]: ", label)
 		got, err := readLine(sc, w, prompt)
 		if err != nil {
 			return result, err
@@ -80,16 +108,12 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult, skip promptSkip)
 		switch got {
 		case "":
 			// keep default
-		case "standard", "1":
-			result.Preset = "standard"
-		case "minimal", "2":
-			result.Preset = "minimal"
-		case "flutter", "3":
-			result.Preset = "flutter"
-		case "typescript", "4":
-			result.Preset = "typescript"
+		case "none":
+			result.Stack = ""
+		case "flutter", "typescript":
+			result.Stack = got
 		default:
-			return result, fmt.Errorf("prompt: unknown preset %q (expected standard | minimal | flutter | typescript)", got)
+			return result, fmt.Errorf("prompt: unknown stack %q (expected none | flutter | typescript)", got)
 		}
 	}
 

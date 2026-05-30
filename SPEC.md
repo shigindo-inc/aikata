@@ -136,28 +136,31 @@ must do and the user-visible behavior. Implementation details live in
 **Must be able to**:
 
 - Create a default file set in an empty or new directory.
-- Read flags `--preset`, `--with-ui`, `--with-api`, `--with-tdd`,
-  `--with-changelog`, `--with-memory`, `--oss`, `--monorepo`,
-  `--lang ja|en`, `--ai-tools`, `--minimal`, `--no-interactive`,
-  `--dry-run`, `--force`. (`--with-memory` enables the long-term
-  agent memory slot defined in
+- Read flags `--scope`, `--stack`, `--with-ui`, `--with-api`,
+  `--with-tdd`, `--with-changelog`, `--with-memory`, `--oss`,
+  `--monorepo`, `--lang ja|en`, `--ai-tools`, `--no-interactive`,
+  `--dry-run`, `--force`. `--scope` (documentation breadth) and
+  `--stack` (target technology) are orthogonal axes
+  ([ADR 0024](./docs/adr/0024-scope-stack-axes-split.md), v0.8.2);
+  `--preset` survives as a deprecated alias for them, removed in v1.0.
+  (`--with-memory` enables the long-term agent memory slot defined in
   [ADR 0004](./docs/adr/0004-long-term-memory-slot.md); ships v0.2.)
 - When run in an existing non-empty directory **without** `--force`:
   write proposed files under `.aikata-proposed/` instead of overwriting,
   and exit with a non-error message.
-- In interactive mode (the default), ask: project name, language, AI tools,
-  stack preset, and the optional-component questions (long-term memory,
-  UI, API, TDD, changelog). Each optional-component question maps 1:1
-  to its `--with-*` flag and defaults to N. Questions whose flag was
-  explicitly set on the command line are silently skipped. The
+- In interactive mode (the default), ask: project name, scope, stack,
+  language, AI tools, and the optional-component questions (long-term
+  memory, UI, API, TDD, changelog). Each optional-component question
+  maps 1:1 to its `--with-*` flag and defaults to N. Questions whose
+  flag was explicitly set on the command line are silently skipped. The
   `extended` / OSS intent question remains scheduled for v1.0; the
   `--monorepo` flag is scheduled for v0.6.
-- Default preset: `standard`. Default `--ai-tools`: `claude`. Default
-  `--lang`: `en`.
+- Default scope: `standard`. Default stack: none (stack-agnostic).
+  Default `--ai-tools`: `claude`. Default `--lang`: `en`.
 
 **Acceptance**:
 
-- `aikata init my-app --preset minimal --no-interactive` produces a
+- `aikata init my-app --scope minimal --no-interactive` produces a
   predictable file set matching the `minimal` golden test.
 - Re-running in the same directory without `--force` writes nothing outside
   `.aikata-proposed/`.
@@ -289,7 +292,7 @@ this sync because canonical project documents may contain user edits.
 
 ### 5.2 Performance
 
-- `aikata init --preset standard` completes in **< 500 ms** on a 2025-era
+- `aikata init --scope standard` completes in **< 500 ms** on a 2025-era
   laptop.
 - Binary size **< 20 MB**.
 

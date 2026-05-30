@@ -121,7 +121,7 @@ This is the layout aikata produces when a user runs `aikata init` on a
 brand-new project (not aikata itself). The structure is the **product**;
 the repository layout in §2 is the **producer**.
 
-### 3.1 Default (`aikata init --preset standard`)
+### 3.1 Default (`aikata init --scope standard`)
 
 ```
 /<project>
@@ -410,7 +410,7 @@ clients, dynamic template engines that allow script execution.
 
 | Operation | Budget |
 |---|---|
-| `aikata init --preset standard` end-to-end | < 500 ms |
+| `aikata init --scope standard` end-to-end | < 500 ms |
 | `aikata doctor` on a project with 50 markdown files | < 200 ms |
 | Binary size (stripped) | < 20 MB |
 | Memory peak during init | < 64 MB |
@@ -434,5 +434,5 @@ produced. This list is the executable form of the Phase 2 checklist.
 - [ ] `.github/workflows/ci.yml` running `make test` and `make lint`.
 - [ ] `make build` produces a working binary.
 
-No business logic is in scope for Phase 2. The MVP (`aikata init --preset
+No business logic is in scope for Phase 2. The MVP (`aikata init --scope
 minimal`) is **Phase 3** — see [ROADMAP.md](./ROADMAP.md).

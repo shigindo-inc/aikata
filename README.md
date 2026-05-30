@@ -23,8 +23,10 @@ Japanese users can start from
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
 > **Status — v0.2.**
-> `aikata init` ships four presets (`minimal` / `standard` / `flutter` /
-> `typescript`), bilingual templates (`--lang en|ja`), and the long-term
+> `aikata init` selects a documentation scope (`--scope minimal |
+> standard`) and an optional target stack (`--stack flutter |
+> typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
+> alias), with bilingual templates (`--lang en|ja`) and the long-term
 > agent memory slot (`--with-memory`). `aikata generate` emits Claude
 > Code (`CLAUDE.md`) and Cursor (`.cursor/rules/main.mdc`) artifacts;
 > Codex passes through `AGENTS.md` directly. `aikata doctor` runs eight
@@ -224,7 +226,7 @@ merge contract.
 ### Monorepo layout (v0.6+)
 
 ```bash
-aikata init my-workspace --preset standard --monorepo --no-interactive
+aikata init my-workspace --scope standard --monorepo --no-interactive
 ```
 
 `--monorepo` adds workspace-style scaffolding on top of the chosen
@@ -268,17 +270,21 @@ migration paths. Highlights:
 aikata init my-app
 
 # Or non-interactively with explicit flags:
-aikata init my-app --preset standard --no-interactive
+aikata init my-app --scope standard --no-interactive
 
-# Stack-flavored presets (v0.2):
-aikata init my-flutter-app --preset flutter --no-interactive
-aikata init my-ts-app --preset typescript --no-interactive
+# Add a target stack (v0.8.2 — orthogonal --scope / --stack axes,
+# ADR 0024):
+aikata init my-flutter-app --scope standard --stack flutter --no-interactive
+aikata init my-ts-app --scope standard --stack typescript --no-interactive
 
 # Japanese template set (v0.2):
-aikata init my-app --preset standard --lang ja --no-interactive
+aikata init my-app --scope standard --lang ja --no-interactive
 
 # Opt in to the long-term agent memory slot (ADR 0004):
-aikata init my-app --preset standard --with-memory --no-interactive
+aikata init my-app --scope standard --with-memory --no-interactive
+
+# --preset is a deprecated alias for --scope/--stack (removed in v1.0):
+aikata init my-flutter-app --preset flutter --no-interactive
 
 # Generate per-AI-tool files. Currently emits CLAUDE.md and
 # .cursor/rules/main.mdc; Codex reads AGENTS.md directly:
@@ -310,10 +316,10 @@ directory unless `--force` is passed. Always inspect the dry run before
 overwriting files:
 
 ```bash
-aikata init my-project --preset standard --with-memory --no-interactive --dry-run --force
+aikata init my-project --scope standard --with-memory --no-interactive --dry-run --force
 
 # If the proposed changes are acceptable:
-aikata init my-project --preset standard --with-memory --no-interactive --force
+aikata init my-project --scope standard --with-memory --no-interactive --force
 ```
 
 For an existing repository that already has `AGENTS.md`, the safer minimal

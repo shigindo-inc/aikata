@@ -16,7 +16,10 @@ audience: [human, agent]
   CLI version updates), ADR 0013 (scope derivation hierarchy — defines
   how preset / lang / opt-in flags / stacks are picked across manifest,
   aikata.yaml, and CLI overrides), ADR 0014 (manifest is a living
-  record — refines D4's "init-time ancestor" framing)
+  record — refines D4's "init-time ancestor" framing), ADR 0025
+  (extends the *Rebaseline ancestor choice* principle to the
+  post-clean-run manifest regeneration path, which originally
+  contradicted it)
 
 ## Context
 

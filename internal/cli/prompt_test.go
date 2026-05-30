@@ -11,18 +11,22 @@ import (
 func noSkip() promptSkip { return promptSkip{} }
 
 func TestRunPrompt_HappyPath(t *testing.T) {
-	// Order: name, preset, lang, ai-tools, memory, ui, api, tdd, changelog, monorepo.
-	in := strings.NewReader("myproj\nminimal\nja\nclaude,cursor\ny\ny\nn\ny\nn\nn\n")
+	// Order: name, scope, stack, lang, ai-tools, memory, ui, api, tdd,
+	// changelog, monorepo.
+	in := strings.NewReader("myproj\nminimal\nnone\nja\nclaude,cursor\ny\ny\nn\ny\nn\nn\n")
 	var out bytes.Buffer
-	got, err := runPrompt(in, &out, promptResult{Preset: "standard", Lang: "en"}, noSkip())
+	got, err := runPrompt(in, &out, promptResult{Scope: "standard", Lang: "en"}, noSkip())
 	if err != nil {
 		t.Fatalf("runPrompt: %v", err)
 	}
 	if got.Name != "myproj" {
 		t.Errorf("Name = %q, want %q", got.Name, "myproj")
 	}
-	if got.Preset != "minimal" {
-		t.Errorf("Preset = %q, want %q", got.Preset, "minimal")
+	if got.Scope != "minimal" {
+		t.Errorf("Scope = %q, want %q", got.Scope, "minimal")
+	}
+	if got.Stack != "" {
+		t.Errorf("Stack = %q, want %q (none)", got.Stack, "")
 	}
 	if got.Lang != "ja" {
 		t.Errorf("Lang = %q, want %q", got.Lang, "ja")
@@ -38,7 +42,7 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 			[4]bool{got.WithUI, got.WithAPI, got.WithTDD, got.WithChangelog})
 	}
 	prompts := out.String()
-	for _, needle := range []string{"Project name", "Preset", "Document language", "AI tools", "memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md", "monorepo"} {
+	for _, needle := range []string{"Project name", "Scope", "Stack", "Document language", "AI tools", "memory", "UI.md", "API.md", "testing.md", "CHANGELOG.md", "monorepo"} {
 		if !strings.Contains(prompts, needle) {
 			t.Errorf("prompt output missing %q:\n%s", needle, prompts)
 		}
@@ -46,12 +50,12 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 }
 
 func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
-	// Ten blanks (name + 4 existing + 4 v0.4 single-file + 1 v0.6
-	// monorepo question) accept every default.
-	in := strings.NewReader("myproj\n\n\n\n\n\n\n\n\n\n")
+	// Eleven blanks (name + scope + stack + lang + ai-tools + 4 v0.4
+	// single-file + 1 v0.6 monorepo question) accept every default.
+	in := strings.NewReader("myproj\n" + strings.Repeat("\n", 10))
 	var out bytes.Buffer
 	defaults := promptResult{
-		Preset:     "standard",
+		Scope:      "standard",
 		Lang:       "en",
 		AITools:    []string{"claude"},
 		WithMemory: true,
@@ -60,8 +64,11 @@ func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
 	if err != nil {
 		t.Fatalf("runPrompt: %v", err)
 	}
-	if got.Preset != "standard" {
-		t.Errorf("Preset default lost: %q", got.Preset)
+	if got.Scope != "standard" {
+		t.Errorf("Scope default lost: %q", got.Scope)
+	}
+	if got.Stack != "" {
+		t.Errorf("Stack default lost: %q", got.Stack)
 	}
 	if got.Lang != "en" {
 		t.Errorf("Lang default lost: %q", got.Lang)
@@ -79,9 +86,9 @@ func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
 }
 
 func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
-	in := strings.NewReader("standard\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
+	in := strings.NewReader("standard\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
-	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Preset: "minimal"}, noSkip())
+	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Scope: "minimal"}, noSkip())
 	if err != nil {
 		t.Fatalf("runPrompt: %v", err)
 	}
@@ -95,8 +102,8 @@ func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
 
 func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
 	// Lang and AITools were pinned via flags; the prompt should ask
-	// only about preset and memory.
-	in := strings.NewReader("myproj\nstandard\nn\nn\nn\nn\nn\nn\n")
+	// only about scope, stack, and the optional components.
+	in := strings.NewReader("myproj\nstandard\nnone\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		Lang:    "ja",
@@ -120,8 +127,26 @@ func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
 	}
 }
 
+func TestRunPrompt_SkipsScopeAndStackWhenSet(t *testing.T) {
+	// Scope and stack were pinned via flags (or a --preset alias); the
+	// prompt must not ask for them and must keep the supplied values.
+	in := strings.NewReader("myproj\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
+	var out bytes.Buffer
+	defaults := promptResult{Scope: "standard", Stack: "flutter"}
+	got, err := runPrompt(in, &out, defaults, promptSkip{Scope: true, Stack: true})
+	if err != nil {
+		t.Fatalf("runPrompt: %v", err)
+	}
+	if got.Scope != "standard" || got.Stack != "flutter" {
+		t.Errorf("scope/stack clobbered by skipped prompts: scope=%q stack=%q", got.Scope, got.Stack)
+	}
+	if strings.Contains(out.String(), "Scope") || strings.Contains(out.String(), "Stack") {
+		t.Errorf("scope/stack question rendered despite skip:\n%s", out.String())
+	}
+}
+
 func TestRunPrompt_EmptyNameIsError(t *testing.T) {
-	in := strings.NewReader("\nstandard\nen\nclaude\nn\n")
+	in := strings.NewReader("\nstandard\nnone\nen\nclaude\nn\n")
 	var out bytes.Buffer
 	_, err := runPrompt(in, &out, promptResult{}, noSkip())
 	if err == nil {
@@ -129,49 +154,75 @@ func TestRunPrompt_EmptyNameIsError(t *testing.T) {
 	}
 }
 
-func TestRunPrompt_UnknownPresetIsError(t *testing.T) {
+func TestRunPrompt_UnknownScopeIsError(t *testing.T) {
 	in := strings.NewReader("myproj\nrust\n")
 	var out bytes.Buffer
-	_, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
+	_, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
 	if err == nil {
-		t.Fatalf("expected error for unknown preset")
+		t.Fatalf("expected error for unknown scope")
+	}
+}
+
+func TestRunPrompt_UnknownStackIsError(t *testing.T) {
+	in := strings.NewReader("myproj\nstandard\nrust\n")
+	var out bytes.Buffer
+	_, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
+	if err == nil {
+		t.Fatalf("expected error for unknown stack")
 	}
 }
 
 func TestRunPrompt_UnknownLanguageIsError(t *testing.T) {
-	in := strings.NewReader("myproj\nstandard\nfr\n")
+	in := strings.NewReader("myproj\nstandard\nnone\nfr\n")
 	var out bytes.Buffer
-	_, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
+	_, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
 	if err == nil {
 		t.Fatalf("expected error for unknown language")
 	}
 }
 
 func TestRunPrompt_UnknownAIToolIsError(t *testing.T) {
-	in := strings.NewReader("myproj\nstandard\nen\nclaude,jetbrains\n")
+	in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude,jetbrains\n")
 	var out bytes.Buffer
-	_, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
+	_, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
 	if err == nil {
 		t.Fatalf("expected error for unknown ai-tool")
 	}
 }
 
-func TestRunPrompt_NumericPresetChoices(t *testing.T) {
+func TestRunPrompt_NumericScopeChoices(t *testing.T) {
 	cases := map[string]string{
 		"1": "standard",
 		"2": "minimal",
-		"3": "flutter",
-		"4": "typescript",
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\n" + input + "\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
-		got, err := runPrompt(in, &out, promptResult{Preset: "standard"}, noSkip())
+		got, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
 		if err != nil {
 			t.Fatalf("runPrompt(%q): %v", input, err)
 		}
-		if got.Preset != expected {
-			t.Errorf("preset %q → got %q, want %q", input, got.Preset, expected)
+		if got.Scope != expected {
+			t.Errorf("scope %q → got %q, want %q", input, got.Scope, expected)
+		}
+	}
+}
+
+func TestRunPrompt_StackChoices(t *testing.T) {
+	cases := map[string]string{
+		"none":       "",
+		"flutter":    "flutter",
+		"typescript": "typescript",
+	}
+	for input, expected := range cases {
+		in := strings.NewReader("myproj\nstandard\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\nn\n")
+		var out bytes.Buffer
+		got, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
+		if err != nil {
+			t.Fatalf("runPrompt(%q): %v", input, err)
+		}
+		if got.Stack != expected {
+			t.Errorf("stack %q → got %q, want %q", input, got.Stack, expected)
 		}
 	}
 }
@@ -187,7 +238,7 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 		"N":   false,
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\nstandard\nen\nclaude\n" + input + "\nn\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude\n" + input + "\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{}, noSkip())
 		if err != nil {
@@ -203,7 +254,7 @@ func TestRunPrompt_OptionalComponentSkipsHonored(t *testing.T) {
 	// Pin every optional question via skip and provide no Y/N input
 	// for them. runPrompt must traverse without asking, keeping the
 	// supplied defaults intact.
-	in := strings.NewReader("myproj\nstandard\nen\nclaude\n")
+	in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		WithMemory:    true,
@@ -236,7 +287,7 @@ func TestRunPrompt_OptionalComponentSkipsHonored(t *testing.T) {
 }
 
 func TestRunPrompt_UnknownYesNoOnNewOptionalIsError(t *testing.T) {
-	in := strings.NewReader("myproj\nstandard\nen\nclaude\nn\nmaybe\n")
+	in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude\nn\nmaybe\n")
 	var out bytes.Buffer
 	_, err := runPrompt(in, &out, promptResult{}, noSkip())
 	if err == nil {
@@ -245,7 +296,7 @@ func TestRunPrompt_UnknownYesNoOnNewOptionalIsError(t *testing.T) {
 }
 
 func TestRunPrompt_UnknownYesNoIsError(t *testing.T) {
-	in := strings.NewReader("myproj\nstandard\nen\nclaude\nmaybe\n")
+	in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude\nmaybe\n")
 	var out bytes.Buffer
 	_, err := runPrompt(in, &out, promptResult{}, noSkip())
 	if err == nil {
