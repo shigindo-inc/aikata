@@ -263,7 +263,24 @@ the update operation. See
 - Detect template version drift between bundled templates and the user's
   files.
 - Present diffs interactively with accept / reject per hunk.
-- Preserve user edits (no silent overwrite).
+- Preserve user edits (no silent overwrite) — **durably**, across
+  repeated syncs. A user-edited / upstream-unchanged file
+  (`user-only-edit`) keeps its divergence on every run; the manifest
+  ancestor is regenerated from the upstream rendering, never from the
+  post-merge on-disk bytes (ADR 0025 D1).
+- Honor a per-file ownership opt-out: paths listed under
+  `sync.own` in `.aikata/aikata.yaml` report the `owned` status and are
+  never rendered-compared, conflict-markered, overwritten, or
+  manifest-tracked (ADR 0025 D2). Same glob matcher as `doctor.exclude`.
+- Re-anchor an existing manifest on demand with `--reseed` (manifest-
+  only write; no source file touched). `--rebaseline` seeds a *missing*
+  manifest and emits a notice pointing at `--reseed` if one already
+  exists (ADR 0025 D4).
+
+`.gitignore` is managed by the ADR 0018 managed-append writer
+(non-destructive by default); the removed `docs.generate_gitignore`
+flag (ADR 0025 D3) was inert, and a project that wants sync to leave any
+file alone lists it under `sync.own`.
 
 Inspired by Copier's update flow. `aikata generate` may warn that a
 project is behind bundled templates, but it must not silently perform

@@ -16,5 +16,4 @@ components:
 features:
     obsidian_hints: false
 docs:
-    generate_gitignore: true
     task_file_location: docs/tasks/current.md

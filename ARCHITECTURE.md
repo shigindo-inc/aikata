@@ -214,11 +214,13 @@ features:                        # Non-scope ergonomic toggles.
   obsidian_hints: false
 
 docs:
-  generate_gitignore: true       # Add generated artifacts to .gitignore.
-                                 # Default: true for `aikata init` output;
-                                 # aikata's own repo sets this to false
-                                 # (see Do-No-Harm §6).
   task_file_location: docs/tasks/current.md
+
+sync:                            # Optional. `aikata sync` preferences (ADR 0025).
+  own:                           # Globs the user has taken ownership of;
+    - README.md                  # reported `owned`, never compared, conflict-
+    - .gitignore                 # markered, overwritten, or manifest-tracked.
+                                 # Same matcher as doctor.exclude (ADR 0021).
 
 overrides:                       # Per-tool fine-tuning.
   claude:

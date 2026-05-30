@@ -29,6 +29,7 @@ func newSyncCmd() *cobra.Command {
 	var (
 		dryRun       bool
 		rebaseline   bool
+		reseed       bool
 		jsonOut      bool
 		preset       string
 		lang         string
@@ -87,6 +88,7 @@ func newSyncCmd() *cobra.Command {
 				Root:                 target,
 				DryRun:               dryRun,
 				Rebaseline:           rebaseline,
+				Reseed:               reseed,
 				Stdout:               cmd.OutOrStdout(),
 				Stderr:               cmd.ErrOrStderr(),
 				OverridePreset:       presetPtr,
@@ -114,7 +116,8 @@ func newSyncCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "report the merge plan without writing to disk")
-	cmd.Flags().BoolVar(&rebaseline, "rebaseline", false, "seed a missing manifest from current on-disk state (non-destructive: no source files are modified)")
+	cmd.Flags().BoolVar(&rebaseline, "rebaseline", false, "seed a missing manifest from the current upstream rendering (non-destructive: no source files are modified). No-op with a notice if a manifest already exists — use --reseed")
+	cmd.Flags().BoolVar(&reseed, "reseed", false, "re-anchor an existing manifest to the current upstream rendering and exit (manifest-only write; no source files are modified)")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON envelope (shape: {version: 1, kind: \"sync\", ...})")
 	// Scope override flags (ADR 0013). Each one is a transient lens
 	// over this invocation only; the manifest and `aikata.yaml` are

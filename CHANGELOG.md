@@ -18,6 +18,63 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-05-30
+
+`aikata sync` now durably preserves files a user has intentionally
+rewritten, instead of oscillating between preserving and silently
+overwriting them. Motivated by a downstream dogfooding report (`itteco`,
+Flutter, aikata v0.8.1); [ADR 0025](./docs/adr/0025-sync-divergent-file-preservation.md)
+records the decisions. Like v0.8.2, a pre-v1.0 stable-surface correction
+interleaved into the 0.8.x number space.
+
+### Fixed
+
+- **Sync data loss (re-baseline oscillation), ADR 0025 D1** — on a
+  conflict-free run the manifest is regenerated from the in-memory
+  **upstream rendering**, not from a re-read of the post-merge on-disk
+  bytes. Previously a `user-only-edit` file recorded the user's bytes as
+  the new ancestor, so the *next* sync reclassified it as
+  `upstream-applied` and silently overwrote the user's content. The
+  ancestor now stays at the upstream rendering, so the edit survives
+  unlimited syncs. This unifies the post-clean-run path with the
+  existing `--rebaseline` ancestor principle (ADR 0011).
+- **`user-deleted` resurrection (D1 side effect)** — recording the
+  upstream rendering keeps the manifest entry for a deleted path, so a
+  respected deletion is no longer silently re-created on the next sync
+  (ADR 0019).
+
+### Added
+
+- **Per-file `owned` opt-out (`sync.own`), ADR 0025 D2** — an optional
+  `sync.own:` glob list in `.aikata/aikata.yaml` (same matcher and
+  additive semantics as `doctor.exclude`, ADR 0021; no schema bump).
+  Matching paths report the new `owned` status and are never
+  rendered-compared, conflict-markered, overwritten, or manifest-tracked.
+  Replaces the manual `git restore` workaround for fully forked files.
+- **`aikata sync --reseed`, ADR 0025 D4** — re-anchors an existing
+  manifest to the current upstream rendering and exits (manifest-only
+  write; no source files touched). `--rebaseline` against a project that
+  already has a manifest now emits a notice pointing at `--reseed`
+  instead of silently running a normal merge.
+
+### Removed
+
+- **Inert `docs.generate_gitignore` flag, ADR 0025 D3** — the field was
+  defined, defaulted to `true`, and never read, so removal is a
+  behavioural no-op. `.gitignore` stays managed by the ADR 0018
+  managed-append writer; a project that wants sync to leave it alone
+  lists it under `sync.own`. Old configs carrying the key still parse
+  (the unknown key is ignored).
+
+### Internal
+
+- Extracted the shared slash-path glob matcher into `internal/glob`;
+  `internal/doctor` now delegates to it so `doctor.exclude` and
+  `sync.own` apply identical matching.
+- The manifest schema stays at `v1` while `aikata.yaml` is `v2`: the two
+  version independently by design (machine-owned regenerated record vs
+  user-owned migrated document). Documented in ADR 0025; no code change.
+
 ## [0.8.2] - 2026-05-30
 
 CLI surface correction: `aikata init`'s fused `--preset` enum is split
