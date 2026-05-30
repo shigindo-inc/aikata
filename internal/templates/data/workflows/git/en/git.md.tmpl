@@ -1,0 +1,70 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Git Workflow
+
+Collaboration policy for {{.ProjectName}}: how branches, commits, pull
+requests, reviews, merges, releases, and CI gates work. This guide is the
+canonical source for the detailed workflow — `AGENTS.md` only points here.
+
+## Branching
+
+- **GitHub Flow.** `main` is always releasable. All work happens on
+  short-lived branches cut from an up-to-date `main`.
+- **Branch names** follow `<type>/<short-topic>`, e.g. `feat/login-form`,
+  `fix/null-deref`, `docs/readme-install`. Use the Conventional Commits
+  type as the prefix; keep the topic in kebab-case.
+- Delete the branch after merge. Long-lived branches are avoided; re-cut
+  from `main` rather than letting a branch drift.
+
+## Commits
+
+- **Conventional Commits.** Each commit subject is
+  `<type>(<scope>)?: <summary>`. Allowed types: `feat`, `fix`, `docs`,
+  `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`.
+- Subject in the imperative mood, no trailing period, ~72 chars max.
+- Describe the change, not the tooling. Do not add AI / assistant
+  signatures to commit messages.
+
+## Pull requests
+
+- **Small PRs.** Prefer one logical change per PR; split unrelated work.
+  A reviewer should be able to read the whole diff in one sitting.
+- Every change lands through a PR; do not push directly to `main`.
+- The PR description states what changed and why, and links any related
+  issue or ADR.
+- **Squash-only merge.** A PR merges as a single squashed commit whose
+  subject follows Conventional Commits, keeping `main` history linear and
+  one-commit-per-change.
+
+## Review and merge
+
+- At least one approving review before merge. Where the project allows it,
+  a trusted committer may self-merge once CI is green.
+- All required CI checks must pass before merge — see below.
+- Resolve review threads before merging; never merge over an unresolved
+  blocking comment.
+
+## Releases
+
+- **SemVer tags.** Releases are tagged `vMAJOR.MINOR.PATCH`
+  (e.g. `v1.4.0`): MAJOR for breaking changes, MINOR for
+  backward-compatible features, PATCH for fixes.
+- Tag from `main` at a commit where CI is green.
+- Where a project ships mobile apps or needs to stabilise a release, cut a
+  short-lived `release/<version>` branch for final fixes and tag from
+  there. Urgent production fixes use a `hotfix/<topic>` branch merged back
+  to `main`.
+
+## CI gates
+
+- Required checks (build, lint, tests, and any project-specific gates)
+  must be green before a PR can merge. Treat a red gate as a blocker, not
+  a suggestion.
+- Keep `main` green: if a merge breaks CI, fixing or reverting it takes
+  priority over new work.

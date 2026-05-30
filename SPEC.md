@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -351,6 +351,10 @@ them. Concretely:
   leak into `AGENTS.md` otherwise.
 - **Flutter and other stacks**: isolated to `docs/stacks/`, included into
   `AGENTS.md` only when enabled.
+- **Workflow guides**: collaboration policy isolated to `docs/workflows/`,
+  enabled only via `aikata enable workflow <domain>`; `AGENTS.md` gains a
+  short pointer (never the full policy) only when a guide is enabled
+  ([ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md)).
 - **Monorepo**: no nested layout unless `--monorepo`.
 - **AI tools**: only `claude` by default; others opt-in via `--ai-tools`.
 - **Language**: English is the default to maximize reach.

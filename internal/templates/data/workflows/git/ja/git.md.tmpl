@@ -1,0 +1,68 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Git ワークフロー (Git Workflow)
+
+{{.ProjectName}} の共同作業ポリシー。ブランチ・コミット・プルリクエスト・
+レビュー・マージ・リリース・CI ゲートの運用を定める。詳細ワークフローの
+正典は本ファイルであり、`AGENTS.md` はここへのポインタのみを持つ。
+
+## ブランチ (Branching)
+
+- **GitHub Flow。** `main` は常にリリース可能な状態を保つ。作業はすべて、
+  最新化した `main` から切った短命ブランチで行う。
+- **ブランチ名** は `<type>/<short-topic>` 形式。例: `feat/login-form`,
+  `fix/null-deref`, `docs/readme-install`。接頭辞に Conventional Commits
+  の type を使い、トピックは kebab-case にする。
+- マージ後はブランチを削除する。長命ブランチは避け、`main` から大きく
+  乖離させずに切り直す。
+
+## コミット (Commits)
+
+- **Conventional Commits。** コミット subject は
+  `<type>(<scope>)?: <summary>`。type は `feat`, `fix`, `docs`,
+  `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`。
+- subject は命令形・末尾ピリオドなし・72 文字程度まで。
+- ツールではなく変更内容を記述する。コミットメッセージに AI / アシスタント
+  の署名を入れない。
+
+## プルリクエスト (Pull requests)
+
+- **小さな PR。** 1 PR = 1 つの論理的変更を基本とし、無関係な作業は分割する。
+  レビュアーが diff 全体を一読できる粒度にする。
+- すべての変更は PR 経由で取り込む。`main` への直接 push はしない。
+- PR 説明には「何を・なぜ」変えたかを書き、関連 issue / ADR をリンクする。
+- **Squash マージのみ。** PR は Conventional Commits に従う subject を持つ
+  単一の squash コミットとしてマージし、`main` の履歴を線形かつ
+  1 変更 = 1 コミットに保つ。
+
+## レビューとマージ (Review and merge)
+
+- マージ前に最低 1 件の approve を得る。プロジェクトが許す場合、信頼された
+  コミッターは CI green を条件に self-merge してよい。
+- マージ前に必須 CI チェックがすべて通っていること(下記参照)。
+- レビュースレッドを解決してからマージする。未解決のブロッキングコメントを
+  跨いでマージしない。
+
+## リリース (Releases)
+
+- **SemVer タグ。** リリースは `vMAJOR.MINOR.PATCH` でタグ付けする
+  (例: `v1.4.0`)。MAJOR は破壊的変更、MINOR は後方互換の機能追加、
+  PATCH は修正。
+- CI が green のコミットで `main` からタグを切る。
+- モバイルアプリを配信する、またはリリースを安定させたい場合は、短命の
+  `release/<version>` ブランチを切って最終修正を当て、そこからタグを切る。
+  緊急の本番修正は `hotfix/<topic>` ブランチを使い `main` へ戻す。
+
+## CI ゲート (CI gates)
+
+- 必須チェック(build / lint / test、およびプロジェクト固有のゲート)が
+  green でなければ PR をマージできない。red のゲートは提案ではなく
+  ブロッカーとして扱う。
+- `main` を green に保つ。マージで CI が壊れたら、新規作業より修正または
+  revert を優先する。

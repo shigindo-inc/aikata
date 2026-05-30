@@ -61,7 +61,7 @@ type overrides struct {
 // rewriting them into the new shape whenever a writer (`aikata
 // generate` / `aikata sync` / `aikata doctor --fix`) runs.
 func derivePlan(ancestor config.Manifest, cfg config.AikataYaml, manifestPresent bool, ov overrides) (
-	preset, lang string, flags withFlags, stacks []string,
+	preset, lang string, flags withFlags, stacks, workflows []string,
 ) {
 	if manifestPresent {
 		preset = ancestor.Preset
@@ -83,6 +83,11 @@ func derivePlan(ancestor config.Manifest, cfg config.AikataYaml, manifestPresent
 	// (`obsidian_hints`) are deliberately ignored — they have no
 	// scaffold-side effect.
 	stacks = append([]string(nil), cfg.Stacks...)
+	// Workflow guides (ADR 0026) are a post-init-only list axis with no
+	// manifest-path inference rule of their own; aikata.yaml `workflows:`
+	// is the single source. Rendering them into the upstream tree keeps
+	// an enabled guide classified like any other managed document.
+	workflows = append([]string(nil), cfg.Workflows...)
 	if cfg.Components.Memory {
 		flags.WithMemory = true
 	}

@@ -54,6 +54,14 @@ type Options struct {
 	// docs/stacks/<stack>.md cross-references; the values also flow
 	// into .aikata/aikata.yaml's `stacks:` field for downstream tools.
 	Stacks []string
+	// Workflows lists workflow-guide domains (e.g. "git") the project
+	// opts into (ADR 0026). Each renders docs/workflows/<domain>.md.
+	// There is no init flag for workflows in v0.8.4 — they are enabled
+	// post-init via `aikata enable workflow <domain>` — but `aikata sync`
+	// populates this from `.aikata/aikata.yaml` `workflows:` so an
+	// enabled guide is rendered into the upstream tree and classified
+	// like any other aikata-managed document instead of upstream-removed.
+	Workflows []string
 	// AITools lists the AI-tool identifiers the project enables in its
 	// initial `.aikata/aikata.yaml`. Empty defaults to `["claude"]` for
 	// backward compatibility with v0.2 init behaviour.
@@ -183,6 +191,20 @@ func renderInto(opts Options) (map[string]string, error) {
 			return nil, fmt.Errorf("scaffold: %w", err)
 		}
 		for k, v := range files {
+			rendered[k] = v
+		}
+	}
+
+	// Opt-in workflow guides (ADR 0026). Like stacks this is a list
+	// axis, so it lives outside the boolean optionalSpecs table. Each
+	// enabled domain renders docs/workflows/<domain>.md via the same
+	// helper `aikata enable workflow` uses.
+	for _, domain := range opts.Workflows {
+		wf, err := components.RenderWorkflowGuide(domain, sfp)
+		if err != nil {
+			return nil, fmt.Errorf("scaffold: %w", err)
+		}
+		for k, v := range wf {
 			rendered[k] = v
 		}
 	}
