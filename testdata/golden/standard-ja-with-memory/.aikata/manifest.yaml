@@ -7,7 +7,7 @@ files:
     - path: .gitignore
       sha256: c422068c5b43edafa711d32523732c26d95478f5726565fb99077d454f25aaee
     - path: AGENTS.md
-      sha256: 27546aa36e39139fffa245a6cee06a6577289828024bfbf63a51ba7bbbcb5e6e
+      sha256: ccf0c9e8c39b954ca8d65c0f153be6445cfa0b969be297dba0a8ee330af56b1f
     - path: ARCHITECTURE.md
       sha256: 7e37911d0b536cc80ffc505ff82c8096607e1fedaaae46261d1089c954559031
     - path: GLOSSARY.md

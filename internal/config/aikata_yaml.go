@@ -26,6 +26,7 @@ type AikataYaml struct {
 	Project    Project         `yaml:"project"`
 	AITools    []string        `yaml:"ai_tools,omitempty"`
 	Stacks     []string        `yaml:"stacks,omitempty"`
+	Workflows  []string        `yaml:"workflows,omitempty"`
 	Components Components      `yaml:"components"`
 	Features   map[string]bool `yaml:"features,omitempty"`
 	Docs       Docs            `yaml:"docs,omitempty"`

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-31
 audience: agent
 ---
 
@@ -70,6 +70,7 @@ matching ADR under [`docs/adr/`](./docs/adr/).
 | Change error/exit codes | `ARCHITECTURE.md` §7, every `internal/cli/*.go` |
 | Update terminology | `GLOSSARY.md`, then run a grep for outdated forms |
 | Record a design decision | new file under `docs/adr/`, follow [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) |
+| Cut a release | [`CONTRIBUTING.md` § Release flow](./CONTRIBUTING.md#release-flow-for-maintainers), [`ARCHITECTURE.md` §6.5](./ARCHITECTURE.md#65-versioning--the-release-ritual) |
 | Update planning notes | `docs/decisions/open-questions.md` |
 | Recall user / project context | `docs/memory/{user,feedback,project,reference}.md` (see [ADR 0004](./docs/adr/0004-long-term-memory-slot.md)) |
 | Touch documents only | the relevant top-level `.md` + `docs/` |

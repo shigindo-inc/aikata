@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-29
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -72,6 +72,7 @@ aikata/
 │   ├── decisions/               # Open questions, design notes
 │   ├── origin/                  # Historical planning docs (do not edit)
 │   ├── stacks/                  # (planned) per-stack guides
+│   ├── workflows/               # (optional) collaboration workflow guides
 │   └── tasks/
 │       └── current.md           # Agent's working memory
 ├── examples/                    # Real-world `aikata init` outputs
@@ -202,6 +203,13 @@ ai_tools:                        # Empty list = no `aikata generate` output.
 stacks:                          # Empty list = stack-agnostic.
   - flutter
 
+workflows:                       # Empty/absent = no workflow guides.
+  - git                          # Opt-in collaboration guides under
+                                 # docs/workflows/<domain>.md (ADR 0026).
+                                 # List axis like stacks / ai_tools, not a
+                                 # components: boolean. Enable via
+                                 # `aikata enable workflow <domain>`.
+
 components:                      # Schema-v2 explicit template-scope flags.
   memory: false                  # See ADR 0016. All default false.
   ui: false
@@ -323,6 +331,34 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 - Installers should write small install-source metadata under the user's
   data directory so the CLI can distinguish native, Homebrew, npm, Go,
   and unknown installs before choosing an update path.
+
+### 6.5 Versioning & the release ritual
+
+**There is no version constant in source.** The binary version is the
+git tag, injected at build time:
+
+- `Makefile` sets `VERSION ?= $(shell git describe --tags --dirty || echo
+  "0.0.1-dev")` and passes it via `LDFLAGS := -X main.version=$(VERSION)`.
+- `cmd/aikata/main.go` declares `var version = devVersion` where
+  `devVersion = "0.0.1-dev"`; GoReleaser / `make` overwrite it through the
+  ldflags above. GoReleaser builds (triggered by a `v*` tag) inject the
+  bare semver string.
+
+The practical consequence: **cutting a release never edits a version field
+in Go source.** The tag is the source of truth. What a release *does*
+touch is documentation, and it must be kept in sync at tag time:
+
+| At `git tag vX.Y.Z` time, update | How |
+|---|---|
+| `CHANGELOG.md` | Promote the `## [Unreleased]` entries into a new `## [X.Y.Z] - YYYY-MM-DD` section with a one-paragraph summary. Leave a fresh empty `[Unreleased]`. |
+| `ROADMAP.md` | Flip the milestone heading from `(pending)` / `(planned)` to `✅ (released YYYY-MM-DD)`. |
+| Binary version | **Nothing** — `git describe` picks up the new tag automatically. |
+
+This ritual is performed in a `chore(release): prepare vX.Y.Z` PR that
+merges to `main` immediately before the tag is pushed (see the
+maintainer release flow in
+[CONTRIBUTING.md](./CONTRIBUTING.md#release-flow-for-maintainers)).
+Contributors never push tags directly.
 
 ---
 

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-24
+updated: 2026-05-30
 audience: [human, agent]
 ---
 
@@ -273,6 +273,21 @@ core code (this guides the v1.x plugin design).
 Design rule: at most **8 non-hidden files** at the project root after
 `aikata init --scope standard`. Dot-files (`.gitignore`, `.env.example`,
 `.ai/`, `.aikata/`) do not count. Enforced by `aikata doctor`.
+
+---
+
+## W
+
+### workflow guide — `docs/workflows/`
+
+An optional collaboration document that captures durable project workflow
+policy for humans and agents, such as branch strategy, commit format, PR
+rules, review / merge policy, release tags, and CI gates. Workflow guides
+live under `docs/workflows/<domain>.md`; the first planned built-in guide
+is `docs/workflows/git.md` in v0.8.4. `AGENTS.md` remains canonical for
+agent behaviour and only links to enabled workflow guides instead of
+inlining their full content. Defined by
+[ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md).
 
 ---
 

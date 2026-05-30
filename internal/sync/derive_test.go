@@ -49,7 +49,7 @@ func TestDerivePlan_Rebaseline_HonoursAikataYaml(t *testing.T) {
 			"tdd":      true,
 		},
 	}
-	preset, lang, flags, stacks := derivePlan(config.Manifest{}, cfg, false, overrides{})
+	preset, lang, flags, stacks, _ := derivePlan(config.Manifest{}, cfg, false, overrides{})
 
 	if preset != "standard" {
 		t.Errorf("preset = %q, want \"standard\" (rebaseline default)", preset)
@@ -93,7 +93,7 @@ func TestDerivePlan_Manifest_AikataYamlORs(t *testing.T) {
 			"tdd":      true,
 		},
 	}
-	preset, lang, flags, stacks := derivePlan(m, cfg, true, overrides{})
+	preset, lang, flags, stacks, _ := derivePlan(m, cfg, true, overrides{})
 
 	if preset != "standard" {
 		t.Errorf("preset = %q, want manifest's \"standard\"", preset)
@@ -141,7 +141,7 @@ func TestDerivePlan_SchemaV2_ComponentsOR(t *testing.T) {
 			Monorepo: true,
 		},
 	}
-	_, _, flags, _ := derivePlan(m, cfg, true, overrides{})
+	_, _, flags, _, _ := derivePlan(m, cfg, true, overrides{})
 
 	if !flags.WithMemory {
 		t.Errorf("Components.Memory not honoured: %+v", flags)
@@ -172,7 +172,7 @@ func TestDerivePlan_SchemaV2_LegacyFeaturesStillRead(t *testing.T) {
 			"monorepo": true,
 		},
 	}
-	_, _, flags, _ := derivePlan(config.Manifest{}, cfg, false, overrides{})
+	_, _, flags, _, _ := derivePlan(config.Manifest{}, cfg, false, overrides{})
 	if !flags.WithTDD || !flags.WithMonorepo {
 		t.Errorf("legacy features.{tdd,monorepo} must still set flags pre-migration: %+v", flags)
 	}
@@ -201,7 +201,7 @@ func TestDerivePlan_Overrides_TakePrecedence(t *testing.T) {
 	wantStacks := []string{"typescript"}
 	wantMono := false
 
-	preset, lang, flags, stacks := derivePlan(m, cfg, true, overrides{
+	preset, lang, flags, stacks, _ := derivePlan(m, cfg, true, overrides{
 		Preset:       &wantPreset,
 		Lang:         &wantLang,
 		Stacks:       &wantStacks,

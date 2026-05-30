@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-29
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -17,6 +17,53 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.8.5] - 2026-05-31
+
+Projects the verification discipline aikata practices on itself into the
+templates it generates, without imposing a test-first methodology
+([ADR 0027](./docs/adr/0027-verification-expectation-in-generated-templates.md)).
+A pre-v1.0 stable-surface refinement in the 0.8.x number space.
+
+### Added
+
+- **Verification expectation in the standard template (ADR 0027)** — the
+  standard preset `AGENTS.md` now ships a methodology-neutral hard rule:
+  *"Verify before declaring done. If the project has tests or a build,
+  run them and show the output before claiming a change is complete."*
+  The rule is conditional, so it stays inert in a test-less project. The
+  `flutter` / `typescript` presets are unchanged (they already carry a
+  stack-specific verification line); `minimal` stays lean. Test-first
+  remains opt-in (ADR 0003).
+- **Release-flow navigation** — the repo's own `AGENTS.md` gains a
+  "Cut a release" row pointing at the documented ritual in
+  `CONTRIBUTING.md` and `ARCHITECTURE.md` §6.5.
+
+### Changed
+
+- **`docs/testing.md` template (opt-in TDD component)** — strengthened
+  from a bare TODO skeleton with a "Why this matters for AI collaboration"
+  rationale and a clearly-marked opt-in test-first recommendation, in
+  both `en` and `ja`. Only affects projects that enable `--with-tdd` /
+  `aikata enable tdd`.
+
+## [0.8.4] - 2026-05-31
+
+Adds opt-in workflow guides — a durable, project-local place for humans
+and agents to read collaboration workflow policy without bloating
+`AGENTS.md` ([ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md)).
+Git is the first built-in workflow domain.
+
+### Added
+
+- **`aikata enable workflow git`** — generates `docs/workflows/git.md`
+  with a portable Git policy (GitHub Flow, Conventional Commits, small
+  PRs, squash merges, SemVer tags, CI gates) and adds a short conditional
+  pointer from `AGENTS.md`. The built-in guide ships no personal account
+  names, vault paths, private helper commands, or paid-plan assumptions.
+- **`workflows:` config axis** — enabled workflow guides persist as a
+  list in `.aikata/aikata.yaml` (e.g. `workflows: [git]`), an orthogonal
+  axis alongside `stacks:` and `ai_tools:`.
 
 ## [0.8.3] - 2026-05-30
 

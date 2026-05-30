@@ -197,7 +197,7 @@ func Run(opts Options) (RunResult, error) {
 	// Determine which preset / lang / optional components / stacks
 	// to render. The hierarchy is documented in ADR 0013:
 	// CLI overrides > manifest > `.aikata/aikata.yaml` > defaults.
-	preset, lang, withFlags, stacks := derivePlan(ancestor, cfg, manifestPresent, overrides{
+	preset, lang, withFlags, stacks, workflows := derivePlan(ancestor, cfg, manifestPresent, overrides{
 		Preset:       opts.OverridePreset,
 		Lang:         opts.OverrideLang,
 		Stacks:       opts.OverrideStacks,
@@ -210,6 +210,7 @@ func Run(opts Options) (RunResult, error) {
 		TargetDir:     opts.Root, // not read or written by Render
 		Lang:          lang,
 		Stacks:        stacks,
+		Workflows:     workflows,
 		AITools:       append([]string(nil), cfg.AITools...),
 		WithMemory:    withFlags.WithMemory,
 		WithUI:        withFlags.WithUI,

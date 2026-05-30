@@ -16,6 +16,7 @@ var capabilities = []Component{
 	Stack,
 	TDD,
 	UI,
+	Workflow,
 }
 
 // artifacts is the set of components exposed by

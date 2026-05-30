@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-30
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -171,6 +171,11 @@ what unblocks a decision, and the latest update date.
 - **Unblocks**: v1.0 surface freeze once `expand` is decided one way
   or the other.
 - **Updated**: 2026-05-29.
+
+_(Q-DESIGN-11 — verification gate in the standard template — was
+resolved and moved to
+[ADR 0027](../adr/0027-verification-expectation-in-generated-templates.md),
+Accepted 2026-05-31.)_
 
 ---
 
