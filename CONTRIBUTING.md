@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-29
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -109,9 +109,25 @@ promote one to a full ADR when consensus emerges.
 
 ## Release flow (for maintainers)
 
-aikata uses GoReleaser triggered by `v*` tags on `main`. The release
-flow is described in `ARCHITECTURE.md` §6 and is enforced by
-`.github/workflows/`. Contributors should not push tags directly.
+aikata uses GoReleaser triggered by `v*` tags on `main`, enforced by
+`.github/workflows/`. The versioning mechanism is documented in
+[`ARCHITECTURE.md` §6.5](./ARCHITECTURE.md#65-versioning--the-release-ritual).
+Contributors should not push tags directly.
+
+**The binary version comes from the git tag** (`git describe --tags` →
+ldflags), so there is **no version constant to bump in Go source**. A
+release is a `chore(release): prepare vX.Y.Z` PR that updates only docs,
+merged to `main` immediately before the tag is pushed. At tag time:
+
+1. **`CHANGELOG.md`** — promote the `## [Unreleased]` entries into a new
+   `## [X.Y.Z] - YYYY-MM-DD` section with a short summary paragraph; leave
+   a fresh empty `[Unreleased]`.
+2. **`ROADMAP.md`** — flip the milestone heading from `(pending)` /
+   `(planned)` to `✅ (released YYYY-MM-DD)`.
+3. **Binary version** — nothing to edit; `git describe` picks up the new
+   tag automatically once it is pushed.
+4. **Tag & push** — `git tag vX.Y.Z && git push --tags`; GoReleaser does
+   the rest (signed checksums, SBOMs, multi-arch archives).
 
 ---
 

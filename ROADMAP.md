@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-05-30
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -849,6 +849,113 @@ Out of v0.8.3 intentionally:
   reporter's Issue 4); no `doctor` check added.
 - Line-level diff3 conflict markers (still file-granularity; a separate
   v0.x follow-up if real-world feedback shows file-level is too coarse).
+
+---
+
+## v0.8.4 — Workflow guide opt-in (pending)
+
+**Goal**: give AI agents and humans a durable, project-local place to
+read collaboration workflow policy without bloating `AGENTS.md` or
+requiring the future `extended` governance pack. This is another
+pre-v1.0 stable-surface correction in the v0.8.x number space: it
+extends aikata's document-centered collaboration model, not the
+security / governance hardening theme of v0.8.0 and v0.8.1.
+
+Motivated by a small-team GitHub Flow policy used across personal and
+team projects: short-lived branches, Conventional Commits, small PRs,
+squash-only merges, SemVer release tags, trusted-committer review
+rules, and CI gates. [ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md)
+records the design: workflow guides are opt-in collaboration documents
+under `docs/workflows/`, with Git as the first built-in domain.
+
+- [ ] **`aikata enable workflow git`** — new enable-tier command shape
+      for workflow domains. The command intentionally uses the broader
+      `workflow git` form rather than `git-workflow` so future release,
+      deployment, incident, or review workflow guides can share the
+      same category.
+- [ ] **`workflows:` config axis** — persist enabled workflow guides as
+      a list in `.aikata/aikata.yaml`, for example `workflows: [git]`.
+      This avoids adding one boolean per workflow under `components:`
+      and mirrors the list-shaped `stacks:` / `ai_tools:` axes.
+- [ ] **`docs/workflows/git.md` template** — generate the first built-in
+      workflow guide with portable Git policy: GitHub Flow, branch
+      naming, Conventional Commits, PR size / squash merge rules,
+      SemVer tags, hotfix / mobile release branch conventions where
+      applicable, and CI gate expectations. The template must not
+      hard-code personal account names, vault paths, private helper
+      commands, or a specific paid GitHub plan assumption.
+- [ ] **Conditional `AGENTS.md` pointer** — when the Git workflow guide
+      is enabled, add only a short reference from `AGENTS.md` to
+      `docs/workflows/git.md`; do not inline the full policy into the
+      canonical instruction file.
+- [ ] **Golden / config / doctor coverage** — assert that default and
+      minimal projects have zero workflow residue; enabling the guide
+      writes valid frontmatter, persists config, records the manifest,
+      and keeps doctor checks green.
+- [ ] **Docs alignment** — update README / SPEC / ARCHITECTURE /
+      GLOSSARY and generated template docs so users understand the new
+      workflow-guide slot and its boundary with `AGENTS.md`,
+      `CONTRIBUTING.md`, memory, and working state.
+
+Out of v0.8.4 intentionally:
+
+- **GitHub enforcement artifacts** — no `.github/CODEOWNERS`, PR
+  template, Repository Rulesets JSON, or CI workflow generation in this
+  release. Those files are useful but environment-specific and belong
+  behind a later opt-in design such as `--with-github-files` or a
+  separate GitHub operations capability.
+- **Custom workflow import** — no `aikata import workflow --from <path>`
+  yet. Vault-to-repo and team-template imports need a separate trust,
+  template-variable, sync, and conflict model.
+- **Contributor governance pack** — `CONTRIBUTING.md`, SECURITY /
+  CODE_OF_CONDUCT, issue templates, and broader OSS readiness remain
+  part of the v1.0 `extended` scope.
+
+---
+
+## v0.8.5 — Verification expectation in generated templates (pending)
+
+**Goal**: project the verification discipline aikata practices on itself
+(its own `AGENTS.md` Hard Rule 7, `make test && make lint`) into the
+templates it generates, without imposing a test-first methodology.
+[ADR 0027](./docs/adr/0027-verification-expectation-in-generated-templates.md)
+records the design; it promotes
+[Q-DESIGN-11](./docs/decisions/open-questions.md#q-design-11--should-the-standard-template-project-a-verification-gate-into-the-generated-agentsmd).
+
+Framing: "test existence" is already a default rule, "test-first" stays
+opt-in (ADR 0003), and the gap is methodology-neutral **verification** —
+"run the checks and show the output before claiming done".
+
+- [ ] **PR-A — `docs/testing.md` strengthening** _(opt-in; light HITL)_.
+      Strengthen `internal/templates/data/components/tdd/{en,ja}/tdd.md.tmpl`
+      from the bare TODO skeleton with a short rationale and an optional,
+      clearly-marked TDD recommendation (which may lean harder for AI
+      collaboration than for humans). Regenerate golden fixtures. A human
+      reviews the shipped prose before merge. **Not** blocked on ADR 0027
+      acceptance.
+- [ ] **PR-B — verification rule in standard `AGENTS.md`** _(default
+      output; HITL required)_. Add a conditional, methodology-neutral
+      hard rule ("run the project's tests / build **if they exist** and
+      show the output") to the `## 4. Hard rules` list of
+      `internal/templates/data/presets/standard/{en,ja}/AGENTS.md.tmpl`
+      (next to the existing `Add tests` rule). Note: the `flutter` /
+      `typescript` presets already carry a stack-specific
+      "run tests before declaring complete" line — PR-B decides whether
+      to touch them (lean: leave them). **Blocked** on ADR 0027 being
+      flipped to `Accepted` and the final rule wording being approved by
+      a maintainer.
+- [ ] **Do-No-Harm coverage** — a `minimal`-scope golden assertion shows
+      zero verification-rule and zero TDD-recommendation residue; the rule
+      reads as inert in a test-less project.
+
+Both PRs follow the standard gates: a `[Unreleased]` CHANGELOG entry,
+`make test && make lint`, `aikata doctor` clean, and English commit / PR
+text.
+
+Out of v0.8.5 intentionally:
+
+- **Test-first as a default.** Not happening — ADR 0003 keeps test-first
+  opt-in. v0.8.5 adds verification, not methodology.
 
 ---
 
