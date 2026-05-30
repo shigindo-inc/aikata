@@ -209,9 +209,14 @@ breadth, aikata is closer to Vite/Astro.
 
 ### preset — (プリセット)
 
-A named bundle of templates and feature flags. Built-in presets:
-`minimal`, `standard`, plus stack-specific presets such as `flutter`
-(planned for v0.2). External presets are a planned v1.x feature.
+**Deprecated alias** (removed in v1.0) for the orthogonal `scope` and
+`stack` axes — see
+[ADR 0024](./docs/adr/0024-scope-stack-axes-split.md). `aikata init
+--preset` still works and prints a deprecation notice: `minimal` /
+`standard` map to `--scope`, and `flutter` / `typescript` map to
+`--scope standard --stack <name>`. New work should use `--scope` and
+`--stack` directly. Internally, "preset" survives only as the name of a
+template tree under `internal/templates/data/presets/<tree>/`.
 
 ---
 
@@ -222,11 +227,31 @@ A named bundle of templates and feature flags. Built-in presets:
 To generate the initial structure (directories + template files) of a
 project. The noun form refers to the generated structure itself.
 
+### scope — (スコープ)
+
+The documentation-breadth axis of `aikata init`, selected with
+`--scope`: `minimal` (AGENTS.md + the smallest README/SPEC/ARCH/GLOSSARY
+scaffold) or `standard` (the full canonical document set). `extended` is
+reserved for the v1.0 operational-readiness pack. Orthogonal to `stack`
+and `--lang` (ADR 0024). As of v0.8.2 only the combinations that have a
+template tree are buildable — `minimal`, `standard`, `standard + flutter`,
+`standard + typescript`; other pairings error explicitly until the
+template refactor that unlocks them.
+
+### stack — (スタック)
+
+The target-technology axis of `aikata init`, selected with `--stack`
+(`flutter` | `typescript`; repeatable / comma-separated in syntax,
+empty = stack-agnostic). A stack adds a `docs/stacks/<name>.md` brief and
+records itself in `aikata.yaml`'s `stacks:` list. Orthogonal to `scope`
+and `--lang` (ADR 0024). v0.8.2 accepts a single stack paired with
+`--scope standard`.
+
 ### stack-agnostic core
 
 Design principle: the aikata CLI core knows nothing about specific
-technology stacks. Stack knowledge lives entirely in presets under
-`templates/presets/<stack>/`. Adding a stack must not require modifying
+technology stacks. Stack knowledge lives entirely in templates under
+`templates/presets/<tree>/`. Adding a stack must not require modifying
 core code (this guides the v1.x plugin design).
 
 ---
@@ -236,7 +261,7 @@ core code (this guides the v1.x plugin design).
 ### top-level minimalism
 
 Design rule: at most **8 non-hidden files** at the project root after
-`aikata init --preset standard`. Dot-files (`.gitignore`, `.env.example`,
+`aikata init --scope standard`. Dot-files (`.gitignore`, `.env.example`,
 `.ai/`, `.aikata/`) do not count. Enforced by `aikata doctor`.
 
 ---

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-05-29
+updated: 2026-05-30
 audience: [human, agent]
 ---
 
@@ -724,6 +724,131 @@ Out of v0.8.x intentionally:
   review found aikata's code already safe; revisit only if a concrete
   issue surfaces.
 - `--preset extended` governance templates (stay at v1.0).
+
+---
+
+## v0.8.2 — CLI surface: scope × stack (pending)
+
+**Goal**: a pre-v1.0 stable-surface correction, interleaved into the
+0.8.x number space (not part of the security & governance theme of
+v0.8.0 / v0.8.1; see [ADR 0024](./docs/adr/0024-scope-stack-axes-split.md)
+for why it is numbered here rather than renumbering the v0.9.x line).
+
+`aikata init`'s single `--preset minimal|standard|flutter|typescript`
+flag fuses two orthogonal axes — documentation **scope** and target
+**stack** — into one enum. Language is already a separate `--lang` axis;
+stack should be too. v0.8.2 makes stack a first-class flag and opens the
+`--preset` deprecation window. It delivers the orthogonal **flag
+surface**, **not** new buildable combinations: the four preset template
+trees are independently authored (ADR 0024 Scope boundary), so
+`(scope, stacks)` resolves only to the four combinations that exist
+today; everything else errors explicitly. Unlocking new combinations
+(`minimal` + stack, multi-stack) needs a template refactor deferred as
+follow-up.
+
+- [ ] **`--scope` flag** — `minimal | standard` (single-valued, default
+      `standard`; `extended` stays reserved per ADR 0017).
+- [ ] **`--stack` flag** — multi-valued *in syntax* (repeatable and/or
+      comma-separated); empty = stack-agnostic. Writes the existing
+      `stacks` list in `aikata.yaml` directly (no schema bump). Removes
+      `stacksForPreset`. v0.8.2 accepts only a single stack paired with
+      `--scope standard`; other combinations error (see below).
+- [ ] **Bounded `(scope, stack)` resolution** — maps to the existing
+      trees only: `minimal` / `standard` / `standard+flutter` /
+      `standard+typescript`. `minimal`+stack, multi-stack, and
+      `extended` return a clear "not yet supported" error rather than a
+      silent half-wired fallback.
+- [ ] **`--preset` deprecated alias** — maps `minimal`/`standard` →
+      `--scope`, `flutter`/`typescript` → `--scope standard --stack
+      <name>`; prints a one-line deprecation notice; erroring if
+      combined with `--scope`/`--stack`. Removed at v1.0.
+- [ ] **Interactive prompt** — ask scope, then stack (single, empty
+      allowed), then lang; never prompt for "preset".
+- [ ] **Doc/glossary alignment** — update the GLOSSARY `preset` entry to
+      "deprecated alias for `--scope`", add a `scope` entry, align
+      `stack` entries (doctor runs a glossary-consistency check); update
+      README / SPEC / ARCHITECTURE / `docs/` help and examples. Shipped
+      ROADMAP/CHANGELOG history is left intact.
+- [ ] **Q-DESIGN-04 closed** — superseded by ADR 0024; presets are no
+      longer a composition mechanism.
+
+Out of v0.8.2 intentionally:
+
+- **Template refactor for new `scope × stack` combinations** — scope
+  base + stack partials, re-deriving flutter/typescript without drift.
+  A separate follow-up feature; v0.8.2 ships only the flag shape and
+  deprecation window (ADR 0024 Scope boundary).
+- `extended` scope behaviour — stays reserved (v1.0 governance pack).
+- Removing the `--preset` alias — deferred to v1.0 so the deprecation
+  has a migration window.
+
+---
+
+## v0.8.3 — `aikata sync` divergent-file preservation (pending)
+
+**Goal**: `aikata sync` durably preserves files a user has intentionally
+rewritten, instead of oscillating between preserving and silently
+overwriting them. Like v0.8.2, this is a pre-v1.0 stable-surface
+correction interleaved into the 0.8.x number space — *not* part of the
+v0.8.0 / v0.8.1 security & governance theme (ADR 0024 established the
+precedent for non-security work living in this number space without a
+renumber). Because the headline item is a **data-loss** fix, v0.8.3 may
+land ahead of v0.8.2 despite the higher number; ROADMAP ordering is
+direction, not sequence.
+
+Motivated by a downstream dogfooding report (`itteco`, Flutter, aikata
+`v0.8.1`): a preset-managed file the user rewrote for their project
+(`README.md`, `.gitignore`, `docs/tasks/current.md`) could not be held
+stable across repeated `aikata sync` runs. [ADR 0025](./docs/adr/0025-sync-divergent-file-preservation.md)
+records the decisions; the four reported problems map to the items
+below.
+
+- [ ] **Re-baseline records the upstream rendering, not the on-disk
+      snapshot** (ADR 0025 D1 — the data-loss root cause). On a
+      conflict-free run, the manifest is regenerated from the in-memory
+      upstream rendering rather than `postMergeSnapshot`'s on-disk
+      re-read, unifying the post-clean-run path with the existing
+      `--rebaseline` ancestor principle (ADR 0011). The only
+      behavioural change is `user-only-edit`: its ancestor stays at the
+      upstream rendering, so the file is preserved across unlimited
+      syncs instead of being absorbed as the ancestor and overwritten
+      next run. Also keeps `user-deleted` entries so a respected
+      deletion is not silently re-created (ADR 0019). Independent of the
+      items below — must ship even if the `owned` marker slips.
+- [ ] **Per-file `owned` opt-out** (ADR 0025 D2) — an optional
+      `sync.own:` glob list in `.aikata/aikata.yaml` (same matcher and
+      additive semantics as `doctor.exclude`, ADR 0021; no schema bump).
+      Matching paths report an `owned` status and are never
+      rendered-compared, conflict-markered, or overwritten. Removes the
+      residual conflict noise D1 leaves on *fully* forked files and
+      replaces the reporter's manual `git restore` workaround.
+- [ ] **Remove the dead `docs.generate_gitignore` flag** (ADR 0025 D3)
+      — the field is defined but never read, so removal is a
+      behavioural no-op. `.gitignore` stays managed by the ADR 0018
+      managed-append writer (non-destructive by default); a user who
+      wants sync to leave it alone uses `sync.own` (D2) rather than a
+      single-purpose flag. Old configs carrying the key still parse.
+- [ ] **`--rebaseline` is explicit when a manifest exists; add
+      `--reseed`** (ADR 0025 D4) — passing `--rebaseline` to a project
+      that already has a manifest emits a notice instead of a silent
+      no-op; `--reseed` re-anchors an existing manifest to the current
+      upstream rendering (manifest-only write, no source files touched).
+- [ ] **GLOSSARY / SPEC / README alignment** — add the `owned` sync
+      status and `sync.own` to GLOSSARY (doctor runs a glossary check),
+      document `owned` / `--reseed` / the `generate_gitignore` behaviour
+      in SPEC §4, and align README / `docs/` help. Deferred from this
+      planning pass to the implementation PR per the ADR 0024 precedent.
+
+Out of v0.8.3 intentionally:
+
+- **Bumping `.aikata/manifest.yaml` to schema v2** for parity with the
+  `aikata.yaml` v2 config. The two schemas version independently by
+  design — the manifest is a machine-owned regenerated record (ADR
+  0014), the config a user-owned migrated document (ADR 0016). No code
+  change, documented as a clarification in ADR 0025 (Problem 4 / the
+  reporter's Issue 4); no `doctor` check added.
+- Line-level diff3 conflict markers (still file-granularity; a separate
+  v0.x follow-up if real-world feedback shows file-level is too coarse).
 
 ---
 

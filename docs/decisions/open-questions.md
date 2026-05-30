@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-29
+updated: 2026-05-30
 audience: [human, agent]
 ---
 
@@ -65,11 +65,15 @@ what unblocks a decision, and the latest update date.
 
 ### Q-DESIGN-04 — Preset composition (`--preset flutter --preset oss`)
 
-- Should presets compose, layer, or be mutually exclusive?
-- **Leading**: presets are **feature-flag bundles**. Two presets compose
-  by set-union of flags + last-write-wins on template overrides.
-- **Unblocks**: a second preset (`flutter`) and a meaningful use case
-  for composition.
+- **Status**: **Superseded** by
+  [ADR 0024](../adr/0024-scope-stack-axes-split.md). The question
+  ("should presets compose by set-union of flags?") dissolves: presets
+  stop being the composition mechanism. `--preset` is split into
+  orthogonal `--scope` (documentation breadth) and `--stack` (target
+  technology, multi-valued) axes, with `--preset` kept as a deprecated
+  alias until v1.0. There is no preset algebra to define.
+- **Resolved**: 2026-05-30. Kept as a pointer; removable once v0.8.2
+  ships.
 
 ### Q-DESIGN-05 — Ownership of `docs/tasks/current.md`
 
@@ -78,7 +82,13 @@ what unblocks a decision, and the latest update date.
 - **Leading**: format the file as a thin sectioned outline (Status /
   Next / Notes); document a "human edits go to Notes" convention; let
   agents rewrite Status and Next freely.
+- **Partial mechanism**: a project that has fully taken over the file
+  can list it under `sync.own` so `aikata sync` never overwrites or
+  conflict-marks it ([ADR 0025](../adr/0025-sync-divergent-file-preservation.md)
+  D2). That settles the *sync* side; the open part remains the
+  human-vs-agent in-file editing convention above.
 - **Unblocks**: real dogfooding evidence.
+- **Updated**: 2026-05-30.
 
 ### Q-DESIGN-07 — Memory generate-projection across AI-tool memory channels
 
