@@ -852,7 +852,7 @@ Out of v0.8.3 intentionally:
 
 ---
 
-## v0.8.4 — Workflow guide opt-in (pending)
+## v0.8.4 — Workflow guide opt-in ✅ (released 2026-05-31)
 
 **Goal**: give AI agents and humans a durable, project-local place to
 read collaboration workflow policy without bloating `AGENTS.md` or
@@ -868,31 +868,31 @@ rules, and CI gates. [ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collab
 records the design: workflow guides are opt-in collaboration documents
 under `docs/workflows/`, with Git as the first built-in domain.
 
-- [ ] **`aikata enable workflow git`** — new enable-tier command shape
+- [x] **`aikata enable workflow git`** — new enable-tier command shape
       for workflow domains. The command intentionally uses the broader
       `workflow git` form rather than `git-workflow` so future release,
       deployment, incident, or review workflow guides can share the
       same category.
-- [ ] **`workflows:` config axis** — persist enabled workflow guides as
+- [x] **`workflows:` config axis** — persist enabled workflow guides as
       a list in `.aikata/aikata.yaml`, for example `workflows: [git]`.
       This avoids adding one boolean per workflow under `components:`
       and mirrors the list-shaped `stacks:` / `ai_tools:` axes.
-- [ ] **`docs/workflows/git.md` template** — generate the first built-in
+- [x] **`docs/workflows/git.md` template** — generate the first built-in
       workflow guide with portable Git policy: GitHub Flow, branch
       naming, Conventional Commits, PR size / squash merge rules,
       SemVer tags, hotfix / mobile release branch conventions where
       applicable, and CI gate expectations. The template must not
       hard-code personal account names, vault paths, private helper
       commands, or a specific paid GitHub plan assumption.
-- [ ] **Conditional `AGENTS.md` pointer** — when the Git workflow guide
+- [x] **Conditional `AGENTS.md` pointer** — when the Git workflow guide
       is enabled, add only a short reference from `AGENTS.md` to
       `docs/workflows/git.md`; do not inline the full policy into the
       canonical instruction file.
-- [ ] **Golden / config / doctor coverage** — assert that default and
+- [x] **Golden / config / doctor coverage** — assert that default and
       minimal projects have zero workflow residue; enabling the guide
       writes valid frontmatter, persists config, records the manifest,
       and keeps doctor checks green.
-- [ ] **Docs alignment** — update README / SPEC / ARCHITECTURE /
+- [x] **Docs alignment** — update README / SPEC / ARCHITECTURE /
       GLOSSARY and generated template docs so users understand the new
       workflow-guide slot and its boundary with `AGENTS.md`,
       `CONTRIBUTING.md`, memory, and working state.
@@ -913,44 +913,46 @@ Out of v0.8.4 intentionally:
 
 ---
 
-## v0.8.5 — Verification expectation in generated templates (pending)
+## v0.8.5 — Verification expectation in generated templates ✅ (released 2026-05-31)
 
 **Goal**: project the verification discipline aikata practices on itself
 (its own `AGENTS.md` Hard Rule 7, `make test && make lint`) into the
 templates it generates, without imposing a test-first methodology.
 [ADR 0027](./docs/adr/0027-verification-expectation-in-generated-templates.md)
-records the design; it promotes
-[Q-DESIGN-11](./docs/decisions/open-questions.md#q-design-11--should-the-standard-template-project-a-verification-gate-into-the-generated-agentsmd).
+(Accepted 2026-05-31) records the design; it resolved the former
+Q-DESIGN-11.
 
 Framing: "test existence" is already a default rule, "test-first" stays
 opt-in (ADR 0003), and the gap is methodology-neutral **verification** —
 "run the checks and show the output before claiming done".
 
-- [ ] **PR-A — `docs/testing.md` strengthening** _(opt-in; light HITL)_.
-      Strengthen `internal/templates/data/components/tdd/{en,ja}/tdd.md.tmpl`
-      from the bare TODO skeleton with a short rationale and an optional,
-      clearly-marked TDD recommendation (which may lean harder for AI
-      collaboration than for humans). Regenerate golden fixtures. A human
-      reviews the shipped prose before merge. **Not** blocked on ADR 0027
-      acceptance.
-- [ ] **PR-B — verification rule in standard `AGENTS.md`** _(default
-      output; HITL required)_. Add a conditional, methodology-neutral
-      hard rule ("run the project's tests / build **if they exist** and
-      show the output") to the `## 4. Hard rules` list of
-      `internal/templates/data/presets/standard/{en,ja}/AGENTS.md.tmpl`
-      (next to the existing `Add tests` rule). Note: the `flutter` /
-      `typescript` presets already carry a stack-specific
-      "run tests before declaring complete" line — PR-B decides whether
-      to touch them (lean: leave them). **Blocked** on ADR 0027 being
-      flipped to `Accepted` and the final rule wording being approved by
-      a maintainer.
-- [ ] **Do-No-Harm coverage** — a `minimal`-scope golden assertion shows
-      zero verification-rule and zero TDD-recommendation residue; the rule
-      reads as inert in a test-less project.
+- [x] **PR-A — `docs/testing.md` strengthening** _(opt-in)_. Strengthened
+      `internal/templates/data/components/tdd/{en,ja}/tdd.md.tmpl` from the
+      bare TODO skeleton with a "Why this matters for AI collaboration"
+      rationale and a clearly-marked opt-in test-first recommendation.
+      Golden `standard-with-extras` regenerated.
+- [x] **PR-B — verification rule in standard `AGENTS.md`** _(default
+      output)_. Added the conditional, methodology-neutral hard rule
+      ("**Verify before declaring done.** If the project has tests or a
+      build, run them and show the output …") next to the existing
+      `Add tests` rule in
+      `internal/templates/data/presets/standard/{en,ja}/AGENTS.md.tmpl`.
+      The `flutter` / `typescript` presets were left untouched (they
+      already carry a stronger stack-specific verification line); `minimal`
+      stays lean. Golden standard fixtures regenerated.
+- [x] **Do-No-Harm coverage** — the existing byte-comparison golden tests
+      for `minimal` / `minimal-ja` are unchanged after regeneration,
+      proving zero verification-rule and zero TDD-recommendation residue
+      in non-adopting scopes; the rule is conditional ("if they exist") so
+      it reads as inert in a test-less project.
+- [x] **Release-flow discoverability** — added a "Cut a release" row to
+      the repo's own `AGENTS.md` navigation matrix pointing at
+      `CONTRIBUTING.md` § Release flow and `ARCHITECTURE.md` §6.5, so an
+      agent cutting a release finds the ritual from the first-read file.
 
-Both PRs follow the standard gates: a `[Unreleased]` CHANGELOG entry,
-`make test && make lint`, `aikata doctor` clean, and English commit / PR
-text.
+All changes follow the standard gates: a `[Unreleased]` CHANGELOG entry,
+`make test && make lint`, `aikata doctor` clean, the `aikata generate`
+byte-identity check, and English commit / PR text.
 
 Out of v0.8.5 intentionally:
 

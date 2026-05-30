@@ -172,58 +172,10 @@ what unblocks a decision, and the latest update date.
   or the other.
 - **Updated**: 2026-05-29.
 
-### Q-DESIGN-11 — Should the standard template project a verification gate into the generated `AGENTS.md`?
-
-- **Status**: Open, **being promoted** to
-  [ADR 0027](../adr/0027-verification-expectation-in-generated-templates.md)
-  (currently `Proposed` — awaiting maintainer acceptance of the default
-  `AGENTS.md` rule wording). This entry stays here until ADR 0027 is
-  `Accepted`, at which point it is removed. Surfaced 2026-05-31 during a
-  dogfooding discussion on whether generated files should take more of a
-  TDD stance.
-- **Framing distinction — three things often conflated as "TDD":**
-  - *Test existence* is **already a default**: the standard `AGENTS.md`
-    template ships the hard rule "Add tests for new code unless the
-    change is documentation-only"
-    ([`testdata/golden/standard/AGENTS.md`](../../testdata/golden/standard/AGENTS.md)).
-    Generated files are **not** silent on testing.
-  - *Test-first methodology* (TDD red-green ordering) stays **opt-in**
-    via `--with-tdd` / `enable tdd`, per
-    [ADR 0003](../adr/0003-do-no-harm-policy.md). That decision is **not
-    in question here** and should not be reopened: forcing test-first
-    across all domains is genuinely wrong for some (exploratory,
-    prototype, research code).
-  - *Verification* — "before claiming a change complete, run the
-    project's checks and show the output" — is methodology-neutral and
-    is the **actual gap**.
-- **Concrete evidence for the gap**: aikata's **own** `AGENTS.md`
-  carries a verification gate (Hard Rule 7, `make test && make lint`),
-  but the **generated** standard template does not. AI agents are prone
-  to claiming "done" without running anything; a verification gate is
-  the cheapest objective check, and its value rises specifically under
-  AI collaboration (cheap to satisfy, high signal). This asymmetry —
-  aikata holds the gate but does not project it — is what makes the gap
-  concrete rather than abstract.
-- **Question**: Should the standard `AGENTS.md` template gain a
-  methodology-neutral verification hard rule, e.g.:
-  > Before claiming a change is complete, run the project's tests /
-  > build **if they exist** and show the output.
-- **Do-No-Harm constraint**: the rule must degrade gracefully. The
-  "if they exist" condition is load-bearing — a project with zero tests
-  yet must not be handed an empty obligation, or this becomes a
-  Do-No-Harm violation ([ADR 0003](../adr/0003-do-no-harm-policy.md)) in
-  new clothes.
-- **Leading position**: add the conditional verification rule to the
-  standard template; keep test-first opt-in. Place any TDD
-  *recommendation* (not mandate) inside the opt-in `docs/testing.md`
-  template (currently a bare TODO skeleton) or a future `docs/workflows/`
-  guide ([ADR 0026](../adr/0026-workflow-guides-as-opt-in-collaboration-docs.md)),
-  never in the canonical default `AGENTS.md`.
-- **Unblocks decision**: promote to an ADR once the wording is settled
-  and Do-No-Harm compliance is demonstrated (golden `minimal` shows zero
-  residue; the rule reads as inert in a test-less project). Coordinate
-  with any `docs/testing.md` strengthening.
-- **Updated**: 2026-05-31.
+_(Q-DESIGN-11 — verification gate in the standard template — was
+resolved and moved to
+[ADR 0027](../adr/0027-verification-expectation-in-generated-templates.md),
+Accepted 2026-05-31.)_
 
 ---
 

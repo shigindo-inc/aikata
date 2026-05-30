@@ -8,18 +8,16 @@ audience: [human, agent]
 
 # ADR 0027 — Verification expectation in generated templates
 
-- **Status**: **Proposed** — pending maintainer acceptance. This ADR is
-  the human-in-the-loop gate for the change it describes. Do **not** flip
-  it to `Accepted` and do **not** merge the standard-`AGENTS.md` template
-  change (D1) until a human maintainer approves the final rule wording.
-  The opt-in `docs/testing.md` strengthening (D3) may proceed ahead of
-  acceptance behind a lighter text review.
+- **Status**: **Accepted** — the maintainer approved the final rule
+  wording (D1) and the opt-in recommendation prose (D3) when approving the
+  v0.8.5 implementation plan on 2026-05-31. The human-in-the-loop gate is
+  satisfied.
 - **Date**: 2026-05-31
 - **Deciders**: aikata maintainers
 - **Related**: ADR 0002 (`AGENTS.md` is canonical), ADR 0003 (Do-No-Harm
-  Policy), ADR 0026 (workflow guides), and
-  [Q-DESIGN-11](../decisions/open-questions.md#q-design-11--should-the-standard-template-project-a-verification-gate-into-the-generated-agentsmd)
-  which this ADR promotes.
+  Policy), ADR 0026 (workflow guides). This ADR resolved and replaced the
+  former Q-DESIGN-11 in
+  [`docs/decisions/open-questions.md`](../decisions/open-questions.md).
 
 ## Context
 
