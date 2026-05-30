@@ -30,6 +30,7 @@ type AikataYaml struct {
 	Features   map[string]bool `yaml:"features,omitempty"`
 	Docs       Docs            `yaml:"docs,omitempty"`
 	Doctor     Doctor          `yaml:"doctor,omitempty"`
+	Sync       Sync            `yaml:"sync,omitempty"`
 }
 
 // Project carries the human-facing identity of the project.
@@ -55,9 +56,29 @@ type Components struct {
 }
 
 // Docs holds documentation-related preferences.
+//
+// The inert `generate_gitignore` field was removed in v0.8.3 (ADR 0025
+// D3): it was defined, defaulted to true, and never read, so setting it
+// had no effect. `.gitignore` remains managed by the ADR 0018 managed-
+// append writer (non-destructive by default); a project that wants
+// `aikata sync` to leave a file alone lists it under `sync.own`. Old
+// configs still carrying `generate_gitignore:` parse without error —
+// the unknown key is ignored.
 type Docs struct {
-	GenerateGitignore bool   `yaml:"generate_gitignore"`
-	TaskFileLocation  string `yaml:"task_file_location"`
+	TaskFileLocation string `yaml:"task_file_location"`
+}
+
+// Sync holds optional `aikata sync` preferences. See ADR 0025.
+type Sync struct {
+	// Own is a list of glob patterns (same matcher and additive
+	// semantics as `doctor.exclude`, ADR 0021) for files the user has
+	// intentionally taken ownership of. A matching path is reported
+	// with the `owned` status and is never rendered-compared,
+	// conflict-markered, or overwritten by `aikata sync`. An absent
+	// block is the empty list. Ownership lives here — in the user-
+	// editable config — not in the machine-owned manifest (ADR 0011
+	// forbids hand-editing `.aikata/manifest.yaml`).
+	Own []string `yaml:"own,omitempty"`
 }
 
 // Doctor holds optional tuning for `aikata doctor`. The zero value
@@ -76,15 +97,13 @@ type Doctor struct {
 
 // Default returns an AikataYaml at the current schema version seeded
 // for the given project name and language. The defaults match
-// `aikata init --preset standard`:
+// `aikata init --scope standard`:
 //
 //   - Only the `claude` AI tool is enabled by default.
 //   - No stacks selected.
 //   - All optional components off (schema-v2 `components` block).
 //   - All non-scope feature flags off (`obsidian_hints`).
-//   - Generated AI-tool artifacts are gitignored by default
-//     (target-project default — aikata's own repo overrides this per
-//     ADR 0003).
+//   - `docs.task_file_location` points at the default task file.
 func Default(name, lang string) AikataYaml {
 	if lang == "" {
 		lang = "en"
@@ -102,8 +121,7 @@ func Default(name, lang string) AikataYaml {
 			"obsidian_hints": false,
 		},
 		Docs: Docs{
-			GenerateGitignore: true,
-			TaskFileLocation:  "docs/tasks/current.md",
+			TaskFileLocation: "docs/tasks/current.md",
 		},
 	}
 }

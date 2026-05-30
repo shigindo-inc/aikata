@@ -214,13 +214,32 @@ markers (`<<<<<<<`, `|||||||`, `=======`, `>>>>>>>`) for manual
 resolution.
 
 - `aikata sync --dry-run` previews the merge plan without writing.
-- `aikata sync --rebaseline` seeds a manifest from current state for
-  projects that pre-date v0.5 (one-shot; subsequent runs need no
-  flag).
+- `aikata sync --rebaseline` seeds a manifest from the current upstream
+  rendering for projects that pre-date v0.5 (one-shot). If a manifest
+  already exists it is a no-op with a notice; use `--reseed` to
+  deliberately re-anchor an existing manifest.
 - `aikata sync --json` emits a machine-readable report with the same
   envelope shape as `doctor` / `list` / `update`.
 
-See [ADR 0011](./docs/adr/0011-aikata-sync-design.md) for the full
+**Keeping a file you rewrote (v0.8.3):** files you have intentionally
+forked for your project are preserved across **every** sync — a
+`user-only-edit` is never absorbed and overwritten on a later run
+(ADR 0025). To stop aikata from even diff-comparing a file you have
+fully taken over (e.g. `README.md`), list it under `sync.own` in
+`.aikata/aikata.yaml`:
+
+```yaml
+sync:
+  own:
+    - README.md
+    - .gitignore
+```
+
+Such paths report the `owned` status and are never compared,
+conflict-markered, overwritten, or manifest-tracked.
+
+See [ADR 0011](./docs/adr/0011-aikata-sync-design.md) and
+[ADR 0025](./docs/adr/0025-sync-divergent-file-preservation.md) for the full
 merge contract.
 
 ### Monorepo layout (v0.6+)

@@ -33,6 +33,7 @@ import (
 	"strings"
 
 	"github.com/shigindo-inc/aikata/internal/config"
+	"github.com/shigindo-inc/aikata/internal/glob"
 	"github.com/shigindo-inc/aikata/internal/scaffold"
 )
 
@@ -72,6 +73,11 @@ const (
 	// respected (we don't restore it) unless --restore-deletes is
 	// passed (v0.5.x follow-up).
 	StatusUserDeleted Status = "user-deleted"
+	// StatusOwned means the path matched the project's `sync.own` glob
+	// list (ADR 0025 D2). aikata treats the file as user-owned: it is
+	// never rendered-compared, conflict-markered, overwritten, or
+	// tracked in the manifest.
+	StatusOwned Status = "owned"
 )
 
 // FileResult describes the outcome for one path in a sync run.
@@ -104,8 +110,14 @@ type Options struct {
 	Root       string
 	DryRun     bool
 	Rebaseline bool
-	Stdout     io.Writer
-	Stderr     io.Writer
+	// Reseed re-anchors an existing `.aikata/manifest.yaml` to the
+	// current upstream rendering and exits without running the merge
+	// (ADR 0025 D4). Only the manifest is written; no source file is
+	// touched. Unlike --rebaseline (which seeds a *missing* manifest),
+	// --reseed deliberately overwrites an existing one.
+	Reseed bool
+	Stdout io.Writer
+	Stderr io.Writer
 
 	OverridePreset       *string
 	OverrideLang         *string
@@ -220,6 +232,28 @@ func Run(opts Options) (RunResult, error) {
 	delete(upstream, manifestRel)
 	delete(upstream, configRel)
 
+	// User-owned paths (ADR 0025 D2): a path matching `sync.own` is
+	// never rendered-compared, conflict-markered, overwritten, or
+	// tracked in the manifest. The matcher is shared with
+	// `doctor.exclude` (internal/glob).
+	isOwned := func(path string) bool { return glob.MatchAny(cfg.Sync.Own, path) }
+
+	// --reseed re-anchors an existing manifest to the current upstream
+	// rendering and exits without running the merge (ADR 0025 D4).
+	// Manifest-only write; no source file is touched. Honored whether
+	// or not a manifest is already present.
+	if opts.Reseed {
+		var result RunResult
+		if !opts.DryRun {
+			if err := saveManifestFromUpstream(opts.Root, preset, lang, upstream, isOwned); err != nil {
+				return RunResult{}, err
+			}
+		}
+		result.Notes = append(result.Notes,
+			"Manifest re-seeded from the current upstream rendering. Source files were not modified.")
+		return result, nil
+	}
+
 	// Rebaseline path (manifest absent + --rebaseline): write a
 	// manifest whose ancestor hashes are the current *upstream*
 	// rendering — the same manifest `aikata init` would have written
@@ -238,15 +272,26 @@ func Run(opts Options) (RunResult, error) {
 	if !manifestPresent {
 		var result RunResult
 		if !opts.DryRun {
-			newManifest := config.BuildManifest(preset, lang, upstream, []string{manifestRel, configRel})
-			if err := config.SaveManifest(opts.Root, newManifest); err != nil {
-				return RunResult{}, fmt.Errorf("sync: save manifest: %w", err)
+			if err := saveManifestFromUpstream(opts.Root, preset, lang, upstream, isOwned); err != nil {
+				return RunResult{}, err
 			}
 		}
 		result.Notes = append(result.Notes,
 			"Manifest seeded from current upstream rendering. Source files were not modified.",
 			"Local customisations will appear as `user-only-edit` on the next `aikata sync` and be preserved.")
 		return result, nil
+	}
+
+	// --rebaseline against a project that already has a manifest is a
+	// no-op for re-seeding (ADR 0025 D4): say so explicitly instead of
+	// silently running a normal merge, and point at --reseed. The merge
+	// still proceeds below.
+	if opts.Rebaseline {
+		if _, werr := fmt.Fprintln(opts.Stderr,
+			"sync: rebaseline skipped: .aikata/manifest.yaml already present "+
+				"(use --reseed to re-anchor it to the current upstream rendering)"); werr != nil {
+			return RunResult{}, werr
+		}
 	}
 
 	// Build a lookup of ancestor hashes keyed by path.
@@ -275,6 +320,12 @@ func Run(opts Options) (RunResult, error) {
 	// the run completes cleanly.
 	merged := make(map[string]string, len(upstream))
 	for _, path := range sortedPaths {
+		// Owned paths bypass the 3-way merge entirely (ADR 0025 D2).
+		if isOwned(path) {
+			result.Files = append(result.Files, FileResult{Path: path, Status: StatusOwned})
+			result.NoChange++
+			continue
+		}
 		fileResult, mergedContent, err := classifyAndMerge(path, ancestorHash, upstream, opts.Root)
 		if err != nil {
 			return RunResult{}, err
@@ -312,14 +363,20 @@ func Run(opts Options) (RunResult, error) {
 	// Regenerate the manifest only when the run is conflict-free —
 	// otherwise the ancestor would jump past the in-progress
 	// resolution and confuse the next sync.
+	//
+	// ADR 0025 D1: the new ancestor is the in-memory *upstream*
+	// rendering, NOT a re-read of the post-merge on-disk bytes. This
+	// unifies the post-clean-run path with the rebaseline / reseed
+	// principle (ADR 0011 "ancestor = upstream rendering"). For a
+	// `user-only-edit` file the upstream rendering equals the *old*
+	// ancestor, so the user's divergence is preserved across unlimited
+	// syncs instead of being absorbed as the ancestor and overwritten
+	// next run. Recording the upstream rendering for a `user-deleted`
+	// path also keeps its manifest entry, so a respected deletion is
+	// not silently re-created (ADR 0019).
 	if result.Conflicts == 0 {
-		snapshot, err := postMergeSnapshot(opts.Root, upstream)
-		if err != nil {
+		if err := saveManifestFromUpstream(opts.Root, preset, lang, upstream, isOwned); err != nil {
 			return result, err
-		}
-		newManifest := config.BuildManifest(preset, lang, snapshot, []string{manifestRel, configRel})
-		if err := config.SaveManifest(opts.Root, newManifest); err != nil {
-			return result, fmt.Errorf("sync: save manifest: %w", err)
 		}
 	} else {
 		result.Notes = append(result.Notes,
@@ -327,6 +384,27 @@ func Run(opts Options) (RunResult, error) {
 	}
 
 	return result, nil
+}
+
+// saveManifestFromUpstream writes `.aikata/manifest.yaml` from the
+// in-memory upstream rendering — the single ancestor-choice principle
+// shared by rebaseline, --reseed, and the post-clean-run regeneration
+// (ADR 0025 D1). Owned paths (ADR 0025 D2) and the config / manifest
+// files themselves are excluded from the recorded set.
+func saveManifestFromUpstream(root, preset, lang string, upstream map[string]string, isOwned func(string) bool) error {
+	manifestRel := config.PrimaryDir + "/" + config.ManifestFilename
+	configRel := config.PrimaryDir + "/" + config.Filename
+	excludes := []string{manifestRel, configRel}
+	for path := range upstream {
+		if isOwned(path) {
+			excludes = append(excludes, path)
+		}
+	}
+	newManifest := config.BuildManifest(preset, lang, upstream, excludes)
+	if err := config.SaveManifest(root, newManifest); err != nil {
+		return fmt.Errorf("sync: save manifest: %w", err)
+	}
+	return nil
 }
 
 // classifyAndMerge implements the per-file decision matrix described
@@ -423,30 +501,4 @@ func conflictMarkers(ours, ancestor, theirs string) string {
 	}
 	b.WriteString(">>>>>>> upstream\n")
 	return b.String()
-}
-
-// postMergeSnapshot reads the current on-disk bytes for every path in
-// upstream so the rebuilt manifest reflects the post-sync ancestor
-// (which is exactly what's now on disk). Only called when conflicts
-// == 0, so no file holds conflict markers at this point.
-func postMergeSnapshot(root string, upstream map[string]string) (map[string]string, error) {
-	out := make(map[string]string, len(upstream))
-	for path, body := range upstream {
-		full := filepath.Join(root, filepath.FromSlash(path))
-		got, err := os.ReadFile(full)
-		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				// User deleted the file and the run respected it
-				// (StatusUserDeleted). Skip it from the new manifest
-				// so the next sync sees the same state.
-				continue
-			}
-			return nil, fmt.Errorf("sync: snapshot read %s: %w", path, err)
-		}
-		out[path] = string(got)
-		// Keep `body` referenced so go vet doesn't complain about
-		// the unused value when the file was deleted.
-		_ = body
-	}
-	return out, nil
 }

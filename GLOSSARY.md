@@ -196,6 +196,16 @@ see [ADR 0001](./docs/adr/0001-record-architecture-decisions.md).
 
 ## O
 
+### owned (sync status) — (所有)
+
+The `aikata sync` status for a path listed under `sync.own` in
+`.aikata/aikata.yaml` (a glob list using the same matcher as
+`doctor.exclude`). An `owned` file is one the user has intentionally
+taken over: `aikata sync` never rendered-compares, conflict-markers,
+overwrites, or manifest-tracks it. Introduced in v0.8.3
+([ADR 0025](./docs/adr/0025-sync-divergent-file-preservation.md) D2) as
+the declarative replacement for a manual `git restore` workaround.
+
 ### opinionated, but small
 
 aikata's positioning: it makes a few strong choices (file names, frontmatter
