@@ -20,15 +20,13 @@ audience: [human, agent]
   を extends する。プロジェクト固有の追加ルールは同ファイルに 1 行
   コメントで根拠を添える。
 - `flutter analyze` は**警告 0** でなければコミットしない。CI が強制する。
-- `dart format`（80 桁デフォルト）を使う。空白を手調整しない。
+- `dart format` を使う。CI が format を強制する。
 
 ## 2. null safety
 
 - sound null safety（Dart 3+）でビルドする。
 - `!`（bang 演算子）の使用は避ける。使う場合は、その箇所で値が不変に
   non-null である理由をインラインコメントで添える。
-- `initState` やコンストラクタ本文の後で non-null になるフィールドは
-  `?` よりも `late` を優先する。
 
 ## 3. 状態管理
 
@@ -57,21 +55,16 @@ _TODO: 採用方式（Provider / Riverpod / Bloc / GetX / 素の
 ## 6. Build_runner / コード生成
 
 - 生成ファイルはソースの隣に置く（`foo.g.dart`, `foo.freezed.dart`）。
-- 生成ファイルは**コミットする**。コントリビューターが build_runner を
-  実行しなくてもコードを読めるようにするため。CI は
-  `dart run build_runner build --delete-conflicting-outputs` を実行し、
-  作業ツリーが dirty なら失敗する。
+- _TODO: 生成ファイルをコミットするか gitignore するか決めて記録する。
+  コミットする場合は CI で `dart run build_runner build
+  --delete-conflicting-outputs` を実行し、dirty なら失敗させる。_
 
 ## 7. テスト
 
-- **単体テスト** を `test/` 配下に `lib/` と 1:1 で配置。
-- **Widget tests** を再利用可能な widget（他ファイルから import される
-  もの）すべてに用意。
-- **Golden tests** を視覚的に regression させたくない UI に用意。
-  golden はプラットフォーム依存 — CI の同一イメージで実行し、
-  ローカル環境が異なる場合はローカル生成した golden をコミットしない。
-- **Integration tests** を `integration_test/` 配下で複数画面に
-  またがるフローに用意。
+- regression しそうな所をテストする: 単体テストを `test/` 配下に `lib/` と
+  対応させ、再利用 widget に widget test、視覚的に regression させたくない
+  UI に golden test（golden はプラットフォーム依存 — CI イメージで生成する）、
+  複数画面にまたがるフローに `integration_test/` の integration test。
 - 作業完了の宣言前に `flutter test`（必要なら
   `flutter test integration_test/`）を必ず実行。
 
@@ -84,11 +77,9 @@ _TODO: 採用方式（Provider / Riverpod / Bloc / GetX / 素の
 
 ## 9. アクセシビリティ
 
-- 全ての対話的 widget は `Semantics` ラベルを公開する（明示または
-  デフォルト経由）。
-- 色を情報の唯一の搬送手段にしない。
-- テキストスケール: `MediaQuery.textScaler = TextScaler.noScaling` を
-  設定しない。OS レベルの設定を通す。
+- 対話的 widget には `Semantics` ラベルを公開し、色だけで情報を伝えず、
+  OS のテキストスケール設定を尊重する（`MediaQuery.textScaler =
+  TextScaler.noScaling` を強制しない）。
 
 ## 10. プロジェクトレイアウト — 置き場所
 

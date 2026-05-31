@@ -19,12 +19,11 @@ audience: [human, agent]
 
 - `strict: true` (and the full strict family stays on). Disabling any
   strict-family flag requires an ADR.
-- `noUncheckedIndexedAccess: true` — make array / record indexing
-  return `T | undefined`.
-- `exactOptionalPropertyTypes: true` — distinguish absent from
-  `undefined`.
 - `target` and `module` chosen to match the runtime (see §2 / §3).
-- `incremental: true` for fast rebuilds; `.tsbuildinfo` is gitignored.
+- _Recommended, tune per project: `noUncheckedIndexedAccess` and
+  `exactOptionalPropertyTypes` for stricter indexing / optionality;
+  `incremental: true` with a gitignored `.tsbuildinfo` for fast
+  rebuilds._
 
 ## 2. Module format (ESM vs CJS)
 
@@ -65,8 +64,6 @@ audience: [human, agent]
   `satisfies`.
 - **Avoid `!` (non-null assertion)** unless the call site cannot be
   refactored to narrow. Each use needs a comment.
-- Prefer `readonly` for inputs that are not mutated. Make immutability
-  explicit at function and class boundaries.
 - Use `import type` for type-only imports so the emit stays tree-shake
   friendly.
 
@@ -79,9 +76,8 @@ audience: [human, agent]
 
 ## 8. Errors
 
-- Subclass `Error` for new error categories; do not throw plain
-  strings or object literals.
-- Public surfaces document which errors callers can expect.
+- Subclass `Error` for new error categories (not plain strings or
+  object literals); document which errors a public surface can throw.
 - Use `cause` (ES2022) to chain errors instead of dropping the
   original stack.
 

@@ -22,16 +22,13 @@ audience: [human, agent]
   one-line justification comment.
 - `flutter analyze` must report **zero warnings** before commit. CI
   enforces this.
-- Use `dart format` (default 80-col line length). Do not hand-tune
-  whitespace.
+- Use `dart format`; CI enforces formatting.
 
 ## 2. Null safety
 
 - The project ships with sound null safety (Dart 3+).
 - Avoid `!` (the bang operator). Each use must have an inline comment
   explaining why the value is invariantly non-null at that point.
-- Prefer `late` over `?` when a field is non-null after `initState` or
-  the constructor body.
 
 ## 3. State management
 
@@ -61,21 +58,17 @@ mix two state-management libraries without an ADR justifying it._
 
 - Generated files live next to their sources (`foo.g.dart`,
   `foo.freezed.dart`).
-- Generated files are **committed** so contributors do not need to run
-  build_runner before they can read the code. CI runs
-  `dart run build_runner build --delete-conflicting-outputs` and fails
-  if the working tree is dirty afterwards.
+- _TODO: decide whether generated files are committed or gitignored, and
+  record it. If committed, run `dart run build_runner build
+  --delete-conflicting-outputs` in CI and fail on a dirty tree._
 
 ## 7. Testing
 
-- **Unit tests** under `test/`, mirroring `lib/` one-to-one.
-- **Widget tests** for every reusable widget (the kind another file
-  imports).
-- **Golden tests** for any UI that should not visually regress. Goldens
-  are platform-sensitive — run them on the same CI image, do not check
-  in goldens captured locally if your local platform differs.
-- **Integration tests** under `integration_test/` for flows that cross
-  more than one screen.
+- Test what is likely to regress: unit tests under `test/` mirroring
+  `lib/`, widget tests for reusable widgets, golden tests for UI that
+  must not visually regress (goldens are platform-sensitive — generate
+  them on the CI image), and integration tests under `integration_test/`
+  for multi-screen flows.
 - Run `flutter test` (and `flutter test integration_test/` when
   present) before declaring work complete.
 
@@ -88,11 +81,9 @@ mix two state-management libraries without an ADR justifying it._
 
 ## 9. Accessibility
 
-- Every interactive widget exposes a `Semantics` label (explicitly or
-  via the default).
-- Color is never the sole carrier of information.
-- Text scales: do not set `MediaQuery.textScaler = TextScaler.noScaling`;
-  let the OS-level setting through.
+- Expose `Semantics` labels on interactive widgets, never carry
+  information by colour alone, and respect the OS text-scale setting (do
+  not force `MediaQuery.textScaler = TextScaler.noScaling`).
 
 ## 10. Project layout — where things live
 
