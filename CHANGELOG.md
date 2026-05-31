@@ -28,6 +28,21 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   scopes, config flags, init prompts, or `sync` ownership.
   (v0.9.2 ships after v0.9.3 — numeric order is direction, not ship
   order; ADR 0032 D4.)
+- **`doctor` default-scope direction (ADR 0033)** — record that
+  `aikata doctor`'s default walk should validate primarily the
+  aikata-managed document surface, with an explicit broader audit mode
+  and `doctor.exclude` retained as an escape hatch. The behavior change
+  is deliberately deferred to its own scoped step with before/after
+  coverage proof; this is a documentation-only decision (no `doctor`
+  behavior change). Resolves Q-DOCTOR-02 (direction only).
+
+### Changed
+
+- **v0.9.0 core-concept stabilization tail closed** — the v1.0 backlog
+  pruning item is resolved: external stack repositories, third-party
+  skill management, new workflow domains, and broad native-wrapper
+  proliferation are confirmed off the critical path (demand-driven).
+  Documentation-only ROADMAP / open-questions hygiene.
 
 ## [0.9.3] - 2026-05-31
 

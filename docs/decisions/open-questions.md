@@ -375,21 +375,23 @@ Accepted 2026-05-31.)_
 
 ### Q-DOCTOR-02 — Should `doctor` default to aikata-managed documents?
 
-- **Status**: Open. Follow-up to
+- **Status**: **Resolved (direction only; behavior deferred)**. The
+  direction is settled by
+  [ADR 0033](../adr/0033-doctor-default-scope-direction.md): the default
+  walk *should* validate primarily the document surface aikata manages,
+  with an explicit broader audit mode for additional Markdown paths, and
+  `doctor.exclude` ([ADR 0021](../adr/0021-doctor-scope-and-exclusion.md))
+  is kept as an escape hatch. The **behavior change is deliberately
+  deferred** to its own scoped step with before/after coverage proof, so
+  pre-v1.0 adopted and pre-manifest projects do not lose useful validation
+  silently and the binding `--strict` CI gate is not narrowed without
+  warning (ADR 0033 D2 / D3).
+- **Follow-up to**:
   [ADR 0021](../adr/0021-doctor-scope-and-exclusion.md) and the v0.9
   core-concept stabilization review
   ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
-- **Question**: should the default walk validate primarily the document
-  surface aikata manages, with an explicit broader audit mode for
-  additional Markdown paths, instead of validating almost every
-  repository Markdown file and requiring exclusions for third-party
-  contracts?
-- **Leading**: yes, if adopted and pre-manifest projects still receive
-  useful validation without hidden blind spots. Keep `doctor.exclude`
-  as an escape hatch where it remains useful.
-- **Unblocks**: a focused `doctor` scope ADR and the v0.9.0 behavior
-  change.
-- **Updated**: 2026-05-31.
+- **Resolved**: 2026-06-01. Kept as a pointer; the behavior-change step
+  inherits the preconditions in ADR 0033 D3.
 
 ---
 
