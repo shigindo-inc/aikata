@@ -94,7 +94,32 @@ mix two state-management libraries without an ADR justifying it._
 - Text scales: do not set `MediaQuery.textScaler = TextScaler.noScaling`;
   let the OS-level setting through.
 
-## 10. When to revise this file
+## 10. Project layout — where things live
+
+Declaring a home for shared values up front prevents the most common
+AI-collaboration drift in a Flutter codebase: magic numbers, colours,
+and spacing scatter across widgets because no canonical location was
+agreed. Recommended homes (adjust to the project, but pick one and keep
+it consistent):
+
+- `lib/theme/` — `ThemeData`, colour scheme, text themes.
+- `lib/theme/tokens.dart` — the raw design tokens (colours, spacing,
+  radii, durations) the theme is built from. New colours and spacings
+  go here, not inline in a widget.
+- `lib/constants/` — non-UI constants (keys, route names, durations,
+  feature flags).
+
+aikata does not generate these files. The convention is shared as a
+document so a human and an AI agent place new code in the same spot; the
+agent creates the directory or file on demand when the project first
+needs it, following this section.
+
+_TODO: confirm the directory strategy (feature-first vs layer-first) and
+record it in an ADR if it diverges from the above. Link the design-token
+source of truth if a package (for example a generated tokens file) owns
+it._
+
+## 11. When to revise this file
 
 - A new dependency that significantly changes how state, navigation, or
   IO works → add a section.

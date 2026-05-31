@@ -18,6 +18,27 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-05-31
+
+First increment of the v0.9.0 core-concept stabilization line
+([ADR 0028](./docs/adr/0028-prioritize-core-concept-stabilization.md)).
+It sharpens the stack-brief surface without widening it: stack guidance
+stays document-centered and code-free
+([ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md)).
+
+### Added
+
+- **Canonical layout convention in stack briefs (ADR 0029)** — the
+  Flutter and TypeScript stack briefs (`docs/stacks/<stack>.md`, en + ja)
+  gain a "Project layout — where things live" section that names a
+  recommended home for the theme, design tokens, and constants, plus the
+  recurring AI-collaboration failure mode it prevents (literals
+  scattered across widgets / modules). It is guidance, not a mandate, and
+  aikata generates no code — the agent scaffolds on demand from the
+  documented convention. `minimal` / `standard` output is unchanged
+  (Do-No-Harm). Partially resolves Q-DESIGN-13; the subtractive
+  brief-trimming half is deferred to a later evidence-led increment.
+
 ## [0.8.5] - 2026-05-31
 
 Projects the verification discipline aikata practices on itself into the

@@ -93,7 +93,31 @@ audience: [human, agent]
   intentionally fire-and-forget with a comment.
 - Reject early; do not swallow errors with empty `catch` blocks.
 
-## 10. When to revise this file
+## 10. Project layout — where things live
+
+Declaring a home for shared values up front prevents a common
+AI-collaboration drift: string and numeric literals duplicate across
+modules because no single source of truth was agreed. Recommended homes
+(adjust to the project, but pick one and keep it consistent):
+
+- `src/constants/` — shared constants (keys, routes, limits, feature
+  flags). A literal used in more than one place goes here, not inline.
+- `src/config/` — runtime configuration and environment wiring (read
+  once, typed, validated at the boundary).
+- For a frontend project: a single design-token / theme location (for
+  example `src/theme/`) for colours, spacing, and typography, so UI
+  values are not hard-coded per component.
+
+aikata does not generate these files. The convention is shared as a
+document so a human and an AI agent place new code in the same spot; the
+agent creates the directory or file on demand when the project first
+needs it, following this section.
+
+_TODO: pin the layout for this project's shape (backend service vs
+frontend app vs library) and record it in an ADR if it diverges. Link
+the design-token source of truth if a package owns it._
+
+## 11. When to revise this file
 
 - A new dependency that significantly changes how state, IO, or build
   works → add a section.
