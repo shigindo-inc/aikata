@@ -973,10 +973,12 @@ records the priority rule; the
 [v0.9.0 design note](./docs/decisions/v0.9-core-concept-stabilization.md)
 records the evidence, target landing point, and follow-up questions.
 
-- [ ] **Live-document convergence** — align README, SPEC, ROADMAP,
-      adoption docs, and dogfood config with the shipped v0.8.5
-      surface. Identify narrowly-scoped checks that prevent repeat
-      drift without turning `doctor` into a general repository linter.
+- [x] **Live-document convergence** ✅ (shipped in v0.9.1) — aligned
+      README (status + ADR index), SPEC (`enable`/`new`), ROADMAP
+      (v0.8.2/v0.8.3 released), adoption docs, and dogfood config with
+      the shipped surface; added a narrow `repolint` check asserting the
+      README ADR index covers every `docs/adr/` file (no `doctor`
+      behavior change).
 - [ ] **Default standard-scope audit** — verify that every generated
       file has a distinct role in the shared-context model.
       `docs/prompts.md` is the first removal / opt-in candidate
@@ -985,13 +987,13 @@ records the evidence, target landing point, and follow-up questions.
       managed-document default with an explicit broader audit mode.
       Preserve a coherent story for adopted and pre-manifest projects
       before changing behavior (Q-DOCTOR-02).
-- [x] **Stack-brief layout convention** ✅ (shipped in v0.9.0) — the
+- [x] **Stack-brief simplification** ✅ (Q-DESIGN-13 resolved) — the
       Flutter / TypeScript briefs gain a code-free canonical layout
-      convention and aikata generates no stack code
-      ([ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md),
-      the additive direction of Q-DESIGN-13). The **subtractive**
-      simplification — trimming team-specific best-practice policy — is
-      deferred to a later evidence-led increment (Q-DESIGN-13 open part).
+      convention (v0.9.0,
+      [ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md)) and
+      are trimmed to standard-aligned guardrails (v0.9.1,
+      [ADR 0030](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md));
+      aikata generates no stack code.
 - [ ] **v1.0 backlog pruning** — move external stack repositories,
       third-party skill management, new workflow domains, and broad
       native-wrapper proliferation off the critical path unless

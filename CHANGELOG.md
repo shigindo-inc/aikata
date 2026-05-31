@@ -18,6 +18,14 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-05-31
+
+Second increment of the v0.9.0 core-concept stabilization line. Converges
+aikata's own live documentation with the shipped surface (design note
+work package A) and completes the subtractive half of Q-DESIGN-13
+([ADR 0030](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md),
+which amends ADR 0029 D3).
+
 ### Changed
 
 - **Stack briefs trimmed to standard-aligned guardrails (ADR 0030)** —
