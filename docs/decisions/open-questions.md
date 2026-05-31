@@ -194,17 +194,23 @@ Accepted 2026-05-31.)_
 
 ### Q-DESIGN-13 — How small should built-in stack briefs become?
 
-- **Status**: Open. Triggered by the v0.9 core-concept stabilization
-  review ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
-- **Question**: which Flutter / TypeScript rules prevent recurring AI
-  collaboration failures, and which are general best-practice opinions
-  better left to downstream project edits or ADRs?
-- **Leading**: retain common failure modes, minimum verification
-  commands, and TODO prompts for project-specific choices. Remove or
-  soften policy that is valid only for some teams. A scope-base /
-  stack-partial refactor is maintenance-only: it must reduce drift
-  without unlocking new stack combinations in the same change.
-- **Unblocks**: the v0.9.0 stack-brief simplification PR.
+- **Status**: **Partially resolved** by
+  [ADR 0029](../adr/0029-stack-brief-layout-convention.md). The
+  direction is settled: briefs stay small (high-value AI guardrails +
+  minimum verification commands + project-choice TODOs + ADR links),
+  they carry a code-free **canonical layout convention** section, and
+  aikata never generates stack source code — the agent scaffolds on
+  demand from the documented convention.
+- **Open part**: the **subtractive** half — which existing rules to
+  remove or soften (e.g. committing every generated file, a test per
+  reusable widget, detailed compiler-flag pins). Per ADR 0029 D3 this
+  is deferred to a later v0.9.x increment with dogfooding evidence,
+  rather than trimmed on speculation inside a signed release.
+- **Question (remaining)**: which Flutter / TypeScript rules prevent
+  recurring AI collaboration failures, and which are general
+  best-practice opinions better left to downstream project edits or
+  ADRs?
+- **Unblocks**: the follow-up stack-brief trimming increment.
 - **Updated**: 2026-05-31.
 
 ---
