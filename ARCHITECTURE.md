@@ -318,21 +318,35 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 - `curl -sSL https://aikata.dev/install.sh | sh`.
 - npm wrapper: `npx aikata` (post-v0.4).
 
-### 6.4 CLI self-update model (planned)
+### 6.4 CLI self-update model
 
 - `aikata update` is reserved for updating the aikata CLI binary,
   matching the user-facing convention established by Claude Code's
-  `claude update` (ADR 0009).
-- Native / installer-managed installs may update themselves by fetching
-  a signed or checksummed GitHub Release asset and replacing the aikata
-  binary atomically.
-- Package-manager installs remain package-manager-owned. `aikata update`
-  may print or, behind explicit opt-in, run `brew upgrade`, npm install,
-  or an equivalent manager command, but it must not overwrite a
-  package-manager-managed binary directly.
-- Installers should write small install-source metadata under the user's
-  data directory so the CLI can distinguish native, Homebrew, npm, Go,
-  and unknown installs before choosing an update path.
+  `claude update` (ADR 0009). `--check` reports availability; `--apply`
+  (shipped v0.9.4, [ADR 0035](./docs/adr/0035-native-self-update-safety.md))
+  performs the update, routed by `internal/install.Detect()`.
+- **Verify before swap** (`install-script` / `github-release`): download
+  the host release archive and `checksums.txt`, verify the archive's
+  SHA-256 **before extracting**, extract the `aikata` entry, then replace
+  the running binary atomically (temp file in the same directory →
+  `os.Rename`; POSIX keeps the live process's old inode). SHA-256 over
+  HTTPS-to-github is the transport trust anchor; cosign verification is a
+  documented non-goal (ADR 0035 D2). The download/verify boundary lives in
+  `internal/release`; extraction and the atomic replace live in
+  `internal/selfupdate`, which always takes an injected `exePath`.
+- **`go install`** installs are shown the channel-native
+  `go install …@latest` rather than swapping a GoReleaser binary over a
+  toolchain-built one.
+- **Package-manager installs** remain package-manager-owned: `aikata
+  update --apply` prints an actionable `brew upgrade` / npm command
+  (Homebrew / npm channels themselves are deferred to v0.9.9) and never
+  overwrites a package-manager-managed binary directly.
+- **Windows** cannot overwrite a running `.exe`, so `--apply` returns
+  manual-download / `go install` guidance before any download. Unknown
+  installs and permission-denied paths likewise get actionable messages.
+- `scripts/install.sh` writes install-source metadata
+  (`aikata.install-source`) next to the binary so the CLI can distinguish
+  native, Homebrew, npm, Go, and unknown installs before choosing a path.
 
 ### 6.5 Versioning & the release ritual
 

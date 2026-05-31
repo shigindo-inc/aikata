@@ -418,6 +418,7 @@ aikata generate
   - [0032 — Split the Channel-publication Line by Distribution Value](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
   - [0033 — Direction for `doctor`'s Default Validation Scope](./docs/adr/0033-doctor-default-scope-direction.md)
   - [0034 — Move the Reusable-prompts Library to an Opt-in Capability](./docs/adr/0034-reusable-prompts-opt-in-capability.md)
+  - [0035 — Native Self-update (`aikata update --apply`) Safety Model](./docs/adr/0035-native-self-update-safety.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

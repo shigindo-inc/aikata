@@ -57,7 +57,12 @@ type Result struct {
 type Client struct {
 	HTTPClient *http.Client
 	Endpoint   string
-	UserAgent  string
+	// DownloadBase overrides the release-download root used by
+	// DownloadReleaseAsset (self-update). Empty falls back to the
+	// canonical GitHub Releases download URL. Tests point both Endpoint
+	// and DownloadBase at one httptest.Server.
+	DownloadBase string
+	UserAgent    string
 }
 
 // CheckLatest fetches the latest release and compares it against
