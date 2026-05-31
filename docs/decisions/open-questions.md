@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -179,18 +179,18 @@ Accepted 2026-05-31.)_
 
 ### Q-DESIGN-12 — Which documents belong in the standard default scaffold?
 
-- **Status**: Open. Triggered by the v0.9 core-concept stabilization
-  review ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
-- **Question**: does each file emitted by `aikata init --scope standard`
-  have a distinct role that repeatedly saves context-reconstruction or
-  maintenance work?
-- **Leading**: keep the canonical rules / requirements / architecture /
-  terminology / ADR / working-state structure. Remove `docs/prompts.md`
-  from the default surface or make it opt-in unless dogfooding evidence
-  shows that an empty reusable-prompt library earns its maintenance cost.
-- **Unblocks**: the v0.9.0 default-scope simplification PR and any
-  sync-visible template removal decision.
-- **Updated**: 2026-05-31.
+- **Status**: **Resolved**. The canonical rules / requirements /
+  architecture / terminology / ADR / working-state structure stays in the
+  default scaffold. `docs/prompts.md` — an empty reusable-prompt skeleton
+  that imposed maintenance cost on every project for latent value — is
+  moved to an opt-in `aikata enable prompts` / `--with-prompts` capability
+  by [ADR 0034](../adr/0034-reusable-prompts-opt-in-capability.md)
+  (shipped v0.9.2). The removal is sync-visible but non-destructive
+  (ADR 0019).
+- **Triggered by**: the v0.9 core-concept stabilization review
+  ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
+- **Resolved**: 2026-06-01. Kept as a pointer; removable in a future
+  cleanup.
 
 ### Q-DESIGN-13 — How small should built-in stack briefs become?
 

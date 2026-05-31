@@ -11,6 +11,7 @@ components:
     tdd: true
     changelog: true
     monorepo: false
+    prompts: true
 features:
     obsidian_hints: false
 docs:

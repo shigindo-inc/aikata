@@ -9,19 +9,17 @@ files:
     - path: AGENTS.md
       sha256: d51469708bcd8e9acc21dd3b88de03c4bf45688f408f27c5bc036b6e21bb17ae
     - path: ARCHITECTURE.md
-      sha256: 7a7ee1e7bf04b6b2dae7bdec084a71722a26d9a38b362e0870d3f04f11a1dd3d
+      sha256: d8ee324ce88f80764b0c6037d64aed2fbb7bf9d8af3cf2cd185d8a2a63173bfe
     - path: GLOSSARY.md
       sha256: b508c85b85ebd7d8c9c6ba14488342dc74f6d1036ade5ffa996c8d9401321171
     - path: README.md
-      sha256: 0ffa92d0563fb894bccf62d37bfeb467100eaebbf86863e96351eeb25fa0ddff
+      sha256: 9e1d4722c7a5c4ffc6261d2535dbe5faa818be5322ed49c09a6a249f900c7784
     - path: ROADMAP.md
       sha256: 0f2183949c5972eabe5e8d7fb89e6c56d2111de7693f31000bf6040dc1e159c5
     - path: SPEC.md
       sha256: c8bc2351177ac08420c36b5625ed8c58dd3eb6cc9a7899379a06caec943c415f
     - path: docs/adr/0001-record-architecture-decisions.md
       sha256: 8d438e6b74e29e2fa02f85e4f58f73f976e80fdfa844ee419864456f6cfb372e
-    - path: docs/prompts.md
-      sha256: 7b0eae336b40729ac666506b6720d086086489404ed3422c9bf9336107c0d7fa
     - path: docs/stacks/typescript.md
       sha256: cfc61a44d6ca67d0ef8bf7cfb31c6ae593ef59e9163e1909a7f2f0d98fcaf0b2
     - path: docs/tasks/current.md

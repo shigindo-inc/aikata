@@ -37,6 +37,7 @@ func newInitCmd() *cobra.Command {
 		withTDD       bool
 		withChangelog bool
 		withMonorepo  bool
+		withPrompts   bool
 		aiToolsCSV    string
 	)
 
@@ -99,6 +100,7 @@ func newInitCmd() *cobra.Command {
 					WithTDD:       cmd.Flags().Changed("with-tdd"),
 					WithChangelog: cmd.Flags().Changed("with-changelog"),
 					WithMonorepo:  cmd.Flags().Changed("monorepo"),
+					WithPrompts:   cmd.Flags().Changed("with-prompts"),
 					Lang:          cmd.Flags().Changed("lang"),
 					AITools:       cmd.Flags().Changed("ai-tools"),
 				}
@@ -116,6 +118,7 @@ func newInitCmd() *cobra.Command {
 					WithTDD:       withTDD,
 					WithChangelog: withChangelog,
 					WithMonorepo:  withMonorepo,
+					WithPrompts:   withPrompts,
 					Lang:          lang,
 					AITools:       aiTools,
 				}, skip)
@@ -133,6 +136,7 @@ func newInitCmd() *cobra.Command {
 				withTDD = result.WithTDD
 				withChangelog = result.WithChangelog
 				withMonorepo = result.WithMonorepo
+				withPrompts = result.WithPrompts
 				lang = result.Lang
 				aiTools = result.AITools
 			}
@@ -171,6 +175,7 @@ func newInitCmd() *cobra.Command {
 				WithTDD:       withTDD,
 				WithChangelog: withChangelog,
 				WithMonorepo:  withMonorepo,
+				WithPrompts:   withPrompts,
 				Stacks:        normStacks,
 				AITools:       aiTools,
 				Stdout:        cmd.OutOrStdout(),
@@ -200,6 +205,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&withTDD, "with-tdd", false, "include test strategy at docs/testing.md")
 	cmd.Flags().BoolVar(&withChangelog, "with-changelog", false, "include release notes at CHANGELOG.md")
 	cmd.Flags().BoolVar(&withMonorepo, "monorepo", false, "configure as a monorepo with nested apps/<name>/AGENTS.md files (v0.6+)")
+	cmd.Flags().BoolVar(&withPrompts, "with-prompts", false, "include a reusable-prompt library at docs/prompts.md (ADR 0034)")
 	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .aikata/aikata.yaml (claude | cursor | codex)")
 
 	return cmd

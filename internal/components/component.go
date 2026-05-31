@@ -222,6 +222,11 @@ func EnableComponentInConfig(targetDir string, field string) error {
 			return nil
 		}
 		cfg.Components.Monorepo = true
+	case "prompts":
+		if cfg.Components.Prompts {
+			return nil
+		}
+		cfg.Components.Prompts = true
 	default:
 		return fmt.Errorf("components: enable: unknown components.* field %q", field)
 	}

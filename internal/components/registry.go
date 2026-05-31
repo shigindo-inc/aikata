@@ -13,6 +13,7 @@ var capabilities = []Component{
 	Changelog,
 	Memory,
 	Monorepo,
+	Prompts,
 	Stack,
 	TDD,
 	UI,
@@ -25,6 +26,8 @@ var capabilities = []Component{
 // file without flipping any durable project flag.
 var artifacts = []Component{
 	Adr,
+	AppIcon,
+	Mascot,
 }
 
 // Capabilities returns the enable-tier components sorted by Name.

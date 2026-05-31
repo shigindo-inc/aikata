@@ -99,8 +99,10 @@ func TestListArtifacts_TextOutput(t *testing.T) {
 		t.Fatalf("list artifacts: %v\nstderr: %s", err, errBuf.String())
 	}
 	got := out.String()
-	if !strings.Contains(got, "adr\n") {
-		t.Errorf("list artifacts: expected adr in output:\n%s", got)
+	for _, want := range []string{"adr\n", "app-icon\n", "mascot\n"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("list artifacts: expected %q in output:\n%s", want, got)
+		}
 	}
 	if strings.Contains(got, "memory") {
 		t.Errorf("list artifacts should not include memory (it's a capability):\n%s", got)
@@ -131,13 +133,15 @@ func TestListArtifacts_JSONOutput(t *testing.T) {
 	if report.Kind != "artifacts" {
 		t.Errorf("kind = %q, want artifacts", report.Kind)
 	}
-	hasAdr := false
+	want := map[string]bool{"adr": false, "app-icon": false, "mascot": false}
 	for _, it := range report.Items {
-		if it.Name == "adr" {
-			hasAdr = true
+		if _, ok := want[it.Name]; ok {
+			want[it.Name] = true
 		}
 	}
-	if !hasAdr {
-		t.Errorf("expected adr in items; got %+v", report.Items)
+	for name, seen := range want {
+		if !seen {
+			t.Errorf("expected %q in artifact items; got %+v", name, report.Items)
+		}
 	}
 }

@@ -11,13 +11,13 @@ files:
     - path: API.md
       sha256: 16b0b789b35e2ff4ec16dc9d3bfbb03e641b45671a70aad2a73909957f077631
     - path: ARCHITECTURE.md
-      sha256: f589e6dae8a75e7d4f5702ede7e268c2c6f3ebfc9d6039fb545ee2ec7800ac25
+      sha256: 633ade8fef2f990d8c106fd93b555a730c110aa44936e4a00926bce35dadc5eb
     - path: CHANGELOG.md
       sha256: 7eb00078bcd9e920e5e7b2098344399c8192b733aef8204bc111ec92fdc841fc
     - path: GLOSSARY.md
       sha256: 0188cf160f110994b2fd3de80110458a88defa677752f7159b3d27cc58036bd8
     - path: README.md
-      sha256: 6c0ece05ea741d1e1db68a078a91f885b3d1dd8cd3dceff5b79ab13938894754
+      sha256: ef3f58e2690cf3e2206ff8119c048e20eeb166a42438edcbd6083b9b4532291c
     - path: ROADMAP.md
       sha256: b7273f42d86cc3f07bb1fb34af2d498526308c3306038f7fad1507e52b55b035
     - path: SPEC.md

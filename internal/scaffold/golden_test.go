@@ -149,12 +149,14 @@ func TestGolden_StandardJaWithMemory(t *testing.T) {
 	compareWithGolden(t, goldenRoot(t, "standard-ja-with-memory"), tmp)
 }
 
-// TestGolden_StandardWithExtras exercises the v0.4.1 optional-component
-// flags (`--with-ui` / `--with-api` / `--with-tdd` / `--with-changelog`)
-// all together. Coverage is intentionally one combined fixture rather
-// than four individual ones: the components are independent (no
-// shared template branching, per scaffold D3) so a single all-on tree
-// is enough to catch dispatch breakage.
+// TestGolden_StandardWithExtras exercises the single-file optional-
+// component flags (`--with-ui` / `--with-api` / `--with-tdd` /
+// `--with-changelog` / `--with-prompts`) all together. Coverage is
+// intentionally one combined fixture rather than several individual
+// ones: the components are independent (no shared template branching,
+// per scaffold D3) so a single all-on tree is enough to catch dispatch
+// breakage. This is also the only golden tree that carries
+// docs/prompts.md after v0.9.2 made it opt-in (ADR 0034).
 func TestGolden_StandardWithExtras(t *testing.T) {
 	tmp := t.TempDir()
 	opts := standardOpts(tmp)
@@ -162,6 +164,7 @@ func TestGolden_StandardWithExtras(t *testing.T) {
 	opts.WithAPI = true
 	opts.WithTDD = true
 	opts.WithChangelog = true
+	opts.WithPrompts = true
 	if err := Run(opts); err != nil {
 		t.Fatalf("Run: %v", err)
 	}

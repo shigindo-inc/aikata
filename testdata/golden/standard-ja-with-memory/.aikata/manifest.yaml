@@ -9,11 +9,11 @@ files:
     - path: AGENTS.md
       sha256: ccf0c9e8c39b954ca8d65c0f153be6445cfa0b969be297dba0a8ee330af56b1f
     - path: ARCHITECTURE.md
-      sha256: 7e37911d0b536cc80ffc505ff82c8096607e1fedaaae46261d1089c954559031
+      sha256: d0e774551190a5a25fd0d5f5b1bb54aac955e78fb0e383cae252eaa7ed0505c7
     - path: GLOSSARY.md
       sha256: e976e0f7da5cfaca579b6506aac43bcd97bc9cd245bf9fcd28d982646976bdd5
     - path: README.md
-      sha256: 1c22bbd6dfa07f8f46df26769bce295928a77f5a52217459d430e9eb8bfbfefd
+      sha256: ce699e223fe71164f412ba8cd99c18e7d7fcec36b37b9dcfdb7a594be0a4d61e
     - path: ROADMAP.md
       sha256: 0f2183949c5972eabe5e8d7fb89e6c56d2111de7693f31000bf6040dc1e159c5
     - path: SPEC.md
@@ -30,8 +30,6 @@ files:
       sha256: 17604981a5996b42dc1835427c3725d2a921886c5970e7c091e73e5f6ab7c162
     - path: docs/memory/user.md
       sha256: 4ffd4eb6038ba08bd5d0a338dddfd15ec03e949cc7e01e422944a85f9da352cc
-    - path: docs/prompts.md
-      sha256: cf75a91cefc00cb0247d0fe4ba1be5ba01c98e03c6051fe532465e4044c20daf
     - path: docs/tasks/current.md
       sha256: 95eede2cb1879b5048334d877ab70cc07fd9104d39850becb8372baa2ae750fb
     - path: docs/troubleshooting.md

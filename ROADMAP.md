@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -979,10 +979,13 @@ records the evidence, target landing point, and follow-up questions.
       the shipped surface; added a narrow `repolint` check asserting the
       README ADR index covers every `docs/adr/` file (no `doctor`
       behavior change).
-- [ ] **Default standard-scope audit** — verify that every generated
-      file has a distinct role in the shared-context model.
-      `docs/prompts.md` is the first removal / opt-in candidate
-      (Q-DESIGN-12).
+- [x] **Default standard-scope audit** ✅ (Q-DESIGN-12 resolved) —
+      every default-scaffolded file is confirmed to have a
+      distinct role in the shared-context model. `docs/prompts.md`, an
+      empty reusable-prompt skeleton, is moved to an opt-in
+      `aikata enable prompts` / `--with-prompts` capability (v0.9.2,
+      [ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md));
+      the removal is sync-visible but non-destructive (ADR 0019).
 - [x] **`doctor` scope follow-up ADR** ✅ — the direction is settled by
       [ADR 0033](./docs/adr/0033-doctor-default-scope-direction.md): a
       managed-document default with an explicit broader audit mode, with
@@ -1015,39 +1018,56 @@ Out of v0.9.0 intentionally:
 
 ---
 
-## v0.9.2 — Brand exploration artifacts (planned)
+## v0.9.2 — Scope discipline ✅ (released 2026-06-01)
 
-Add two opt-in, one-off authoring scaffolds for app projects without
-widening the default `standard` or future `extended` scope. Mobile-app
-dogfooding showed that icon and mascot exploration documents repeatedly
-save product-context reconstruction work, especially when prompts must
-be passed to an external image-generation LLM that cannot read the
-repository. [ADR 0031](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)
-records the boundary.
+Two scope-discipline changes that keep the default `standard` scaffold
+lean: add opt-in brand-exploration artifacts, and move the empty
+reusable-prompt library off the default surface. Both follow the v0.9.0
+core-concept stabilization principle (ADR 0028) — the default scaffold
+carries only documents with a distinct, non-latent role; convenience
+documents are opt-in.
 
-- [ ] **`aikata new app-icon`** — stamp
+**Brand-exploration artifacts** ([ADR 0031](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)).
+Mobile-app dogfooding showed that icon and mascot exploration documents
+repeatedly save product-context reconstruction work, especially when
+prompts must be passed to an external image-generation LLM that cannot
+read the repository.
+
+- [x] **`aikata new app-icon`** — stamp
       `docs/design/app-icon-concepts.md` with a concise bilingual starter
       structure: external-LLM product context, brand / technical
       constraints, concept comparison, image-generation prompts,
       negative prompts, and selection follow-up.
-- [ ] **`aikata new mascot`** — stamp
+- [x] **`aikata new mascot`** — stamp
       `docs/design/mascot-character-ideas.md` with a concise bilingual
       starter structure: external-LLM product context, mascot role /
       tone, candidate comparison, image-generation prompts, intended
       product surfaces, and selection follow-up.
-- [ ] **One-off artifact semantics** — register both under
-      `aikata list artifacts`; do not add config flags, init prompts,
-      preset defaults, or `.aikata/manifest.yaml` entries. After
-      stamping, the project owns the files and `aikata sync` does not
-      restore or merge them.
-- [ ] **Verification** — add component / CLI tests for en + ja
-      rendering, collision refusal, dry-run output, artifact listing,
-      and zero residue in unchanged `minimal` / `standard` golden trees.
+- [x] **One-off artifact semantics** — both registered under
+      `aikata list artifacts`; no config flags, init prompts, preset
+      defaults, or `.aikata/manifest.yaml` entries. After stamping, the
+      project owns the files and `aikata sync` does not restore or merge
+      them. Collision refuses rather than overwriting.
+
+**Reusable-prompts opt-in** ([ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md),
+Q-DESIGN-12). The empty `docs/prompts.md` skeleton is removed from the
+default `standard` / `flutter` / `typescript` scopes and offered as an
+opt-in capability.
+
+- [x] **`aikata enable prompts` / `--with-prompts`** — single-file
+      capability rendering `docs/prompts.md`; schema-v2
+      `components.prompts`, manifest-recorded, `sync`-preserved. Removal
+      from the default scaffold is sync-visible but non-destructive
+      (ADR 0019).
+- [x] **Verification** — component / CLI tests for en + ja rendering,
+      collision refusal, dry-run output, artifact listing; golden trees
+      confirm `docs/prompts.md` leaves the default scopes and appears only
+      in `standard-with-extras`; `minimal` golden trees are unchanged.
 
 Out of v0.9.2 intentionally:
 
-- Default inclusion in `standard`, `extended`, `--with-ui`, or stack
-  selections.
+- Default inclusion of brand artifacts in `standard`, `extended`,
+  `--with-ui`, or stack selections.
 - A branding hierarchy or speculative `new logo` / `new brand-guide`
   commands without repeated dogfooding evidence.
 

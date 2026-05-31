@@ -30,7 +30,6 @@ This project was scaffolded with
 
 - [`docs/tasks/current.md`](./docs/tasks/current.md) — current in-flight work.
 - [`docs/troubleshooting.md`](./docs/troubleshooting.md) — known pitfalls.
-- [`docs/prompts.md`](./docs/prompts.md) — reusable prompts.
 
 ## Quickstart
 

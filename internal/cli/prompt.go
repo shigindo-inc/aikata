@@ -23,6 +23,7 @@ type promptResult struct {
 	WithTDD       bool
 	WithChangelog bool
 	WithMonorepo  bool
+	WithPrompts   bool
 	Lang          string
 	AITools       []string
 }
@@ -41,6 +42,7 @@ type promptSkip struct {
 	WithTDD       bool
 	WithChangelog bool
 	WithMonorepo  bool
+	WithPrompts   bool
 	Lang          bool
 	AITools       bool
 }
@@ -172,6 +174,7 @@ func runPrompt(r io.Reader, w io.Writer, defaults promptResult, skip promptSkip)
 		{skip.WithTDD, &result.WithTDD, "Include docs/testing.md (test strategy)?"},
 		{skip.WithChangelog, &result.WithChangelog, "Include CHANGELOG.md (release notes)?"},
 		{skip.WithMonorepo, &result.WithMonorepo, "Configure this project as a monorepo (apps/ + nested AGENTS.md)?"},
+		{skip.WithPrompts, &result.WithPrompts, "Include docs/prompts.md (reusable prompt library)?"},
 	}
 	for _, q := range optionalQs {
 		if q.skip {

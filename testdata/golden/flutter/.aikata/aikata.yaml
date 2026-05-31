@@ -13,6 +13,7 @@ components:
     tdd: false
     changelog: false
     monorepo: false
+    prompts: false
 features:
     obsidian_hints: false
 docs:

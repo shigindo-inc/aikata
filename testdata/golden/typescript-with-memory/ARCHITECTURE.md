@@ -45,8 +45,7 @@ samplekata/
 │   │   └── typescript.md
 │   ├── tasks/
 │   │   └── current.md
-│   ├── troubleshooting.md
-│   └── prompts.md
+│   └── troubleshooting.md
 ├── src/
 │   └── index.ts             # entry point
 ├── test/                    # mirrors src/

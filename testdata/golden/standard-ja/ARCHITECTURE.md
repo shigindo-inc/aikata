@@ -36,8 +36,7 @@ samplekata/
     │   └── 0001-record-architecture-decisions.md
     ├── tasks/
     │   └── current.md
-    ├── troubleshooting.md
-    └── prompts.md
+    └── troubleshooting.md
 ```
 
 _TODO: ソースコードのツリーが定まったら拡張する。_

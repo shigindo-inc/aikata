@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -417,6 +417,7 @@ aikata generate
   - [0031 — Brand Exploration Documents as One-off Artifacts](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)
   - [0032 — Split the Channel-publication Line by Distribution Value](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
   - [0033 — Direction for `doctor`'s Default Validation Scope](./docs/adr/0033-doctor-default-scope-direction.md)
+  - [0034 — Move the Reusable-prompts Library to an Opt-in Capability](./docs/adr/0034-reusable-prompts-opt-in-capability.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

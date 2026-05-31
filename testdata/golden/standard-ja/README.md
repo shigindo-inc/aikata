@@ -31,7 +31,6 @@ audience: [human, agent]
 
 - [`docs/tasks/current.md`](./docs/tasks/current.md) — 現在進行中の作業。
 - [`docs/troubleshooting.md`](./docs/troubleshooting.md) — 既知の落とし穴。
-- [`docs/prompts.md`](./docs/prompts.md) — 再利用可能なプロンプト集。
 
 ## クイックスタート
 
