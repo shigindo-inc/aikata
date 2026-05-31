@@ -20,6 +20,44 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- **Brand-exploration artifact design (ADR 0031)** — reserve the v0.9.2
+  implementation of `aikata new app-icon` and `aikata new mascot`.
+  The one-off authoring scaffolds will stamp
+  `docs/design/app-icon-concepts.md` and
+  `docs/design/mascot-character-ideas.md` without changing default
+  scopes, config flags, init prompts, or `sync` ownership.
+  (v0.9.2 ships after v0.9.3 — numeric order is direction, not ship
+  order; ADR 0032 D4.)
+
+## [0.9.3] - 2026-05-31
+
+First of the three value-ordered channel-publication lines
+([ADR 0032](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
+D1): **agent-ecosystem distribution**. Ships the distribution surface
+that matches aikata's core identity — agent-facing shared-context tooling
+discoverable where its users already work (ADR 0028). These are additive
+`dist/` artifacts; `minimal` / `standard` CLI output is unchanged
+(Do-No-Harm).
+
+### Added
+
+- **Universal `npx skills` package** — new tool-agnostic skill at
+  `dist/universal-skill/SKILL.md` per
+  [ADR 0015](./docs/adr/0015-first-party-skill-plugin-distribution.md).
+  It teaches any `AGENTS.md`-reading agent how to invoke the aikata CLI
+  and installs into the universal `.agents/skills/` layout via
+  `npx skills add …/tree/main/dist/universal-skill --agent universal`.
+  `dist/universal-skill/` is the canonical source — no publication mirror
+  repository is required. The skill is also attached as the
+  `aikata-universal-skill.md` release asset.
+- **Claude Code marketplace readiness** — a root
+  `.claude-plugin/marketplace.json` lists the v0.6.0 plugin scaffold so
+  the repository is installable as a self-hosted marketplace
+  (`/plugin marketplace add shigindo-inc/aikata`). `plugin.json` is
+  finalized for listing (version `0.6.0` → `0.9.3`, added `category` /
+  `keywords`). The **submission act to Anthropic's canonical marketplace
+  stays gated** on the upstream review flow (ADR 0032 D1); the
+  self-hosted and manual-copy install paths are supported today.
 - **Channel-publication split by distribution value (ADR 0032)** — split
   the former single v0.9.9 channel-publication line into three
   value-ordered lines: **v0.9.3** ships the prioritized agent-ecosystem
@@ -33,12 +71,6 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   the distribution-surface cadence table, the README ADR index, and
   `open-questions.md` (Q-ECOSYSTEM-04) are aligned; refines the v0.9.x
   line defined in ADR 0022.
-- **Brand-exploration artifact design (ADR 0031)** — reserve the v0.9.2
-  implementation of `aikata new app-icon` and `aikata new mascot`.
-  The one-off authoring scaffolds will stamp
-  `docs/design/app-icon-concepts.md` and
-  `docs/design/mascot-character-ideas.md` without changing default
-  scopes, config flags, init prompts, or `sync` ownership.
 
 ## [0.9.1] - 2026-05-31
 
