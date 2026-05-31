@@ -177,6 +177,36 @@ resolved and moved to
 [ADR 0027](../adr/0027-verification-expectation-in-generated-templates.md),
 Accepted 2026-05-31.)_
 
+### Q-DESIGN-12 — Which documents belong in the standard default scaffold?
+
+- **Status**: Open. Triggered by the v0.9 core-concept stabilization
+  review ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
+- **Question**: does each file emitted by `aikata init --scope standard`
+  have a distinct role that repeatedly saves context-reconstruction or
+  maintenance work?
+- **Leading**: keep the canonical rules / requirements / architecture /
+  terminology / ADR / working-state structure. Remove `docs/prompts.md`
+  from the default surface or make it opt-in unless dogfooding evidence
+  shows that an empty reusable-prompt library earns its maintenance cost.
+- **Unblocks**: the v0.9.0 default-scope simplification PR and any
+  sync-visible template removal decision.
+- **Updated**: 2026-05-31.
+
+### Q-DESIGN-13 — How small should built-in stack briefs become?
+
+- **Status**: Open. Triggered by the v0.9 core-concept stabilization
+  review ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
+- **Question**: which Flutter / TypeScript rules prevent recurring AI
+  collaboration failures, and which are general best-practice opinions
+  better left to downstream project edits or ADRs?
+- **Leading**: retain common failure modes, minimum verification
+  commands, and TODO prompts for project-specific choices. Remove or
+  soften policy that is valid only for some teams. A scope-base /
+  stack-partial refactor is maintenance-only: it must reduce drift
+  without unlocking new stack combinations in the same change.
+- **Unblocks**: the v0.9.0 stack-brief simplification PR.
+- **Updated**: 2026-05-31.
+
 ---
 
 ## Q-PROMPT
@@ -309,7 +339,7 @@ Accepted 2026-05-31.)_
     commands, MCP servers, hooks, sub-agents, themes, and agent skills.
 - **Resolved part**: aikata will ship first-party wrappers that teach
   agents how to use the aikata CLI. `npx skills add ... --agent
-  universal` support is planned for v0.9.x, with source artifacts under
+  universal` support is planned for v0.9.9, with source artifacts under
   `dist/`. aikata will not be distributed as an "aikata agent"
   personality.
 - **Open part**: should aikata ever scaffold / manage curated
@@ -343,6 +373,24 @@ Accepted 2026-05-31.)_
   recommended snippets for Claude Code plugin layouts.
 - Kept as a back-reference; will be removed in a future cleanup.
 - **Updated**: 2026-05-29.
+
+### Q-DOCTOR-02 — Should `doctor` default to aikata-managed documents?
+
+- **Status**: Open. Follow-up to
+  [ADR 0021](../adr/0021-doctor-scope-and-exclusion.md) and the v0.9
+  core-concept stabilization review
+  ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
+- **Question**: should the default walk validate primarily the document
+  surface aikata manages, with an explicit broader audit mode for
+  additional Markdown paths, instead of validating almost every
+  repository Markdown file and requiring exclusions for third-party
+  contracts?
+- **Leading**: yes, if adopted and pre-manifest projects still receive
+  useful validation without hidden blind spots. Keep `doctor.exclude`
+  as an escape hatch where it remains useful.
+- **Unblocks**: a focused `doctor` scope ADR and the v0.9.0 behavior
+  change.
+- **Updated**: 2026-05-31.
 
 ---
 

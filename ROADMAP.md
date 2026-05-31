@@ -333,7 +333,7 @@ one-shell-line elsewhere, and scales to a monorepo.
 
 v0.6.0 ships the **agent-doable subset**. User-action channels
 (Homebrew tap, npm wrapper, marketplace listing) are deferred to the
-v0.9.x channel-publication line so v0.6.x can close on repository-local
+v0.9.9 channel-publication line so v0.6.x can close on repository-local
 work. v0.6.1 / v0.6.2 / v0.6.3 are unscheduled patch releases
 (rebaseline fix, ROADMAP & manifest hygiene, scope derivation) — see
 their own sections.
@@ -349,16 +349,16 @@ Shipped:
   placed the binary (`github-release`, `install-script`,
   `go-install`, `homebrew`, `npm`, `unknown`). Reads either a
   build-time ldflag or `<install-dir>/aikata.install-source` (written
-  by `scripts/install.sh`). Foundation for a v0.9.x native
+  by `scripts/install.sh`). Foundation for a v0.9.9 native
   `aikata update --apply` self-update; the consuming side ships in
-  the v0.9.x channel-publication line once Homebrew / npm channels
+  the v0.9.9 channel-publication line once Homebrew / npm channels
   exist.
 - `dist/claude-code/plugin/` — Claude Code plugin scaffold bundling
   the v0.3.1 skill with four slash commands (`/aikata-init`,
   `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`). Installable
   manually today (`cp -r dist/claude-code/plugin/*
   ~/.claude/plugins/aikata/`); marketplace listing is deferred to
-  v0.9.x.
+  v0.9.9.
 
 Deferred again to v0.7+ (no projection in v0.6):
 
@@ -383,7 +383,7 @@ hashes seeded from the **upstream rendering** so the user's
 customisations register as `user-only-edit` on the next sync.
 
 Originally planned v0.6.1 work (channel publication) is deferred to
-v0.9.x; nothing else lands in v0.6.1 so the fix can be tagged and
+v0.9.9; nothing else lands in v0.6.1 so the fix can be tagged and
 shipped without coupling.
 
 - [x] `internal/sync/sync.go` — non-destructive rebaseline path.
@@ -617,8 +617,8 @@ location.
 v0.7.x is considered closed at v0.7.3 (with v0.7.4 as an optional
 cleanup tail) unless a further critical patch is needed. v0.8.x
 covers security & governance hardening of the aikata repository
-itself; v0.9.x covers channel publication; v1.0 covers the stable
-surface (see below).
+itself; v0.9.0 covers core-concept stabilization; v0.9.9 covers channel
+publication; v1.0 covers the stable surface (see below).
 
 Out of v0.7.x intentionally:
 
@@ -628,13 +628,11 @@ Out of v0.7.x intentionally:
 - An `aikata expand <tier>` verb — deferred per ADR 0017 until
   `extended` exists or a real project surfaces the need.
 
-v0.9.x is the channel-publication line (Homebrew / npm / marketplace /
-native self-update); it was previously numbered v0.8.x and moved back
-one minor when the security & governance hardening line was inserted
-ahead of it (ADR 0022). The next planned milestone after v0.9.x is
-v1.0. No separate RC / stabilization line is reserved today; if v0.8.x
-or v0.9.x expose upgrade or compatibility issues, a stabilization line
-can be inserted before v1.0 at that point.
+v0.9.0 is the core-concept stabilization line inserted after the v0.8.5
+maintainer review (ADR 0028). v0.9.9 is the channel-publication line
+(Homebrew / npm / marketplace / native self-update); that work was
+previously numbered v0.8.x and moved back one minor when the security &
+governance hardening line was inserted ahead of it (ADR 0022).
 
 ---
 
@@ -642,7 +640,7 @@ can be inserted before v1.0 at that point.
 
 **Goal**: bring the aikata *repository itself* up to the governance and
 supply-chain bar expected of a publicly published OSS project before the
-v0.9.x channel-publication line widens its distribution footprint. Scope
+v0.9.9 channel-publication line widens its distribution footprint. Scope
 is deliberately limited to aikata's own repo posture; the operational-
 readiness *templates* that `aikata init --preset extended` scaffolds for
 *user* projects (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
@@ -732,7 +730,7 @@ Out of v0.8.x intentionally:
 **Goal**: a pre-v1.0 stable-surface correction, interleaved into the
 0.8.x number space (not part of the security & governance theme of
 v0.8.0 / v0.8.1; see [ADR 0024](./docs/adr/0024-scope-stack-axes-split.md)
-for why it is numbered here rather than renumbering the v0.9.x line).
+for why it is numbered here rather than renumbering the v0.9.9 line).
 
 `aikata init`'s single `--preset minimal|standard|flutter|typescript`
 flag fuses two orthogonal axes — documentation **scope** and target
@@ -961,7 +959,52 @@ Out of v0.8.5 intentionally:
 
 ---
 
-## v0.9.x — Channel publication (pending)
+## v0.9.0 — Core-concept stabilization (pending)
+
+**Goal**: make the existing product easier to understand and trust
+before widening its ecosystem surface in v1.0+.
+
+This tranche responds to a maintainer review after v0.8.5: aikata's
+value is reducing the human cost of maintaining shared project context
+for humans and AI coding agents. Plausible future extensions must not
+turn it into an all-purpose template platform whose value is hard to
+explain. [ADR 0028](./docs/adr/0028-prioritize-core-concept-stabilization.md)
+records the priority rule; the
+[v0.9.0 design note](./docs/decisions/v0.9-core-concept-stabilization.md)
+records the evidence, target landing point, and follow-up questions.
+
+- [ ] **Live-document convergence** — align README, SPEC, ROADMAP,
+      adoption docs, and dogfood config with the shipped v0.8.5
+      surface. Identify narrowly-scoped checks that prevent repeat
+      drift without turning `doctor` into a general repository linter.
+- [ ] **Default standard-scope audit** — verify that every generated
+      file has a distinct role in the shared-context model.
+      `docs/prompts.md` is the first removal / opt-in candidate
+      (Q-DESIGN-12).
+- [ ] **`doctor` scope follow-up ADR** — investigate a
+      managed-document default with an explicit broader audit mode.
+      Preserve a coherent story for adopted and pre-manifest projects
+      before changing behavior (Q-DOCTOR-02).
+- [ ] **Stack-brief simplification** — shorten Flutter / TypeScript
+      guidance toward recurring AI failure modes, minimum verification
+      commands, and ADR prompts. Treat any scope-base / stack-partial
+      refactor as drift reduction, not a stack-expansion project
+      (Q-DESIGN-13).
+- [ ] **v1.0 backlog pruning** — move external stack repositories,
+      third-party skill management, new workflow domains, and broad
+      native-wrapper proliferation off the critical path unless
+      dogfooding evidence justifies them.
+
+Out of v0.9.0 intentionally:
+
+- Distribution-channel publication remains the separate v0.9.9 line.
+- New built-in stacks, workflow domains, multi-stack composition,
+  external stack repositories, and third-party skill management stay
+  deferred unless concrete demand justifies them.
+
+---
+
+## v0.9.9 — Channel publication (pending)
 
 Tracking the distribution-channel items that need maintainer action
 outside the aikata repo. These no longer block the v0.6.x line; v0.6.x
@@ -1066,7 +1109,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.6.3 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.7.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.8.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
-| v0.9.x | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
+| v0.9.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
@@ -1079,7 +1123,9 @@ Plugin / skill scope grows monotonically too:
   only.
 - **v0.8.x** — no new distribution channel; security & governance
   hardening of the aikata repository only (ADR 0022).
-- **v0.9.x** — adds channel publication and a first-party universal
+- **v0.9.0** — stabilizes the core concept and generated-document
+  surface. It does not add a distribution channel.
+- **v0.9.9** — adds channel publication and a first-party universal
   skill package for `npx skills add ... --agent universal`. The package
   wraps the aikata CLI; it does not install arbitrary third-party
   skills.

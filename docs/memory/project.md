@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-28
+updated: 2026-05-31
 audience: [human, agent]
 memory_type: project
 ---
@@ -112,3 +112,12 @@ stakeholders, and current "north stars." See
   `new` creates authoring artifacts. Tracked in
   [ROADMAP.md v0.7.x](../../ROADMAP.md#v07x--schema--adoption-hardening-planned)
   and Q-DESIGN-10.
+- [2026-05-31] **v0.9.0 prioritizes core-concept stabilization before
+  ecosystem expansion.** aikata's north star is reducing the human cost
+  of maintaining shared project context for humans and AI coding agents.
+  Converge live docs, audit the default scaffold, reconsider `doctor`'s
+  default scope, and shorten stack briefs before adding new stack /
+  workflow / plugin breadth. Recorded in
+  [ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md) and
+  the
+  [v0.9.0 design note](../decisions/v0.9-core-concept-stabilization.md).
