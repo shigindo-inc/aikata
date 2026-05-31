@@ -983,10 +983,13 @@ records the evidence, target landing point, and follow-up questions.
       file has a distinct role in the shared-context model.
       `docs/prompts.md` is the first removal / opt-in candidate
       (Q-DESIGN-12).
-- [ ] **`doctor` scope follow-up ADR** — investigate a
-      managed-document default with an explicit broader audit mode.
-      Preserve a coherent story for adopted and pre-manifest projects
-      before changing behavior (Q-DOCTOR-02).
+- [x] **`doctor` scope follow-up ADR** ✅ — the direction is settled by
+      [ADR 0033](./docs/adr/0033-doctor-default-scope-direction.md): a
+      managed-document default with an explicit broader audit mode, with
+      `doctor.exclude` kept as an escape hatch. The behavior change is
+      deliberately deferred to its own scoped step with before/after
+      coverage proof, preserving a coherent story for adopted and
+      pre-manifest projects (Q-DOCTOR-02 resolved, direction only).
 - [x] **Stack-brief simplification** ✅ (Q-DESIGN-13 resolved) — the
       Flutter / TypeScript briefs gain a code-free canonical layout
       convention (v0.9.0,
@@ -994,10 +997,13 @@ records the evidence, target landing point, and follow-up questions.
       are trimmed to standard-aligned guardrails (v0.9.1,
       [ADR 0030](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md));
       aikata generates no stack code.
-- [ ] **v1.0 backlog pruning** — move external stack repositories,
+- [x] **v1.0 backlog pruning** ✅ — external stack repositories,
       third-party skill management, new workflow domains, and broad
-      native-wrapper proliferation off the critical path unless
-      dogfooding evidence justifies them.
+      native-wrapper proliferation are confirmed **off the critical
+      path**: they stay demand-driven, recorded in the v1.0 / v1.x
+      sections and "Out-of-scope, indefinitely" rather than as v0.9.x
+      commitments. None is pulled forward without concrete dogfooding
+      evidence (consistent with "Out of v0.9.0 intentionally" below).
 
 Out of v0.9.0 intentionally:
 

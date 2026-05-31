@@ -416,6 +416,7 @@ aikata generate
   - [0030 — Trim Stack Briefs to Standard-aligned Guardrails](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md)
   - [0031 — Brand Exploration Documents as One-off Artifacts](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)
   - [0032 — Split the Channel-publication Line by Distribution Value](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
+  - [0033 — Direction for `doctor`'s Default Validation Scope](./docs/adr/0033-doctor-default-scope-direction.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 
