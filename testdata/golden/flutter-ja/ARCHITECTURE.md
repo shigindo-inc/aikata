@@ -41,8 +41,7 @@ samplekata/
 │   │   └── flutter.md
 │   ├── tasks/
 │   │   └── current.md
-│   ├── troubleshooting.md
-│   └── prompts.md
+│   └── troubleshooting.md
 ├── lib/
 │   └── main.dart            # アプリのエントリ、widget tree のルート
 ├── test/

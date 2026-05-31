@@ -238,6 +238,7 @@ func upsertComponentsBlock(root *yaml.Node, tdd, monorepo bool) {
 		ensureBoolKey(existing, "tdd", tdd)
 		ensureBoolKey(existing, "changelog", false)
 		ensureBoolKey(existing, "monorepo", monorepo)
+		ensureBoolKey(existing, "prompts", false)
 		return
 	}
 	block := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
@@ -248,6 +249,7 @@ func upsertComponentsBlock(root *yaml.Node, tdd, monorepo bool) {
 		scalarString("tdd"), scalarBool(tdd),
 		scalarString("changelog"), scalarBool(false),
 		scalarString("monorepo"), scalarBool(monorepo),
+		scalarString("prompts"), scalarBool(false),
 	)
 	setMapKey(root, "components", block)
 }

@@ -68,6 +68,58 @@ func TestNew_WithoutConfig_Exit2(t *testing.T) {
 	}
 }
 
+// TestNewAppIcon_HappyPath verifies `aikata new app-icon` stamps the
+// brand-exploration artifact under docs/design/ (ADR 0031).
+func TestNewAppIcon_HappyPath(t *testing.T) {
+	root := t.TempDir()
+	writeAikataYamlV2(t, root, "tester")
+
+	if _, _, err := runNewFromRoot(t, root, "app-icon"); err != nil {
+		t.Fatalf("new app-icon: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "docs", "design", "app-icon-concepts.md")); err != nil {
+		t.Fatalf("expected docs/design/app-icon-concepts.md: %v", err)
+	}
+	// A one-off artifact records nothing in the manifest (ADR 0031 D2).
+	if _, err := os.Stat(filepath.Join(root, ".aikata", "manifest.yaml")); !os.IsNotExist(err) {
+		t.Errorf("new app-icon must not write .aikata/manifest.yaml; stat err = %v", err)
+	}
+}
+
+// TestNewMascot_DryRun verifies --dry-run prints a plan and writes
+// nothing.
+func TestNewMascot_DryRun(t *testing.T) {
+	root := t.TempDir()
+	writeAikataYamlV2(t, root, "tester")
+
+	out, _, err := runNewFromRoot(t, root, "mascot", "--dry-run")
+	if err != nil {
+		t.Fatalf("new mascot --dry-run: %v", err)
+	}
+	if !strings.Contains(out, "Would write docs/design/mascot-character-ideas.md") {
+		t.Errorf("expected dry-run plan in output; got %q", out)
+	}
+	if _, err := os.Stat(filepath.Join(root, "docs", "design", "mascot-character-ideas.md")); !os.IsNotExist(err) {
+		t.Errorf("dry-run wrote a file; stat err = %v", err)
+	}
+}
+
+// TestNewAppIcon_CollisionExit refuses to clobber an existing artifact.
+func TestNewAppIcon_CollisionExit(t *testing.T) {
+	root := t.TempDir()
+	writeAikataYamlV2(t, root, "tester")
+	if _, _, err := runNewFromRoot(t, root, "app-icon"); err != nil {
+		t.Fatalf("first new app-icon: %v", err)
+	}
+	_, _, err := runNewFromRoot(t, root, "app-icon")
+	if err == nil {
+		t.Fatalf("expected an error on the second new app-icon (collision)")
+	}
+	if !strings.Contains(err.Error(), "already exists") {
+		t.Errorf("expected collision message; got %q", err.Error())
+	}
+}
+
 // TestNew_UnknownArtifact_Exit2 confirms the parent dispatcher
 // rejects unknown artifact names.
 func TestNew_UnknownArtifact_Exit2(t *testing.T) {

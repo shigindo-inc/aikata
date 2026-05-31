@@ -213,7 +213,6 @@ var expectedStandardFiles = []string{
 	".gitignore",
 	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
-	"docs/prompts.md",
 	"docs/tasks/current.md",
 	"docs/troubleshooting.md",
 }
@@ -316,7 +315,6 @@ var expectedFlutterFiles = []string{
 	".gitignore",
 	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
-	"docs/prompts.md",
 	"docs/stacks/flutter.md",
 	"docs/tasks/current.md",
 	"docs/troubleshooting.md",
@@ -471,7 +469,6 @@ var expectedTypescriptFiles = []string{
 	".gitignore",
 	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
-	"docs/prompts.md",
 	"docs/stacks/typescript.md",
 	"docs/tasks/current.md",
 	"docs/troubleshooting.md",

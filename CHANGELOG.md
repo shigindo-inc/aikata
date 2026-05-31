@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -18,31 +18,55 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-06-01
+
+**Scope discipline.** Two changes that keep the default `standard`
+scaffold lean (ADR 0028 core-concept stabilization): add opt-in
+brand-exploration artifacts, and move the empty reusable-prompt library
+off the default surface. Also closes the v0.9.0 core-concept
+stabilization tail (numeric order is direction, not ship order: v0.9.2
+ships after v0.9.3 — ADR 0032 D4).
+
 ### Added
 
-- **Brand-exploration artifact design (ADR 0031)** — reserve the v0.9.2
-  implementation of `aikata new app-icon` and `aikata new mascot`.
-  The one-off authoring scaffolds will stamp
-  `docs/design/app-icon-concepts.md` and
-  `docs/design/mascot-character-ideas.md` without changing default
-  scopes, config flags, init prompts, or `sync` ownership.
-  (v0.9.2 ships after v0.9.3 — numeric order is direction, not ship
-  order; ADR 0032 D4.)
-- **`doctor` default-scope direction (ADR 0033)** — record that
-  `aikata doctor`'s default walk should validate primarily the
-  aikata-managed document surface, with an explicit broader audit mode
-  and `doctor.exclude` retained as an escape hatch. The behavior change
-  is deliberately deferred to its own scoped step with before/after
-  coverage proof; this is a documentation-only decision (no `doctor`
-  behavior change). Resolves Q-DOCTOR-02 (direction only).
+- **Brand-exploration artifacts (ADR 0031)** — `aikata new app-icon` and
+  `aikata new mascot` stamp `docs/design/app-icon-concepts.md` and
+  `docs/design/mascot-character-ideas.md` with concise bilingual starter
+  structures (external-LLM product context, constraints, candidate
+  comparison, self-contained image-generation prompts + negative prompts,
+  selection follow-up). One-off artifacts: not recorded in
+  `.aikata/manifest.yaml`, not restored by `aikata sync`, and refusing to
+  clobber an existing file. Listed under `aikata list artifacts`. Not
+  emitted by any default scope, `--with-ui`, or stack selection.
+- **Reusable-prompt library opt-in (ADR 0034)** — `aikata enable prompts`
+  and `aikata init --with-prompts` (with a matching interactive question)
+  render `docs/prompts.md` as a single-file capability with the schema-v2
+  `components.prompts` flag, manifest tracking, and `sync` preservation.
 
 ### Changed
 
-- **v0.9.0 core-concept stabilization tail closed** — the v1.0 backlog
-  pruning item is resolved: external stack repositories, third-party
-  skill management, new workflow domains, and broad native-wrapper
-  proliferation are confirmed off the critical path (demand-driven).
-  Documentation-only ROADMAP / open-questions hygiene.
+- **`docs/prompts.md` removed from the default `standard` / `flutter` /
+  `typescript` scopes** (ADR 0034, Q-DESIGN-12) — the empty
+  reusable-prompt skeleton no longer ships by default; it is now opt-in
+  (see Added). **Migration**: this is sync-visible but non-destructive
+  (ADR 0019) — an existing project keeps its `docs/prompts.md`; on the
+  next `aikata sync` the file is treated as user-owned (it simply stops
+  receiving upstream updates). Run `aikata enable prompts` to track it as
+  a managed capability again, or delete it and the deletion will stick.
+
+### Decided (documentation-only)
+
+- **`doctor` default-scope direction (ADR 0033)** — `aikata doctor`'s
+  default walk should validate primarily the aikata-managed document
+  surface, with an explicit broader audit mode and `doctor.exclude`
+  retained as an escape hatch. The behavior change is deliberately
+  deferred to its own scoped step with before/after coverage proof (no
+  `doctor` behavior change in this release). Resolves Q-DOCTOR-02
+  (direction only).
+- **v0.9.0 core-concept stabilization tail closed** — external stack
+  repositories, third-party skill management, new workflow domains, and
+  broad native-wrapper proliferation are confirmed off the critical path
+  (demand-driven). ROADMAP / open-questions hygiene.
 
 ## [0.9.3] - 2026-05-31
 

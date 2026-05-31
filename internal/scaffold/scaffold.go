@@ -49,6 +49,11 @@ type Options struct {
 	// Per-app `AGENTS.md` files are user-managed; aikata does not
 	// regenerate them.
 	WithMonorepo bool
+	// WithPrompts provisions the opt-in reusable-prompt library at
+	// docs/prompts.md (ADR 0034). Single-file component; preset
+	// templates do not branch on this flag. Off by default — the file
+	// was a default scaffold through v0.9.1 and is now opt-in.
+	WithPrompts bool
 	// Stacks lists stack identifiers (e.g. "flutter") the project opts
 	// into. Templates branch on {{range .Stacks}} to include
 	// docs/stacks/<stack>.md cross-references; the values also flow
@@ -181,6 +186,7 @@ func renderInto(opts Options) (map[string]string, error) {
 				Clock:       opts.Clock,
 			})
 		}},
+		{opts.WithPrompts, func() (map[string]string, error) { return components.RenderPrompts(sfp) }},
 	}
 	for _, spec := range optionalSpecs {
 		if !spec.enabled {
@@ -249,6 +255,7 @@ func addPresetArtifacts(opts Options, rendered map[string]string) error {
 		cfg.Components.TDD = opts.WithTDD
 		cfg.Components.Changelog = opts.WithChangelog
 		cfg.Components.Monorepo = opts.WithMonorepo
+		cfg.Components.Prompts = opts.WithPrompts
 		buf, err := config.Marshal(cfg)
 		if err != nil {
 			return err

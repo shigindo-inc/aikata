@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -153,6 +153,7 @@ the repository layout in §2 is the **producer**.
 | `API.md` | `--with-api` or API-style preset | v0.4.1 | API interface spec |
 | `docs/testing.md` | `--with-tdd` | v0.4.1 | Test strategy |
 | `CHANGELOG.md` | `--with-changelog` | v0.4.1 | Release notes |
+| `docs/prompts.md` | `--with-prompts` / `enable prompts` | v0.9.2 | Reusable-prompt library (opt-in; was a default through v0.9.1). See [ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md). |
 | `docs/memory/` (5 files) | `--with-memory` | v0.2 | Long-term agent memory (`user`, `feedback`, `project`, `reference` + `README`). See [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). |
 | `CONTRIBUTING.md` | `--oss` | v1.0 | Contributor guide |
 | `SECURITY.md` | `--oss` | v1.0 | Security policy |
@@ -217,6 +218,7 @@ components:                      # Schema-v2 explicit template-scope flags.
   tdd: false
   changelog: false
   monorepo: false
+  prompts: false                 # Opt-in reusable-prompt library (ADR 0034).
 
 features:                        # Non-scope ergonomic toggles.
   obsidian_hints: false

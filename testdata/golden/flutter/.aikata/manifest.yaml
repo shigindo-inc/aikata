@@ -9,19 +9,17 @@ files:
     - path: AGENTS.md
       sha256: c5ce509a36eba4750721307148edbff79fa7cd1c67d9928ccc243ff72124580c
     - path: ARCHITECTURE.md
-      sha256: fc2b1c58326edae5d2dffd42b1550d17888707f0430aaa9e5de5ddb29ea4d453
+      sha256: e49a4eabad93cbcefe75da79149499bf6b792b078767c39ee69fe71030bda609
     - path: GLOSSARY.md
       sha256: c543aae96ff420ccba2c3d28958dbd084716651b4421919046b486a1eebbe0ab
     - path: README.md
-      sha256: 6b9fd58392a015984c0a122125151c78894eea51b2ae7c6eb351094a5727b0b6
+      sha256: 462475c5a7ed3f7189396b1820d797dece39716cb3e4769ce607551c8b8f293c
     - path: ROADMAP.md
       sha256: b7273f42d86cc3f07bb1fb34af2d498526308c3306038f7fad1507e52b55b035
     - path: SPEC.md
       sha256: 63d3dbc46909b4b333ab6f1d09977aea677bbdfb032cd10dbc14c52d56759f1f
     - path: docs/adr/0001-record-architecture-decisions.md
       sha256: d01d6255ec1d111509708059ca525cea28ac80fac9b2a9be0547d753dba8ce42
-    - path: docs/prompts.md
-      sha256: 0a258ad92dfee3738ee14399b795f6935b3db492d3ecc82eb19425f05093224a
     - path: docs/stacks/flutter.md
       sha256: 09938141a3a1f196fc6ea4168d6d5a01ba60346465e6f2ad4204dd42e11b6e08
     - path: docs/tasks/current.md

@@ -1,0 +1,82 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Mascot Character Ideas — {{.ProjectName}}
+
+> A working document for exploring a mascot character. The prompts below
+> are written to be **self-contained**: paste one into an external
+> image-generation tool that cannot read this repository and still get a
+> useful result. Replace the bracketed placeholders, then keep the
+> candidates you want to compare.
+
+---
+
+## 1. Product context (for an external LLM)
+
+> One short paragraph an image model needs to understand the product and
+> why it has a mascot at all.
+
+- **What it is**: _[one sentence]_
+- **Primary users**: _[who]_
+- **Why a mascot**: _[onboarding warmth, brand recall, empty states, …]_
+
+## 2. Mascot role, tone, and constraints
+
+- **Role**: _[guide / helper / observer / company avatar]_
+- **Personality**: _[3–4 adjectives, e.g. calm, curious, dependable]_
+- **Tone to avoid**: _[e.g. childish, aggressive, gimmicky]_
+- **Form**: _[animal / object / abstract creature]_; works as a simple
+  silhouette and at sticker size.
+- **Palette**: _[brand colors, or "open"]_
+
+## 3. Candidate characters
+
+| # | Candidate | Form | Personality read | Why it could fit |
+|---|-----------|------|------------------|------------------|
+| A | _[name]_ | _[what]_ | _[trait]_ | _[rationale]_ |
+| B | _[name]_ | _[what]_ | _[trait]_ | _[rationale]_ |
+| C | _[name]_ | _[what]_ | _[trait]_ | _[rationale]_ |
+
+## 4. Image-generation prompts
+
+Self-contained prompts — copy one verbatim into your image tool.
+
+### Candidate A
+
+```text
+Mascot character for "[product]", a [one-line description].
+A [creature/object] that is [personality adjectives], [art style:
+flat vector / soft 3D / hand-drawn], [palette].
+Friendly pose, expressive but simple face, clean background,
+full-body, readable as a small sticker, no text.
+```
+
+### Candidate B
+
+```text
+[Second self-contained prompt …]
+```
+
+### Negative prompt
+
+```text
+text, words, watermark, photorealistic, uncanny face, extra limbs,
+cluttered background, harsh shadows, overly detailed, multiple characters
+```
+
+## 5. Intended product surfaces
+
+- _[onboarding, empty states, error pages, loading, docs, social, …]_
+- Note any surface that needs a specific pose or expression.
+
+## 6. Follow-up after a candidate is selected
+
+- [ ] Chosen candidate: _[A / B / C]_ and why.
+- [ ] Pose / expression set required.
+- [ ] Export sizes / formats and where each is used.
+- [ ] Open questions for a designer or a follow-up generation pass.

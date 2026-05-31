@@ -54,6 +54,10 @@ type Components struct {
 	TDD       bool `yaml:"tdd"`
 	Changelog bool `yaml:"changelog"`
 	Monorepo  bool `yaml:"monorepo"`
+	// Prompts records the opt-in reusable-prompt library at
+	// docs/prompts.md (ADR 0034). New in v0.9.2; pre-v0.9.2 v2 configs
+	// omit the key and read as false (the doc is no longer a default).
+	Prompts bool `yaml:"prompts"`
 }
 
 // Docs holds documentation-related preferences.

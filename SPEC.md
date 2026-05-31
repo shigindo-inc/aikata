@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -137,7 +137,8 @@ must do and the user-visible behavior. Implementation details live in
 
 - Create a default file set in an empty or new directory.
 - Read flags `--scope`, `--stack`, `--with-ui`, `--with-api`,
-  `--with-tdd`, `--with-changelog`, `--with-memory`, `--oss`,
+  `--with-tdd`, `--with-changelog`, `--with-prompts`, `--with-memory`,
+  `--oss`,
   `--monorepo`, `--lang ja|en`, `--ai-tools`, `--no-interactive`,
   `--dry-run`, `--force`. `--scope` (documentation breadth) and
   `--stack` (target technology) are orthogonal axes
@@ -150,8 +151,8 @@ must do and the user-visible behavior. Implementation details live in
   and exit with a non-error message.
 - In interactive mode (the default), ask: project name, scope, stack,
   language, AI tools, and the optional-component questions (long-term
-  memory, UI, API, TDD, changelog). Each optional-component question
-  maps 1:1 to its `--with-*` flag and defaults to N. Questions whose
+  memory, UI, API, TDD, changelog, prompts). Each optional-component
+  question maps 1:1 to its `--with-*` flag and defaults to N. Questions whose
   flag was explicitly set on the command line are silently skipped. The
   `extended` / OSS intent question remains scheduled for v1.0; the
   `--monorepo` flag is scheduled for v0.6.
@@ -175,7 +176,9 @@ The pre-v0.7.1 `aikata add` parent was removed without an alias.
 **`aikata enable <capability>`** must be able to enable:
 
 - A single-file component (`enable ui` → `UI.md`, `enable api` → `API.md`,
-  plus `tdd`, `changelog`).
+  plus `tdd`, `changelog`, and `prompts` → `docs/prompts.md`, the opt-in
+  reusable-prompt library per
+  [ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md)).
 - The long-term memory slot (`enable memory`).
 - A stack (`enable stack flutter`) and an AI-tool target
   (`enable ai-tool cursor`).
@@ -190,6 +193,13 @@ flips the matching `components.*` flag or appends to the
 scaffolds with no durable schema change:
 
 - A new ADR with a title (`new adr "use go modules"`).
+- Brand-exploration documents (`new app-icon` →
+  `docs/design/app-icon-concepts.md`, `new mascot` →
+  `docs/design/mascot-character-ideas.md`) per
+  [ADR 0031](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md).
+  These are not recorded in the manifest and `aikata sync` does not
+  restore them; a second `new` on an existing file refuses rather than
+  overwriting.
 
 ### 4.3 `aikata doctor`
 
@@ -311,8 +321,8 @@ AI-tool integrations.
 - Built-in scopes (`minimal`, `standard`) and stacks (`flutter`,
   `typescript`).
 - Available capabilities (`list capabilities`: memory, ui, api, tdd,
-  changelog, monorepo, stack, ai-tool, workflow) and one-off artifacts
-  (`list artifacts`: adr).
+  changelog, prompts, monorepo, stack, ai-tool, workflow) and one-off
+  artifacts (`list artifacts`: adr, app-icon, mascot).
 - AI tools the current aikata binary supports.
 
 ---

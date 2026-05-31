@@ -1,0 +1,79 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# App-icon Concepts — {{.ProjectName}}
+
+> A working document for exploring app-icon directions. The prompts
+> below are written to be **self-contained**: paste one into an external
+> image-generation tool that cannot read this repository and still get a
+> useful result. Replace the bracketed placeholders, then keep the
+> directions you want to compare.
+
+---
+
+## 1. Product context (for an external LLM)
+
+> One short paragraph an image model needs to understand the product.
+> What is {{.ProjectName}}, who uses it, and what feeling should the icon
+> convey?
+
+- **What it is**: _[one sentence]_
+- **Primary users**: _[who]_
+- **Desired impression**: _[e.g. trustworthy, playful, precise]_
+
+## 2. Brand and technical constraints
+
+- **Palette**: _[primary / accent colors, or "open"]_
+- **Must read at small sizes**: home-screen and favicon scale (down to
+  16–48 px); avoid fine detail and thin strokes.
+- **Shape system**: _[rounded square / circle / platform-adaptive]_
+- **Avoid**: _[motifs, colors, or clichés to steer away from]_
+- **Output**: square, transparent or solid background, no text in the
+  mark unless explicitly intended.
+
+## 3. Concept directions
+
+| # | Direction | Core idea | Why it could fit |
+|---|-----------|-----------|------------------|
+| A | _[name]_ | _[symbol / metaphor]_ | _[rationale]_ |
+| B | _[name]_ | _[symbol / metaphor]_ | _[rationale]_ |
+| C | _[name]_ | _[symbol / metaphor]_ | _[rationale]_ |
+
+## 4. Image-generation prompts
+
+Self-contained prompts — copy one verbatim into your image tool.
+
+### Direction A
+
+```text
+App icon for "[product]", a [one-line description].
+A [subject/symbol], [style: flat / gradient / 3D / line], [palette].
+Centered composition, simple geometric shape, legible at 48px,
+rounded-square canvas, solid [color] background, no text, no lettering.
+```
+
+### Direction B
+
+```text
+[Second self-contained prompt …]
+```
+
+### Negative prompt
+
+```text
+text, words, letters, watermark, photorealistic clutter, busy detail,
+drop shadows, gradients banding, off-center, multiple subjects
+```
+
+## 5. Follow-up after a direction is selected
+
+- [ ] Chosen direction: _[A / B / C]_ and why.
+- [ ] Export sizes / formats required (e.g. 1024² master, adaptive
+      foreground/background, favicon set).
+- [ ] Where the icon is used (store listing, home screen, in-app, docs).
+- [ ] Open questions for a designer or a follow-up generation pass.
