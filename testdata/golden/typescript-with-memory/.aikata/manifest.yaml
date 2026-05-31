@@ -33,7 +33,7 @@ files:
     - path: docs/prompts.md
       sha256: 0a258ad92dfee3738ee14399b795f6935b3db492d3ecc82eb19425f05093224a
     - path: docs/stacks/typescript.md
-      sha256: a27c6261d8166149d16bf9efcbdafb2c9542586e05a35842caec7c7507400341
+      sha256: 4d65c1656cc51dd5268f835ecdd5175b31a210566fd398e02b0ff2e5035ce58b
     - path: docs/tasks/current.md
       sha256: 6ac92075a5c4ce8b4b6e95f924383b05dc2f1aa0da30bea0d1c804f91daeccd7
     - path: docs/troubleshooting.md
