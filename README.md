@@ -414,6 +414,8 @@ aikata generate
   - [0028 — Prioritize Core-concept Stabilization](./docs/adr/0028-prioritize-core-concept-stabilization.md)
   - [0029 — Code-free Stack-brief Layout Convention](./docs/adr/0029-stack-brief-layout-convention.md)
   - [0030 — Trim Stack Briefs to Standard-aligned Guardrails](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md)
+  - [0031 — Brand Exploration Documents as One-off Artifacts](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)
+  - [0032 — Split the Channel-publication Line by Distribution Value](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 
