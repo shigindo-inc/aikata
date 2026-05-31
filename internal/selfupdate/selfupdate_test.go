@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -192,6 +193,9 @@ func TestHostAssetName(t *testing.T) {
 }
 
 func TestReplaceExecutable_PermissionDenied(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX directory-permission semantics; chmod does not gate writes on Windows")
+	}
 	if os.Geteuid() == 0 {
 		t.Skip("running as root ignores directory permissions")
 	}
