@@ -413,6 +413,7 @@ aikata generate
   - [0027 — Verification Expectation in Generated Templates](./docs/adr/0027-verification-expectation-in-generated-templates.md)
   - [0028 — Prioritize Core-concept Stabilization](./docs/adr/0028-prioritize-core-concept-stabilization.md)
   - [0029 — Code-free Stack-brief Layout Convention](./docs/adr/0029-stack-brief-layout-convention.md)
+  - [0030 — Trim Stack Briefs to Standard-aligned Guardrails](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 
