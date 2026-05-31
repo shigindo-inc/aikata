@@ -1,6 +1,6 @@
 {
   "name": "aikata",
-  "version": "0.6.0",
+  "version": "0.9.3",
   "description": "Scaffold and maintain AI-readable markdown documentation projects (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI.",
   "homepage": "https://github.com/shigindo-inc/aikata",
   "repository": "https://github.com/shigindo-inc/aikata",
@@ -11,6 +11,8 @@
       "url": "https://github.com/shigindo-inc"
     }
   ],
+  "category": "development",
+  "keywords": ["scaffolding", "documentation", "agents", "markdown", "agents-md", "claude-md", "adr"],
   "tags": ["scaffolding", "documentation", "agents", "markdown"],
   "components": {
     "skills": [

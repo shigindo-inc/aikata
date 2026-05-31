@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "aikata",
+  "version": "0.9.3",
+  "description": "First-party Claude Code distribution for aikata — scaffold and maintain AI-readable markdown documentation (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI.",
+  "owner": {
+    "name": "shigindo-inc",
+    "url": "https://github.com/shigindo-inc"
+  },
+  "plugins": [
+    {
+      "name": "aikata",
+      "description": "Scaffold and maintain AI-readable markdown documentation projects (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI.",
+      "version": "0.9.3",
+      "author": {
+        "name": "shigindo-inc",
+        "url": "https://github.com/shigindo-inc"
+      },
+      "source": "./dist/claude-code/plugin",
+      "category": "development",
+      "tags": ["scaffolding", "documentation", "agents", "markdown"]
+    }
+  ]
+}

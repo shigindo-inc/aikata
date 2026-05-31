@@ -1047,7 +1047,7 @@ Out of v0.9.2 intentionally:
 
 ---
 
-## v0.9.3 — Agent-ecosystem distribution (planned)
+## v0.9.3 — Agent-ecosystem distribution ✅ (released 2026-05-31)
 
 First of the three value-ordered channel-publication lines that
 [ADR 0032](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
@@ -1058,20 +1058,23 @@ tooling, discoverable where its users already work (ADR 0028) — and is the
 is independent of the still-unshipped v0.9.2 brand-exploration line (the
 v0.8.3-before-v0.8.2 precedent).
 
-- [ ] **Universal `npx skills add` package** — first-party aikata usage
-      guidance, source under `dist/universal-skill/` per
+- [x] **Universal `npx skills add` package** — first-party aikata usage
+      guidance at `dist/universal-skill/SKILL.md` per
       [ADR 0015](./docs/adr/0015-first-party-skill-plugin-distribution.md).
-      Fully repo-local and agent-doable; the headline v0.9.3 deliverable.
-      A publication mirror is allowed only if the installer requires a
-      dedicated repository shape, and must point back to this repo as
-      canonical.
-- [ ] **Claude Code marketplace readiness** — finalize the plugin
-      manifest / listing metadata so aikata is submission-ready (the
-      v0.6.0 plugin scaffold already exists). The **submission act stays
-      gated** on the upstream marketplace flow being available plus a
-      maintainer submitting for review; per the v0.6.0 agent-doable-subset
-      precedent that external step does not block the release. The manual
-      plugin-install path stays supported regardless.
+      A tool-agnostic skill installed via
+      `npx skills add …/tree/main/dist/universal-skill --agent universal`;
+      `dist/universal-skill/` is canonical, so no publication mirror is
+      required. Also shipped as the `aikata-universal-skill.md` release
+      asset.
+- [x] **Claude Code marketplace readiness** — a root
+      `.claude-plugin/marketplace.json` lists the v0.6.0 plugin scaffold,
+      making the repo installable as a self-hosted marketplace
+      (`/plugin marketplace add shigindo-inc/aikata`); `plugin.json` is
+      finalized for listing (version → 0.9.3, `category` / `keywords`).
+      The **submission act stays gated** on the upstream marketplace flow
+      plus a maintainer submitting for review; per the v0.6.0
+      agent-doable-subset precedent that external step does not block the
+      release. The manual plugin-install path stays supported regardless.
 
 Out of v0.9.3 intentionally:
 
