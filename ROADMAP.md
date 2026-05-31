@@ -1001,7 +1001,8 @@ records the evidence, target landing point, and follow-up questions.
 
 Out of v0.9.0 intentionally:
 
-- Distribution-channel publication remains the separate v0.9.9 line.
+- Distribution-channel publication remains the separate v0.9.3 / v0.9.4 /
+  v0.9.9 lines (ADR 0032).
 - New built-in stacks, workflow domains, multi-stack composition,
   external stack repositories, and third-party skill management stay
   deferred unless concrete demand justifies them.
@@ -1046,13 +1047,70 @@ Out of v0.9.2 intentionally:
 
 ---
 
-## v0.9.9 — Channel publication (pending)
+## v0.9.3 — Agent-ecosystem distribution (planned)
 
-Tracking the distribution-channel items that need maintainer action
-outside the aikata repo. These no longer block the v0.6.x line; v0.6.x
-closes at v0.6.3 unless a critical patch is needed. Previously numbered
-v0.8.x; moved back one minor when the v0.8.x security & governance
-hardening line was inserted ahead of it (ADR 0022).
+First of the three value-ordered channel-publication lines that
+[ADR 0032](./docs/adr/0032-split-channel-publication-by-distribution-value.md)
+split out of the former single v0.9.9 line. v0.9.3 ships the distribution
+surface that matches aikata's core identity — agent-facing shared-context
+tooling, discoverable where its users already work (ADR 0028) — and is the
+**prioritized** line. Numeric order is direction, not ship order: v0.9.3
+is independent of the still-unshipped v0.9.2 brand-exploration line (the
+v0.8.3-before-v0.8.2 precedent).
+
+- [ ] **Universal `npx skills add` package** — first-party aikata usage
+      guidance, source under `dist/universal-skill/` per
+      [ADR 0015](./docs/adr/0015-first-party-skill-plugin-distribution.md).
+      Fully repo-local and agent-doable; the headline v0.9.3 deliverable.
+      A publication mirror is allowed only if the installer requires a
+      dedicated repository shape, and must point back to this repo as
+      canonical.
+- [ ] **Claude Code marketplace readiness** — finalize the plugin
+      manifest / listing metadata so aikata is submission-ready (the
+      v0.6.0 plugin scaffold already exists). The **submission act stays
+      gated** on the upstream marketplace flow being available plus a
+      maintainer submitting for review; per the v0.6.0 agent-doable-subset
+      precedent that external step does not block the release. The manual
+      plugin-install path stays supported regardless.
+
+Out of v0.9.3 intentionally:
+
+- Homebrew tap and npm wrapper (deferred to v0.9.9 — convenience-only).
+- Native `aikata update --apply` (v0.9.4).
+
+---
+
+## v0.9.4 — Native self-update for existing channels (planned)
+
+Second value-ordered line (ADR 0032 D2). Ships `aikata update --apply`
+covering only the channels that exist today: `install-script`,
+`go-install`, and `github-release`. The foundation
+(`internal/install.Detect()` and the `aikata.install-source` marker
+written by `scripts/install.sh`) shipped in v0.6.0.
+
+- [ ] **`aikata update --apply`** — consume `internal/install.Detect()`
+      and pick the safe upgrade path per channel. The highest-value branch
+      is **`install-script` self-update** (the `curl … | sh` audience is
+      aikata's main no-Go install path). The `homebrew` / `npm` branches
+      are stubbed with an actionable "use your package manager" message
+      until those channels are real (v0.9.9).
+
+Native self-update is a convenience, not essential; v0.9.4 keeps it
+isolated from the v0.9.3 ecosystem work so neither blocks the other.
+
+---
+
+## v0.9.9 — Native package-manager channels (pending)
+
+Third and lowest-priority channel-publication line (ADR 0032 D3). The
+convenience-only package-manager channels and their dependent self-update
+branches. These fill no open install gap — `curl … | sh` (v0.2.1, with
+SHA-256 verification) already covers no-Go install, and `go install`
+covers Go users — so they are deferred until concrete demand (a user
+asking for `brew install aikata` / `npx aikata`) justifies the standing
+maintenance cost. They need out-of-repo maintainer action and were
+previously numbered v0.8.x; moved back one minor when the v0.8.x security
+& governance hardening line was inserted ahead of them (ADR 0022).
 
 - [ ] **Homebrew tap** (`shigindo-inc/tap/aikata`) published from
       the release workflow. Requires creating the
@@ -1062,20 +1120,9 @@ hardening line was inserted ahead of it (ADR 0022).
       org credentials (`shigindo-inc` scope) configured as
       `NPM_TOKEN`. v0.6.0 shipped `internal/install`'s Source enum
       pre-populated with `npm`; the wrapper just needs to publish.
-- [ ] **Claude Code marketplace listing**. Requires the upstream
-      plugin marketplace listing flow to be available + a
-      maintainer to submit aikata for review. Manual install path
-      stays supported regardless.
-- [ ] **Universal `npx skills add` package** for first-party aikata
-      usage guidance. Source files live under `dist/` per
-      [ADR 0015](./docs/adr/0015-first-party-skill-plugin-distribution.md);
-      a publication mirror is allowed only if the installer requires
-      a dedicated repository shape.
-- [ ] **Native installer-managed `aikata update --apply`** —
-      consume `internal/install.Detect()` and pick the safe upgrade
-      path per channel. Foundation shipped in v0.6.0; the
-      `--apply` flag ships once each channel above is real enough
-      to test in CI.
+- [ ] **`homebrew` / `npm` branches of `aikata update --apply`** —
+      added to the v0.9.4 self-update surface once items above are real
+      enough to test in CI.
 
 ---
 
@@ -1153,7 +1200,8 @@ previous one (`go install` stays the canonical baseline).
 | v0.8.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.9.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.9.2 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
-| v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
+| v0.9.3 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | — | — | `npx skills add` |
+| v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | `npx aikata` | tap | `npx skills add` |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
@@ -1170,10 +1218,19 @@ Plugin / skill scope grows monotonically too:
   surface. It does not add a distribution channel.
 - **v0.9.2** — adds opt-in brand-exploration authoring artifacts. It
   does not add a distribution channel.
-- **v0.9.9** — adds channel publication and a first-party universal
-  skill package for `npx skills add ... --agent universal`. The package
-  wraps the aikata CLI; it does not install arbitrary third-party
-  skills.
+- **v0.9.3** — first channel-publication line (ADR 0032): the first-party
+  universal skill package for `npx skills add ... --agent universal` plus
+  Claude Code marketplace *readiness* (the listing submission stays gated
+  on upstream availability + maintainer action). The package wraps the
+  aikata CLI; it does not install arbitrary third-party skills.
+- **v0.9.4** — adds the native `aikata update --apply` self-update
+  *mechanism* for the channels that already exist (install-script /
+  go-install / github-release). It adds no new install channel, so it has
+  no cadence-table row.
+- **v0.9.9** — adds the convenience package-manager channels (Homebrew
+  tap, `npx aikata`) and the brew / npm branches of `aikata update
+  --apply`. Deferred as lowest priority because `curl … | sh` and
+  `go install` already cover the install gap (ADR 0032).
 - **v1.0** — mirrors the v0.6 plugin shape into Codex, Cursor, Gemini
   CLI, and a thin VS Code wrapper where each platform has a stable native
   extension surface. Per-tool feature parity is not promised; the promise

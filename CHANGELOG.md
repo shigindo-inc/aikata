@@ -20,6 +20,19 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ### Added
 
+- **Channel-publication split by distribution value (ADR 0032)** — split
+  the former single v0.9.9 channel-publication line into three
+  value-ordered lines: **v0.9.3** ships the prioritized agent-ecosystem
+  distribution (universal `npx skills add` package under
+  `dist/universal-skill/` plus Claude Code marketplace readiness);
+  **v0.9.4** ships native `aikata update --apply` self-update for the
+  channels that already exist (install-script / go-install /
+  github-release); **v0.9.9** keeps the convenience-only Homebrew tap and
+  npm wrapper (and the brew / npm self-update branches), deferred because
+  `curl … | sh` and `go install` already cover the install gap. ROADMAP,
+  the distribution-surface cadence table, the README ADR index, and
+  `open-questions.md` (Q-ECOSYSTEM-04) are aligned; refines the v0.9.x
+  line defined in ADR 0022.
 - **Brand-exploration artifact design (ADR 0031)** — reserve the v0.9.2
   implementation of `aikata new app-icon` and `aikata new mascot`.
   The one-off authoring scaffolds will stamp

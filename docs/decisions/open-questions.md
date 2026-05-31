@@ -337,9 +337,10 @@ Accepted 2026-05-31.)_
     commands, MCP servers, hooks, sub-agents, themes, and agent skills.
 - **Resolved part**: aikata will ship first-party wrappers that teach
   agents how to use the aikata CLI. `npx skills add ... --agent
-  universal` support is planned for v0.9.9, with source artifacts under
-  `dist/`. aikata will not be distributed as an "aikata agent"
-  personality.
+  universal` support is planned for v0.9.3, with source artifacts under
+  `dist/universal-skill/` (the prioritized first line of the
+  channel-publication split, [ADR 0032](../adr/0032-split-channel-publication-by-distribution-value.md)).
+  aikata will not be distributed as an "aikata agent" personality.
 - **Open part**: should aikata ever scaffold / manage curated
   third-party skill and plugin manifests for teams?
 - **Leading**: no third-party skill package management in v0.x. For
@@ -350,7 +351,7 @@ Accepted 2026-05-31.)_
   future `aikata add skill-source ...` or team marketplace manifest
   feature, and memory projection decisions that might depend on native
   skill/plugin packaging.
-- **Updated**: 2026-05-28.
+- **Updated**: 2026-05-31.
 
 ---
 
