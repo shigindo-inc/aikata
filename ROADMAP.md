@@ -1008,6 +1008,44 @@ Out of v0.9.0 intentionally:
 
 ---
 
+## v0.9.2 — Brand exploration artifacts (planned)
+
+Add two opt-in, one-off authoring scaffolds for app projects without
+widening the default `standard` or future `extended` scope. Mobile-app
+dogfooding showed that icon and mascot exploration documents repeatedly
+save product-context reconstruction work, especially when prompts must
+be passed to an external image-generation LLM that cannot read the
+repository. [ADR 0031](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)
+records the boundary.
+
+- [ ] **`aikata new app-icon`** — stamp
+      `docs/design/app-icon-concepts.md` with a concise bilingual starter
+      structure: external-LLM product context, brand / technical
+      constraints, concept comparison, image-generation prompts,
+      negative prompts, and selection follow-up.
+- [ ] **`aikata new mascot`** — stamp
+      `docs/design/mascot-character-ideas.md` with a concise bilingual
+      starter structure: external-LLM product context, mascot role /
+      tone, candidate comparison, image-generation prompts, intended
+      product surfaces, and selection follow-up.
+- [ ] **One-off artifact semantics** — register both under
+      `aikata list artifacts`; do not add config flags, init prompts,
+      preset defaults, or `.aikata/manifest.yaml` entries. After
+      stamping, the project owns the files and `aikata sync` does not
+      restore or merge them.
+- [ ] **Verification** — add component / CLI tests for en + ja
+      rendering, collision refusal, dry-run output, artifact listing,
+      and zero residue in unchanged `minimal` / `standard` golden trees.
+
+Out of v0.9.2 intentionally:
+
+- Default inclusion in `standard`, `extended`, `--with-ui`, or stack
+  selections.
+- A branding hierarchy or speculative `new logo` / `new brand-guide`
+  commands without repeated dogfooding evidence.
+
+---
+
 ## v0.9.9 — Channel publication (pending)
 
 Tracking the distribution-channel items that need maintainer action
@@ -1114,6 +1152,7 @@ previous one (`go install` stays the canonical baseline).
 | v0.7.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.8.x | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.9.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
+| v0.9.2 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace | `npx aikata` | tap | `npx skills add` |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
 
@@ -1129,6 +1168,8 @@ Plugin / skill scope grows monotonically too:
   hardening of the aikata repository only (ADR 0022).
 - **v0.9.0** — stabilizes the core concept and generated-document
   surface. It does not add a distribution channel.
+- **v0.9.2** — adds opt-in brand-exploration authoring artifacts. It
+  does not add a distribution channel.
 - **v0.9.9** — adds channel publication and a first-party universal
   skill package for `npx skills add ... --agent universal`. The package
   wraps the aikata CLI; it does not install arbitrary third-party

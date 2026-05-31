@@ -18,6 +18,15 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **Brand-exploration artifact design (ADR 0031)** — reserve the v0.9.2
+  implementation of `aikata new app-icon` and `aikata new mascot`.
+  The one-off authoring scaffolds will stamp
+  `docs/design/app-icon-concepts.md` and
+  `docs/design/mascot-character-ideas.md` without changing default
+  scopes, config flags, init prompts, or `sync` ownership.
+
 ## [0.9.1] - 2026-05-31
 
 Second increment of the v0.9.0 core-concept stabilization line. Converges
