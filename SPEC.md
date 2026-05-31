@@ -165,16 +165,31 @@ must do and the user-visible behavior. Implementation details live in
 - Re-running in the same directory without `--force` writes nothing outside
   `.aikata-proposed/`.
 
-### 4.2 `aikata add <component>`
+### 4.2 `aikata enable <capability>` / `aikata new <artifact>`
 
-**Purpose**: Add a single component to an existing aikata project.
+**Purpose**: Extend an existing aikata project after `init`. The verb is
+split by lifetime ([ADR 0017](./docs/adr/0017-post-init-command-taxonomy.md)):
+`enable` records a durable capability; `new` stamps a one-off artifact.
+The pre-v0.7.1 `aikata add` parent was removed without an alias.
 
-**Must be able to** add:
+**`aikata enable <capability>`** must be able to enable:
 
-- A top-level file (`add ui` → `UI.md`, `add api` → `API.md`).
-- A new ADR with a title (`add adr "use go modules"`).
-- A stack (`add stack flutter`).
-- An AI-tool target (`add ai-tool cursor`).
+- A single-file component (`enable ui` → `UI.md`, `enable api` → `API.md`,
+  plus `tdd`, `changelog`).
+- The long-term memory slot (`enable memory`).
+- A stack (`enable stack flutter`) and an AI-tool target
+  (`enable ai-tool cursor`).
+- The monorepo layout (`enable monorepo`) and a workflow guide
+  (`enable workflow git`).
+
+Each leaf renders its files, records them in `.aikata/manifest.yaml`, and
+flips the matching `components.*` flag or appends to the
+`stacks` / `ai_tools` / `workflows` list in `.aikata/aikata.yaml`.
+
+**`aikata new <artifact>`** must be able to stamp one-off authoring
+scaffolds with no durable schema change:
+
+- A new ADR with a title (`new adr "use go modules"`).
 
 ### 4.3 `aikata doctor`
 
@@ -288,12 +303,16 @@ this sync because canonical project documents may contain user edits.
 
 ### 4.7 `aikata list`
 
-**Purpose**: List available presets, components, and AI-tool integrations.
+**Purpose**: List available scopes, stacks, capabilities, artifacts, and
+AI-tool integrations.
 
 **Must output**:
 
-- Built-in presets (`minimal`, `standard`, plus stack presets).
-- Available `add` components.
+- Built-in scopes (`minimal`, `standard`) and stacks (`flutter`,
+  `typescript`).
+- Available capabilities (`list capabilities`: memory, ui, api, tdd,
+  changelog, monorepo, stack, ai-tool, workflow) and one-off artifacts
+  (`list artifacts`: adr).
 - AI tools the current aikata binary supports.
 
 ---

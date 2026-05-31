@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-29
+updated: 2026-05-31
 audience: [human, agent]
 ---
 
@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.2.**
+> **Status — v0.9.0.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
@@ -403,6 +403,16 @@ aikata generate
   - [0017 — Post-init Command Taxonomy: enable / new (no add)](./docs/adr/0017-post-init-command-taxonomy.md)
   - [0018 — Managed-block Append for Project-owned Files](./docs/adr/0018-managed-append-for-project-owned-files.md)
   - [0019 — `aikata sync` Missing-file Repair Semantics](./docs/adr/0019-sync-missing-file-repair-semantics.md)
+  - [0020 — Retire the legacy `.ai/aikata.yaml` config fallback](./docs/adr/0020-retire-ai-config-fallback.md)
+  - [0021 — `doctor` Scope and Exclusion Semantics](./docs/adr/0021-doctor-scope-and-exclusion.md)
+  - [0022 — v0.8.x Security & Governance Hardening](./docs/adr/0022-v0-8-security-governance-hardening.md)
+  - [0023 — Release Signing and Supply-chain Hardening](./docs/adr/0023-release-signing-and-supply-chain.md)
+  - [0024 — Split `--preset` into Orthogonal `--scope` and `--stack` Axes](./docs/adr/0024-scope-stack-axes-split.md)
+  - [0025 — `aikata sync` Divergent-file Preservation](./docs/adr/0025-sync-divergent-file-preservation.md)
+  - [0026 — Workflow Guides as Opt-in Collaboration Documents](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md)
+  - [0027 — Verification Expectation in Generated Templates](./docs/adr/0027-verification-expectation-in-generated-templates.md)
+  - [0028 — Prioritize Core-concept Stabilization](./docs/adr/0028-prioritize-core-concept-stabilization.md)
+  - [0029 — Code-free Stack-brief Layout Convention](./docs/adr/0029-stack-brief-layout-convention.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

@@ -71,8 +71,9 @@ generators have one source of truth.
 3. Run `aikata generate`. The generated artifacts now reflect your
    content.
 4. Decide whether to commit the generated artifacts or gitignore
-   them. The target-project default is gitignored
-   (`docs.generate_gitignore: true`); aikata's own repository
+   them. The target-project default gitignores them — the
+   managed-append writer (ADR 0018) keeps the artifact paths in the
+   aikata-owned `.gitignore` block. aikata's own repository instead
    commits them so contributors get a working Claude / Cursor
    experience without first installing aikata (ADR 0003 §6).
 
@@ -98,10 +99,19 @@ an existing `.gitignore` instead of overwriting:
 - Re-running is idempotent: the block is refreshed in place, not
   duplicated.
 
-- Setting `docs.generate_gitignore: false` in
-  `.aikata/aikata.yaml` suppresses the writer entirely. Use this
-  when you want `.gitignore` to remain fully user-owned (aikata's
-  own repository does, per ADR 0003 §6).
+- To have `aikata sync` leave `.gitignore` (or any file) fully
+  alone, list it under `sync.own:` in `.aikata/aikata.yaml`
+  ([ADR 0025](./adr/0025-sync-divergent-file-preservation.md) D2):
+
+  ```yaml
+  sync:
+    own:
+      - .gitignore
+  ```
+
+  Matching paths report the `owned` status and are never
+  rendered-compared, conflict-markered, or overwritten. (The old
+  `docs.generate_gitignore` flag was removed in v0.8.3, ADR 0025 D3.)
 
 Without `--force`, `aikata init` against a non-empty directory
 still falls back to `.aikata-proposed/`. The managed-append
