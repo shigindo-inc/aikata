@@ -985,11 +985,13 @@ records the evidence, target landing point, and follow-up questions.
       managed-document default with an explicit broader audit mode.
       Preserve a coherent story for adopted and pre-manifest projects
       before changing behavior (Q-DOCTOR-02).
-- [ ] **Stack-brief simplification** — shorten Flutter / TypeScript
-      guidance toward recurring AI failure modes, minimum verification
-      commands, and ADR prompts. Treat any scope-base / stack-partial
-      refactor as drift reduction, not a stack-expansion project
-      (Q-DESIGN-13).
+- [x] **Stack-brief layout convention** ✅ (shipped in v0.9.0) — the
+      Flutter / TypeScript briefs gain a code-free canonical layout
+      convention and aikata generates no stack code
+      ([ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md),
+      the additive direction of Q-DESIGN-13). The **subtractive**
+      simplification — trimming team-specific best-practice policy — is
+      deferred to a later evidence-led increment (Q-DESIGN-13 open part).
 - [ ] **v1.0 backlog pruning** — move external stack repositories,
       third-party skill management, new workflow domains, and broad
       native-wrapper proliferation off the critical path unless

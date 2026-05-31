@@ -18,6 +18,14 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-05-31
+
+First increment of the v0.9.0 core-concept stabilization line
+([ADR 0028](./docs/adr/0028-prioritize-core-concept-stabilization.md)).
+It sharpens the stack-brief surface without widening it: stack guidance
+stays document-centered and code-free
+([ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md)).
+
 ### Added
 
 - **Canonical layout convention in stack briefs (ADR 0029)** — the
