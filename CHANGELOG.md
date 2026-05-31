@@ -18,6 +18,36 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-06-01
+
+**Native self-update.** `aikata update --apply` for the channels that
+exist today (ADR 0032 D2, [ADR 0035](./docs/adr/0035-native-self-update-safety.md)).
+Numeric order is direction, not ship order (ADR 0032 D4).
+
+### Added
+
+- **`aikata update --apply`** — native self-update routed by install
+  channel (`internal/install.Detect()`):
+  - `install-script` / `github-release` perform an in-place **binary
+    swap**: download the host release archive, **verify its SHA-256
+    against `checksums.txt` before extracting** (verify-before-swap), then
+    atomically replace the running binary (`os.Rename`; POSIX-safe).
+  - `go-install` is shown the channel-native `go install …@latest`.
+  - `homebrew` / `npm` print an actionable "use your package manager"
+    stub (real channels deferred to v0.9.9).
+  - Windows and unknown installs get manual-download guidance (a running
+    `.exe` cannot be replaced in place); permission-denied paths get an
+    actionable re-run/reinstall message.
+
+### Security
+
+- Self-update modifies the running binary, so its trust model is recorded
+  for review (ADR 0035, `SECURITY.md` Agent Safety): SHA-256 against
+  `checksums.txt` over HTTPS-to-github as the transport anchor; cosign
+  verification is a documented non-goal for v0.9.4. A tampered-archive
+  regression test asserts a checksum mismatch errors **and leaves the
+  target binary unchanged**.
+
 ## [0.9.2] - 2026-06-01
 
 **Scope discipline.** Two changes that keep the default `standard`

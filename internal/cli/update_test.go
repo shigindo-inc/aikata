@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/shigindo-inc/aikata/internal/install"
 )
 
 // runUpdate is a test harness that builds the update subcommand,
@@ -29,7 +31,7 @@ func TestUpdate_BareCommandPrintsGuidance(t *testing.T) {
 	if err != nil {
 		t.Fatalf("update: %v", err)
 	}
-	for _, needle := range []string{"self-update is not implemented yet", "planned v0.6", "--check"} {
+	for _, needle := range []string{"--check", "--apply"} {
 		if !strings.Contains(out, needle) {
 			t.Errorf("guidance missing %q:\n%s", needle, out)
 		}
@@ -141,5 +143,32 @@ func TestUpdate_Check5xxIsError(t *testing.T) {
 	_, _, err := runUpdate(t, "v0.4.1", []string{"--check"})
 	if err == nil {
 		t.Fatal("expected error on 500 response")
+	}
+}
+
+// TestApplyUpdate_ChannelRouting asserts `update --apply` returns an
+// actionable, swap-free message for the channels that do not perform an
+// in-place binary swap (ADR 0035 D1). The detected source is injected so
+// the test does not depend on how the test binary itself was installed.
+func TestApplyUpdate_ChannelRouting(t *testing.T) {
+	cases := []struct {
+		src     install.Source
+		needles []string
+	}{
+		{install.SourceHomebrew, []string{"Homebrew", "brew upgrade"}},
+		{install.SourceNpm, []string{"npm", "npx"}},
+		{install.SourceGoInstall, []string{"go install", "@latest"}},
+		{install.SourceUnknown, []string{"could not determine", "releases/latest"}},
+	}
+	for _, tc := range cases {
+		var out bytes.Buffer
+		if err := applyUpdate(&out, "v0.9.4", tc.src); err != nil {
+			t.Fatalf("applyUpdate(%s): %v", tc.src, err)
+		}
+		for _, needle := range tc.needles {
+			if !strings.Contains(out.String(), needle) {
+				t.Errorf("applyUpdate(%s) output missing %q:\n%s", tc.src, needle, out.String())
+			}
+		}
 	}
 }

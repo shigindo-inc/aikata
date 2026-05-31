@@ -1109,20 +1109,24 @@ Out of v0.9.3 intentionally:
 
 ---
 
-## v0.9.4 — Native self-update for existing channels (planned)
+## v0.9.4 — Native self-update for existing channels ✅ (released 2026-06-01)
 
 Second value-ordered line (ADR 0032 D2). Ships `aikata update --apply`
-covering only the channels that exist today: `install-script`,
-`go-install`, and `github-release`. The foundation
+covering the channels that exist today. The foundation
 (`internal/install.Detect()` and the `aikata.install-source` marker
-written by `scripts/install.sh`) shipped in v0.6.0.
+written by `scripts/install.sh`) shipped in v0.6.0. The safety model is
+recorded in [ADR 0035](./docs/adr/0035-native-self-update-safety.md).
 
-- [ ] **`aikata update --apply`** — consume `internal/install.Detect()`
-      and pick the safe upgrade path per channel. The highest-value branch
-      is **`install-script` self-update** (the `curl … | sh` audience is
-      aikata's main no-Go install path). The `homebrew` / `npm` branches
-      are stubbed with an actionable "use your package manager" message
-      until those channels are real (v0.9.9).
+- [x] **`aikata update --apply`** ✅ — consumes `internal/install.Detect()`
+      and picks the safe path per channel (ADR 0035 D1):
+      `install-script` / `github-release` do an in-place **binary swap**
+      (download → verify SHA-256 against `checksums.txt` → extract →
+      atomic replace); `go-install` is shown the channel-native
+      `go install …@latest`; `homebrew` / `npm` are stubbed with an
+      actionable "use your package manager" message until those channels
+      are real (v0.9.9); Windows and unknown installs get manual-download
+      guidance. Verify-before-swap plus a tampered-archive regression
+      test back the RCE-surface review (ADR 0035 D2 / `SECURITY.md`).
 
 Native self-update is a convenience, not essential; v0.9.4 keeps it
 isolated from the v0.9.3 ecosystem work so neither blocks the other.
