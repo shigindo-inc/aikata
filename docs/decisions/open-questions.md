@@ -194,24 +194,16 @@ Accepted 2026-05-31.)_
 
 ### Q-DESIGN-13 — How small should built-in stack briefs become?
 
-- **Status**: **Partially resolved** by
-  [ADR 0029](../adr/0029-stack-brief-layout-convention.md). The
-  direction is settled: briefs stay small (high-value AI guardrails +
-  minimum verification commands + project-choice TODOs + ADR links),
-  they carry a code-free **canonical layout convention** section, and
-  aikata never generates stack source code — the agent scaffolds on
-  demand from the documented convention.
-- **Open part**: the **subtractive** half — which existing rules to
-  remove or soften (e.g. committing every generated file, a test per
-  reusable widget, detailed compiler-flag pins). Per ADR 0029 D3 this
-  is deferred to a later v0.9.x increment with dogfooding evidence,
-  rather than trimmed on speculation inside a signed release.
-- **Question (remaining)**: which Flutter / TypeScript rules prevent
-  recurring AI collaboration failures, and which are general
-  best-practice opinions better left to downstream project edits or
-  ADRs?
-- **Unblocks**: the follow-up stack-brief trimming increment.
-- **Updated**: 2026-05-31.
+- **Status**: **Resolved**. The direction is settled by
+  [ADR 0029](../adr/0029-stack-brief-layout-convention.md) (briefs stay
+  small, carry a code-free canonical layout convention, and aikata never
+  generates stack source code) and the **subtractive** half by
+  [ADR 0030](../adr/0030-trim-stack-briefs-to-standard-guardrails.md),
+  which trims over-strict mandates and preference-colored policy via a
+  standard-vs-preference test (keeping official standards such as
+  accessibility and error handling).
+- **Resolved**: 2026-05-31. Kept as a pointer; removable in a future
+  cleanup.
 
 ---
 

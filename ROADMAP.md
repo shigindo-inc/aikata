@@ -725,7 +725,7 @@ Out of v0.8.x intentionally:
 
 ---
 
-## v0.8.2 — CLI surface: scope × stack (pending)
+## v0.8.2 — CLI surface: scope × stack ✅ (released 2026-05-30)
 
 **Goal**: a pre-v1.0 stable-surface correction, interleaved into the
 0.8.x number space (not part of the security & governance theme of
@@ -744,30 +744,30 @@ today; everything else errors explicitly. Unlocking new combinations
 (`minimal` + stack, multi-stack) needs a template refactor deferred as
 follow-up.
 
-- [ ] **`--scope` flag** — `minimal | standard` (single-valued, default
+- [x] **`--scope` flag** — `minimal | standard` (single-valued, default
       `standard`; `extended` stays reserved per ADR 0017).
-- [ ] **`--stack` flag** — multi-valued *in syntax* (repeatable and/or
+- [x] **`--stack` flag** — multi-valued *in syntax* (repeatable and/or
       comma-separated); empty = stack-agnostic. Writes the existing
       `stacks` list in `aikata.yaml` directly (no schema bump). Removes
       `stacksForPreset`. v0.8.2 accepts only a single stack paired with
       `--scope standard`; other combinations error (see below).
-- [ ] **Bounded `(scope, stack)` resolution** — maps to the existing
+- [x] **Bounded `(scope, stack)` resolution** — maps to the existing
       trees only: `minimal` / `standard` / `standard+flutter` /
       `standard+typescript`. `minimal`+stack, multi-stack, and
       `extended` return a clear "not yet supported" error rather than a
       silent half-wired fallback.
-- [ ] **`--preset` deprecated alias** — maps `minimal`/`standard` →
+- [x] **`--preset` deprecated alias** — maps `minimal`/`standard` →
       `--scope`, `flutter`/`typescript` → `--scope standard --stack
       <name>`; prints a one-line deprecation notice; erroring if
       combined with `--scope`/`--stack`. Removed at v1.0.
-- [ ] **Interactive prompt** — ask scope, then stack (single, empty
+- [x] **Interactive prompt** — ask scope, then stack (single, empty
       allowed), then lang; never prompt for "preset".
-- [ ] **Doc/glossary alignment** — update the GLOSSARY `preset` entry to
+- [x] **Doc/glossary alignment** — update the GLOSSARY `preset` entry to
       "deprecated alias for `--scope`", add a `scope` entry, align
       `stack` entries (doctor runs a glossary-consistency check); update
       README / SPEC / ARCHITECTURE / `docs/` help and examples. Shipped
       ROADMAP/CHANGELOG history is left intact.
-- [ ] **Q-DESIGN-04 closed** — superseded by ADR 0024; presets are no
+- [x] **Q-DESIGN-04 closed** — superseded by ADR 0024; presets are no
       longer a composition mechanism.
 
 Out of v0.8.2 intentionally:
@@ -782,7 +782,7 @@ Out of v0.8.2 intentionally:
 
 ---
 
-## v0.8.3 — `aikata sync` divergent-file preservation (pending)
+## v0.8.3 — `aikata sync` divergent-file preservation ✅ (released 2026-05-30)
 
 **Goal**: `aikata sync` durably preserves files a user has intentionally
 rewritten, instead of oscillating between preserving and silently
@@ -801,7 +801,7 @@ stable across repeated `aikata sync` runs. [ADR 0025](./docs/adr/0025-sync-diver
 records the decisions; the four reported problems map to the items
 below.
 
-- [ ] **Re-baseline records the upstream rendering, not the on-disk
+- [x] **Re-baseline records the upstream rendering, not the on-disk
       snapshot** (ADR 0025 D1 — the data-loss root cause). On a
       conflict-free run, the manifest is regenerated from the in-memory
       upstream rendering rather than `postMergeSnapshot`'s on-disk
@@ -813,25 +813,25 @@ below.
       next run. Also keeps `user-deleted` entries so a respected
       deletion is not silently re-created (ADR 0019). Independent of the
       items below — must ship even if the `owned` marker slips.
-- [ ] **Per-file `owned` opt-out** (ADR 0025 D2) — an optional
+- [x] **Per-file `owned` opt-out** (ADR 0025 D2) — an optional
       `sync.own:` glob list in `.aikata/aikata.yaml` (same matcher and
       additive semantics as `doctor.exclude`, ADR 0021; no schema bump).
       Matching paths report an `owned` status and are never
       rendered-compared, conflict-markered, or overwritten. Removes the
       residual conflict noise D1 leaves on *fully* forked files and
       replaces the reporter's manual `git restore` workaround.
-- [ ] **Remove the dead `docs.generate_gitignore` flag** (ADR 0025 D3)
+- [x] **Remove the dead `docs.generate_gitignore` flag** (ADR 0025 D3)
       — the field is defined but never read, so removal is a
       behavioural no-op. `.gitignore` stays managed by the ADR 0018
       managed-append writer (non-destructive by default); a user who
       wants sync to leave it alone uses `sync.own` (D2) rather than a
       single-purpose flag. Old configs carrying the key still parse.
-- [ ] **`--rebaseline` is explicit when a manifest exists; add
+- [x] **`--rebaseline` is explicit when a manifest exists; add
       `--reseed`** (ADR 0025 D4) — passing `--rebaseline` to a project
       that already has a manifest emits a notice instead of a silent
       no-op; `--reseed` re-anchors an existing manifest to the current
       upstream rendering (manifest-only write, no source files touched).
-- [ ] **GLOSSARY / SPEC / README alignment** — add the `owned` sync
+- [x] **GLOSSARY / SPEC / README alignment** — add the `owned` sync
       status and `sync.own` to GLOSSARY (doctor runs a glossary check),
       document `owned` / `--reseed` / the `generate_gitignore` behaviour
       in SPEC §4, and align README / `docs/` help. Deferred from this
@@ -973,10 +973,12 @@ records the priority rule; the
 [v0.9.0 design note](./docs/decisions/v0.9-core-concept-stabilization.md)
 records the evidence, target landing point, and follow-up questions.
 
-- [ ] **Live-document convergence** — align README, SPEC, ROADMAP,
-      adoption docs, and dogfood config with the shipped v0.8.5
-      surface. Identify narrowly-scoped checks that prevent repeat
-      drift without turning `doctor` into a general repository linter.
+- [x] **Live-document convergence** ✅ (shipped in v0.9.1) — aligned
+      README (status + ADR index), SPEC (`enable`/`new`), ROADMAP
+      (v0.8.2/v0.8.3 released), adoption docs, and dogfood config with
+      the shipped surface; added a narrow `repolint` check asserting the
+      README ADR index covers every `docs/adr/` file (no `doctor`
+      behavior change).
 - [ ] **Default standard-scope audit** — verify that every generated
       file has a distinct role in the shared-context model.
       `docs/prompts.md` is the first removal / opt-in candidate
@@ -985,13 +987,13 @@ records the evidence, target landing point, and follow-up questions.
       managed-document default with an explicit broader audit mode.
       Preserve a coherent story for adopted and pre-manifest projects
       before changing behavior (Q-DOCTOR-02).
-- [x] **Stack-brief layout convention** ✅ (shipped in v0.9.0) — the
+- [x] **Stack-brief simplification** ✅ (Q-DESIGN-13 resolved) — the
       Flutter / TypeScript briefs gain a code-free canonical layout
-      convention and aikata generates no stack code
-      ([ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md),
-      the additive direction of Q-DESIGN-13). The **subtractive**
-      simplification — trimming team-specific best-practice policy — is
-      deferred to a later evidence-led increment (Q-DESIGN-13 open part).
+      convention (v0.9.0,
+      [ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md)) and
+      are trimmed to standard-aligned guardrails (v0.9.1,
+      [ADR 0030](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md));
+      aikata generates no stack code.
 - [ ] **v1.0 backlog pruning** — move external stack repositories,
       third-party skill management, new workflow domains, and broad
       native-wrapper proliferation off the critical path unless

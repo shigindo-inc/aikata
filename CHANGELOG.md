@@ -18,6 +18,37 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-05-31
+
+Second increment of the v0.9.0 core-concept stabilization line. Converges
+aikata's own live documentation with the shipped surface (design note
+work package A) and completes the subtractive half of Q-DESIGN-13
+([ADR 0030](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md),
+which amends ADR 0029 D3).
+
+### Changed
+
+- **Stack briefs trimmed to standard-aligned guardrails (ADR 0030)** —
+  the Flutter / TypeScript briefs (en + ja) drop over-strict mandates and
+  preference-colored policy (commit-every-generated-file, a test per
+  reusable widget, `prefer late over ?`, `prefer readonly`, granular
+  tsconfig pins) via a standard-vs-preference test. Official standards
+  (accessibility, error handling, `dart format`, `strict: true`) are kept
+  and condensed. Completes the subtractive half of Q-DESIGN-13;
+  `minimal` / `standard` output is unchanged (Do-No-Harm).
+- **Live documentation converged with the v0.9.0 surface** — README
+  status label (v0.2 → v0.9.0) and ADR index (now 0020–0030); SPEC §4.2
+  describes `enable` / `new` instead of the removed `aikata add`;
+  ROADMAP marks v0.8.2 / v0.8.3 released; the removed
+  `docs.generate_gitignore` flag is dropped from `adoption.md` and the
+  dogfood config in favour of `sync.own` (ADR 0025).
+
+### Added
+
+- **repolint: README ADR-index coverage check** — a test-only guard
+  (not in the binary) fails CI when a numbered ADR under `docs/adr/` is
+  not linked from the README, preventing the index drift from recurring.
+
 ## [0.9.0] - 2026-05-31
 
 First increment of the v0.9.0 core-concept stabilization line

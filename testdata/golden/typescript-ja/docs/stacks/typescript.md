@@ -18,12 +18,10 @@ audience: [human, agent]
 
 - `strict: true`（および strict ファミリのフラグはすべて ON のまま）。
   strict ファミリのいずれかを無効化するには ADR が必要。
-- `noUncheckedIndexedAccess: true` — 配列／レコードのインデックス
-  アクセスを `T | undefined` にする。
-- `exactOptionalPropertyTypes: true` — プロパティ未指定と `undefined` を
-  区別する。
 - `target` と `module` はランタイムに合わせる（§2 / §3 参照）。
-- `incremental: true` で再ビルドを速く。`.tsbuildinfo` は gitignore 済み。
+- _推奨・プロジェクトで調整: より厳しいインデックス／optional 判定のための
+  `noUncheckedIndexedAccess`・`exactOptionalPropertyTypes`、再ビルド高速化の
+  ための `incremental: true`（`.tsbuildinfo` は gitignore）。_
 
 ## 2. モジュール形式（ESM vs CJS）
 
@@ -60,8 +58,6 @@ audience: [human, agent]
 - **`as` キャストを避ける**。ユーザー定義型ガードまたは `satisfies` を優先。
 - **`!` non-null assertion は避ける**。呼び出し側で narrowing できない場合に
   限って使用し、各使用箇所にコメントを添える。
-- 引数が変更されない場合は `readonly` を優先する。関数・クラス境界で
-  immutability を明示する。
 - 型のみの import には `import type` を使い、emit を tree-shake-friendly に保つ。
 
 ## 7. テストランナー
@@ -73,9 +69,9 @@ audience: [human, agent]
 
 ## 8. エラー
 
-- 新しいエラー分類のために `Error` をサブクラス化する。生の文字列や
-  オブジェクトリテラルを throw しない。
-- 公開サーフェスは、呼び出し側が期待しうるエラーを文書化する。
+- 新しいエラー分類のために `Error` をサブクラス化する（生の文字列や
+  オブジェクトリテラルを throw しない）。公開サーフェスは throw しうる
+  エラーを文書化する。
 - 元のスタックを失わないよう、エラーチェインには `cause`（ES2022）を使う。
 
 ## 9. 非同期

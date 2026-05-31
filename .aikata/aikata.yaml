@@ -17,9 +17,10 @@ components:
 features:
     obsidian_hints: false
 docs:
-    # aikata's own repo overrides the target-project default and
-    # commits generated artifacts (CLAUDE.md, .cursor/rules/, ...) so
-    # contributors can open the repo with Claude Code / Cursor without
-    # first installing aikata. See ADR 0003 §"Consequences".
-    generate_gitignore: false
+    # aikata's own repo commits its generated artifacts (CLAUDE.md,
+    # .cursor/rules/, ...) so contributors can open the repo with Claude
+    # Code / Cursor without first installing aikata. See ADR 0003
+    # §"Consequences". The generated paths are simply kept out of the
+    # managed `.gitignore` block here; the removed `generate_gitignore`
+    # flag (ADR 0025 D3) is no longer part of the schema.
     task_file_location: docs/tasks/current.md

@@ -23,7 +23,7 @@ files:
     - path: docs/prompts.md
       sha256: 0a258ad92dfee3738ee14399b795f6935b3db492d3ecc82eb19425f05093224a
     - path: docs/stacks/flutter.md
-      sha256: c1b91915576a3a70595228b1afcc242c2954a1a9d4aa39b724736a375c1bdce2
+      sha256: 09938141a3a1f196fc6ea4168d6d5a01ba60346465e6f2ad4204dd42e11b6e08
     - path: docs/tasks/current.md
       sha256: 357905705bc63259ed39a8b9d02d2d675cfd39347caee65fd39e3d29463f26e5
     - path: docs/troubleshooting.md
