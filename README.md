@@ -165,6 +165,21 @@ curl -fsSL -o ~/.claude/skills/aikata.md \
 See [`dist/README.md`](./dist/README.md) for offline install from a
 checkout and notes on the v0.6 plugin migration path.
 
+### Codex plugin (optional, v0.9.6+)
+
+Codex CLI `0.135.0+` can install aikata as a first-party skill plugin
+from this repository:
+
+```bash
+codex plugin marketplace add shigindo-inc/aikata --ref v0.9.6
+codex plugin add aikata@aikata
+```
+
+The plugin is a thin wrapper over the aikata CLI. It adds native skill
+discovery and Codex App metadata without an MCP server or app
+integration. Older Codex versions can use the direct universal-skill
+fallback documented in [`dist/README.md`](./dist/README.md).
+
 ### Shell completion (v0.3.1+)
 
 `aikata completion <shell>` prints a completion script for `bash`, `zsh`,
@@ -419,6 +434,7 @@ aikata generate
   - [0033 — Direction for `doctor`'s Default Validation Scope](./docs/adr/0033-doctor-default-scope-direction.md)
   - [0034 — Move the Reusable-prompts Library to an Opt-in Capability](./docs/adr/0034-reusable-prompts-opt-in-capability.md)
   - [0035 — Native Self-update (`aikata update --apply`) Safety Model](./docs/adr/0035-native-self-update-safety.md)
+  - [0036 — Ship Codex Native Distribution in v0.9.6](./docs/adr/0036-codex-native-distribution.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

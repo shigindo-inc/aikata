@@ -1,0 +1,20 @@
+{
+  "name": "aikata",
+  "interface": {
+    "displayName": "aikata"
+  },
+  "plugins": [
+    {
+      "name": "aikata",
+      "source": {
+        "source": "local",
+        "path": "./dist/codex/plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

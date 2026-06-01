@@ -22,18 +22,25 @@ dist/
 │           ├── aikata-sync.md
 │           ├── aikata-new.md
 │           └── aikata-enable.md
+├── codex/
+│   └── plugin/
+│       ├── .codex-plugin/plugin.json
+│       └── skills/aikata/
+│           ├── SKILL.md   ← byte-identical copy of universal-skill/SKILL.md
+│           └── agents/openai.yaml
 └── universal-skill/
-    └── SKILL.md   ← tool-agnostic skill for `npx skills add ...` (v0.9.3+)
+    ├── SKILL.md   ← tool-agnostic skill for `npx skills add ...` (v0.9.3+)
+    └── agents/openai.yaml   ← Codex App UI metadata (v0.9.6+)
 ```
 
-The repository root also carries `.claude-plugin/marketplace.json`, which
-lists the Claude Code plugin above so the repo is installable as a
-self-hosted marketplace (see *Claude Code plugin* below).
+The repository root also carries `.claude-plugin/marketplace.json` and
+`.agents/plugins/marketplace.json`. They list the Claude Code and Codex
+plugins above so the repo is installable as a self-hosted marketplace.
 
 Planned first-party wrapper directories (ADR 0015):
 
-- `dist/codex/`, `dist/cursor/`, `dist/gemini-cli/` — v1.0 native
-  wrappers where the platform shape is stable enough.
+- `dist/cursor/`, `dist/gemini-cli/` — v1.0 native wrappers where the
+  platform shape is stable enough.
 
 ## Claude Code skill
 
@@ -108,12 +115,40 @@ Code, Codex, Cursor, Gemini CLI, and other AGENTS.md-aware tools read.
 `dist/universal-skill/` is the canonical source; no publication mirror
 repository is required.
 
+For Codex CLI `0.125.0+`, direct installation into
+`.agents/skills/aikata/` is also the fallback when native plugin commands
+are unavailable:
+
+```bash
+mkdir -p ~/.agents/skills/aikata/agents
+cp dist/universal-skill/SKILL.md ~/.agents/skills/aikata/SKILL.md
+cp dist/universal-skill/agents/openai.yaml ~/.agents/skills/aikata/agents/openai.yaml
+```
+
+Restart Codex after installation. The release keeps the existing
+`aikata-universal-skill.md` one-file asset and also ships
+`aikata-universal-skill.tar.gz` for the complete directory.
+
+## Codex plugin (v0.9.6+)
+
+Codex CLI `0.135.0+` can install `dist/codex/plugin/` through the root
+self-hosted marketplace:
+
+```bash
+codex plugin marketplace add shigindo-inc/aikata --ref v0.9.6
+codex plugin add aikata@aikata
+```
+
+The plugin is a thin wrapper over the CLI: one skill, the same
+`agents/openai.yaml` UI metadata, no MCP server, and no app integration.
+The release also ships `aikata-codex-plugin.tar.gz` for offline use.
+
 ## Other tools
 
-Codex skills / plugins, Cursor custom modes or rule packs, Gemini CLI
-extensions, and a thin VS Code wrapper are scoped to v1.0 (see
-[ROADMAP.md](../ROADMAP.md)). Until then, this directory will grow only
-when a new tool's distribution shape is stable enough to ship.
+Cursor custom modes or rule packs, Gemini CLI extensions, and a thin VS
+Code wrapper are scoped to v1.0 (see [ROADMAP.md](../ROADMAP.md)). Until
+then, this directory will grow only when a new tool's distribution shape
+is stable enough to ship.
 
 This directory is for first-party aikata distribution artifacts. It does
 not install or vendor third-party skill repositories such as those used

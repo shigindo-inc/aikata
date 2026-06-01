@@ -318,6 +318,22 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 - `curl -sSL https://aikata.dev/install.sh | sh`.
 - npm wrapper: `npx aikata` (post-v0.4).
 
+### 6.3.1 Agent skill and plugin distribution
+
+- `dist/universal-skill/` is the canonical universal Agent Skill source.
+  Its `agents/openai.yaml` adds minimal Codex App UI metadata while
+  keeping the skill tool-agnostic.
+- `dist/codex/plugin/` is the first-party Codex CLI `0.135.0+` native
+  plugin. Its skill files stay byte-identical to the universal source;
+  repository tests enforce the copy boundary.
+- `.agents/plugins/marketplace.json` exposes that tracked directory as a
+  self-hosted Codex marketplace plugin. Older Codex versions keep using
+  direct `.agents/skills/` discovery, which works on CLI `0.125.0`.
+- `scripts/package-distribution-assets.sh` creates ignored release
+  archives for the complete universal skill and Codex plugin trees before
+  GoReleaser uploads them. See
+  [ADR 0036](./docs/adr/0036-codex-native-distribution.md).
+
 ### 6.4 CLI self-update model
 
 - `aikata update` is reserved for updating the aikata CLI binary,
@@ -368,7 +384,8 @@ touch is documentation, and it must be kept in sync at tag time:
 |---|---|
 | `CHANGELOG.md` | Promote the `## [Unreleased]` entries into a new `## [X.Y.Z] - YYYY-MM-DD` section with a one-paragraph summary. Leave a fresh empty `[Unreleased]`. |
 | `ROADMAP.md` | Flip the milestone heading from `(pending)` / `(planned)` to `✅ (released YYYY-MM-DD)`. |
-| `plugin.json` + `marketplace.json` | Bump `version` in `dist/claude-code/plugin/plugin.json` (1 place) and `.claude-plugin/marketplace.json` (2 places) to the release semver — **lockstep** with every release (v0.9.5+) so the marketplace listing matches. `requires.minVersion` is independent. |
+| `plugin.json` + `marketplace.json` | Bump `version` in `dist/claude-code/plugin/plugin.json` (1 place), `.claude-plugin/marketplace.json` (2 places), and `dist/codex/plugin/.codex-plugin/plugin.json` (1 place) to the release semver — **lockstep** with every release (Codex joins in v0.9.6) so marketplace listings match. `requires.minVersion` is independent. |
+| Agent distribution archives | Run `scripts/package-distribution-assets.sh` before GoReleaser. It creates ignored `dist/aikata-universal-skill.tar.gz` and `dist/aikata-codex-plugin.tar.gz` release assets while preserving the existing one-file `aikata-universal-skill.md` asset. |
 | Binary version | **Nothing** — `git describe` picks up the new tag automatically. |
 
 This ritual is performed in a `chore(release): prepare vX.Y.Z` PR that

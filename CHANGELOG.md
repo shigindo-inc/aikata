@@ -18,6 +18,32 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.6] - 2026-06-01
+
+**Codex native distribution (ADR 0036).** Advances the Codex skill-only
+native wrapper from ADR 0015's v1.0 deferral now that the platform shape
+needed by aikata is stable. Codex gains a native install path and App
+skill-card metadata around the same thin CLI wrapper already shipped as
+the universal skill. No Go CLI behaviour change.
+
+### Added
+
+- **Codex native distribution (ADR 0036)** — `dist/universal-skill/`
+  now includes Codex App metadata under `agents/openai.yaml`, and
+  `dist/codex/plugin/` packages the same skill as a first-party Codex
+  plugin. The root `.agents/plugins/marketplace.json` exposes the plugin
+  through Codex's self-hosted marketplace flow.
+- **Agent distribution archive assets** —
+  `aikata-universal-skill.tar.gz` and `aikata-codex-plugin.tar.gz` are
+  generated before GoReleaser runs. CI smoke-checks their required
+  entries while preserving the existing `aikata-universal-skill.md`
+  release asset.
+
+### Changed
+
+- Release metadata lockstep now covers the Claude Code plugin,
+  Claude Code marketplace, and Codex plugin manifest.
+
 ## [0.9.5] - 2026-06-01
 
 **Plugin command surface + marketplace version lockstep.** Rounds out the

@@ -5,8 +5,8 @@ version: 2
 project_name: aikata
 
 # Write GoReleaser's build output to a private directory rather than
-# ./dist so the human-curated dist/ tree (Claude Code skill, future
-# plugin payloads) is not wiped by `release --clean`.
+# ./dist so the human-curated dist/ tree (Claude Code skill and plugin,
+# Codex plugin payloads) is not wiped by `release --clean`.
 dist: .goreleaser-output
 
 before:
@@ -114,10 +114,14 @@ release:
   footer: |
     ---
     Released via [GoReleaser](https://goreleaser.com).
-  # Ship the first-party skills alongside the binaries so users can grab
-  # them directly from a release asset without cloning the repo.
+  # Ship the first-party skills and plugin bundles alongside the binaries
+  # so users can grab them directly from a release asset without cloning.
   extra_files:
     - glob: dist/claude-code/skill/SKILL.md
       name_template: aikata-skill.md
     - glob: dist/universal-skill/SKILL.md
       name_template: aikata-universal-skill.md
+    - glob: dist/aikata-universal-skill.tar.gz
+      name_template: aikata-universal-skill.tar.gz
+    - glob: dist/aikata-codex-plugin.tar.gz
+      name_template: aikata-codex-plugin.tar.gz
