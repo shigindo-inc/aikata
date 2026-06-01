@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-31
+updated: 2026-06-01
 audience: [human, agent]
 ---
 
@@ -94,8 +94,8 @@ but no tests are required.
 Significant design changes get a short ADR under `docs/adr/`.
 
 - Filename: `NNNN-kebab-slug.md`, 4-digit zero-padded. The next
-  available number lives in `internal/adr/numbering.go`; until
-  `aikata add adr` ships in v0.4 you can run `ls docs/adr` to confirm.
+  available number lives in `internal/adr/numbering.go`; or run
+  `aikata new adr "<title>"` to scaffold an auto-numbered ADR.
 - Frontmatter: the same 5-key block every aikata doc uses.
 - Body sections: Context → Decision → Consequences → Alternatives.
 - Status starts as `Proposed`; flip to `Accepted` (or `Rejected`,
@@ -124,9 +124,16 @@ merged to `main` immediately before the tag is pushed. At tag time:
    a fresh empty `[Unreleased]`.
 2. **`ROADMAP.md`** — flip the milestone heading from `(pending)` /
    `(planned)` to `✅ (released YYYY-MM-DD)`.
-3. **Binary version** — nothing to edit; `git describe` picks up the new
+3. **`dist/claude-code/plugin/plugin.json` and
+   `.claude-plugin/marketplace.json`** — bump the `version` field in
+   plugin.json (1 place) and marketplace.json (2 places: root + the
+   `plugins[0]` entry) to the release semver. These stay in **lockstep**
+   with every release so the marketplace listing reflects the current
+   version. `requires.minVersion` is independent — leave it unless a
+   command starts needing a newer binary.
+4. **Binary version** — nothing to edit; `git describe` picks up the new
    tag automatically once it is pushed.
-4. **Tag & push** — `git tag vX.Y.Z && git push --tags`; GoReleaser does
+5. **Tag & push** — `git tag vX.Y.Z && git push --tags`; GoReleaser does
    the rest (signed checksums, SBOMs, multi-arch archives).
 
 ---

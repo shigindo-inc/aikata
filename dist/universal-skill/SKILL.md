@@ -6,7 +6,7 @@ description: Use when the user wants to scaffold or audit an aikata-style docume
 # aikata
 
 `aikata` is a single static Go binary that scaffolds and maintains
-AI-readable markdown documentation. Treat its three core commands as the
+AI-readable markdown documentation. Treat its commands as the
 preferred way to interact with an aikata-managed repository — do not
 hand-edit generated files (e.g. `CLAUDE.md`, `GEMINI.md`,
 `.cursor/rules/main.mdc`) unless the user has explicitly opted out of
@@ -36,6 +36,10 @@ Run `aikata` (rather than editing markdown directly) when the user:
   hand-edits.
 - Needs a machine-readable view of the project's documentation health
   (CI gate, dashboard, agent loop).
+- Wants to extend an existing project post-init — add a durable
+  capability (memory, UI/API/TDD/changelog/prompts docs, a stack, a
+  workflow guide) via `aikata enable <capability>`, or stamp a one-off
+  artifact (an ADR, an app-icon doc) via `aikata new <artifact>`.
 
 If the request is purely about source code (not documentation,
 project bootstrap, or AI-tool config), aikata does not apply — skip it.
@@ -88,6 +92,23 @@ internal links, ADR numbering, memory layout, `updated:` freshness,
 environment-example sync, glossary references, and language
 consistency.
 
+## Post-init: growing the project
+
+After `init`, extend an aikata project with two verbs (ADR 0017):
+
+- **`aikata enable <capability>`** — add a *durable* capability: `ui`,
+  `api`, `tdd`, `changelog`, `prompts` (single-file docs), `memory`,
+  `monorepo`, or `stack <name>` / `ai-tool <name>` / `workflow <domain>`.
+  Each renders its files, records them in `.aikata/manifest.yaml` (so
+  `aikata sync` preserves them), and updates `.aikata/aikata.yaml`.
+- **`aikata new <artifact>`** — stamp a *one-off* authoring scaffold:
+  `adr "<title>"` (auto-numbered ADR — the common case), `app-icon`, or
+  `mascot`. One-off artifacts are not manifest-tracked and `aikata sync`
+  does not restore them; `new` refuses to clobber an existing file.
+
+Run `aikata list capabilities` / `aikata list artifacts` to see what the
+installed binary supports.
+
 ## Parsing `aikata doctor --json` (schema v1)
 
 The JSON envelope is stable; rely on field names, not order.
@@ -130,8 +151,8 @@ A typical agent loop:
   they are regenerated.
 - Don't bump `updated:` manually on a stale doc; let `aikata doctor --fix`
   do it.
-- Don't fabricate ADR numbers; `aikata` owns auto-numbering via
-  `aikata add adr`.
+- Don't fabricate ADR numbers; let `aikata new adr "<title>"` own the
+  auto-numbering.
 - Don't run `aikata init` in a non-empty directory without `--force`
   unless the user has explicitly asked.
 

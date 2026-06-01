@@ -368,6 +368,7 @@ touch is documentation, and it must be kept in sync at tag time:
 |---|---|
 | `CHANGELOG.md` | Promote the `## [Unreleased]` entries into a new `## [X.Y.Z] - YYYY-MM-DD` section with a one-paragraph summary. Leave a fresh empty `[Unreleased]`. |
 | `ROADMAP.md` | Flip the milestone heading from `(pending)` / `(planned)` to `✅ (released YYYY-MM-DD)`. |
+| `plugin.json` + `marketplace.json` | Bump `version` in `dist/claude-code/plugin/plugin.json` (1 place) and `.claude-plugin/marketplace.json` (2 places) to the release semver — **lockstep** with every release (v0.9.5+) so the marketplace listing matches. `requires.minVersion` is independent. |
 | Binary version | **Nothing** — `git describe` picks up the new tag automatically. |
 
 This ritual is performed in a `chore(release): prepare vX.Y.Z` PR that
