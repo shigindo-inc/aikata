@@ -1,0 +1,6 @@
+interface:
+  display_name: "aikata"
+  short_description: "Scaffold and maintain AI-readable project docs"
+  default_prompt: "Use $aikata to scaffold or audit this project's AI-readable documentation."
+policy:
+  allow_implicit_invocation: true

@@ -49,6 +49,9 @@ jobs:
       - name: Install syft
         uses: anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
 
+      - name: Package agent distribution assets
+        run: sh scripts/package-distribution-assets.sh
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:

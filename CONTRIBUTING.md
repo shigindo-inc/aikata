@@ -116,24 +116,29 @@ Contributors should not push tags directly.
 
 **The binary version comes from the git tag** (`git describe --tags` →
 ldflags), so there is **no version constant to bump in Go source**. A
-release is a `chore(release): prepare vX.Y.Z` PR that updates only docs,
-merged to `main` immediately before the tag is pushed. At tag time:
+release is a `chore(release): prepare vX.Y.Z` PR that updates docs and
+distribution metadata, merged to `main` immediately before the tag is
+pushed. At tag time:
 
 1. **`CHANGELOG.md`** — promote the `## [Unreleased]` entries into a new
    `## [X.Y.Z] - YYYY-MM-DD` section with a short summary paragraph; leave
    a fresh empty `[Unreleased]`.
 2. **`ROADMAP.md`** — flip the milestone heading from `(pending)` /
    `(planned)` to `✅ (released YYYY-MM-DD)`.
-3. **`dist/claude-code/plugin/plugin.json` and
-   `.claude-plugin/marketplace.json`** — bump the `version` field in
-   plugin.json (1 place) and marketplace.json (2 places: root + the
-   `plugins[0]` entry) to the release semver. These stay in **lockstep**
-   with every release so the marketplace listing reflects the current
-   version. `requires.minVersion` is independent — leave it unless a
-   command starts needing a newer binary.
-4. **Binary version** — nothing to edit; `git describe` picks up the new
+3. **Plugin distribution metadata** — bump the `version` field in
+   `dist/claude-code/plugin/plugin.json` (1 place),
+   `.claude-plugin/marketplace.json` (2 places: root + the `plugins[0]`
+   entry), and `dist/codex/plugin/.codex-plugin/plugin.json` (1 place) to
+   the release semver. These stay in **lockstep** with every release so
+   marketplace listings reflect the current version.
+   `requires.minVersion` is independent — leave it unless a command
+   starts needing a newer binary.
+4. **Agent distribution archives** — run
+   `scripts/package-distribution-assets.sh`. The generated `.tar.gz`
+   files are ignored locally and attached by GoReleaser.
+5. **Binary version** — nothing to edit; `git describe` picks up the new
    tag automatically once it is pushed.
-5. **Tag & push** — `git tag vX.Y.Z && git push --tags`; GoReleaser does
+6. **Tag & push** — `git tag vX.Y.Z && git push --tags`; GoReleaser does
    the rest (signed checksums, SBOMs, multi-arch archives).
 
 ---

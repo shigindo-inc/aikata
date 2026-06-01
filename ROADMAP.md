@@ -1160,7 +1160,40 @@ plugin and `npx skills add` surfaces already exist from v0.6 / v0.9.3.
 
 ---
 
-## v0.9.9 — Native package-manager channels (pending)
+## v0.9.6 — Codex native distribution ✅ (released 2026-06-01)
+
+Advances the Codex skill-only native wrapper from ADR 0015's v1.0
+deferral now that the platform shape needed by aikata is stable. No Go
+CLI behaviour changes: Codex gets a native install path and App metadata
+around the same thin CLI wrapper already shipped as the universal skill.
+
+- [x] **Codex App skill-card metadata** —
+      `dist/universal-skill/agents/openai.yaml` adds the `aikata` display
+      name, concise description, `$aikata` starter prompt, and implicit
+      invocation policy without speculative icons, colors, dependencies,
+      or branding assets.
+- [x] **First-party Codex plugin** — `dist/codex/plugin/` contains
+      `.codex-plugin/plugin.json` plus byte-identical copies of the
+      universal skill and `agents/openai.yaml`. Root
+      `.agents/plugins/marketplace.json` exposes the tracked plugin for
+      the self-hosted Codex marketplace flow.
+- [x] **Versioned native install guidance** — Codex CLI `0.135.0+`
+      prefers `codex plugin marketplace add shigindo-inc/aikata --ref
+      v0.9.6` followed by `codex plugin add aikata@aikata`. Direct
+      universal-skill discovery remains the fallback for older Codex
+      versions and works on CLI `0.125.0`.
+- [x] **Release bundles + CI smoke coverage** — preserve
+      `aikata-universal-skill.md`; add generated
+      `aikata-universal-skill.tar.gz` and `aikata-codex-plugin.tar.gz`
+      assets, with archive-entry smoke checks and repository lockstep
+      tests.
+
+Cursor and Gemini CLI native wrappers remain v1.0 work. The rationale
+and Do-No-Harm analysis are recorded in
+[ADR 0036](./docs/adr/0036-codex-native-distribution.md).
+
+---
+v0.9.9 — Native package-manager channels (pending)
 
 Third and lowest-priority channel-publication line (ADR 0032 D3). The
 convenience-only package-manager channels and their dependent self-update
@@ -1200,13 +1233,13 @@ previously numbered v0.8.x; moved back one minor when the v0.8.x security
 - [ ] Stable preset & template schema (semver guarantee).
 - [ ] Official docs site (`aikata.dev`).
 - [ ] External preset repositories (`aikata add stack github.com/foo/bar`).
-- [ ] **Plugin / skill distribution beyond Claude** — publish aikata in
+- [ ] **Plugin / skill distribution beyond Claude and Codex** — publish aikata in
       native distribution shapes where they are stable enough to support:
-      Cursor custom modes or rule packs, Codex skills / plugins,
-      Gemini CLI extensions, and a VS Code extension that wraps the CLI.
+      Cursor custom modes or rule packs, Gemini CLI extensions, and a VS
+      Code extension that wraps the CLI.
       Per-tool scope is driven by H1 dogfooding evidence; the Claude
-      plugin (v0.6) defines the surface shape and the others mirror it
-      only where the platform concepts line up.
+      plugin (v0.6) and Codex skill plugin (v0.9.6) define the surface
+      shape only where the platform concepts line up.
 - [ ] Third-party skill / plugin marketplace interop policy. ADR 0015
       resolves first-party wrapper distribution; this remaining item is
       only about whether aikata should ever scaffold manifests for
@@ -1261,8 +1294,9 @@ previous one (`go install` stays the canonical baseline).
 | v0.9.0 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.9.2 | ✅ | ✅ | ✅ | minimal | scaffold (manual) | — | — | — |
 | v0.9.3 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | — | — | `npx skills add` |
-| v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | `npx aikata` | tap | `npx skills add` |
-| v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Cursor / Gemini / VS Code |
+| v0.9.6 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | — | — | Codex plugin |
+| v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | `npx aikata` | tap | Codex plugin + `npx skills add` |
+| v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Codex / Cursor / Gemini / VS Code |
 
 Plugin / skill scope grows monotonically too:
 
@@ -1291,14 +1325,18 @@ Plugin / skill scope grows monotonically too:
   Claude Code plugin and documents `enable` / `new` in both first-party
   skills. It extends the *content* of existing surfaces, not the set of
   install channels, so it has no cadence-table row.
+- **v0.9.6** — adds minimal Codex App metadata and a first-party Codex
+  skill plugin installable from the repository's self-hosted marketplace.
+  The plugin stays byte-identical to the universal skill content and adds
+  no MCP server or app integration (ADR 0036).
 - **v0.9.9** — adds the convenience package-manager channels (Homebrew
   tap, `npx aikata`) and the brew / npm branches of `aikata update
   --apply`. Deferred as lowest priority because `curl … | sh` and
   `go install` already cover the install gap (ADR 0032).
-- **v1.0** — mirrors the v0.6 plugin shape into Codex, Cursor, Gemini
-  CLI, and a thin VS Code wrapper where each platform has a stable native
-  extension surface. Per-tool feature parity is not promised; the promise
-  is "you can discover and invoke aikata from your tool's native surface."
+- **v1.0** — extends native wrappers into Cursor, Gemini CLI, and a thin
+  VS Code wrapper where each platform has a stable native extension
+  surface. Per-tool feature parity is not promised; the promise is "you
+  can discover and invoke aikata from your tool's native surface."
   Installing arbitrary third-party skills remains an ecosystem question,
   not part of the core CLI contract yet.
 

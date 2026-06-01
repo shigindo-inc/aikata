@@ -23,10 +23,11 @@ go.work.sum
 # --- Release artifacts ---
 # GoReleaser's output (archives, checksums, snapshots). The dist:
 # field in .goreleaser.yml redirects build output to .goreleaser-output
-# so the human-curated dist/ tree (Claude Code skill, future plugin
-# payloads) stays untouched by `release --clean`.
+# so the human-curated dist/ tree (Claude Code skill and plugin, Codex
+# plugin payloads) stays untouched by `release --clean`.
 /.goreleaser-output/
 /bin/
+/dist/*.tar.gz
 
 # --- aikata-specific ---
 # Proposals from `aikata init` against existing directories (do not commit)

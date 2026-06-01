@@ -1,0 +1,26 @@
+{
+  "name": "aikata",
+  "version": "0.9.6",
+  "description": "Scaffold and maintain AI-readable markdown documentation projects via the aikata CLI.",
+  "author": {
+    "name": "shigindo-inc",
+    "url": "https://github.com/shigindo-inc"
+  },
+  "homepage": "https://github.com/shigindo-inc/aikata",
+  "repository": "https://github.com/shigindo-inc/aikata",
+  "license": "MIT",
+  "keywords": ["scaffolding", "documentation", "agents", "markdown", "agents-md", "adr"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "aikata",
+    "shortDescription": "Scaffold and maintain AI-readable project docs.",
+    "longDescription": "Use the aikata CLI to scaffold, audit, synchronize, and extend canonical project documentation for humans and AI coding agents.",
+    "developerName": "shigindo-inc",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Use aikata to audit this project's AI-readable documentation.",
+      "Use aikata to scaffold an AI-readable documentation set for this project."
+    ]
+  }
+}
