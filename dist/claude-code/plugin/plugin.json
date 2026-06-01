@@ -1,6 +1,6 @@
 {
   "name": "aikata",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "description": "Scaffold and maintain AI-readable markdown documentation projects (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI.",
   "homepage": "https://github.com/shigindo-inc/aikata",
   "repository": "https://github.com/shigindo-inc/aikata",
@@ -22,7 +22,9 @@
       "commands/aikata-init.md",
       "commands/aikata-generate.md",
       "commands/aikata-doctor.md",
-      "commands/aikata-sync.md"
+      "commands/aikata-sync.md",
+      "commands/aikata-new.md",
+      "commands/aikata-enable.md"
     ]
   },
   "requires": {

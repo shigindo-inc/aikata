@@ -19,7 +19,9 @@ dist/
 │           ├── aikata-init.md
 │           ├── aikata-generate.md
 │           ├── aikata-doctor.md
-│           └── aikata-sync.md
+│           ├── aikata-sync.md
+│           ├── aikata-new.md
+│           └── aikata-enable.md
 └── universal-skill/
     └── SKILL.md   ← tool-agnostic skill for `npx skills add ...` (v0.9.3+)
 ```
@@ -60,8 +62,9 @@ aikata project — it will pick up the skill automatically.
 ## Claude Code plugin (v0.6+)
 
 The v0.6 release adds `dist/claude-code/plugin/` — a Claude Code
-plugin that bundles the same skill plus four slash commands:
-`/aikata-init`, `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`.
+plugin that bundles the same skill plus six slash commands:
+`/aikata-init`, `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`,
+and (v0.9.5) `/aikata-new` and `/aikata-enable` for post-init authoring.
 
 To install it as a self-hosted marketplace (v0.9.3+):
 

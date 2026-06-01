@@ -1133,6 +1133,33 @@ isolated from the v0.9.3 ecosystem work so neither blocks the other.
 
 ---
 
+## v0.9.5 — Plugin command surface + version lockstep ✅ (released 2026-06-01)
+
+Rounds out the Claude Code plugin so it exposes aikata's authoring-growth
+verbs, not just the init / sync / doctor / generate lifecycle loop, and
+pins the distribution-metadata versioning policy. No CLI behaviour change;
+the binary surface is unchanged.
+
+- [x] **`/aikata-new` and `/aikata-enable` plugin slash commands** —
+      thin `$ARGUMENTS` wrappers over `aikata new <artifact>` (adr /
+      app-icon / mascot) and `aikata enable <capability>` (ui / api /
+      tdd / changelog / prompts / memory / monorepo / stack / ai-tool /
+      workflow). The plugin previously surfaced neither verb, so creating
+      an ADR or enabling a capability had no plugin-level affordance.
+- [x] **Both first-party skills document `enable` / `new`** —
+      `dist/claude-code/skill/SKILL.md` and `dist/universal-skill/SKILL.md`
+      gain a short post-init section (they previously omitted these
+      commands entirely).
+- [x] **`plugin.json` / `marketplace.json` version lockstep** — both bump
+      with every release going forward (CONTRIBUTING § Release flow,
+      ARCHITECTURE §6.5); set to `0.9.5`, resolving the v0.9.4 gap where
+      the marketplace still showed `0.9.3`.
+
+This is not a distribution *channel* change (no cadence-table row): the
+plugin and `npx skills add` surfaces already exist from v0.6 / v0.9.3.
+
+---
+
 ## v0.9.9 — Native package-manager channels (pending)
 
 Third and lowest-priority channel-publication line (ADR 0032 D3). The
@@ -1260,6 +1287,10 @@ Plugin / skill scope grows monotonically too:
   *mechanism* for the channels that already exist (install-script /
   go-install / github-release). It adds no new install channel, so it has
   no cadence-table row.
+- **v0.9.5** — adds `/aikata-new` and `/aikata-enable` to the existing
+  Claude Code plugin and documents `enable` / `new` in both first-party
+  skills. It extends the *content* of existing surfaces, not the set of
+  install channels, so it has no cadence-table row.
 - **v0.9.9** — adds the convenience package-manager channels (Homebrew
   tap, `npx aikata`) and the brew / npm branches of `aikata update
   --apply`. Deferred as lowest priority because `curl … | sh` and

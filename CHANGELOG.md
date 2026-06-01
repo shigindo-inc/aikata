@@ -18,6 +18,34 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-06-01
+
+**Plugin command surface + marketplace version lockstep.** Rounds out the
+Claude Code plugin and pins the distribution-metadata versioning policy.
+
+### Added
+
+- **`/aikata-new` and `/aikata-enable` plugin slash commands** — the
+  Claude Code plugin previously exposed only the init / sync / doctor /
+  generate lifecycle loop; it now also surfaces aikata's authoring-growth
+  verbs. `/aikata-new` wraps `aikata new <artifact>` (ADR creation,
+  app-icon, mascot); `/aikata-enable` wraps `aikata enable <capability>`
+  (ui / api / tdd / changelog / prompts / memory / monorepo / stack /
+  ai-tool / workflow). Both pass `$ARGUMENTS` through to the CLI.
+- Both first-party skills (`dist/claude-code/skill/SKILL.md` and
+  `dist/universal-skill/SKILL.md`) now document `aikata enable` /
+  `aikata new`, which they previously omitted.
+
+### Changed
+
+- **`plugin.json` / `marketplace.json` versions now bump in lockstep with
+  every release** (documented in CONTRIBUTING § Release flow and
+  ARCHITECTURE §6.5). Both are set to `0.9.5`, resolving the v0.9.4 gap
+  where the marketplace still advertised `0.9.3` (v0.9.2 / v0.9.4 shipped
+  no plugin change, so the version had been frozen). Note: an
+  already-installed marketplace plugin does not auto-update; re-add or
+  update the marketplace to pick up the new version.
+
 ## [0.9.4] - 2026-06-01
 
 **Native self-update.** `aikata update --apply` for the channels that
