@@ -114,13 +114,13 @@ release:
   footer: |
     ---
     Released via [GoReleaser](https://goreleaser.com).
-  # Ship the first-party skills and plugin bundles alongside the binaries
+  # Ship the first-party skill and plugin bundles alongside the binaries
   # so users can grab them directly from a release asset without cloning.
+  # From v0.10.0 the surface is two skills (aikata-cli, aikata-context;
+  # ADR 0040), so a single-file `.md` asset can no longer represent it —
+  # the universal and Codex tarballs (plus the self-hosted marketplaces)
+  # are the install path.
   extra_files:
-    - glob: dist/claude-code/skill/SKILL.md
-      name_template: aikata-skill.md
-    - glob: dist/universal-skill/SKILL.md
-      name_template: aikata-universal-skill.md
     - glob: dist/aikata-universal-skill.tar.gz
       name_template: aikata-universal-skill.tar.gz
     - glob: dist/aikata-codex-plugin.tar.gz

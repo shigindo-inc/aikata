@@ -1,0 +1,6 @@
+interface:
+  display_name: "aikata CLI"
+  short_description: "Scaffold and audit AI-readable project docs via the aikata CLI"
+  default_prompt: "Use $aikata-cli to scaffold or audit this project's AI-readable documentation."
+policy:
+  allow_implicit_invocation: true

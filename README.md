@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.9.8.**
+> **Status — v0.10.0.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
@@ -152,29 +152,31 @@ not found after install.
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
 > are deferred to v0.9.x — see [ROADMAP.md](./ROADMAP.md).
 
-### Claude Code skill (optional, v0.3.1+)
+### Claude Code skills (optional, v0.3.1+)
 
-aikata ships a minimal Claude Code skill that teaches Claude when to
-call the CLI and how to parse `aikata doctor --json`. It is a single
-file — no slash commands, sub-agents, or hooks — so installing it is
-one copy:
+aikata ships **two** first-party skills (ADR 0040): `aikata-cli` teaches
+the agent when to call the CLI and how to parse `aikata doctor --json`,
+and `aikata-context` teaches the daily in-repo context-maintenance loop
+(which canonical docs to read, where new context belongs, what to check
+before handoff). Both install together as the single `aikata` plugin
+from the self-hosted marketplace:
 
-```bash
-mkdir -p ~/.claude/skills
-curl -fsSL -o ~/.claude/skills/aikata.md \
-  https://github.com/shigindo-inc/aikata/releases/latest/download/aikata-skill.md
+```text
+/plugin marketplace add shigindo-inc/aikata
+/plugin install aikata@aikata
 ```
 
-See [`dist/README.md`](./dist/README.md) for offline install from a
-checkout and notes on the v0.6 plugin migration path.
+See [`dist/README.md`](./dist/README.md) for the standalone-skill install
+from a release tarball or checkout, and the v0.10.0 reinstall step if you
+previously installed the single `aikata` skill.
 
 ### Codex plugin (optional, v0.9.6+)
 
 Codex CLI `0.135.0+` can install aikata as a first-party skill plugin
-from this repository:
+from this repository (both skills ship in the one plugin):
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.9.8
+codex plugin marketplace add shigindo-inc/aikata --ref v0.10.0
 codex plugin add aikata@aikata
 ```
 
@@ -441,6 +443,7 @@ aikata generate
   - [0037 — Tighten Adoption Mutation Boundaries in v0.9.7](./docs/adr/0037-tighten-adoption-mutation-boundaries.md)
   - [0038 — Unify `.gitignore` on the Managed Block Across init and sync](./docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md)
   - [0039 — Documentation Hygiene & Context Budget](./docs/adr/0039-documentation-hygiene-and-context-budget.md)
+  - [0040 — Collaboration-operation Skill Split (aikata-cli + aikata-context)](./docs/adr/0040-collaboration-operation-skill-split.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

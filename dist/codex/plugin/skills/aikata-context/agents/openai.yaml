@@ -1,0 +1,6 @@
+interface:
+  display_name: "aikata Context"
+  short_description: "Maintain canonical docs and working state while developing in an aikata repo"
+  default_prompt: "Use $aikata-context before non-trivial work in this aikata repo: read the relevant canonical docs and keep working state current."
+policy:
+  allow_implicit_invocation: true

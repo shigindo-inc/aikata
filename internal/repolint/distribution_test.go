@@ -8,17 +8,62 @@ import (
 	"testing"
 )
 
-func TestCodexPluginSkillCopiesMatchUniversal(t *testing.T) {
+// firstPartySkills is the v0.10.0 skill surface (ADR 0040): the
+// CLI-wrapper responsibility and the in-repo context-maintenance loop,
+// shipped from the single aikata plugin.
+var firstPartySkills = []string{"aikata-cli", "aikata-context"}
+
+// TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040:
+// `dist/universal-skill/<skill>/SKILL.md` is the single canonical source
+// for each skill's content, and every per-platform copy (Codex plugin,
+// Claude Code plugin, Claude Code standalone skill) is byte-identical to
+// it. Copies exist only for per-platform discovery location/format, never
+// for content. The Codex copy additionally carries a byte-identical
+// `agents/openai.yaml`; Claude Code ignores that file, so its copies are
+// the flat `.md` body alone.
+func TestSkillCopiesMatchCanonical(t *testing.T) {
 	root := repoRoot(t)
 
-	assertFilesEqual(t, root,
-		"dist/universal-skill/SKILL.md",
-		"dist/codex/plugin/skills/aikata/SKILL.md",
-	)
-	assertFilesEqual(t, root,
-		"dist/universal-skill/agents/openai.yaml",
-		"dist/codex/plugin/skills/aikata/agents/openai.yaml",
-	)
+	for _, skill := range firstPartySkills {
+		canonicalSkill := "dist/universal-skill/" + skill + "/SKILL.md"
+		skillCopies := []string{
+			"dist/codex/plugin/skills/" + skill + "/SKILL.md",
+			"dist/claude-code/plugin/skills/" + skill + ".md",
+			"dist/claude-code/skill/" + skill + ".md",
+		}
+		for _, copyPath := range skillCopies {
+			assertFilesEqual(t, root, canonicalSkill, copyPath)
+		}
+
+		assertFilesEqual(t, root,
+			"dist/universal-skill/"+skill+"/agents/openai.yaml",
+			"dist/codex/plugin/skills/"+skill+"/agents/openai.yaml",
+		)
+	}
+}
+
+// TestClaudePluginListsBothSkills guards the Claude Code plugin manifest
+// against drifting from the two-skill surface (ADR 0040).
+func TestClaudePluginListsBothSkills(t *testing.T) {
+	root := repoRoot(t)
+
+	var plugin struct {
+		Components struct {
+			Skills []string `json:"skills"`
+		} `json:"components"`
+	}
+	readJSON(t, filepath.Join(root, "dist", "claude-code", "plugin", "plugin.json"), &plugin)
+
+	want := []string{"skills/aikata-cli.md", "skills/aikata-context.md"}
+	got := plugin.Components.Skills
+	if len(got) != len(want) {
+		t.Fatalf("Claude plugin skills = %v, want %v", got, want)
+	}
+	for i, w := range want {
+		if got[i] != w {
+			t.Errorf("Claude plugin skills[%d] = %q, want %q", i, got[i], w)
+		}
+	}
 }
 
 func TestCodexMarketplacePointsAtTrackedPlugin(t *testing.T) {
