@@ -181,6 +181,41 @@ requirements live in `SPEC.md`, technical design lives in
 belongs in optional `UI.md` when enabled. See
 [ADR 0007](./docs/adr/0007-no-generic-design-md.md).
 
+### 3.4 File write disciplines
+
+Every command decides per file **how** it touches an existing path. There
+are exactly seven disciplines; this table is the single reference (the
+behaviour is otherwise spread across ADRs 0002 / 0011 / 0018 / 0019 /
+0025 / 0031 / 0037 and the `internal/scaffold`, `internal/components`,
+`internal/sync`, and `internal/generate` packages). When adding a code
+path that writes a project file, pick one of these — do not invent an
+eighth.
+
+| # | Discipline | On absent | On existing | Used by | Code | ADR |
+|---|---|---|---|---|---|---|
+| 1 | **Overwrite (disposable)** | write | **overwrite** unconditionally | `aikata generate` artifacts (`CLAUDE.md`, `.cursor/rules/main.mdc`) | `internal/generate` `writeAll` | 0002 |
+| 2 | **Atomic full-tree write** | write all-or-nothing | overwrite (only reached with `--force`; else → #6) | `aikata init` greenfield scaffold | `scaffold.writeAll` | — |
+| 3 | **Managed-append (block)** | write template verbatim | merge: replace only the `# >>> aikata managed >>>` block, byte-preserve user lines | `.gitignore` at init / scaffold time | `scaffold.contentForWrite` + `internal/managed.ApplyBlock` (`isManagedAppendPath`) | 0018 |
+| 4 | **Create-or-skip (`writeIfMissing`)** | write | **skip** + notice (never overwrite) | single-file capabilities (`enable ui/api/tdd/changelog/prompts/env`, `memory`) | `singleFile.Add` → `writeIfMissing` | 0004 / 0034 / 0037 |
+| 5 | **Refuse-on-collision** | write | **error** (refuse; leave untouched) | one-off artifacts (`new adr/app-icon/mascot`) | `oneOffArtifact.Add` | 0031 |
+| 6 | **Proposal fallback** | n/a | render the whole scaffold under `.aikata-proposed/`, exit 0; refuse if that tree is non-empty (`ErrProposalExists`) | `aikata init` in a non-empty dir without `--force` | `scaffold.Run` | 0037 |
+| 7 | **3-way merge** | re-create unless `user-deleted` (0019) | merge vs manifest ancestor: `user-only-edit` preserved, conflicts get git-style markers | `aikata sync` | `internal/sync` | 0011 / 0025 |
+
+Two cross-cutting modifiers sit on top of the table:
+
+- **`owned` / skip** — any path matching `sync.own` is exempted from #7
+  entirely (never compared, merged, conflict-markered, or
+  manifest-tracked). ADR 0025 D2.
+- **Manifest tracking** — disciplines #2, #3, #4 record the rendered
+  path in `.aikata/manifest.yaml` so #7 has an ancestor; #5 deliberately
+  records nothing (the artifact becomes project-owned immediately); #1
+  artifacts are never manifest-tracked (disposable). ADR 0014.
+
+Config files (`.aikata/aikata.yaml`, `.aikata/manifest.yaml`) are always
+written atomically (temp + rename, `internal/config`), with lazy
+schema-migration rewrites; they are aikata-owned state, not subject to
+the disciplines above.
+
 ---
 
 ## 4. Configuration File: `.aikata/aikata.yaml`
