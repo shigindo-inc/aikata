@@ -86,8 +86,8 @@ rm -f ~/.claude/skills/aikata.md
 rm -rf ~/.agents/skills/aikata
 ```
 
-If you installed via a plugin, refresh the marketplace, then reinstall so
-the new two-skill plugin is picked up:
+If you installed via a plugin, update it so the new two-skill plugin is
+picked up:
 
 ```text
 # Claude Code
@@ -96,8 +96,21 @@ the new two-skill plugin is picked up:
 ```
 
 ```bash
-# Codex (re-point the marketplace at the new tag, then reinstall)
-codex plugin marketplace add shigindo-inc/aikata --ref v0.10.1
+# Codex — if the marketplace tracks the default branch (recommended)
+codex plugin marketplace upgrade aikata
+codex plugin add aikata@aikata
+```
+
+If your Codex `aikata` marketplace was added with a pinned `--ref` (an
+older tag), `marketplace upgrade` only re-pulls that same tag, so it will
+not advance — you must remove and re-add it. The same is true if
+`marketplace add` reports `marketplace 'aikata' is already added from a
+different source`:
+
+```bash
+codex plugin remove aikata              # drop the stale installed plugin
+codex plugin marketplace remove aikata  # drop the old marketplace entry
+codex plugin marketplace add shigindo-inc/aikata   # re-add (default branch)
 codex plugin add aikata@aikata
 ```
 
@@ -166,6 +179,9 @@ installer treats the given path as a container of skills, so a path like
 aikata-cli` (or `aikata-context`) to install just one. `dist/universal-skill/`
 is the canonical source; no publication mirror repository is required.
 
+The `tree/main/...` URL tracks the default branch, so to **update** just
+re-run the same `npx skills add` command — it pulls the latest skills.
+
 For Codex CLI `0.125.0+`, direct installation into `.agents/skills/` is
 also the fallback when native plugin commands are unavailable. Extract the
 release tarball, or copy the directories from a checkout:
@@ -182,12 +198,27 @@ Restart Codex after installation. The release ships
 ## Codex plugin (v0.9.6+)
 
 Codex CLI `0.135.0+` can install `dist/codex/plugin/` through the root
-self-hosted marketplace:
+self-hosted marketplace. The recommended (update-friendly) form tracks the
+default branch, so it always installs the latest skills:
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.10.1
+codex plugin marketplace add shigindo-inc/aikata
 codex plugin add aikata@aikata
 ```
+
+Update later with:
+
+```bash
+codex plugin marketplace upgrade aikata
+codex plugin add aikata@aikata
+```
+
+**Optional — pin a tag for reproducibility.** Add `--ref v0.10.2` to the
+`marketplace add` to lock the plugin to a specific release. The trade-off
+is updates are manual: `marketplace upgrade` re-pulls the *same* pinned
+tag (it never advances), so moving to a newer release means
+`codex plugin marketplace remove aikata` then re-adding with the new
+`--ref` (see "Reinstalling" above).
 
 The plugin is a thin wrapper over the CLI: both skills, each with its own
 `agents/openai.yaml` UI metadata, no MCP server, and no app integration.
