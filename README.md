@@ -181,7 +181,8 @@ npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-s
 Each is a thin wrapper over the aikata CLI — no MCP server, sub-agent, or
 app integration. To **update**: Claude Code `/plugin marketplace update
 aikata`; Codex `codex plugin marketplace upgrade aikata && codex plugin
-add aikata@aikata`; universal re-run the `npx skills add` command above.
+add aikata@aikata`; universal `npx skills update` (add `--global` for the
+`--agent universal` install).
 
 See [`dist/README.md`](./dist/README.md) for the full per-surface install,
 update, reinstall/migration, standalone-skill, and tag-pinning steps.
