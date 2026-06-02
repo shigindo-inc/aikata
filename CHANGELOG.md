@@ -18,6 +18,56 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-06-02
+
+**Collaboration-operation skills (ADR 0040).** The single first-party
+`aikata` skill is split by responsibility into two small, composable
+skills shipped from the same marketplace entry and plugin: `aikata-cli`
+(when and how to invoke the CLI) and `aikata-context` (the daily in-repo
+context-maintenance loop). No runtime agent, MCP server, or app
+integration is introduced; the skills remain guidance the user's existing
+agent reads.
+
+### Added
+
+- **`aikata-context` skill** — triggers when an agent begins non-trivial
+  work in an aikata-managed repository (recognizable by `AGENTS.md` /
+  `.aikata/aikata.yaml`). It teaches the context-maintenance loop: read
+  the relevant canonical documents before editing; keep
+  `docs/tasks/current.md` current at start / progress / completion when
+  the slot exists; classify durable information into the correct slot
+  (invariant rules → `AGENTS.md`, requirements → `SPEC.md`, design
+  decisions → `docs/adr/`, durable facts/preferences → `docs/memory/`,
+  in-flight state → `docs/tasks/current.md`); and check documentation
+  impact, verification results, unresolved questions, and handoff state
+  before declaring work complete. It delegates command execution to
+  `aikata-cli`.
+
+### Changed
+
+- **The CLI-wrapper skill is renamed `aikata-cli`** (was `aikata`), with
+  unchanged scope: `init`, `enable`, `new`, `generate`, `doctor`, `sync`,
+  generated-artifact safety, and `doctor --json` (schema v1) parsing.
+- **Single canonical skill content; copies for discovery only** (ADR
+  0040). `dist/universal-skill/<skill>/SKILL.md` is the single source of
+  each skill's content; the Codex plugin, Claude Code plugin, and Claude
+  Code standalone copies are byte-identical to it. The prior
+  universal-vs-Claude-Code content divergence is retired.
+- **Distribution layout** moves to a per-skill directory tree across the
+  universal, Codex, and Claude Code distributions. The Claude Code plugin
+  manifest lists both skill files; the Codex plugin auto-discovers both.
+  Version lockstep is bumped to 0.10.0 across the marketplace and plugin
+  manifests.
+
+### Removed
+
+- **The single-file `.md` release assets** (`aikata-skill.md`,
+  `aikata-universal-skill.md`) are dropped — a single file can no longer
+  represent the two-skill surface. The universal and Codex tarballs plus
+  the self-hosted marketplaces are the install path. No backward-compat
+  aliases or transitional packaging are retained; see `dist/README.md`
+  for the reinstall step.
+
 ## [0.9.8] - 2026-06-02
 
 **`.gitignore` managed-block unification (ADR 0038) + documentation

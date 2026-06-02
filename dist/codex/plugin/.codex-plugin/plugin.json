@@ -1,6 +1,6 @@
 {
   "name": "aikata",
-  "version": "0.9.8",
+  "version": "0.10.0",
   "description": "Scaffold and maintain AI-readable markdown documentation projects via the aikata CLI.",
   "author": {
     "name": "shigindo-inc",

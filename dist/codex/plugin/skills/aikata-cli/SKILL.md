@@ -1,26 +1,32 @@
 ---
-name: aikata
-description: Use when the user wants to scaffold or audit an aikata-style documentation project — AGENTS.md / CLAUDE.md / SPEC.md / ARCHITECTURE.md / ADR layout, multi-AI-tool config generation, or `aikata doctor` self-check. Triggers on mentions of aikata, "init an aikata project", regenerating AI-tool configs from canonical markdown, or fixing AGENTS.md drift.
+name: aikata-cli
+description: Use when the user wants to run an aikata CLI lifecycle operation — scaffold a docs project (`aikata init`), regenerate per-AI-tool configs (`aikata generate` → CLAUDE.md / .cursor/rules/main.mdc), self-check documentation (`aikata doctor`, including `--json`), pull template updates (`aikata sync`), or extend a project (`aikata enable <capability>` / `aikata new <artifact>`). Triggers on mentions of aikata commands, "init an aikata project", regenerating AI-tool configs from canonical markdown, or fixing AGENTS.md drift. For the in-repo daily context-maintenance loop (which docs to read, where new context belongs, handoff checks), use `aikata-context` instead.
 ---
 
-# aikata
+# aikata-cli
 
 `aikata` is a single static Go binary that scaffolds and maintains
-AI-readable markdown documentation. Treat its commands as the
-preferred way to interact with an aikata-managed repository — do not
-hand-edit generated files (e.g. `CLAUDE.md`, `GEMINI.md`,
-`.cursor/rules/main.mdc`) unless the user has explicitly opted out of
-regeneration.
-
-This is a **universal** skill: it is tool-agnostic and applies to any
-agent that reads `AGENTS.md` as the canonical source of project rules
-(Claude Code, Codex, Cursor, Gemini CLI, Copilot, Windsurf, and the
-`.agents/skills/` universal layout). The skill teaches the agent how to
+AI-readable markdown documentation. This skill teaches an agent how to
 *invoke the aikata CLI*; aikata is not a separate runtime assistant.
+Treat its commands as the preferred way to interact with an
+aikata-managed repository — do not hand-edit generated files (e.g.
+`CLAUDE.md`, `GEMINI.md`, `.cursor/rules/main.mdc`) unless the user has
+explicitly opted out of regeneration.
+
+It is tool-agnostic and applies to any agent that reads `AGENTS.md` as
+the canonical source of project rules (Claude Code, Codex, Cursor,
+Gemini CLI, Copilot, Windsurf, and the `.agents/skills/` universal
+layout).
 
 If `aikata` is not on `PATH`, surface the install paths (release tarball,
 `scripts/install.sh`, or `go install`) before falling back to hand
 edits.
+
+> For the everyday operating loop inside an aikata repo — choosing which
+> canonical documents to read, classifying newly-learned context into
+> the right slot, maintaining working state, and checking handoff before
+> completion — use the **`aikata-context`** skill. This skill is the raw
+> CLI surface it delegates to.
 
 ## When to invoke aikata
 
@@ -163,3 +169,4 @@ A typical agent loop:
   `ARCHITECTURE.md` (how), `ROADMAP.md` (sequencing), `GLOSSARY.md`.
 - Decisions: `docs/adr/NNNN-*.md`, with open questions in
   `docs/decisions/open-questions.md`.
+- Sibling skill: `aikata-context` (the in-repo context-maintenance loop).

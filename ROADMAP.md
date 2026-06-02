@@ -415,6 +415,74 @@ previously numbered v0.8.x; moved back one minor when the v0.8.x security
 
 ---
 
+## v0.10.0 — Collaboration-operation skills ✅ (released 2026-06-02)
+
+**Goal**: turn aikata's document-centered collaboration model into an
+agent-usable daily operating loop, not only a CLI bootstrap and maintenance
+surface.
+
+This milestone took priority over the convenience-only v0.9.9 package-manager
+channels and shipped before them. The previous first-party skill taught agents
+when and how to invoke the aikata CLI, but did not teach agents how to operate
+an aikata-managed repository during ordinary development: which canonical
+documents to read, where newly learned context belongs, how to maintain
+working state, or what to check before handoff. That gap weakened the core
+product claim that aikata reduces the human cost of maintaining shared context
+for humans and AI coding agents. The decision is recorded in
+[ADR 0040](./docs/adr/0040-collaboration-operation-skill-split.md).
+
+- [x] **Split the first-party skill surface by responsibility** — rename the
+      existing CLI-wrapper responsibility to `aikata-cli`, covering `init`,
+      `enable`, `new`, `generate`, `doctor`, `sync`, generated-artifact safety,
+      and `doctor --json` parsing.
+- [x] **Add the `aikata-context` MVP skill** — trigger for non-trivial work in
+      an aikata-managed repository and teach the daily context-maintenance
+      loop:
+      - choose the relevant canonical documents to read before editing;
+      - update `docs/tasks/current.md` at task start, during meaningful
+        progress, and at completion when the slot exists;
+      - classify durable information into the correct slot: invariant rules
+        (`AGENTS.md`), requirements (`SPEC.md`), design decisions
+        (`docs/adr/`), long-term facts and preferences (`docs/memory/`), or
+        in-flight state (`docs/tasks/current.md`);
+      - check documentation impact, verification results, unresolved
+        questions, and handoff state before declaring work complete;
+      - invoke `aikata-cli` when the operating loop needs `doctor`, `sync`,
+        `generate`, or `new adr`.
+- [x] **Keep one install surface** — ship `aikata-cli` and `aikata-context`
+      together from the existing `aikata` marketplace entry and plugin. Do not
+      create separate marketplace entries or plugins for the two skills.
+      Preserve the `aikata-` prefix so globally installed skills remain
+      attributable and avoid generic-name collisions.
+- [x] **Apply the split consistently across first-party distributions** —
+      update the canonical universal-skill tree, the Codex plugin copies, and
+      the Claude Code standalone / plugin layouts; keep repository tests for
+      canonical-copy boundaries and release archives.
+- [x] **Record the design in a focused ADR before implementation** — refine
+      ADR 0015's thin CLI-wrapper scope without introducing an "aikata agent",
+      runtime personality, MCP server, or app integration. The selected model
+      remains small composable skills used by the user's existing agent.
+- [x] **No backward-compatibility layer for the old single-skill layout** —
+      the only existing user is the maintainer, so v0.10.0 may replace the old
+      `aikata` skill layout directly. Document the reinstall / migration step,
+      but do not retain aliases, duplicate legacy skill files, or transitional
+      packaging solely for compatibility.
+- [x] **Dogfood the trigger boundary** — verify that ordinary non-trivial
+      repository work activates `aikata-context`, pure CLI lifecycle requests
+      activate `aikata-cli`, and the skills remain small enough that agents can
+      select the correct responsibility without loading an all-purpose
+      workflow manual.
+
+Out of v0.10.0 intentionally:
+
+- Splitting `aikata-context` into narrower `aikata-memory`, `aikata-adr`, or
+  handoff skills before dogfooding demonstrates that the MVP is too broad.
+- A separate aikata runtime agent, MCP server, or app integration.
+- Third-party skill catalog management or native wrappers for additional AI
+  tools.
+
+---
+
 ## v1.0 — Stable surface
 
 **Goal**: a surface that downstream tooling can depend on.
@@ -492,9 +560,10 @@ previous one (`go install` stays the canonical baseline).
 | v0.9.3 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | — | — | `npx skills add` |
 | v0.9.6 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | — | — | Codex plugin |
 | v0.9.9 | ✅ | ✅ | ✅ | minimal + universal | marketplace (ready) | `npx aikata` | tap | Codex plugin + `npx skills add` |
+| v0.10.0 | ✅ | ✅ | ✅ | `aikata-cli` + `aikata-context` | same marketplace plugin | inherit | inherit | Codex plugin + `npx skills add` |
 | v1.0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Codex / Cursor / Gemini / VS Code |
 
-Plugin / skill scope grows monotonically too:
+Plugin / skill scope evolution:
 
 - **v0.3.1** — "Claude knows when to shell out to aikata." One SKILL.md,
   no commands, no agents.
@@ -534,6 +603,13 @@ Plugin / skill scope grows monotonically too:
   tap, `npx aikata`) and the brew / npm branches of `aikata update
   --apply`. Deferred as lowest priority because `curl … | sh` and
   `go install` already cover the install gap (ADR 0032).
+- **v0.10.0** — splits the first-party skill responsibility into
+  `aikata-cli` and `aikata-context` while keeping one marketplace entry and
+  one plugin install. The new context skill turns the canonical-document,
+  working-memory, ADR, long-term-memory, verification, and handoff model into
+  an agent-usable daily operating loop. Because the maintainer is the only
+  existing user, the old single-skill layout is replaced without a
+  compatibility layer.
 - **v1.0** — extends native wrappers into Cursor, Gemini CLI, and a thin
   VS Code wrapper where each platform has a stable native extension
   surface. Per-tool feature parity is not promised; the promise is "you

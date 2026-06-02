@@ -1,27 +1,32 @@
 ---
 project: aikata
 status: draft
-version: 0.6.0
-updated: 2026-05-28
+version: 0.10.0
+updated: 2026-06-02
 audience: [human, agent]
 ---
 
 # aikata — Claude Code Plugin
 
-This directory holds the v0.6 Claude Code plugin scaffold. It bundles
-the v0.3.1 skill (`skills/aikata.md`) with four slash commands so
-Claude Code users can drive aikata without rote shell invocations.
+This directory holds the Claude Code plugin. From v0.10.0 it bundles
+**two** skills — `aikata-cli` (CLI invocation guidance) and
+`aikata-context` (the in-repo context-maintenance loop, ADR 0040) — plus
+six slash commands so Claude Code users can drive aikata without rote
+shell invocations.
 
 ## What ships in this plugin
 
 | Component | Source | Purpose |
 |---|---|---|
 | `plugin.json` | `dist/claude-code/plugin/plugin.json` | Plugin manifest (name, version, requires) |
-| `skills/aikata.md` | mirrors `dist/claude-code/skill/SKILL.md` | "When to call aikata" guidance |
-| `commands/aikata-init.md` | new in v0.6 | `/aikata-init` slash command |
-| `commands/aikata-generate.md` | new in v0.6 | `/aikata-generate` slash command |
-| `commands/aikata-doctor.md` | new in v0.6 | `/aikata-doctor` slash command |
-| `commands/aikata-sync.md` | new in v0.6 | `/aikata-sync` slash command |
+| `skills/aikata-cli.md` | mirrors `dist/universal-skill/aikata-cli/SKILL.md` | "When and how to call the aikata CLI" |
+| `skills/aikata-context.md` | mirrors `dist/universal-skill/aikata-context/SKILL.md` | "Operating loop inside an aikata repo" |
+| `commands/aikata-init.md` | `/aikata-init` slash command |
+| `commands/aikata-generate.md` | `/aikata-generate` slash command |
+| `commands/aikata-doctor.md` | `/aikata-doctor` slash command |
+| `commands/aikata-sync.md` | `/aikata-sync` slash command |
+| `commands/aikata-new.md` | `/aikata-new` slash command (v0.9.5) |
+| `commands/aikata-enable.md` | `/aikata-enable` slash command (v0.9.5) |
 
 ## Install
 
@@ -49,17 +54,17 @@ The plugin is functional as a manual `~/.claude/plugins/aikata`
 install today (v0.6); marketplace listing is deferred to v0.8.x or
 later once the upstream flow is stable.
 
-## Relationship to the v0.3.1 skill
+## Relationship to the standalone skills
 
-`dist/claude-code/skill/SKILL.md` (the standalone, single-file skill
-shipped since v0.3.1) continues to work as-is. The plugin **extends**
-that skill with slash commands — installing the plugin is strictly
-additive; uninstalling the plugin falls back cleanly to the standalone
-skill.
+The standalone skills under `dist/claude-code/skill/` (`aikata-cli.md`,
+`aikata-context.md`) continue to work as-is. The plugin **extends** them
+with slash commands — installing the plugin is strictly additive;
+uninstalling the plugin falls back cleanly to the standalone skills.
 
-The skill copy inside `plugin/skills/aikata.md` is byte-identical to
-`dist/claude-code/skill/SKILL.md`. The release workflow asserts this
-identity; do not edit the plugin copy directly.
+The skill copies inside `plugin/skills/` are byte-identical to the
+canonical sources at `dist/universal-skill/<skill>/SKILL.md`
+(`internal/repolint/distribution_test.go` asserts this); do not edit the
+plugin copies directly. See ADR 0040 for the copy boundary.
 
 ## Versioning
 
