@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.9.7.**
+> **Status — v0.9.8.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
@@ -174,7 +174,7 @@ Codex CLI `0.135.0+` can install aikata as a first-party skill plugin
 from this repository:
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.9.7
+codex plugin marketplace add shigindo-inc/aikata --ref v0.9.8
 codex plugin add aikata@aikata
 ```
 

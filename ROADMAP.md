@@ -353,6 +353,42 @@ Out of v0.9.7 intentionally:
 
 ---
 
+## v0.9.8 — `.gitignore` managed-block unification + doc hygiene ✅ (released 2026-06-02)
+
+Internal hardening, no new user-facing commands. Two follow-ups from the
+v0.9.7 work, shipped together.
+
+[ADR 0038](./docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md)
+and [ADR 0039](./docs/adr/0039-documentation-hygiene-and-context-budget.md)
+are **Accepted**.
+
+- [x] **`.gitignore` unified on the managed block** — `aikata sync` now
+      refreshes only the `# >>> aikata managed >>>` block instead of the
+      generic 3-way merge, so the file can never grow conflict markers.
+      Fresh `aikata init` writes the framed block too (one
+      representation), and a pre-0.9.8 markerless file is migrated in
+      place on first sync without duplication. Shared
+      `managed.IsAppendPath` keeps init and sync in lockstep and guards
+      the (b) decision (never managed-append into prose). Closes
+      Q-INTEROP-04 (a) and (b).
+- [x] **Documentation hygiene rubric + pass** — ADR 0039 records a
+      per-file-class policy (prune resolved first-read context each
+      release; archive released ROADMAP/CHANGELOG detail by move-not-
+      delete; never edit accepted ADR bodies; condense shipped design
+      notes to pointers). Applied: eight resolved open-questions removed,
+      Phase 1 – v0.8.5 ROADMAP detail archived to
+      `docs/roadmap-archive.md`, the v0.9 stabilization note condensed.
+      `CONTRIBUTING.md` links the rubric into the release ritual.
+
+Out of v0.9.8 intentionally:
+
+- Managed-append for prose (`CONTRIBUTING.md` / `SECURITY.md`). Rejected
+  by ADR 0038; prose stays create-if-missing one-shot scaffolds.
+- Archiving `CHANGELOG.md`. Not first-read context; Keep-a-Changelog
+  favours completeness (ADR 0039).
+
+---
+
 ## v0.9.9 — Native package-manager channels (pending)
 
 Third and lowest-priority channel-publication line (ADR 0032 D3). The
