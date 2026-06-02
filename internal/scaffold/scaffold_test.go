@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/shigindo-inc/aikata/internal/managed"
 )
 
 // fixedClock returns a deterministic time for golden-stable rendering.
@@ -289,6 +291,13 @@ func TestRun_StandardGitignoreMentionsGeneratedArtifacts(t *testing.T) {
 		t.Fatalf("read .gitignore: %v", err)
 	}
 	out := string(body)
+	// Fresh init now frames the aikata block with the managed markers
+	// (ADR 0038), so init and sync share one representation and a later
+	// `aikata sync` can refresh the block in place instead of running
+	// the generic 3-way (which could emit conflict markers).
+	if !managed.HasBlock(body) {
+		t.Errorf("fresh .gitignore should carry managed markers (ADR 0038):\n%s", out)
+	}
 	// Kept: aikata-owned residue + selected-AI-tool artifacts.
 	for _, needle := range []string{"CLAUDE.md", ".cursor/rules/", ".aikata-proposed/"} {
 		if !strings.Contains(out, needle) {

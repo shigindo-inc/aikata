@@ -18,17 +18,47 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.9.8] - 2026-06-02
+
+**`.gitignore` managed-block unification (ADR 0038) + documentation
+hygiene (ADR 0039).** Internal hardening: one coherent representation for
+`.gitignore` across `init` and `sync` so the file can never grow conflict
+markers, plus a recorded per-file-class doc-hygiene policy and a leaner
+first-read context surface. Closes the open Q-INTEROP-04 sub-questions.
+
+### Changed
+
+- **`aikata sync` routes `.gitignore` through the managed block** (ADR
+  0038), not the generic 3-way merge. Only the aikata-owned
+  `# >>> aikata managed >>>` block is refreshed; user lines outside the
+  markers are byte-preserved and a `.gitignore` sync can never produce
+  git-style conflict markers. A fresh `aikata init` now also writes the
+  framed block, so init and sync share one on-disk representation. A
+  pre-0.9.8 markerless `.gitignore` is migrated in place on first sync
+  (no duplicated block). Resolves Q-INTEROP-04 (a); the (b) decision —
+  never managed-append into prose — is enforced by a guard test.
+- **Documentation hygiene pass** (ADR 0039). Removed eight fully-resolved
+  open-questions whose record lives in an ADR (Q-DESIGN-04/-09/-12/-13,
+  Q-ECOSYSTEM-03, Q-DOCTOR-01, Q-INTEROP-04, Q-INTEROP-05), taking
+  `open-questions.md` from 476 to 340 lines. Moved the released Phase 1 –
+  v0.8.5 ROADMAP checklists to `docs/roadmap-archive.md` behind a summary
+  table (`ROADMAP.md` 1443 → 545 lines). Condensed the shipped
+  v0.9-core-concept-stabilization design note to an Outcome pointer.
+
 ### Added
 
+- **ADR 0038** — Unify `.gitignore` on the managed block across init and
+  sync. **ADR 0039** — Documentation hygiene & context budget (the
+  per-file-class rubric, linked from `CONTRIBUTING.md`).
 - **`ARCHITECTURE.md` §3.4 "File write disciplines"** — a single
   reference table classifying the seven per-file write disciplines
   (overwrite / atomic full-tree / managed-append / create-or-skip /
   refuse-on-collision / proposal-fallback / 3-way-merge) and the two
-  cross-cutting modifiers (`sync.own`, manifest tracking), which were
-  previously only documented piecemeal across ADRs and code. Records the
-  leading positions for the two open Q-INTEROP-04 sub-questions (sync
-  `.gitignore` routing → unify on managed-append, demand-driven; prose
-  files → not managed-append targets).
+  cross-cutting modifiers (`sync.own`, manifest tracking), previously
+  documented only piecemeal across ADRs and code. Write discipline #3
+  (managed-append) now governs both `init` and `sync` (ADR 0038).
+- **`docs/roadmap-archive.md`** — the released Phase 1 – v0.8.5 roadmap
+  detail, preserved verbatim with links rewritten for the new location.
 
 ## [0.9.7] - 2026-06-02
 

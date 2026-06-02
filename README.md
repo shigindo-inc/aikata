@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.9.7.**
+> **Status — v0.9.8.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
@@ -174,7 +174,7 @@ Codex CLI `0.135.0+` can install aikata as a first-party skill plugin
 from this repository:
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.9.7
+codex plugin marketplace add shigindo-inc/aikata --ref v0.9.8
 codex plugin add aikata@aikata
 ```
 
@@ -439,6 +439,8 @@ aikata generate
   - [0035 — Native Self-update (`aikata update --apply`) Safety Model](./docs/adr/0035-native-self-update-safety.md)
   - [0036 — Ship Codex Native Distribution in v0.9.6](./docs/adr/0036-codex-native-distribution.md)
   - [0037 — Tighten Adoption Mutation Boundaries in v0.9.7](./docs/adr/0037-tighten-adoption-mutation-boundaries.md)
+  - [0038 — Unify `.gitignore` on the Managed Block Across init and sync](./docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md)
+  - [0039 — Documentation Hygiene & Context Budget](./docs/adr/0039-documentation-hygiene-and-context-budget.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

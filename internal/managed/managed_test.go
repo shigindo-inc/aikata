@@ -160,3 +160,57 @@ func TestApplyBlock_MarkersInUserContentDoNotMatch(t *testing.T) {
 		t.Errorf("inline marker mention should be preserved; got:\n%s", got)
 	}
 }
+
+// TestFrame_EqualsApplyBlockOnEmpty pins that Frame is the standalone
+// framed representation — identical to ApplyBlock against no existing
+// content (ADR 0038), and that the result re-frames idempotently.
+func TestFrame_EqualsApplyBlockOnEmpty(t *testing.T) {
+	body := []byte("alpha\nbeta\n")
+	framed := Frame(body)
+
+	viaApply, err := ApplyBlock(nil, body)
+	if err != nil {
+		t.Fatalf("ApplyBlock: %v", err)
+	}
+	if !bytes.Equal(framed, viaApply) {
+		t.Errorf("Frame(body) = %q, want = ApplyBlock(nil, body) = %q", framed, viaApply)
+	}
+	if !HasBlock(framed) {
+		t.Errorf("Frame output should carry a complete block:\n%s", framed)
+	}
+	// Re-applying the same body to the framed form is a no-op.
+	again, err := ApplyBlock(framed, body)
+	if err != nil {
+		t.Fatalf("ApplyBlock(framed): %v", err)
+	}
+	if !bytes.Equal(again, framed) {
+		t.Errorf("ApplyBlock on framed block should be idempotent; got:\n%s", again)
+	}
+}
+
+// TestIsAppendPath_OnlyGitignore is the Q-INTEROP-04 (b) guard: the
+// managed-append set must contain ONLY line-oriented project-owned
+// files (today just `.gitignore`) and never prose targets. Splicing a
+// managed block into prose (CONTRIBUTING.md / SECURITY.md / …) was
+// rejected — if someone adds one here, this test must fail and force a
+// decision review rather than silently shipping prose mutation.
+func TestIsAppendPath_OnlyGitignore(t *testing.T) {
+	if !IsAppendPath(".gitignore") {
+		t.Errorf("IsAppendPath(.gitignore) = false, want true")
+	}
+	prose := []string{
+		"CONTRIBUTING.md", "SECURITY.md", "README.md", "AGENTS.md",
+		"CLAUDE.md", "docs/adr/0001-foo.md", "SPEC.md",
+	}
+	for _, p := range prose {
+		if IsAppendPath(p) {
+			t.Errorf("IsAppendPath(%q) = true; prose must never be managed-append (Q-INTEROP-04 (b))", p)
+		}
+	}
+	// Exhaustive: the set is exactly {.gitignore}. If this count grows,
+	// the new entry must be a line-oriented file and reviewed against
+	// ADR 0037 ownership boundaries.
+	if got := len(appendPaths); got != 1 {
+		t.Errorf("len(appendPaths) = %d, want 1 (only .gitignore)", got)
+	}
+}

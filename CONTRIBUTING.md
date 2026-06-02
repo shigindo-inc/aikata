@@ -107,7 +107,13 @@ Significant design changes get a short ADR under `docs/adr/`.
 
 Open design questions live in
 [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md);
-promote one to a full ADR when consensus emerges.
+promote one to a full ADR when consensus emerges. When a question is
+resolved, **remove** its entry (the ADR is the durable record) rather
+than leaving a pointer — see the documentation-hygiene rubric in
+[ADR 0039](./docs/adr/0039-documentation-hygiene-and-context-budget.md),
+which release authors apply each release (prune resolved first-read
+context; archive released ROADMAP/CHANGELOG detail to `docs/*-archive.md`
+by move, not delete; never edit an accepted ADR body).
 
 ---
 

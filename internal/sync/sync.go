@@ -23,6 +23,7 @@
 package sync
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -34,6 +35,7 @@ import (
 
 	"github.com/shigindo-inc/aikata/internal/config"
 	"github.com/shigindo-inc/aikata/internal/glob"
+	"github.com/shigindo-inc/aikata/internal/managed"
 	"github.com/shigindo-inc/aikata/internal/scaffold"
 )
 
@@ -428,6 +430,57 @@ func classifyAndMerge(path string, ancestorHash map[string]string, upstream map[
 	upstreamHash := ""
 	if hasUpstream {
 		upstreamHash = config.HashContent([]byte(upstreamBody))
+	}
+
+	// Managed-append paths (`.gitignore`) are merged via the marker
+	// block at sync time too, not the generic 3-way (ADR 0038). This
+	// refreshes only the aikata-owned block and byte-preserves the
+	// user's lines outside the markers, so a managed-append file never
+	// produces conflict markers. In steady state the manifest hash is
+	// intentionally not consulted — the on-disk file carries the framed
+	// block while the manifest records the raw upstream body, so a hash
+	// compare always mismatches; ApplyBlock idempotency is the real
+	// signal. The one exception is the legacy migration below, which is
+	// the *only* place the ancestor hash matters for these paths.
+	if managed.IsAppendPath(path) && hasUpstream {
+		if !hasCurrent {
+			if hadAncestor {
+				// User deleted it; respect the deletion (ADR 0019),
+				// same as the generic path.
+				return FileResult{Path: path, Status: StatusUserDeleted}, nil, nil
+			}
+			// Upstream introduces the file and the project has none:
+			// write the framed standalone block.
+			return FileResult{Path: path, Status: StatusUpstreamAdded}, managed.Frame([]byte(upstreamBody)), nil
+		}
+		// Legacy migration (ADR 0038): a project scaffolded by v0.9.7 or
+		// earlier has a MARKERLESS `.gitignore` (fresh init returned the
+		// raw template before this ADR). Calling ApplyBlock on it would
+		// find no markers and append a *second* framed copy, silently
+		// duplicating every rule on the most common upgrade path. When the
+		// file is still pristine aikata output — markerless AND byte-equal
+		// to the manifest ancestor — replace it wholesale with the framed
+		// block. This is the sole, narrow use of the ancestor hash for a
+		// managed-append path: it distinguishes "legacy aikata output to
+		// migrate" from "user content". A markerless file that diverges
+		// from the ancestor is treated as user-owned content and falls
+		// through to ApplyBlock (data-preserving: it appends our block and
+		// leaves the user's lines, even old aikata rules, untouched).
+		if !managed.HasBlock(currentBody) && hadAncestor && currentHash == ancestor {
+			framed := managed.Frame([]byte(upstreamBody))
+			if bytes.Equal(framed, currentBody) {
+				return FileResult{Path: path, Status: StatusUnchanged}, nil, nil
+			}
+			return FileResult{Path: path, Status: StatusUpstreamApplied}, framed, nil
+		}
+		merged, mErr := managed.ApplyBlock(currentBody, []byte(upstreamBody))
+		if mErr != nil {
+			return FileResult{Path: path}, nil, fmt.Errorf("sync: managed-append %s: %w", path, mErr)
+		}
+		if bytes.Equal(merged, currentBody) {
+			return FileResult{Path: path, Status: StatusUnchanged}, nil, nil
+		}
+		return FileResult{Path: path, Status: StatusUpstreamApplied}, merged, nil
 	}
 
 	switch {
