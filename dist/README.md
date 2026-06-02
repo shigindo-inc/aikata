@@ -22,21 +22,14 @@ Both ship together from the single `aikata` marketplace entry and plugin.
 dist/
 ├── claude-code/
 │   ├── skill/                              ← standalone skills (no slash commands)
-│   │   ├── aikata-cli.md
-│   │   └── aikata-context.md
+│   │   ├── aikata-cli/SKILL.md
+│   │   └── aikata-context/SKILL.md
 │   └── plugin/
-│       ├── plugin.json
+│       ├── .claude-plugin/plugin.json
 │       ├── README.md
-│       ├── skills/
-│       │   ├── aikata-cli.md               ← byte-identical to the canonical SKILL.md
-│       │   └── aikata-context.md           ← byte-identical
-│       └── commands/
-│           ├── aikata-init.md
-│           ├── aikata-generate.md
-│           ├── aikata-doctor.md
-│           ├── aikata-sync.md
-│           ├── aikata-new.md
-│           └── aikata-enable.md
+│       └── skills/
+│           ├── aikata-cli/SKILL.md         ← byte-identical to the canonical SKILL.md
+│           └── aikata-context/SKILL.md     ← byte-identical
 ├── codex/
 │   └── plugin/
 │       ├── .codex-plugin/plugin.json
@@ -58,11 +51,13 @@ dist/
 
 `dist/universal-skill/<skill>/SKILL.md` is the **single canonical source**
 of each skill's content; every per-platform file is byte-identical to it
-(enforced by `internal/repolint/distribution_test.go`). Copies exist only
-for per-platform discovery location/format — Codex needs
-`skills/<name>/SKILL.md`, Claude Code needs `skills/<name>.md` listed in
-`plugin.json`, the universal layout needs `.agents/skills/<name>/SKILL.md`
-— never for content (ADR 0040).
+(enforced by `internal/repolint/distribution_test.go`). All platforms use
+the same `<base>/<skill>/SKILL.md` directory layout — Claude Code plugin
+skills auto-discover from `skills/<name>/SKILL.md`, Codex reads
+`skills/<name>/SKILL.md`, and the universal layout uses
+`.agents/skills/<name>/SKILL.md`. Copies exist only for per-platform
+discovery location, never for content (ADR 0040, ADR 0041). There are no
+slash commands — the surface is the two skills only.
 
 The repository root also carries `.claude-plugin/marketplace.json` and
 `.agents/plugins/marketplace.json`. They list the Claude Code and Codex
@@ -118,9 +113,10 @@ The full install instructions for each surface are below.
 
 ## Claude Code plugin (v0.6+)
 
-The Claude Code plugin bundles both skills plus six slash commands:
-`/aikata-init`, `/aikata-generate`, `/aikata-doctor`, `/aikata-sync`,
-`/aikata-new`, and `/aikata-enable`.
+The Claude Code plugin bundles the two skills (no slash commands, from
+v0.10.3 — ADR 0041). They appear in the `/` menu and are invoked as
+`/aikata:aikata-cli` and `/aikata:aikata-context`, or Claude loads them
+automatically when relevant.
 
 Install it as a self-hosted marketplace (v0.9.3+):
 
@@ -142,20 +138,22 @@ mkdir -p ~/.claude/plugins/aikata
 cp -r dist/claude-code/plugin/* ~/.claude/plugins/aikata/
 ```
 
-## Claude Code standalone skills (no slash commands)
+## Claude Code standalone skills (without the plugin)
 
-For users who want the skills without the plugin's slash commands, copy
-the two standalone files into `~/.claude/skills/`:
+For users who want the skills without installing the plugin, copy the two
+skill directories into `~/.claude/skills/` (personal skills use the same
+`<name>/SKILL.md` layout):
 
 ```bash
 mkdir -p ~/.claude/skills
-cp dist/claude-code/skill/aikata-cli.md     ~/.claude/skills/aikata-cli.md
-cp dist/claude-code/skill/aikata-context.md ~/.claude/skills/aikata-context.md
+cp -r dist/claude-code/skill/aikata-cli     ~/.claude/skills/aikata-cli
+cp -r dist/claude-code/skill/aikata-context ~/.claude/skills/aikata-context
 ```
 
 Restart Claude Code, then ask it about scaffolding/regenerating an aikata
 project (`aikata-cli`) or start non-trivial work in an aikata repo
-(`aikata-context`) — it will pick up the right skill automatically.
+(`aikata-context`) — it will pick up the right skill automatically, or you
+can invoke `/aikata-cli` / `/aikata-context` directly.
 
 ## Universal skill (v0.9.3+)
 

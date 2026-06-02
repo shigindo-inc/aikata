@@ -378,19 +378,24 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 
 ### 6.3.1 Agent skill and plugin distribution
 
-- The first-party skill surface is **two** skills (ADR 0040):
-  `aikata-cli` (CLI invocation guidance) and `aikata-context` (the in-repo
-  context-maintenance loop). Both ship from the single `aikata`
-  marketplace entry and plugin.
+- The first-party surface is **two skills, no slash commands** (ADR 0040,
+  ADR 0041): `aikata-cli` (CLI invocation guidance) and `aikata-context`
+  (the in-repo context-maintenance loop). Both ship from the single
+  `aikata` marketplace entry and plugin, uniformly across platforms.
 - `dist/universal-skill/<skill>/SKILL.md` is the **single canonical
   source** of each skill's content. Each carries an `agents/openai.yaml`
-  with minimal Codex App UI metadata while keeping the skill tool-agnostic
-  (`.agents/skills/<name>/SKILL.md` layout).
+  with minimal Codex App UI metadata while keeping the skill tool-agnostic.
+- **All platforms use the `<base>/<skill>/SKILL.md` directory layout**
+  (ADR 0041): the Claude Code plugin auto-discovers `skills/<name>/SKILL.md`
+  (manifest at `.claude-plugin/plugin.json`, metadata only) and surfaces the
+  skills namespaced as `/aikata:<skill>`; Codex reads `skills/<name>/SKILL.md`;
+  the universal layout uses `.agents/skills/<name>/SKILL.md`.
 - `dist/codex/plugin/` (Codex CLI `0.135.0+`) and
   `dist/claude-code/{skill,plugin}/` are byte-identical copies of the
   canonical sources; copies exist only for per-platform discovery
-  location/format, never for content. Repository tests
-  (`TestSkillCopiesMatchCanonical`) enforce the copy boundary.
+  location, never for content. Repository tests
+  (`TestSkillCopiesMatchCanonical`, `TestClaudePluginSkillsAreAutoDiscoverable`)
+  enforce the copy boundary and layout.
 - `.agents/plugins/marketplace.json` exposes the tracked Codex plugin as a
   self-hosted marketplace plugin. Older Codex versions keep using direct
   `.agents/skills/` discovery, which works on CLI `0.125.0`.
@@ -450,7 +455,7 @@ touch is documentation, and it must be kept in sync at tag time:
 |---|---|
 | `CHANGELOG.md` | Promote the `## [Unreleased]` entries into a new `## [X.Y.Z] - YYYY-MM-DD` section with a one-paragraph summary. Leave a fresh empty `[Unreleased]`. |
 | `ROADMAP.md` | Flip the milestone heading from `(pending)` / `(planned)` to `✅ (released YYYY-MM-DD)`. |
-| `plugin.json` + `marketplace.json` | Bump `version` in `dist/claude-code/plugin/plugin.json` (1 place), `.claude-plugin/marketplace.json` (2 places), and `dist/codex/plugin/.codex-plugin/plugin.json` (1 place) to the release semver — **lockstep** with every release (Codex joins in v0.9.6) so marketplace listings match. `requires.minVersion` is independent. |
+| `plugin.json` + `marketplace.json` | Bump `version` in `dist/claude-code/plugin/.claude-plugin/plugin.json` (1 place), `.claude-plugin/marketplace.json` (2 places), and `dist/codex/plugin/.codex-plugin/plugin.json` (1 place) to the release semver — **lockstep** with every release so marketplace listings match. |
 | Agent distribution archives | Run `scripts/package-distribution-assets.sh` before GoReleaser. It creates ignored `dist/aikata-universal-skill.tar.gz` and `dist/aikata-codex-plugin.tar.gz` release assets (each carrying both skills). From v0.10.0 the single-file `.md` skill assets are dropped — a single file can no longer represent the two-skill surface (ADR 0040). |
 | Binary version | **Nothing** — `git describe` picks up the new tag automatically. |
 

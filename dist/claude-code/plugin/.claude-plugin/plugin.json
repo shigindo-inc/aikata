@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "aikata",
+  "version": "0.10.3",
+  "description": "Scaffold and maintain AI-readable markdown documentation projects (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI.",
+  "homepage": "https://github.com/shigindo-inc/aikata",
+  "repository": "https://github.com/shigindo-inc/aikata",
+  "license": "MIT",
+  "author": {
+    "name": "shigindo-inc",
+    "url": "https://github.com/shigindo-inc"
+  },
+  "keywords": ["scaffolding", "documentation", "agents", "markdown", "agents-md", "claude-md", "adr"]
+}

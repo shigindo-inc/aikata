@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.10.2.**
+> **Status — v0.10.3.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
@@ -179,10 +179,13 @@ npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-s
 ```
 
 Each is a thin wrapper over the aikata CLI — no MCP server, sub-agent, or
-app integration. To **update**: Claude Code `/plugin marketplace update
-aikata`; Codex `codex plugin marketplace upgrade aikata && codex plugin
-add aikata@aikata`; universal `npx skills update` (add `--global` for the
-`--agent universal` install).
+app integration, and no slash commands. In Claude Code the two skills are
+invoked (or appear in the `/` menu) as `/aikata:aikata-cli` and
+`/aikata:aikata-context`; in Codex as `$aikata-cli` / `$aikata-context`.
+To **update**: Claude Code `/plugin marketplace update aikata`; Codex
+`codex plugin marketplace upgrade aikata && codex plugin add aikata@aikata`;
+universal `npx skills update` (add `--global` for the `--agent universal`
+install).
 
 See [`dist/README.md`](./dist/README.md) for the full per-surface install,
 update, reinstall/migration, standalone-skill, and tag-pinning steps.
@@ -446,6 +449,7 @@ aikata generate
   - [0038 — Unify `.gitignore` on the Managed Block Across init and sync](./docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md)
   - [0039 — Documentation Hygiene & Context Budget](./docs/adr/0039-documentation-hygiene-and-context-budget.md)
   - [0040 — Collaboration-operation Skill Split (aikata-cli + aikata-context)](./docs/adr/0040-collaboration-operation-skill-split.md)
+  - [0041 — Skills-only Surface & Claude Code Plugin Skill Layout](./docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

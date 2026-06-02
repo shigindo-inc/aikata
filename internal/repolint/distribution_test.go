@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -15,14 +16,14 @@ import (
 // shipped from the single aikata plugin.
 var firstPartySkills = []string{"aikata-cli", "aikata-context"}
 
-// TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040:
-// `dist/universal-skill/<skill>/SKILL.md` is the single canonical source
-// for each skill's content, and every per-platform copy (Codex plugin,
-// Claude Code plugin, Claude Code standalone skill) is byte-identical to
-// it. Copies exist only for per-platform discovery location/format, never
-// for content. The Codex copy additionally carries a byte-identical
-// `agents/openai.yaml`; Claude Code ignores that file, so its copies are
-// the flat `.md` body alone.
+// TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040 /
+// ADR 0041: `dist/universal-skill/<skill>/SKILL.md` is the single
+// canonical source for each skill's content, and every per-platform copy
+// is byte-identical to it. Copies exist only for per-platform discovery
+// location, never for content. Every platform now uses the
+// `<base>/<skill>/SKILL.md` directory layout (ADR 0041); the Codex copy
+// additionally carries a byte-identical `agents/openai.yaml`, which the
+// other platforms ignore.
 func TestSkillCopiesMatchCanonical(t *testing.T) {
 	root := repoRoot(t)
 
@@ -30,8 +31,8 @@ func TestSkillCopiesMatchCanonical(t *testing.T) {
 		canonicalSkill := "dist/universal-skill/" + skill + "/SKILL.md"
 		skillCopies := []string{
 			"dist/codex/plugin/skills/" + skill + "/SKILL.md",
-			"dist/claude-code/plugin/skills/" + skill + ".md",
-			"dist/claude-code/skill/" + skill + ".md",
+			"dist/claude-code/plugin/skills/" + skill + "/SKILL.md",
+			"dist/claude-code/skill/" + skill + "/SKILL.md",
 		}
 		for _, copyPath := range skillCopies {
 			assertFilesEqual(t, root, canonicalSkill, copyPath)
@@ -44,27 +45,64 @@ func TestSkillCopiesMatchCanonical(t *testing.T) {
 	}
 }
 
-// TestClaudePluginListsBothSkills guards the Claude Code plugin manifest
-// against drifting from the two-skill surface (ADR 0040).
-func TestClaudePluginListsBothSkills(t *testing.T) {
+// TestClaudePluginSkillsAreAutoDiscoverable guards the Claude Code plugin
+// skill layout (ADR 0041). Claude Code auto-discovers plugin skills as
+// `skills/<name>/SKILL.md` directories; flat `skills/<name>.md` files
+// (the v0.10.0–v0.10.2 shape) silently fail to load. Each first-party
+// skill must exist in directory form, and no flat skill `.md` files may
+// remain.
+func TestClaudePluginSkillsAreAutoDiscoverable(t *testing.T) {
 	root := repoRoot(t)
+	skillsDir := filepath.Join(root, "dist", "claude-code", "plugin", "skills")
 
-	var plugin struct {
-		Components struct {
-			Skills []string `json:"skills"`
-		} `json:"components"`
+	for _, skill := range firstPartySkills {
+		mustExistFile(t, filepath.Join(skillsDir, skill, "SKILL.md"))
 	}
-	readJSON(t, filepath.Join(root, "dist", "claude-code", "plugin", "plugin.json"), &plugin)
 
-	want := []string{"skills/aikata-cli.md", "skills/aikata-context.md"}
-	got := plugin.Components.Skills
-	if len(got) != len(want) {
-		t.Fatalf("Claude plugin skills = %v, want %v", got, want)
+	entries, err := os.ReadDir(skillsDir)
+	if err != nil {
+		t.Fatalf("read %s: %v", skillsDir, err)
 	}
-	for i, w := range want {
-		if got[i] != w {
-			t.Errorf("Claude plugin skills[%d] = %q, want %q", i, got[i], w)
+	for _, e := range entries {
+		if strings.HasPrefix(e.Name(), ".") {
+			continue // ignore OS/editor cruft like .DS_Store
 		}
+		if !e.IsDir() {
+			t.Errorf("dist/claude-code/plugin/skills/%s is a flat file; plugin skills must be <name>/SKILL.md directories (ADR 0041)", e.Name())
+		}
+	}
+}
+
+// TestClaudePluginHasNoCommands guards the skills-only surface (ADR 0041):
+// the slash commands were removed in v0.10.3, so neither a `commands/`
+// directory nor a `commands` manifest key may reappear.
+func TestClaudePluginHasNoCommands(t *testing.T) {
+	root := repoRoot(t)
+	pluginDir := filepath.Join(root, "dist", "claude-code", "plugin")
+
+	if info, err := os.Stat(filepath.Join(pluginDir, "commands")); err == nil && info.IsDir() {
+		t.Errorf("dist/claude-code/plugin/commands/ exists; the slash commands were removed in v0.10.3 (ADR 0041)")
+	}
+
+	var manifest map[string]any
+	readJSON(t, filepath.Join(pluginDir, ".claude-plugin", "plugin.json"), &manifest)
+	if _, ok := manifest["commands"]; ok {
+		t.Errorf("Claude plugin manifest declares `commands`; the skills-only surface forbids it (ADR 0041)")
+	}
+	if _, ok := manifest["components"]; ok {
+		t.Errorf("Claude plugin manifest uses non-standard `components`; use auto-discovery (ADR 0041)")
+	}
+}
+
+func mustExistFile(t *testing.T, path string) {
+	t.Helper()
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Errorf("expected file %s: %v", path, err)
+		return
+	}
+	if info.IsDir() {
+		t.Errorf("expected %s to be a file, got directory", path)
 	}
 }
 
@@ -122,7 +160,7 @@ func TestPluginVersionsStayInLockstep(t *testing.T) {
 	var claudePlugin struct {
 		Version string `json:"version"`
 	}
-	readJSON(t, filepath.Join(root, "dist", "claude-code", "plugin", "plugin.json"), &claudePlugin)
+	readJSON(t, filepath.Join(root, "dist", "claude-code", "plugin", ".claude-plugin", "plugin.json"), &claudePlugin)
 
 	var codexPlugin struct {
 		Version string `json:"version"`
@@ -131,9 +169,9 @@ func TestPluginVersionsStayInLockstep(t *testing.T) {
 
 	want := claudeMarketplace.Version
 	versions := map[string]string{
-		".claude-plugin/marketplace.json plugins[0]":  claudeMarketplace.Plugins[0].Version,
-		"dist/claude-code/plugin/plugin.json":         claudePlugin.Version,
-		"dist/codex/plugin/.codex-plugin/plugin.json": codexPlugin.Version,
+		".claude-plugin/marketplace.json plugins[0]":         claudeMarketplace.Plugins[0].Version,
+		"dist/claude-code/plugin/.claude-plugin/plugin.json": claudePlugin.Version,
+		"dist/codex/plugin/.codex-plugin/plugin.json":        codexPlugin.Version,
 	}
 	for path, got := range versions {
 		if got != want {
@@ -158,8 +196,8 @@ func TestSkillFrontmatterParsesAsYAML(t *testing.T) {
 		skillFiles = append(skillFiles,
 			"dist/universal-skill/"+skill+"/SKILL.md",
 			"dist/codex/plugin/skills/"+skill+"/SKILL.md",
-			"dist/claude-code/plugin/skills/"+skill+".md",
-			"dist/claude-code/skill/"+skill+".md",
+			"dist/claude-code/plugin/skills/"+skill+"/SKILL.md",
+			"dist/claude-code/skill/"+skill+"/SKILL.md",
 		)
 	}
 

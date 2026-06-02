@@ -1,7 +1,7 @@
 {
   "name": "aikata",
-  "version": "0.10.2",
-  "description": "Scaffold and maintain AI-readable markdown documentation projects via the aikata CLI.",
+  "version": "0.10.3",
+  "description": "Scaffold and maintain AI-readable markdown documentation projects (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI.",
   "author": {
     "name": "shigindo-inc",
     "url": "https://github.com/shigindo-inc"

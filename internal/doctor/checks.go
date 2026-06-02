@@ -21,7 +21,10 @@ var frontmatterKeys = []string{"project", "status", "version", "updated", "audie
 
 // skippedDirs lists directories doctor will not descend into. They are
 // either external (vendored deps, build outputs) or aikata-internal
-// scratch areas (testdata fixtures, ephemeral memory).
+// scratch areas (testdata fixtures, ephemeral memory). `dist/` holds
+// first-party distribution artifacts (skill/plugin payloads, not
+// project-managed Markdown); those are validated by the repolint
+// distribution tests, not by doctor.
 var skippedDirs = map[string]struct{}{
 	".git": {}, "node_modules": {}, "build": {}, "dist": {},
 	".dart_tool": {}, ".next": {}, "vendor": {}, ".turbo": {},
