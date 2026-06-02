@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 // firstPartySkills is the v0.10.0 skill surface (ADR 0040): the
@@ -138,6 +140,71 @@ func TestPluginVersionsStayInLockstep(t *testing.T) {
 			t.Errorf("%s version = %q, want lockstep version %q", path, got, want)
 		}
 	}
+}
+
+// TestSkillFrontmatterParsesAsYAML guards against malformed SKILL.md
+// frontmatter shipping undetected. `aikata doctor` excludes dist/, so a
+// description containing a YAML-breaking sequence (e.g. an unquoted
+// `: ` colon-space, which the agent skill ecosystem and Claude Code /
+// Codex parse as a mapping) would otherwise pass every existing check
+// while leaving the skill unloadable on every platform. Each first-party
+// skill file's frontmatter must parse as a YAML mapping with a non-empty
+// name and description.
+func TestSkillFrontmatterParsesAsYAML(t *testing.T) {
+	root := repoRoot(t)
+
+	var skillFiles []string
+	for _, skill := range firstPartySkills {
+		skillFiles = append(skillFiles,
+			"dist/universal-skill/"+skill+"/SKILL.md",
+			"dist/codex/plugin/skills/"+skill+"/SKILL.md",
+			"dist/claude-code/plugin/skills/"+skill+".md",
+			"dist/claude-code/skill/"+skill+".md",
+		)
+	}
+
+	for _, rel := range skillFiles {
+		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+		if err != nil {
+			t.Fatalf("read %s: %v", rel, err)
+		}
+		fm, ok := frontmatterBytes(data)
+		if !ok {
+			t.Errorf("%s: missing `---` frontmatter block", rel)
+			continue
+		}
+		var meta struct {
+			Name        string `yaml:"name"`
+			Description string `yaml:"description"`
+		}
+		if err := yaml.Unmarshal(fm, &meta); err != nil {
+			t.Errorf("%s: frontmatter is not valid YAML: %v", rel, err)
+			continue
+		}
+		if meta.Name == "" {
+			t.Errorf("%s: frontmatter `name` is empty", rel)
+		}
+		if meta.Description == "" {
+			t.Errorf("%s: frontmatter `description` is empty (likely a YAML parse truncation)", rel)
+		}
+	}
+}
+
+// frontmatterBytes returns the bytes between the first two `---` fence
+// lines of a Markdown file, and whether such a block was found.
+func frontmatterBytes(data []byte) ([]byte, bool) {
+	lines := bytes.Split(data, []byte("\n"))
+	if len(lines) == 0 || string(bytes.TrimRight(lines[0], "\r")) != "---" {
+		return nil, false
+	}
+	var body [][]byte
+	for _, line := range lines[1:] {
+		if string(bytes.TrimRight(line, "\r")) == "---" {
+			return bytes.Join(body, []byte("\n")), true
+		}
+		body = append(body, line)
+	}
+	return nil, false
 }
 
 func assertFilesEqual(t *testing.T, root, wantPath, gotPath string) {

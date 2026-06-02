@@ -1,6 +1,6 @@
 ---
 name: aikata-context
-description: Use when beginning non-trivial work (a feature, refactor, investigation, or multi-step change) in a repository that aikata manages — recognizable by an `AGENTS.md` at the root and/or a `.aikata/aikata.yaml`. Teaches the daily context-maintenance loop: which canonical documents to read before editing, where newly-learned information belongs (AGENTS.md / SPEC.md / docs/adr/ / docs/memory/ / docs/tasks/current.md), how to keep working state current, and what to check before handoff. Do not use for trivial one-line edits, for questions unrelated to the project, in repositories without aikata markers, or for raw CLI invocation (use `aikata-cli` for `init`/`generate`/`doctor`/`sync`/`new`).
+description: Use when beginning non-trivial work (a feature, refactor, investigation, or multi-step change) in a repository that aikata manages — recognizable by an `AGENTS.md` at the root and/or a `.aikata/aikata.yaml`. Teaches the daily context-maintenance loop — which canonical documents to read before editing, where newly-learned information belongs (AGENTS.md, SPEC.md, docs/adr/, docs/memory/, docs/tasks/current.md), how to keep working state current, and what to check before handoff. Do not use for trivial one-line edits, for questions unrelated to the project, in repositories without aikata markers, or for raw CLI invocation (use `aikata-cli` for init, generate, doctor, sync, or new).
 ---
 
 # aikata-context

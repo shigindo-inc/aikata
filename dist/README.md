@@ -86,9 +86,22 @@ rm -f ~/.claude/skills/aikata.md
 rm -rf ~/.agents/skills/aikata
 ```
 
-Plugin installs (Claude Code `/plugin install aikata@aikata` or
-`codex plugin add aikata@aikata`) pick up the new two-skill plugin on
-reinstall; rerun the install commands below.
+If you installed via a plugin, refresh the marketplace, then reinstall so
+the new two-skill plugin is picked up:
+
+```text
+# Claude Code
+/plugin marketplace update aikata
+/plugin install aikata@aikata
+```
+
+```bash
+# Codex (re-point the marketplace at the new tag, then reinstall)
+codex plugin marketplace add shigindo-inc/aikata --ref v0.10.1
+codex plugin add aikata@aikata
+```
+
+The full install instructions for each surface are below.
 
 ## Claude Code plugin (v0.6+)
 
@@ -139,15 +152,19 @@ one directory per skill — the `.agents/skills/<name>/SKILL.md` layout that
 Claude Code, Codex, Cursor, Gemini CLI, and other AGENTS.md-aware tools
 read. It does not install third-party skills.
 
-Install each skill into the universal `.agents/skills/` layout:
+Install **both** skills in one command by pointing the installer at the
+`universal-skill` container directory — it walks the container one level
+deep and discovers each `<skill>/SKILL.md`:
 
 ```bash
-npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-skill/aikata-cli --agent universal
-npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-skill/aikata-context --agent universal
+npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-skill --agent universal
 ```
 
-`dist/universal-skill/` is the canonical source; no publication mirror
-repository is required.
+Point at the container, **not** an individual skill subdirectory: the
+installer treats the given path as a container of skills, so a path like
+`.../dist/universal-skill/aikata-context` finds nothing. Add `--skill
+aikata-cli` (or `aikata-context`) to install just one. `dist/universal-skill/`
+is the canonical source; no publication mirror repository is required.
 
 For Codex CLI `0.125.0+`, direct installation into `.agents/skills/` is
 also the fallback when native plugin commands are unavailable. Extract the
@@ -168,7 +185,7 @@ Codex CLI `0.135.0+` can install `dist/codex/plugin/` through the root
 self-hosted marketplace:
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.10.0
+codex plugin marketplace add shigindo-inc/aikata --ref v0.10.1
 codex plugin add aikata@aikata
 ```
 
