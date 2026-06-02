@@ -1,7 +1,7 @@
 ---
 project: aikata
 status: draft
-version: 0.10.1
+version: 0.10.2
 updated: 2026-06-02
 audience: [human, agent]
 ---

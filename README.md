@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.10.1.**
+> **Status — v0.10.2.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
@@ -152,38 +152,39 @@ not found after install.
 > A Homebrew tap (`shigindo-inc/tap/aikata`) and an `npx aikata` wrapper
 > are deferred to v0.9.x — see [ROADMAP.md](./ROADMAP.md).
 
-### Claude Code skills (optional, v0.3.1+)
+### Agent skills & plugins (optional, v0.3.1+)
 
 aikata ships **two** first-party skills (ADR 0040): `aikata-cli` teaches
 the agent when to call the CLI and how to parse `aikata doctor --json`,
 and `aikata-context` teaches the daily in-repo context-maintenance loop
 (which canonical docs to read, where new context belongs, what to check
-before handoff). Both install together as the single `aikata` plugin
-from the self-hosted marketplace:
+before handoff). Both ship together as the single `aikata` plugin — there
+is no separate install per skill. Pick the surface your agent uses:
 
 ```text
+# Claude Code (self-hosted marketplace)
 /plugin marketplace add shigindo-inc/aikata
 /plugin install aikata@aikata
 ```
 
-See [`dist/README.md`](./dist/README.md) for the standalone-skill install
-from a release tarball or checkout, and the v0.10.0 reinstall step if you
-previously installed the single `aikata` skill.
-
-### Codex plugin (optional, v0.9.6+)
-
-Codex CLI `0.135.0+` can install aikata as a first-party skill plugin
-from this repository (both skills ship in the one plugin):
-
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.10.1
+# Codex CLI 0.135.0+ (tracks the default branch — stays current)
+codex plugin marketplace add shigindo-inc/aikata
 codex plugin add aikata@aikata
 ```
 
-The plugin is a thin wrapper over the aikata CLI. It adds native skill
-discovery and Codex App metadata without an MCP server or app
-integration. Older Codex versions can use the direct universal-skill
-fallback documented in [`dist/README.md`](./dist/README.md).
+```bash
+# Universal (npx skills; any AGENTS.md-aware agent)
+npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-skill --agent universal
+```
+
+Each is a thin wrapper over the aikata CLI — no MCP server, sub-agent, or
+app integration. To **update**: Claude Code `/plugin marketplace update
+aikata`; Codex `codex plugin marketplace upgrade aikata && codex plugin
+add aikata@aikata`; universal re-run the `npx skills add` command above.
+
+See [`dist/README.md`](./dist/README.md) for the full per-surface install,
+update, reinstall/migration, standalone-skill, and tag-pinning steps.
 
 ### Shell completion (v0.3.1+)
 

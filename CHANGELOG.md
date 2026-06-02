@@ -18,6 +18,35 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-06-02
+
+**Docs: update-friendly (non-pinned) install defaults + consistent README
+coverage.** No code change — both marketplace manifests already use
+local-path sources; the `--ref` pin lived only in the example commands.
+
+### Changed
+
+- **Codex install is non-pinned by default.** The documented primary
+  command drops `--ref` (`codex plugin marketplace add shigindo-inc/aikata`),
+  so it tracks the default branch and stays current. The update path is
+  `codex plugin marketplace upgrade aikata && codex plugin add aikata@aikata`.
+  Pinning a tag (`--ref vX.Y.Z`) is documented as an optional
+  reproducibility choice, with the caveat that a pinned marketplace cannot
+  be advanced by `upgrade` — it must be removed and re-added. This avoids
+  the failure mode where re-running `marketplace add --ref <new>` over an
+  already-added marketplace errors and silently leaves a stale plugin
+  installed.
+- **README consolidates agent skill/plugin install into one
+  `Agent skills & plugins` subsection** covering all three surfaces
+  (Claude Code, Codex, universal `npx skills`) consistently, with the
+  per-surface depth deferred to `dist/README.md` as the single source of
+  truth. Adds the previously-missing universal `npx skills` surface and
+  removes the README↔dist/README command duplication.
+- **`dist/README.md`** documents the Codex update path and the
+  remove-and-re-add recovery for an old/pinned marketplace, and notes that
+  the universal `tree/main` install is updated by re-running `npx skills add`.
+- Version lockstep bumped to **0.10.2**.
+
 ## [0.10.1] - 2026-06-02
 
 **Fix: `aikata-context` skill frontmatter was unparseable YAML.** The
