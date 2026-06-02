@@ -68,18 +68,6 @@ what unblocks a decision, and the latest update date.
   canonical file.
 - **Updated**: 2026-05-24.
 
-### Q-DESIGN-04 — Preset composition (`--preset flutter --preset oss`)
-
-- **Status**: **Superseded** by
-  [ADR 0024](../adr/0024-scope-stack-axes-split.md). The question
-  ("should presets compose by set-union of flags?") dissolves: presets
-  stop being the composition mechanism. `--preset` is split into
-  orthogonal `--scope` (documentation breadth) and `--stack` (target
-  technology, multi-valued) axes, with `--preset` kept as a deprecated
-  alias until v1.0. There is no preset algebra to define.
-- **Resolved**: 2026-05-30. Kept as a pointer; removable once v0.8.2
-  ships.
-
 ### Q-DESIGN-05 — Ownership of `docs/tasks/current.md`
 
 - Agents rewrite it constantly. Humans also edit. Concurrent edits
@@ -148,16 +136,6 @@ what unblocks a decision, and the latest update date.
   code). Plugin interface deferred to v1.x.
 - **Unblocks**: writing the Flutter preset.
 
-### Q-DESIGN-09 — `.aikata/aikata.yaml` schema v2
-
-- **Status**: Resolved by
-  [ADR 0016](../adr/0016-aikata-yaml-schema-v2.md) in v0.7.0. The
-  `components:` block records `memory`, `ui`, `api`, `tdd`,
-  `changelog`, and `monorepo` as first-class fields; the v1 → v2
-  migrator lifts `features.tdd` and `features.monorepo` automatically;
-  legacy v1 reads stay supported through the v0.x line.
-- Kept as a back-reference; will be removed in a future cleanup.
-
 ### Q-DESIGN-10 — Post-init command taxonomy
 
 - **Status**: Partially resolved by
@@ -181,34 +159,6 @@ _(Q-DESIGN-11 — verification gate in the standard template — was
 resolved and moved to
 [ADR 0027](../adr/0027-verification-expectation-in-generated-templates.md),
 Accepted 2026-05-31.)_
-
-### Q-DESIGN-12 — Which documents belong in the standard default scaffold?
-
-- **Status**: **Resolved**. The canonical rules / requirements /
-  architecture / terminology / ADR / working-state structure stays in the
-  default scaffold. `docs/prompts.md` — an empty reusable-prompt skeleton
-  that imposed maintenance cost on every project for latent value — is
-  moved to an opt-in `aikata enable prompts` / `--with-prompts` capability
-  by [ADR 0034](../adr/0034-reusable-prompts-opt-in-capability.md)
-  (shipped v0.9.2). The removal is sync-visible but non-destructive
-  (ADR 0019).
-- **Triggered by**: the v0.9 core-concept stabilization review
-  ([ADR 0028](../adr/0028-prioritize-core-concept-stabilization.md)).
-- **Resolved**: 2026-06-01. Kept as a pointer; removable in a future
-  cleanup.
-
-### Q-DESIGN-13 — How small should built-in stack briefs become?
-
-- **Status**: **Resolved**. The direction is settled by
-  [ADR 0029](../adr/0029-stack-brief-layout-convention.md) (briefs stay
-  small, carry a code-free canonical layout convention, and aikata never
-  generates stack source code) and the **subtractive** half by
-  [ADR 0030](../adr/0030-trim-stack-briefs-to-standard-guardrails.md),
-  which trims over-strict mandates and preference-colored policy via a
-  standard-vs-preference test (keeping official standards such as
-  accessibility and error handling).
-- **Resolved**: 2026-05-31. Kept as a pointer; removable in a future
-  cleanup.
 
 ---
 
@@ -279,70 +229,6 @@ Accepted 2026-05-31.)_
   an `aikata adopt <file>` command (v0.4?) could parse the user's file
   into the canonical `AGENTS.md` skeleton.
 
-### Q-INTEROP-04 — Managed append rules for existing generic files
-
-- **Status**: Partially resolved by
-  [ADR 0018](../adr/0018-managed-append-for-project-owned-files.md)
-  in v0.7.2. The shared managed-block writer ships in
-  `internal/managed/`; `.gitignore` is the first integration point
-  (init-time only). Block markers are
-  `# >>> aikata managed >>>` / `# <<< aikata managed <<<`, modelled
-  after the conda-init / shell-init convention.
-  ADR 0025 subsequently removed the inert `docs.generate_gitignore`
-  field; `sync.own` is the supported full-ownership opt-out.
-- **Open part**: (1) whether `aikata sync` should also route
-  `.gitignore` through the managed writer (it currently uses the
-  3-way merge) and (2) whether UPPERCASE.md files (CONTRIBUTING.md,
-  SECURITY.md, ...) are safe targets for managed-block append. The
-  third sub-question — whether the managed block should shrink to
-  aikata-owned residue only — is **resolved**: v0.9.7
-  ([ADR 0037](../adr/0037-tighten-adoption-mutation-boundaries.md) D2)
-  shrinks it to `/.aikata-proposed/`, the AI-tool artifacts, and a
-  minimal always-on secret baseline (`.env`, `.env.local`), and keeps
-  `.aikata/` committed.
-- **Leading (1) — sync routing**: **yes, unify on managed-append, but
-  demand-driven.** The marker block is a stronger ownership contract
-  than a generic 3-way hunk merge, so routing `aikata sync`'s
-  `.gitignore` handling through `internal/managed.ApplyBlock` (as init
-  already does) makes future block changes land without conflict
-  markers and removes the two-mechanisms-per-file split (write
-  discipline #3 vs #7 in [ARCHITECTURE §3.4](../../ARCHITECTURE.md#34-file-write-disciplines)).
-  Not urgent — ADR 0025 D1 already prevents data loss — so do it
-  alongside the next `.gitignore` block change or a real sync-conflict
-  report; keep `sync.own` as the full opt-out.
-- **Leading (2) — UPPERCASE.md**: **no — do not managed-append into
-  prose.** Injecting an aikata block into `CONTRIBUTING.md` /
-  `SECURITY.md` reintroduces exactly the ownership drift ADR 0037 pushed
-  back against, and prose merge (position / order / heading structure)
-  is genuinely harder than line-oriented rule files. These stay
-  one-shot scaffolds: created whole when absent and left fully
-  user-owned when present (write discipline #4 `writeIfMissing`, **not**
-  #3). A team that ever needs a continuously-synced section should get a
-  separate aikata-owned file to reference, not a block spliced into
-  their prose. (Distinct from #3: the create-if-missing behaviour is
-  fine; only mid-file block injection is rejected.)
-- **Unblocks**: future expansion of the managed-append target list
-  and the `aikata sync` integration follow-up.
-- **Updated**: 2026-06-02.
-
-### Q-INTEROP-05 — v0.9.7 adoption mutation boundary choices
-
-- **Status**: **Resolved** by
-  [ADR 0037](../adr/0037-tighten-adoption-mutation-boundaries.md)
-  (Accepted, v0.9.7). The maintainer confirmed all four recommended
-  choices: (1) the broad audit is `aikata doctor --all-markdown` over a
-  managed-surface default; (2) the `.gitignore` managed block drops
-  stack/editor/OS/coverage rules; (3) `.env.example` becomes the opt-in
-  `env` capability (`aikata enable env` / `aikata init --with-env`); and
-  (4) the documented `.aikata-proposed/` adoption fallback is
-  implemented with collision refusal.
-- **Triggered by**: adopting aikata into the existing
-  `shigindo-flutter-skills` Agent Skills repository, where `doctor --fix`
-  mutated third-party `skills/**` Markdown and project-owned
-  `CONTRIBUTING.md`.
-- **Resolved**: 2026-06-02. Kept as a pointer; removable in a future
-  cleanup.
-
 ---
 
 ## Q-ECOSYSTEM
@@ -360,12 +246,6 @@ Accepted 2026-05-31.)_
 - **Leading**: a `aikata.dev/templates` index page, no automatic
   trust — users must explicitly fetch by full path. No central
   approval.
-
-### Q-ECOSYSTEM-03 — License
-
-- **Resolved**: MIT, recorded in
-  [`LICENSE`](../../LICENSE) and [SPEC.md](../../SPEC.md).
-- Kept as a back-reference; will be removed in a future cleanup.
 
 ### Q-ECOSYSTEM-04 — External skill / plugin marketplace interop
 
@@ -410,22 +290,6 @@ Accepted 2026-05-31.)_
 ---
 
 ## Q-DOCTOR
-
-### Q-DOCTOR-01 — Scope and exclusion semantics for `aikata doctor`
-
-- **Status**: Resolved by
-  [ADR 0021](../adr/0021-doctor-scope-and-exclusion.md) in v0.7.3.
-  `.aikata/aikata.yaml` gains an optional top-level `doctor:` block
-  with an `exclude:` glob list. Matching paths are skipped at the
-  `walkMarkdown` layer so `checkFrontmatter`, `checkUpdated`, and
-  `checkGlossary` all honour the exclusion consistently. The matcher
-  (`*` / `**` / literal, no extra dep) lives in
-  `internal/doctor/glob.go`. The hardcoded `skippedDirs` /
-  `skippedFiles` baselines remain and the user list is additive.
-  aikata ships zero default exclusions; the ADR documents
-  recommended snippets for Claude Code plugin layouts.
-- Kept as a back-reference; will be removed in a future cleanup.
-- **Updated**: 2026-05-29.
 
 ### Q-DOCTOR-02 — Should `doctor` default to aikata-managed documents?
 

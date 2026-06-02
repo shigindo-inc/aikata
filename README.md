@@ -440,6 +440,7 @@ aikata generate
   - [0036 — Ship Codex Native Distribution in v0.9.6](./docs/adr/0036-codex-native-distribution.md)
   - [0037 — Tighten Adoption Mutation Boundaries in v0.9.7](./docs/adr/0037-tighten-adoption-mutation-boundaries.md)
   - [0038 — Unify `.gitignore` on the Managed Block Across init and sync](./docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md)
+  - [0039 — Documentation Hygiene & Context Budget](./docs/adr/0039-documentation-hygiene-and-context-budget.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 
