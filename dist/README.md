@@ -135,7 +135,7 @@ Codex CLI `0.135.0+` can install `dist/codex/plugin/` through the root
 self-hosted marketplace:
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.9.6
+codex plugin marketplace add shigindo-inc/aikata --ref v0.9.7
 codex plugin add aikata@aikata
 ```
 

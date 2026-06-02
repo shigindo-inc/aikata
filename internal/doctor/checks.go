@@ -63,6 +63,12 @@ func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 			return err
 		}
 		relSlash := filepath.ToSlash(rel)
+		// Managed-surface scope (ADR 0037 D1): when an include set is
+		// configured, only validate Markdown the include globs match.
+		// An empty include set is the broad-audit walk (--all-markdown).
+		if len(opts.Includes) > 0 && !MatchAny(opts.Includes, relSlash) {
+			return nil
+		}
 		if MatchAny(opts.Excludes, relSlash) {
 			return nil
 		}

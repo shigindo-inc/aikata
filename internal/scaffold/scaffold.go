@@ -54,6 +54,13 @@ type Options struct {
 	// templates do not branch on this flag. Off by default — the file
 	// was a default scaffold through v0.9.1 and is now opt-in.
 	WithPrompts bool
+	// WithEnv provisions the opt-in environment-variable template at
+	// .env.example (ADR 0037). Single-file component. Off by default —
+	// the file was a default scaffold through v0.9.6 and is now opt-in.
+	// Note: the scaffolded .gitignore always ignores the `.env` /
+	// `.env.local` secret files regardless of this flag (a minimal
+	// secret baseline, ADR 0037 D2); only the example file is opt-in.
+	WithEnv bool
 	// Stacks lists stack identifiers (e.g. "flutter") the project opts
 	// into. Templates branch on {{range .Stacks}} to include
 	// docs/stacks/<stack>.md cross-references; the values also flow
@@ -78,14 +85,27 @@ type Options struct {
 	Stdout io.Writer
 }
 
-// ErrTargetDirNotEmpty signals that TargetDir already contains files and
-// Force is false. Callers (the cli layer) map this to exit code 2 per
-// ARCHITECTURE.md §7.2.
-var ErrTargetDirNotEmpty = errors.New("scaffold: target directory is not empty (use --force to overwrite)")
+// proposedDirName is the adoption-fallback subdirectory. When
+// `aikata init` runs against a non-empty directory without --force, the
+// full scaffold is rendered here instead of the project root so nothing
+// existing is touched (SPEC §4.1, ADR 0037 D4).
+const proposedDirName = ".aikata-proposed"
+
+// ErrProposalExists signals that the adoption fallback could not write
+// because a non-empty `.aikata-proposed/` already exists. aikata refuses
+// to overwrite a prior proposal silently; the user reviews and removes it
+// first. The cli layer maps this to exit code 2.
+var ErrProposalExists = errors.New("scaffold: .aikata-proposed/ already exists and is not empty (review and remove it, or pass --force to write into the project root)")
 
 // Run scaffolds the requested preset into TargetDir. Generation is
 // all-or-nothing: every template is rendered into memory first; only if
 // every render succeeds do we touch the filesystem.
+//
+// When TargetDir is non-empty and Force is false, Run does not error:
+// it renders the full scaffold under TargetDir/.aikata-proposed/ instead
+// (the adoption fallback, SPEC §4.1 / ADR 0037 D4) and prints an
+// actionable notice. An existing non-empty proposal directory is refused
+// with ErrProposalExists rather than overwritten.
 func Run(opts Options) error {
 	if err := opts.validate(); err != nil {
 		return err
@@ -95,8 +115,11 @@ func Run(opts Options) error {
 	if err != nil {
 		return err
 	}
-	if nonEmpty && !opts.Force {
-		return ErrTargetDirNotEmpty
+	proposalMode := nonEmpty && !opts.Force
+
+	writeRoot := opts.TargetDir
+	if proposalMode {
+		writeRoot = filepath.Join(opts.TargetDir, proposedDirName)
 	}
 
 	rendered, err := renderInto(opts)
@@ -105,10 +128,42 @@ func Run(opts Options) error {
 	}
 
 	if opts.DryRun {
-		return printDryRun(opts.Stdout, opts.TargetDir, rendered)
+		return printDryRun(opts.Stdout, writeRoot, rendered)
 	}
 
-	return writeAll(opts.TargetDir, rendered)
+	if proposalMode {
+		existing, err := isNonEmpty(writeRoot)
+		if err != nil {
+			return err
+		}
+		if existing {
+			return ErrProposalExists
+		}
+	}
+
+	if err := writeAll(writeRoot, rendered); err != nil {
+		return err
+	}
+
+	if proposalMode {
+		return printProposalNotice(opts.Stdout)
+	}
+	return nil
+}
+
+// printProposalNotice tells the user where the adoption fallback wrote
+// the proposed scaffold and how to adopt it. Mirrors the steps in
+// docs/adoption.md.
+func printProposalNotice(w io.Writer) error {
+	if w == nil {
+		w = os.Stdout
+	}
+	_, err := fmt.Fprintf(w,
+		"Target directory is not empty; wrote the proposed scaffold to %s/ instead.\n"+
+			"Review it, merge what you want into the project root, then remove %s/.\n"+
+			"(Re-run with --force to write directly into the project root.)\n",
+		proposedDirName, proposedDirName)
+	return err
 }
 
 // Render returns the in-memory file set that Run would write, without
@@ -187,6 +242,7 @@ func renderInto(opts Options) (map[string]string, error) {
 			})
 		}},
 		{opts.WithPrompts, func() (map[string]string, error) { return components.RenderPrompts(sfp) }},
+		{opts.WithEnv, func() (map[string]string, error) { return components.RenderEnv(sfp) }},
 	}
 	for _, spec := range optionalSpecs {
 		if !spec.enabled {
@@ -256,6 +312,7 @@ func addPresetArtifacts(opts Options, rendered map[string]string) error {
 		cfg.Components.Changelog = opts.WithChangelog
 		cfg.Components.Monorepo = opts.WithMonorepo
 		cfg.Components.Prompts = opts.WithPrompts
+		cfg.Components.Env = opts.WithEnv
 		buf, err := config.Marshal(cfg)
 		if err != nil {
 			return err

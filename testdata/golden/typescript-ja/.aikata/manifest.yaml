@@ -2,18 +2,16 @@ version: 1
 preset: typescript
 lang: ja
 files:
-    - path: .env.example
-      sha256: 69c15138eb2b4fa9e5d06a6b1b1ec4d102c04e471796f4381f4b33e3de6542a0
     - path: .gitignore
-      sha256: ff0abd589edc9440a8225ee1a1e7fa9c264f99cadf59a68d1269fb8796355915
+      sha256: b485fbf57f089709094b9be5b22acb8cc6027b5caa2b744dcac66f02945816c6
     - path: AGENTS.md
-      sha256: d51469708bcd8e9acc21dd3b88de03c4bf45688f408f27c5bc036b6e21bb17ae
+      sha256: 0a4c7d4f3f456cf260bc372ddb3dca3ea561519c7aaf47c1040133a9a8d09219
     - path: ARCHITECTURE.md
-      sha256: d8ee324ce88f80764b0c6037d64aed2fbb7bf9d8af3cf2cd185d8a2a63173bfe
+      sha256: ca59fb6e7bc5bc31df864fc91d5535f73a403847f457224637d31fe4c17ba496
     - path: GLOSSARY.md
       sha256: b508c85b85ebd7d8c9c6ba14488342dc74f6d1036ade5ffa996c8d9401321171
     - path: README.md
-      sha256: 9e1d4722c7a5c4ffc6261d2535dbe5faa818be5322ed49c09a6a249f900c7784
+      sha256: c7360fdb255bf5e9ac679ccf71182fa50c9e8d9566e7b36f59e37ea48e48c754
     - path: ROADMAP.md
       sha256: 0f2183949c5972eabe5e8d7fb89e6c56d2111de7693f31000bf6040dc1e159c5
     - path: SPEC.md

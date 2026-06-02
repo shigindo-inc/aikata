@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-01
+updated: 2026-06-02
 audience: [human, agent]
 ---
 
@@ -22,15 +22,18 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.9.0.**
+> **Status — v0.9.7.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
-> alias), with bilingual templates (`--lang en|ja`) and the long-term
-> agent memory slot (`--with-memory`). `aikata generate` emits Claude
+> alias), with bilingual templates (`--lang en|ja`), the long-term
+> agent memory slot (`--with-memory`), and opt-in capabilities
+> (`--with-prompts`, `--with-env`, …). `aikata generate` emits Claude
 > Code (`CLAUDE.md`) and Cursor (`.cursor/rules/main.mdc`) artifacts;
-> Codex passes through `AGENTS.md` directly. `aikata doctor` runs eight
-> read-only consistency checks.
+> Codex passes through `AGENTS.md` directly. `aikata doctor` validates
+> the aikata-managed document surface by default (`--all-markdown` audits
+> every file). Adopting into a non-empty directory writes a reviewable
+> `.aikata-proposed/` scaffold (ADR 0037).
 > [ROADMAP.md](./ROADMAP.md) lists what comes next.
 
 ---
@@ -171,7 +174,7 @@ Codex CLI `0.135.0+` can install aikata as a first-party skill plugin
 from this repository:
 
 ```bash
-codex plugin marketplace add shigindo-inc/aikata --ref v0.9.6
+codex plugin marketplace add shigindo-inc/aikata --ref v0.9.7
 codex plugin add aikata@aikata
 ```
 
@@ -435,6 +438,7 @@ aikata generate
   - [0034 — Move the Reusable-prompts Library to an Opt-in Capability](./docs/adr/0034-reusable-prompts-opt-in-capability.md)
   - [0035 — Native Self-update (`aikata update --apply`) Safety Model](./docs/adr/0035-native-self-update-safety.md)
   - [0036 — Ship Codex Native Distribution in v0.9.6](./docs/adr/0036-codex-native-distribution.md)
+  - [0037 — Tighten Adoption Mutation Boundaries in v0.9.7](./docs/adr/0037-tighten-adoption-mutation-boundaries.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

@@ -2,18 +2,16 @@ version: 1
 preset: flutter
 lang: en
 files:
-    - path: .env.example
-      sha256: 69d9214a10c7e6e346de9309084ce0f94e37065c37cf880288d2ff6a68a711df
     - path: .gitignore
-      sha256: 238ef14cf2deed9000e72a81bd19c17b3cfb48fe9d50abf6b5818eb7493e8e72
+      sha256: 93be380260ca44fa333de2406521b37fd03c3c1338a3f1fdbf5c54e93479b48b
     - path: AGENTS.md
-      sha256: c5ce509a36eba4750721307148edbff79fa7cd1c67d9928ccc243ff72124580c
+      sha256: 60978906558e4e49b89ab191424aa5b88473fa1546e323fc091d72824d799677
     - path: ARCHITECTURE.md
-      sha256: e49a4eabad93cbcefe75da79149499bf6b792b078767c39ee69fe71030bda609
+      sha256: 829d7c40acbd154a83089773b3da46b83da4f53ac746dd662de7b0c32f40f9b5
     - path: GLOSSARY.md
       sha256: c543aae96ff420ccba2c3d28958dbd084716651b4421919046b486a1eebbe0ab
     - path: README.md
-      sha256: 462475c5a7ed3f7189396b1820d797dece39716cb3e4769ce607551c8b8f293c
+      sha256: 491bdf8281757678e7a88a200d8d0e60731cc4521bb22738c6ba25976601a3f1
     - path: ROADMAP.md
       sha256: b7273f42d86cc3f07bb1fb34af2d498526308c3306038f7fad1507e52b55b035
     - path: SPEC.md

@@ -78,7 +78,7 @@ func TestInit_InteractivePromptHappyPath(t *testing.T) {
 	// Name, scope, stack, language, ai-tools, with-memory, then trailing
 	// `n` answers for with-ui / with-api / with-tdd / with-changelog /
 	// monorepo / prompts.
-	cmd.SetIn(strings.NewReader("interactiveproj\nminimal\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\n"))
+	cmd.SetIn(strings.NewReader("interactiveproj\nminimal\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\nn\n"))
 	cmd.SetArgs(nil)
 	if err := cmd.Execute(); err != nil {
 		t.Fatalf("interactive init: %v (out: %s)", err, out.String())
@@ -108,9 +108,9 @@ func TestInit_InteractiveAcceptsDefaults(t *testing.T) {
 	cmd.SetOut(&out)
 	cmd.SetErr(&out)
 	// Provide name, then blank lines to accept scope / stack / language /
-	// ai-tools / memory / ui / api / tdd / changelog / monorepo / prompts
-	// defaults.
-	cmd.SetIn(strings.NewReader("defaultproj\n" + strings.Repeat("\n", 11)))
+	// ai-tools / memory / ui / api / tdd / changelog / monorepo / prompts /
+	// env defaults.
+	cmd.SetIn(strings.NewReader("defaultproj\n" + strings.Repeat("\n", 12)))
 	cmd.SetArgs(nil)
 	if err := cmd.Execute(); err != nil {
 		t.Fatalf("interactive init (defaults): %v (out: %s)", err, out.String())
@@ -197,22 +197,38 @@ func TestInit_DryRunWritesNothing(t *testing.T) {
 	}
 }
 
+// TestInit_NonEmptyDirWithoutForce pins the adoption fallback end to end
+// (ADR 0037 D4): init in a non-empty directory succeeds, writes the
+// proposal under .aikata-proposed/, leaves the project root untouched,
+// prints an actionable notice, and refuses a second run.
 func TestInit_NonEmptyDirWithoutForce(t *testing.T) {
 	tmp := t.TempDir()
 	if err := os.WriteFile(filepath.Join(tmp, "preexisting.txt"), []byte("x"), 0o644); err != nil {
 		t.Fatalf("seed: %v", err)
 	}
 	chdir(t, tmp)
-	_, err := runInit(t, "samplekata", "--preset", "minimal", "--no-interactive")
-	if err == nil {
-		t.Fatalf("expected error in non-empty dir without --force")
+	out, err := runInit(t, "samplekata", "--preset", "minimal", "--no-interactive")
+	if err != nil {
+		t.Fatalf("init should succeed via the proposal fallback, got: %v", err)
 	}
+	if !strings.Contains(out, ".aikata-proposed/") {
+		t.Errorf("expected a proposal notice mentioning .aikata-proposed/, got:\n%s", out)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, ".aikata-proposed", "AGENTS.md")); err != nil {
+		t.Errorf("expected .aikata-proposed/AGENTS.md: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, "AGENTS.md")); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("AGENTS.md should not land in the project root: %v", err)
+	}
+
+	// A second run must refuse rather than clobber the prior proposal.
+	_, err = runInit(t, "samplekata", "--preset", "minimal", "--no-interactive")
 	var ee *ExitError
 	if !errors.As(err, &ee) || ee.Code != 2 {
-		t.Fatalf("expected ExitError code 2, got: %v", err)
+		t.Fatalf("expected ExitError code 2 on collision, got: %v", err)
 	}
-	if !errors.Is(err, scaffold.ErrTargetDirNotEmpty) {
-		t.Fatalf("expected ErrTargetDirNotEmpty in cause chain, got: %v", err)
+	if !errors.Is(err, scaffold.ErrProposalExists) {
+		t.Fatalf("expected ErrProposalExists in cause chain, got: %v", err)
 	}
 }
 

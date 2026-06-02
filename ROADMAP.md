@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-06-01
+updated: 2026-06-02
 audience: [human, agent]
 ---
 
@@ -1193,7 +1193,65 @@ and Do-No-Harm analysis are recorded in
 [ADR 0036](./docs/adr/0036-codex-native-distribution.md).
 
 ---
-v0.9.9 — Native package-manager channels (pending)
+
+## v0.9.7 — Adoption mutation boundaries ✅ (released 2026-06-02)
+
+Dogfooding `aikata init` + `aikata doctor --fix` against the existing
+`shigindo-flutter-skills` Agent Skills repository exposed an ownership
+boundary failure: broad Markdown validation modified third-party
+`skills/**` contracts and project-owned prose, while the scaffolded
+`.gitignore` block carried stack and editor policies beyond aikata's
+shared-context-document purpose. The public `.aikata-proposed/` adoption
+fallback was also documented but unimplemented.
+
+[ADR 0037](./docs/adr/0037-tighten-adoption-mutation-boundaries.md) is
+**Accepted**; all four maintainer-confirmed boundary fixes ship together.
+
+- [x] **Managed-surface `doctor` default** — implement ADR 0033's
+      deferred behavior flip: validate canonical names, known
+      aikata-owned document directories (`docs/adr`, `docs/memory`,
+      `docs/stacks`, `docs/tasks`, `docs/workflows`, `docs/design`, …),
+      and manifest Markdown entries; leave arbitrary repository Markdown
+      alone unless broad audit is explicitly selected. `doctor.exclude`
+      stays additive (`internal/doctor/scope.go`,
+      `Options.Includes`).
+- [x] **Explicit broad audit mode** — `aikata doctor --all-markdown`
+      restores the whole-repository walk. aikata's own CI gate uses
+      `--all-markdown --strict` (the repo has no manifest and ships docs
+      outside the managed surface).
+- [x] **Minimal `.gitignore` managed block** — keep ADR 0018's
+      non-destructive markers but remove future-tool, stack-build,
+      editor / OS, coverage, and `*.local` rules. Emit only
+      `/.aikata-proposed/`, the AI-tool artifacts, and a minimal
+      **always-on** secret baseline (`.env`, `.env.local`). Stale
+      `docs.generate_gitignore: false` template guidance removed.
+- [x] **`.env.example` opt-in `env` capability** — `aikata enable env` /
+      `aikata init --with-env`; schema-v2 `components.env`,
+      manifest-tracked, `sync`-preserved. Only the example file is
+      opt-in; the `.env` secret ignore stays unconditional. Canonical
+      `AGENTS.md` / `README.md` mention `.env.example` as a pattern (no
+      dangling hard link).
+- [x] **`.aikata-proposed/` contract repair** — non-empty-directory
+      `init` without `--force` renders the proposal under
+      `.aikata-proposed/` and exits 0; a populated proposal tree is
+      refused with `ErrProposalExists`.
+- [x] **Regression and migration proof** — byte-identity tests for
+      third-party `skills/**` + `CONTRIBUTING.md` under default scope,
+      broad-audit coverage, proposal-tree creation/collision tests,
+      `.gitignore`/`.env.example` golden updates, and a CHANGELOG
+      migration note for projects carrying the previous broad block.
+
+Out of v0.9.7 intentionally:
+
+- Stack-native project scaffolding. Flutter / TypeScript build ignores
+  belong to downstream project tooling unless a later opt-in capability
+  demonstrates recurring value.
+- Auto-detection of third-party Markdown schemas. The managed-surface
+  default removes the need to chase external format registries.
+
+---
+
+## v0.9.9 — Native package-manager channels (pending)
 
 Third and lowest-priority channel-publication line (ADR 0032 D3). The
 convenience-only package-manager channels and their dependent self-update
@@ -1329,6 +1387,11 @@ Plugin / skill scope grows monotonically too:
   skill plugin installable from the repository's self-hosted marketplace.
   The plugin stays byte-identical to the universal skill content and adds
   no MCP server or app integration (ADR 0036).
+- **v0.9.7** — tightens adoption mutation boundaries (managed-surface
+  `doctor` default + `--all-markdown`, a minimal `.gitignore` block, the
+  opt-in `env` capability, and the `.aikata-proposed/` fallback,
+  ADR 0037). It changes core behaviour, not the set of install channels,
+  so it has no cadence-table row.
 - **v0.9.9** — adds the convenience package-manager channels (Homebrew
   tap, `npx aikata`) and the brew / npm branches of `aikata update
   --apply`. Deferred as lowest priority because `curl … | sh` and

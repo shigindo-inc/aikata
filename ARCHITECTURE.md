@@ -131,7 +131,6 @@ the repository layout in §2 is the **producer**.
 ├── SPEC.md                # What / Why
 ├── ARCHITECTURE.md        # How
 ├── GLOSSARY.md            # Terminology
-├── .env.example
 ├── .gitignore
 ├── docs/
 │   ├── adr/
@@ -139,11 +138,15 @@ the repository layout in §2 is the **producer**.
 │   ├── stacks/            # Populated per preset
 │   ├── tasks/
 │   │   └── current.md     # Agent's working memory
-│   ├── troubleshooting.md
-│   └── prompts.md
+│   └── troubleshooting.md
 └── .aikata/
     └── aikata.yaml
 ```
+
+> `.env.example` (`--with-env` / `enable env`, ADR 0037) and
+> `docs/prompts.md` (`--with-prompts` / `enable prompts`, ADR 0034) are
+> opt-in capabilities and are **not** part of the default `standard`
+> scaffold; see §3.2.
 
 ### 3.2 Optional files
 
@@ -154,6 +157,7 @@ the repository layout in §2 is the **producer**.
 | `docs/testing.md` | `--with-tdd` | v0.4.1 | Test strategy |
 | `CHANGELOG.md` | `--with-changelog` | v0.4.1 | Release notes |
 | `docs/prompts.md` | `--with-prompts` / `enable prompts` | v0.9.2 | Reusable-prompt library (opt-in; was a default through v0.9.1). See [ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md). |
+| `.env.example` | `--with-env` / `enable env` | v0.9.7 | Environment-variable template (opt-in; was a default through v0.9.6). The `.env` secret ignore is unconditional and independent of this capability. See [ADR 0037](./docs/adr/0037-tighten-adoption-mutation-boundaries.md). |
 | `docs/memory/` (5 files) | `--with-memory` | v0.2 | Long-term agent memory (`user`, `feedback`, `project`, `reference` + `README`). See [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). |
 | `CONTRIBUTING.md` | `--oss` | v1.0 | Contributor guide |
 | `SECURITY.md` | `--oss` | v1.0 | Security policy |
@@ -307,9 +311,21 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 
 ### 6.2 Default for `aikata init` output
 
-- Generated AI-tool artifacts and `.aikata/` **are** added to the target
-  project's `.gitignore`.
-- The flag `--no-gitignore-generated` opts out.
+- The scaffolded `.gitignore` managed block (ADR 0018 markers) ignores
+  only the aikata-owned residue: `/.aikata-proposed/`, the generated
+  AI-tool artifact paths, and a minimal **always-on** secret baseline
+  (`.env`, `.env.local`). The secret baseline is independent of the `env`
+  capability (ADR 0037 D2): a `.env` ignore for an absent file is
+  harmless, and aikata already preaches "never commit secrets."
+- `.aikata/` is **not** ignored: its config and manifest are project
+  state the user should commit so `aikata sync` has a stable baseline
+  (ADR 0037 D2).
+- Stack build outputs, editor / OS files, and coverage directories are
+  **not** managed by aikata — those policies belong to the downstream
+  project (ADR 0037 D2).
+- To stop aikata from managing `.gitignore` at all, list it under
+  `sync.own` ([ADR 0025](./docs/adr/0025-sync-divergent-file-preservation.md));
+  the inert `docs.generate_gitignore` flag was removed in v0.8.3.
 
 ### 6.3 Binary distribution channels (planned)
 

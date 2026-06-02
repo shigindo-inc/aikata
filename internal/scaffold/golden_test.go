@@ -156,7 +156,9 @@ func TestGolden_StandardJaWithMemory(t *testing.T) {
 // ones: the components are independent (no shared template branching,
 // per scaffold D3) so a single all-on tree is enough to catch dispatch
 // breakage. This is also the only golden tree that carries
-// docs/prompts.md after v0.9.2 made it opt-in (ADR 0034).
+// docs/prompts.md (opt-in since v0.9.2, ADR 0034) and .env.example
+// (opt-in since v0.9.7, ADR 0037; the .gitignore secret baseline is
+// unconditional and so appears in every tree).
 func TestGolden_StandardWithExtras(t *testing.T) {
 	tmp := t.TempDir()
 	opts := standardOpts(tmp)
@@ -165,6 +167,7 @@ func TestGolden_StandardWithExtras(t *testing.T) {
 	opts.WithTDD = true
 	opts.WithChangelog = true
 	opts.WithPrompts = true
+	opts.WithEnv = true
 	if err := Run(opts); err != nil {
 		t.Fatalf("Run: %v", err)
 	}

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-01
+updated: 2026-06-02
 audience: [human, agent]
 ---
 
@@ -39,8 +39,13 @@ what unblocks a decision, and the latest update date.
 - **Status**: Resolved for v0.1 by
   [ADR 0003 / Consequences](../adr/0003-do-no-harm-policy.md).
   - aikata's own repo: **commit**.
-  - User projects via `aikata init`: **gitignore by default**,
-    `--no-gitignore-generated` opts out.
+  - User projects via `aikata init`: generated AI-tool artifacts are
+    **gitignored by default** via the ADR 0018 managed-append block.
+    A project that wants to commit them removes the lines from the
+    aikata-owned block or lists `.gitignore` under `sync.own`
+    ([ADR 0025](../adr/0025-sync-divergent-file-preservation.md)); the
+    once-planned `--no-gitignore-generated` flag was never shipped and
+    the inert `docs.generate_gitignore` field was removed in v0.8.3.
 - Kept here only to document that the user-project default itself
   remains revisitable based on community feedback.
 
@@ -283,17 +288,39 @@ Accepted 2026-05-31.)_
   (init-time only). Block markers are
   `# >>> aikata managed >>>` / `# <<< aikata managed <<<`, modelled
   after the conda-init / shell-init convention.
-  `docs.generate_gitignore: false` continues to suppress the writer
-  for `.gitignore` entirely.
+  ADR 0025 subsequently removed the inert `docs.generate_gitignore`
+  field; `sync.own` is the supported full-ownership opt-out.
 - **Open part**: (1) whether `aikata sync` should also route
   `.gitignore` through the managed writer (it currently uses the
-  3-way merge), (2) whether UPPERCASE.md files (CONTRIBUTING.md,
-  SECURITY.md, ...) are safe targets for managed-block append, and
-  (3) whether `.aikata/` itself belongs in the target-project
-  `.gitignore` by default.
+  3-way merge) and (2) whether UPPERCASE.md files (CONTRIBUTING.md,
+  SECURITY.md, ...) are safe targets for managed-block append. The
+  third sub-question — whether the managed block should shrink to
+  aikata-owned residue only — is **resolved**: v0.9.7
+  ([ADR 0037](../adr/0037-tighten-adoption-mutation-boundaries.md) D2)
+  shrinks it to `/.aikata-proposed/`, the AI-tool artifacts, and a
+  minimal always-on secret baseline (`.env`, `.env.local`), and keeps
+  `.aikata/` committed.
 - **Unblocks**: future expansion of the managed-append target list
   and the `aikata sync` integration follow-up.
-- **Updated**: 2026-05-29.
+- **Updated**: 2026-06-02.
+
+### Q-INTEROP-05 — v0.9.7 adoption mutation boundary choices
+
+- **Status**: **Resolved** by
+  [ADR 0037](../adr/0037-tighten-adoption-mutation-boundaries.md)
+  (Accepted, v0.9.7). The maintainer confirmed all four recommended
+  choices: (1) the broad audit is `aikata doctor --all-markdown` over a
+  managed-surface default; (2) the `.gitignore` managed block drops
+  stack/editor/OS/coverage rules; (3) `.env.example` becomes the opt-in
+  `env` capability (`aikata enable env` / `aikata init --with-env`); and
+  (4) the documented `.aikata-proposed/` adoption fallback is
+  implemented with collision refusal.
+- **Triggered by**: adopting aikata into the existing
+  `shigindo-flutter-skills` Agent Skills repository, where `doctor --fix`
+  mutated third-party `skills/**` Markdown and project-owned
+  `CONTRIBUTING.md`.
+- **Resolved**: 2026-06-02. Kept as a pointer; removable in a future
+  cleanup.
 
 ---
 

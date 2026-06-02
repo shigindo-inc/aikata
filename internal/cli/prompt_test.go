@@ -12,8 +12,8 @@ func noSkip() promptSkip { return promptSkip{} }
 
 func TestRunPrompt_HappyPath(t *testing.T) {
 	// Order: name, scope, stack, lang, ai-tools, memory, ui, api, tdd,
-	// changelog, monorepo, prompts.
-	in := strings.NewReader("myproj\nminimal\nnone\nja\nclaude,cursor\ny\ny\nn\ny\nn\nn\nn\n")
+	// changelog, monorepo, prompts, env.
+	in := strings.NewReader("myproj\nminimal\nnone\nja\nclaude,cursor\ny\ny\nn\ny\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	got, err := runPrompt(in, &out, promptResult{Scope: "standard", Lang: "en"}, noSkip())
 	if err != nil {
@@ -50,10 +50,10 @@ func TestRunPrompt_HappyPath(t *testing.T) {
 }
 
 func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
-	// Twelve blanks (name + scope + stack + lang + ai-tools + 4 v0.4
-	// single-file + 1 v0.6 monorepo + 1 v0.9.2 prompts question) accept
+	// Blanks (scope + stack + lang + ai-tools + 4 v0.4 single-file +
+	// 1 v0.6 monorepo + 1 v0.9.2 prompts + 1 v0.9.7 env question) accept
 	// every default.
-	in := strings.NewReader("myproj\n" + strings.Repeat("\n", 11))
+	in := strings.NewReader("myproj\n" + strings.Repeat("\n", 12))
 	var out bytes.Buffer
 	defaults := promptResult{
 		Scope:      "standard",
@@ -87,7 +87,7 @@ func TestRunPrompt_KeepsDefaultsOnBlankInput(t *testing.T) {
 }
 
 func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
-	in := strings.NewReader("standard\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\n")
+	in := strings.NewReader("standard\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	got, err := runPrompt(in, &out, promptResult{Name: "preset-name", Scope: "minimal"}, noSkip())
 	if err != nil {
@@ -104,7 +104,7 @@ func TestRunPrompt_SkipsNameWhenAlreadySet(t *testing.T) {
 func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
 	// Lang and AITools were pinned via flags; the prompt should ask
 	// only about scope, stack, and the optional components.
-	in := strings.NewReader("myproj\nstandard\nnone\nn\nn\nn\nn\nn\nn\nn\n")
+	in := strings.NewReader("myproj\nstandard\nnone\nn\nn\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	defaults := promptResult{
 		Lang:    "ja",
@@ -131,7 +131,7 @@ func TestRunPrompt_SkipsFieldsExplicitlySet(t *testing.T) {
 func TestRunPrompt_SkipsScopeAndStackWhenSet(t *testing.T) {
 	// Scope and stack were pinned via flags (or a --preset alias); the
 	// prompt must not ask for them and must keep the supplied values.
-	in := strings.NewReader("myproj\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\n")
+	in := strings.NewReader("myproj\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\nn\n")
 	var out bytes.Buffer
 	defaults := promptResult{Scope: "standard", Stack: "flutter"}
 	got, err := runPrompt(in, &out, defaults, promptSkip{Scope: true, Stack: true})
@@ -197,7 +197,7 @@ func TestRunPrompt_NumericScopeChoices(t *testing.T) {
 		"2": "minimal",
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\n" + input + "\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\n" + input + "\nnone\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
 		if err != nil {
@@ -216,7 +216,7 @@ func TestRunPrompt_StackChoices(t *testing.T) {
 		"typescript": "typescript",
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\nstandard\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\nstandard\n" + input + "\nen\nclaude\nn\nn\nn\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{Scope: "standard"}, noSkip())
 		if err != nil {
@@ -239,7 +239,7 @@ func TestRunPrompt_MemoryYesNoVariants(t *testing.T) {
 		"N":   false,
 	}
 	for input, expected := range cases {
-		in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude\n" + input + "\nn\nn\nn\nn\nn\nn\n")
+		in := strings.NewReader("myproj\nstandard\nnone\nen\nclaude\n" + input + "\nn\nn\nn\nn\nn\nn\nn\n")
 		var out bytes.Buffer
 		got, err := runPrompt(in, &out, promptResult{}, noSkip())
 		if err != nil {
@@ -272,6 +272,7 @@ func TestRunPrompt_OptionalComponentSkipsHonored(t *testing.T) {
 		WithChangelog: true,
 		WithMonorepo:  true,
 		WithPrompts:   true,
+		WithEnv:       true,
 	}
 	got, err := runPrompt(in, &out, defaults, skip)
 	if err != nil {

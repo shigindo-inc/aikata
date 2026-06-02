@@ -11,6 +11,7 @@ var capabilities = []Component{
 	AITool,
 	API,
 	Changelog,
+	Env,
 	Memory,
 	Monorepo,
 	Prompts,

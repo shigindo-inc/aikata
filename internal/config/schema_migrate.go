@@ -226,7 +226,7 @@ func isMapEmpty(root *yaml.Node, key string) bool {
 }
 
 // upsertComponentsBlock ensures a `components:` mapping exists with
-// all six v2 fields, seeded from the lifted v1 features.
+// every v2 component field, seeded from the lifted v1 features.
 func upsertComponentsBlock(root *yaml.Node, tdd, monorepo bool) {
 	existing := findMapValue(root, "components")
 	if existing != nil && existing.Kind == yaml.MappingNode {
@@ -239,6 +239,7 @@ func upsertComponentsBlock(root *yaml.Node, tdd, monorepo bool) {
 		ensureBoolKey(existing, "changelog", false)
 		ensureBoolKey(existing, "monorepo", monorepo)
 		ensureBoolKey(existing, "prompts", false)
+		ensureBoolKey(existing, "env", false)
 		return
 	}
 	block := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
@@ -250,6 +251,7 @@ func upsertComponentsBlock(root *yaml.Node, tdd, monorepo bool) {
 		scalarString("changelog"), scalarBool(false),
 		scalarString("monorepo"), scalarBool(monorepo),
 		scalarString("prompts"), scalarBool(false),
+		scalarString("env"), scalarBool(false),
 	)
 	setMapKey(root, "components", block)
 }

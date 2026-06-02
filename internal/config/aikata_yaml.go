@@ -58,6 +58,11 @@ type Components struct {
 	// docs/prompts.md (ADR 0034). New in v0.9.2; pre-v0.9.2 v2 configs
 	// omit the key and read as false (the doc is no longer a default).
 	Prompts bool `yaml:"prompts"`
+	// Env records the opt-in environment-variable template at
+	// .env.example (ADR 0037). New in v0.9.7; pre-v0.9.7 v2 configs omit
+	// the key and read as false (the file was default-scaffolded by the
+	// standard / stack scopes through v0.9.6 and is now opt-in).
+	Env bool `yaml:"env"`
 }
 
 // Docs holds documentation-related preferences.

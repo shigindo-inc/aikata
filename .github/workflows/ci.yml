@@ -101,11 +101,15 @@ jobs:
         # gate (ROADMAP: "zero errors and zero warnings on the aikata
         # repository at the release commit") is binding rather than
         # advisory. Errors continue to exit 3; warnings now also do.
-        run: ./aikata doctor --strict
+        # --all-markdown keeps the gate validating every Markdown file
+        # (the repo has no manifest, so the v0.9.7 managed-surface
+        # default would otherwise skip docs/decisions, CONTRIBUTING.md,
+        # SECURITY.md, etc.). See ADR 0037 D1.
+        run: ./aikata doctor --all-markdown --strict
 
       - name: aikata doctor (self-check, Windows)
         if: runner.os == 'Windows'
-        run: .\aikata.exe doctor --strict
+        run: .\aikata.exe doctor --all-markdown --strict
 
       - name: aikata generate is byte-identical (Unix)
         if: runner.os != 'Windows'

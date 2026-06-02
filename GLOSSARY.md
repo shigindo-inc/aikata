@@ -271,8 +271,9 @@ core code (this guides the v1.x plugin design).
 ### top-level minimalism
 
 Design rule: at most **8 non-hidden files** at the project root after
-`aikata init --scope standard`. Dot-files (`.gitignore`, `.env.example`,
-`.ai/`, `.aikata/`) do not count. Enforced by `aikata doctor`.
+`aikata init --scope standard`. Dot-files (`.gitignore`, `.aikata/`, and
+opt-in additions such as `.env.example` via the `env` capability) do not
+count. Enforced by `aikata doctor`.
 
 ---
 

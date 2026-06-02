@@ -31,10 +31,14 @@ go test ./...
 
 # Build and self-check the repo:
 go build -o /tmp/aikata ./cmd/aikata
-/tmp/aikata doctor
+/tmp/aikata doctor --all-markdown
 ```
 
-`aikata doctor` should report zero error-level issues on `main`.
+`aikata doctor` validates the aikata-managed document surface by
+default; this repository ships many docs outside that surface
+(`CONTRIBUTING.md`, `SECURITY.md`, `docs/decisions/`, `dist/`), so its
+own gate uses `--all-markdown` to audit every Markdown file (ADR 0037).
+`aikata doctor --all-markdown` should report zero error-level issues on `main`.
 Info-level findings (orphan glossary entries, etc.) are acceptable —
 the binding gate is errors and warnings.
 

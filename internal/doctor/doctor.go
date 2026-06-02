@@ -58,6 +58,14 @@ type Options struct {
 	// internal/doctor/glob.go. The zero value (nil slice) preserves
 	// the pre-v0.7.3 behaviour. See ADR 0021.
 	Excludes []string
+	// Includes scopes the Markdown walk to the document surface aikata
+	// manages (ADR 0033 / ADR 0037 D1). When non-empty, walkMarkdown
+	// only visits Markdown files whose relative path matches one of
+	// these globs; Excludes still subtracts on top. An empty/nil slice
+	// means "no include filter" — the broad-audit walk over every
+	// Markdown file (`aikata doctor --all-markdown`). The cli layer
+	// populates this from ManagedIncludeGlobs by default.
+	Includes []string
 }
 
 // Check is the contract every individual check function implements.
