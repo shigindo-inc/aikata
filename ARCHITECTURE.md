@@ -186,16 +186,16 @@ belongs in optional `UI.md` when enabled. See
 Every command decides per file **how** it touches an existing path. There
 are exactly seven disciplines; this table is the single reference (the
 behaviour is otherwise spread across ADRs 0002 / 0011 / 0018 / 0019 /
-0025 / 0031 / 0037 and the `internal/scaffold`, `internal/components`,
-`internal/sync`, and `internal/generate` packages). When adding a code
-path that writes a project file, pick one of these — do not invent an
-eighth.
+0025 / 0031 / 0037 / 0038 and the `internal/scaffold`,
+`internal/components`, `internal/sync`, and `internal/generate`
+packages). When adding a code path that writes a project file, pick one
+of these — do not invent an eighth.
 
 | # | Discipline | On absent | On existing | Used by | Code | ADR |
 |---|---|---|---|---|---|---|
 | 1 | **Overwrite (disposable)** | write | **overwrite** unconditionally | `aikata generate` artifacts (`CLAUDE.md`, `.cursor/rules/main.mdc`) | `internal/generate` `writeAll` | 0002 |
 | 2 | **Atomic full-tree write** | write all-or-nothing | overwrite (only reached with `--force`; else → #6) | `aikata init` greenfield scaffold | `scaffold.writeAll` | — |
-| 3 | **Managed-append (block)** | write template verbatim | merge: replace only the `# >>> aikata managed >>>` block, byte-preserve user lines | `.gitignore` at init / scaffold time | `scaffold.contentForWrite` + `internal/managed.ApplyBlock` (`isManagedAppendPath`) | 0018 |
+| 3 | **Managed-append (block)** | write the framed block (markers + body) | merge: replace only the `# >>> aikata managed >>>` block, byte-preserve user lines | `.gitignore` at init **and** `aikata sync` time | `scaffold.contentForWrite` + `sync.classifyAndMerge` + `internal/managed` (`ApplyBlock` / `Frame` / `IsAppendPath`) | 0018 / 0038 |
 | 4 | **Create-or-skip (`writeIfMissing`)** | write | **skip** + notice (never overwrite) | single-file capabilities (`enable ui/api/tdd/changelog/prompts/env`, `memory`) | `singleFile.Add` → `writeIfMissing` | 0004 / 0034 / 0037 |
 | 5 | **Refuse-on-collision** | write | **error** (refuse; leave untouched) | one-off artifacts (`new adr/app-icon/mascot`) | `oneOffArtifact.Add` | 0031 |
 | 6 | **Proposal fallback** | n/a | render the whole scaffold under `.aikata-proposed/`, exit 0; refuse if that tree is non-empty (`ErrProposalExists`) | `aikata init` in a non-empty dir without `--force` | `scaffold.Run` | 0037 |
@@ -210,6 +210,13 @@ Two cross-cutting modifiers sit on top of the table:
   path in `.aikata/manifest.yaml` so #7 has an ancestor; #5 deliberately
   records nothing (the artifact becomes project-owned immediately); #1
   artifacts are never manifest-tracked (disposable). ADR 0014.
+  Managed-append paths (#3) are an exception on `sync`: they re-run the
+  block merge directly rather than the #7 hash 3-way, so in steady state
+  the manifest hash is recorded but not consulted for them — the on-disk
+  file carries the framed block while the manifest holds the raw body, so
+  a hash compare would always mismatch. The one place the hash *is* read
+  is the one-time migration of a pre-0.9.8 markerless file. Both are
+  intentional; see ADR 0038.
 
 Config files (`.aikata/aikata.yaml`, `.aikata/manifest.yaml`) are always
 written atomically (temp + rename, `internal/config`), with lazy

@@ -103,6 +103,38 @@ func HasBlock(existing []byte) bool {
 	return err == nil && startIdx >= 0 && endIdx > startIdx
 }
 
+// Frame wraps body in the aikata managed-block markers and returns the
+// standalone framed block — the canonical on-disk representation a
+// managed-append file always carries (the form a fresh `aikata init`
+// writes, ADR 0038). Equivalent to ApplyBlock against empty existing
+// content, exposed as a name so callers need not pass a nil slice to
+// express "no user content yet".
+func Frame(body []byte) []byte {
+	return frameBlock(body)
+}
+
+// appendPaths is the set of project-owned generic files aikata manages
+// through a marker block (ADR 0018), at BOTH init and sync time
+// (ADR 0038). It is intentionally tiny and line-oriented. Prose files
+// (CONTRIBUTING.md, SECURITY.md, …) are deliberately NOT here:
+// splicing a managed block into prose was rejected (Q-INTEROP-04 (b))
+// because prose merge is context-sensitive and it reintroduces the
+// ownership drift ADR 0037 pushed back against. Those stay
+// create-if-missing one-shot scaffolds (write discipline #4,
+// ARCHITECTURE §3.4).
+var appendPaths = map[string]struct{}{
+	".gitignore": {},
+}
+
+// IsAppendPath reports whether rel — a slash-form path relative to the
+// project root — is managed via the marker block. Shared by
+// internal/scaffold (init) and internal/sync so the two stay in
+// lockstep (ADR 0038).
+func IsAppendPath(rel string) bool {
+	_, ok := appendPaths[rel]
+	return ok
+}
+
 // frameBlock wraps newBlock with the marker lines. The block is
 // always terminated by a newline so consecutive ApplyBlock calls
 // produce stable framing.

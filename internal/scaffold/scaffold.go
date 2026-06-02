@@ -468,21 +468,24 @@ func writeAll(targetDir string, rendered map[string]string) error {
 }
 
 // contentForWrite returns the bytes writeAll should persist for one
-// rendered (path, content) pair. For aikata-managed-append paths
-// (today `.gitignore`) the on-disk file is merged in place so the
-// user's existing content survives — ADR 0018. For everything else
-// the rendered content is returned verbatim.
+// rendered (path, content) pair. Managed-append paths (today
+// `.gitignore`, see managed.IsAppendPath) always carry the aikata
+// marker block on disk so init and `aikata sync` share one
+// representation (ADR 0038): a fresh write is the framed standalone
+// block, and an existing file is merged in place so the user's content
+// outside the markers survives (ADR 0018). For everything else the
+// rendered content is returned verbatim.
 func contentForWrite(fullPath, rel, rendered string) ([]byte, error) {
-	if !isManagedAppendPath(rel) {
+	if !managed.IsAppendPath(rel) {
 		return []byte(rendered), nil
 	}
 	existing, err := os.ReadFile(fullPath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			// Fresh write — emit the template as-is so a clean
-			// `aikata init` looks identical to v0.7.1. Existing-dir
-			// merges go through the ApplyBlock branch below.
-			return []byte(rendered), nil
+			// Fresh write — frame the block so the on-disk file always
+			// carries the markers (the canonical representation `aikata
+			// sync` refreshes; ADR 0038).
+			return managed.Frame([]byte(rendered)), nil
 		}
 		return nil, fmt.Errorf("read existing %s: %w", fullPath, err)
 	}
@@ -491,18 +494,6 @@ func contentForWrite(fullPath, rel, rendered string) ([]byte, error) {
 		return nil, fmt.Errorf("merge managed block in %s: %w", fullPath, err)
 	}
 	return merged, nil
-}
-
-// isManagedAppendPath reports whether rel (a target-relative slash
-// path) should flow through the managed-block writer instead of the
-// straight overwrite path. The list is small on purpose; expanding it
-// requires an ADR 0018 update.
-func isManagedAppendPath(rel string) bool {
-	switch rel {
-	case ".gitignore":
-		return true
-	}
-	return false
 }
 
 func printDryRun(w io.Writer, target string, rendered map[string]string) error {

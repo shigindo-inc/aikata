@@ -1,3 +1,4 @@
+# >>> aikata managed >>>
 # --- シークレット ---
 .env
 .env.local
@@ -14,3 +15,4 @@ CLAUDE.md
 .github/copilot-instructions.md
 GEMINI.md
 .windsurfrules
+# <<< aikata managed <<<
