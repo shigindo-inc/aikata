@@ -179,8 +179,14 @@ installer treats the given path as a container of skills, so a path like
 aikata-cli` (or `aikata-context`) to install just one. `dist/universal-skill/`
 is the canonical source; no publication mirror repository is required.
 
-The `tree/main/...` URL tracks the default branch, so to **update** just
-re-run the same `npx skills add` command — it pulls the latest skills.
+The `tree/main/...` URL tracks the default branch. To **update** an
+installed skill to the latest, use the dedicated update command:
+
+```bash
+npx skills update                 # update all (interactive scope prompt)
+npx skills update --global -y     # the --agent universal install is global
+npx skills update aikata-cli aikata-context   # or name them
+```
 
 For Codex CLI `0.125.0+`, direct installation into `.agents/skills/` is
 also the fallback when native plugin commands are unavailable. Extract the

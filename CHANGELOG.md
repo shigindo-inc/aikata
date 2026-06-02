@@ -18,6 +18,13 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Docs: universal skill update command.** The universal-skill update note
+  said to re-run `npx skills add`; the documented mechanism is the dedicated
+  `npx skills update` command (re-running `add` for an installed skill has no
+  documented behavior). `README.md` and `dist/README.md` corrected.
+
 ## [0.10.2] - 2026-06-02
 
 **Docs: update-friendly (non-pinned) install defaults + consistent README
