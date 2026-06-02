@@ -139,13 +139,11 @@ pushed. At tag time:
 2. **`ROADMAP.md`** — flip the milestone heading from `(pending)` /
    `(planned)` to `✅ (released YYYY-MM-DD)`.
 3. **Plugin distribution metadata** — bump the `version` field in
-   `dist/claude-code/plugin/plugin.json` (1 place),
+   `dist/claude-code/plugin/.claude-plugin/plugin.json` (1 place),
    `.claude-plugin/marketplace.json` (2 places: root + the `plugins[0]`
    entry), and `dist/codex/plugin/.codex-plugin/plugin.json` (1 place) to
    the release semver. These stay in **lockstep** with every release so
    marketplace listings reflect the current version.
-   `requires.minVersion` is independent — leave it unless a command
-   starts needing a newer binary.
 4. **Agent distribution archives** — run
    `scripts/package-distribution-assets.sh`. The generated `.tar.gz`
    files are ignored locally and attached by GoReleaser.

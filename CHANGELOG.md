@@ -18,12 +18,44 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.10.3] - 2026-06-03
+
+**Skills-only surface + fixed Claude Code skill discovery (ADR 0041).** The
+two skills now load and are `/`-invocable in Claude Code for the first time,
+and the surface is uniform across Claude Code, Codex, and universal.
+
 ### Fixed
 
+- **`aikata-cli` / `aikata-context` now load in Claude Code.** Plugin skills
+  must be `skills/<name>/SKILL.md` *directories* (auto-discovered); the
+  v0.10.0–v0.10.2 plugin shipped them as flat `skills/<name>.md` files under a
+  non-standard `components` manifest object, so Claude Code silently dropped
+  them while only the `commands/*.md` loaded. Both the plugin and the
+  standalone `~/.claude/skills/` copies are migrated to the directory layout,
+  and the manifest moves to the required `.claude-plugin/plugin.json`
+  (`claude plugin validate` passes). Skills are invoked namespaced as
+  `/aikata:aikata-cli` and `/aikata:aikata-context`.
+- **Stale plugin install docs.** `dist/claude-code/plugin/README.md` pointed at
+  a never-shipped `aikata-plugin.tar.gz` with a leftover v0.6 TODO; replaced
+  with the marketplace install.
 - **Docs: universal skill update command.** The universal-skill update note
   said to re-run `npx skills add`; the documented mechanism is the dedicated
-  `npx skills update` command (re-running `add` for an installed skill has no
-  documented behavior). `README.md` and `dist/README.md` corrected.
+  `npx skills update` command.
+
+### Removed
+
+- **The six Claude Code slash commands** (`/aikata-init`, `/aikata-generate`,
+  `/aikata-doctor`, `/aikata-sync`, `/aikata-new`, `/aikata-enable`) are
+  removed (ADR 0041). They duplicated the `aikata-cli` skill's domain and had
+  no Codex equivalent; the surface is now the two skills only, uniform across
+  platforms. The Claude Code plugin manifest is reduced to standard metadata
+  (skills auto-discover; the `components` and `requires` objects are dropped).
+
+### Changed
+
+- Codex plugin `description` aligned with the Claude Code wording
+  ("… projects (AGENTS.md, CLAUDE.md, ADRs) via the aikata CLI").
+- Version lockstep bumped to **0.10.3**.
 
 ## [0.10.2] - 2026-06-02
 
