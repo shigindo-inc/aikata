@@ -212,9 +212,23 @@ scaffolds with no durable schema change:
   (warning only).
 - No ADR is in the `Deprecated` status without a replacement reference.
 - Every variable in `.env.example` is mentioned in `AGENTS.md` or
-  `ARCHITECTURE.md`.
+  `ARCHITECTURE.md` (when `.env.example` is present; it is opt-in via the
+  `env` capability from v0.9.7).
 - Document `updated:` fields are not more than 365 days old (warning).
 - Every markdown file has the required frontmatter keys.
+
+**Scope**: The Markdown-walking checks (frontmatter / updated / glossary)
+validate **only the document surface aikata manages** by default — the
+canonical top-level documents, the known `docs/` subtrees (`adr`,
+`memory`, `stacks`, `tasks`, `workflows`, `design`), and any
+manifest-tracked Markdown. Third-party Markdown governed by another
+contract (Claude Code `skills/**`, vendored docs, project-owned prose) is
+left alone. Pass `--all-markdown` to audit every Markdown file in the
+tree; `doctor.exclude` ([ADR 0021](./docs/adr/0021-doctor-scope-and-exclusion.md))
+subtracts paths under either mode. The default flip and broad-audit opt-in
+are recorded in
+[ADR 0033](./docs/adr/0033-doctor-default-scope-direction.md) and
+[ADR 0037](./docs/adr/0037-tighten-adoption-mutation-boundaries.md).
 
 **Output**:
 

@@ -38,7 +38,7 @@ Read in this order:
 
 ## 4. Hard rules
 
-- **Never commit secrets.** Reference patterns in [`.env.example`](./.env.example).
+- **Never commit secrets.** Reference patterns in `.env.example`.
 - **Update [`docs/tasks/current.md`](./docs/tasks/current.md)** when you
   start and finish work.
 - **Add tests** for new code unless the change is documentation-only.

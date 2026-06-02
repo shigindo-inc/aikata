@@ -41,7 +41,7 @@ This project was scaffolded with
 
 aikata stores its own settings under [`.aikata/aikata.yaml`](./.aikata/aikata.yaml).
 Environment variables expected by samplekata are documented in
-[`.env.example`](./.env.example).
+`.env.example`.
 
 ## License
 

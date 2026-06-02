@@ -67,18 +67,41 @@ func TestRun_ProjectNameReflectedInOutput(t *testing.T) {
 	}
 }
 
+// TestRun_NonEmptyDirWithoutForce pins the v0.9.7 adoption fallback
+// (ADR 0037 D4): a non-empty directory without --force is not an error —
+// the scaffold renders under .aikata-proposed/ and the project root is
+// left untouched.
 func TestRun_NonEmptyDirWithoutForce(t *testing.T) {
 	tmp := t.TempDir()
 	if err := os.WriteFile(filepath.Join(tmp, "preexisting.txt"), []byte("hi"), 0o644); err != nil {
 		t.Fatalf("seed file: %v", err)
 	}
-	err := Run(defaultOpts(tmp))
-	if !errors.Is(err, ErrTargetDirNotEmpty) {
-		t.Fatalf("expected ErrTargetDirNotEmpty, got %v", err)
+	if err := Run(defaultOpts(tmp)); err != nil {
+		t.Fatalf("Run should succeed via the proposal fallback, got %v", err)
 	}
-	// Confirm scaffold did not write anything.
+	// The scaffold lands under .aikata-proposed/, not the project root.
+	if _, err := os.Stat(filepath.Join(tmp, proposedDirName, "README.md")); err != nil {
+		t.Errorf("expected .aikata-proposed/README.md to exist: %v", err)
+	}
+	// The project root is untouched: only the pre-existing file remains.
 	if _, err := os.Stat(filepath.Join(tmp, "README.md")); !errors.Is(err, os.ErrNotExist) {
-		t.Errorf("README.md should not exist after failed run: %v", err)
+		t.Errorf("README.md should not be written to the project root: %v", err)
+	}
+}
+
+// TestRun_ProposalCollisionRefuses pins the no-silent-overwrite contract:
+// a second proposal run with .aikata-proposed/ already populated fails
+// with ErrProposalExists rather than clobbering the prior proposal.
+func TestRun_ProposalCollisionRefuses(t *testing.T) {
+	tmp := t.TempDir()
+	if err := os.WriteFile(filepath.Join(tmp, "preexisting.txt"), []byte("hi"), 0o644); err != nil {
+		t.Fatalf("seed file: %v", err)
+	}
+	if err := Run(defaultOpts(tmp)); err != nil {
+		t.Fatalf("first proposal run: %v", err)
+	}
+	if err := Run(defaultOpts(tmp)); !errors.Is(err, ErrProposalExists) {
+		t.Fatalf("second run should refuse with ErrProposalExists, got %v", err)
 	}
 }
 
@@ -209,7 +232,6 @@ var expectedStandardFiles = []string{
 	"README.md",
 	"ROADMAP.md",
 	"SPEC.md",
-	".env.example",
 	".gitignore",
 	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
@@ -267,9 +289,55 @@ func TestRun_StandardGitignoreMentionsGeneratedArtifacts(t *testing.T) {
 		t.Fatalf("read .gitignore: %v", err)
 	}
 	out := string(body)
+	// Kept: aikata-owned residue + selected-AI-tool artifacts.
 	for _, needle := range []string{"CLAUDE.md", ".cursor/rules/", ".aikata-proposed/"} {
 		if !strings.Contains(out, needle) {
 			t.Errorf(".gitignore missing %q:\n%s", needle, out)
+		}
+	}
+	// Removed in v0.9.7 (ADR 0037 D2): editor/OS/coverage policy is the
+	// project's to decide, not aikata's. `*.local` is likewise dropped —
+	// it is broader than the secret baseline.
+	for _, absent := range []string{".DS_Store", ".idea/", ".vscode/", "coverage/", "*.local"} {
+		if strings.Contains(out, absent) {
+			t.Errorf(".gitignore should no longer carry %q (ADR 0037 D2):\n%s", absent, out)
+		}
+	}
+	// Minimal secret baseline is always present (ADR 0037 D2), even
+	// without the env capability.
+	if !strings.Contains(out, "\n.env\n") {
+		t.Errorf(".gitignore should always ignore .env (secret baseline):\n%s", out)
+	}
+}
+
+// TestRun_GitignoreSecretBaselineIsUnconditional pins ADR 0037 D2: the
+// scaffolded .gitignore ignores the `.env` / `.env.local` secret files
+// regardless of whether the env capability (.env.example) is enabled.
+func TestRun_GitignoreSecretBaselineIsUnconditional(t *testing.T) {
+	for _, withEnv := range []bool{false, true} {
+		tmp := t.TempDir()
+		opts := standardOpts(tmp)
+		opts.WithEnv = withEnv
+		if err := Run(opts); err != nil {
+			t.Fatalf("Run(WithEnv=%v): %v", withEnv, err)
+		}
+		body, err := os.ReadFile(filepath.Join(tmp, ".gitignore"))
+		if err != nil {
+			t.Fatalf("read .gitignore: %v", err)
+		}
+		out := string(body)
+		for _, needle := range []string{"# --- Secrets ---", "\n.env\n", "\n.env.local\n"} {
+			if !strings.Contains(out, needle) {
+				t.Errorf("WithEnv=%v: .gitignore missing secret baseline %q:\n%s", withEnv, needle, out)
+			}
+		}
+		// The example file itself remains opt-in.
+		_, statErr := os.Stat(filepath.Join(tmp, ".env.example"))
+		if withEnv && statErr != nil {
+			t.Errorf("WithEnv=true should scaffold .env.example: %v", statErr)
+		}
+		if !withEnv && statErr == nil {
+			t.Errorf("WithEnv=false should not scaffold .env.example")
 		}
 	}
 }
@@ -311,7 +379,6 @@ var expectedFlutterFiles = []string{
 	"README.md",
 	"ROADMAP.md",
 	"SPEC.md",
-	".env.example",
 	".gitignore",
 	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
@@ -369,7 +436,11 @@ func TestRun_FlutterAGENTSReferencesStackDoc(t *testing.T) {
 	}
 }
 
-func TestRun_FlutterGitignoreCoversFlutterArtifacts(t *testing.T) {
+// TestRun_FlutterGitignoreOmitsStackArtifacts pins ADR 0037 D2: the
+// scaffolded .gitignore no longer decides Flutter/Dart/iOS/Android
+// build-ignore policy — that belongs to the downstream project. It
+// keeps only the aikata-owned residue and selected-AI-tool artifacts.
+func TestRun_FlutterGitignoreOmitsStackArtifacts(t *testing.T) {
 	tmp := t.TempDir()
 	if err := Run(flutterOpts(tmp)); err != nil {
 		t.Fatalf("Run: %v", err)
@@ -379,9 +450,14 @@ func TestRun_FlutterGitignoreCoversFlutterArtifacts(t *testing.T) {
 		t.Fatalf("read .gitignore: %v", err)
 	}
 	out := string(body)
-	for _, needle := range []string{".dart_tool/", "build/", "ios/Pods/", "pubspec.lock"} {
+	for _, absent := range []string{".dart_tool/", "ios/Pods/", "pubspec.lock", "android/.gradle/", "coverage/"} {
+		if strings.Contains(out, absent) {
+			t.Errorf(".gitignore should no longer carry Flutter rule %q (ADR 0037 D2):\n%s", absent, out)
+		}
+	}
+	for _, needle := range []string{"/.aikata-proposed/", "CLAUDE.md"} {
 		if !strings.Contains(out, needle) {
-			t.Errorf(".gitignore missing %q:\n%s", needle, out)
+			t.Errorf(".gitignore missing aikata-owned entry %q:\n%s", needle, out)
 		}
 	}
 }
@@ -465,7 +541,6 @@ var expectedTypescriptFiles = []string{
 	"README.md",
 	"ROADMAP.md",
 	"SPEC.md",
-	".env.example",
 	".gitignore",
 	".aikata/aikata.yaml",
 	"docs/adr/0001-record-architecture-decisions.md",
@@ -523,7 +598,10 @@ func TestRun_TypescriptAGENTSReferencesStackDoc(t *testing.T) {
 	}
 }
 
-func TestRun_TypescriptGitignoreCoversNodeArtifacts(t *testing.T) {
+// TestRun_TypescriptGitignoreOmitsStackArtifacts pins ADR 0037 D2: the
+// scaffolded .gitignore no longer decides Node/TypeScript build,
+// bundler, coverage, or package-log ignore policy.
+func TestRun_TypescriptGitignoreOmitsStackArtifacts(t *testing.T) {
 	tmp := t.TempDir()
 	if err := Run(typescriptOpts(tmp)); err != nil {
 		t.Fatalf("Run: %v", err)
@@ -533,9 +611,14 @@ func TestRun_TypescriptGitignoreCoversNodeArtifacts(t *testing.T) {
 		t.Fatalf("read .gitignore: %v", err)
 	}
 	out := string(body)
-	for _, needle := range []string{"node_modules/", "dist/", "*.tsbuildinfo", "coverage/"} {
+	for _, absent := range []string{"node_modules/", "*.tsbuildinfo", ".next/", "coverage/", "npm-debug.log*"} {
+		if strings.Contains(out, absent) {
+			t.Errorf(".gitignore should no longer carry Node/TS rule %q (ADR 0037 D2):\n%s", absent, out)
+		}
+	}
+	for _, needle := range []string{"/.aikata-proposed/", "CLAUDE.md"} {
 		if !strings.Contains(out, needle) {
-			t.Errorf(".gitignore missing %q:\n%s", needle, out)
+			t.Errorf(".gitignore missing aikata-owned entry %q:\n%s", needle, out)
 		}
 	}
 }

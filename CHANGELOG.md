@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-01
+updated: 2026-06-02
 audience: [human, agent]
 ---
 
@@ -17,6 +17,66 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.9.7] - 2026-06-02
+
+**Adoption mutation boundaries (ADR 0037).** Tightens four ways aikata
+reached beyond the shared-context document surface it can safely own,
+surfaced by adopting aikata into an existing Agent Skills repository
+where `doctor --fix` added aikata frontmatter to third-party `skills/**`
+files and project-owned `CONTRIBUTING.md`.
+
+### Changed
+
+- **`aikata doctor` defaults to the managed document surface** (ADR 0033
+  / ADR 0037 D1). The `frontmatter` / `updated` / `glossary` checks now
+  validate only the canonical docs, the known aikata-owned `docs/`
+  subtrees, and any manifest-tracked Markdown — not arbitrary repository
+  Markdown. Third-party files (`skills/**`, vendored docs, project-owned
+  prose) are left alone unless explicitly included. `doctor.exclude`
+  (ADR 0021) remains additive; `doctor --fix` uses the report's scope.
+- **Scaffolded `.gitignore` managed block shrunk to aikata-owned
+  residue** (ADR 0037 D2). It now carries only `/.aikata-proposed/`, the
+  generated AI-tool artifact paths, and a minimal **always-on** secret
+  baseline (`.env`, `.env.local`). Flutter / TypeScript build rules,
+  editor / OS rules, coverage rules, the broad `*.local` pattern, and the
+  stale `docs.generate_gitignore: false` comment are removed — stack and
+  editor ignore policy belongs to the downstream project. The secret
+  baseline is unconditional (not tied to the env capability): aikata
+  already preaches "never commit secrets," and a `.env` ignore for an
+  absent file costs nothing while a missing one can leak credentials.
+- **`.env.example` is no longer a default-scope scaffold file**
+  (ADR 0037 D3). The example file moves behind the opt-in `env`
+  capability (see Added); the `.env` secret ignore above stays
+  unconditional. Canonical `AGENTS.md` / `README.md` templates mention
+  `.env.example` as an inline pattern instead of hard-linking it, so the
+  reference never dangles. Removal from existing projects is sync-visible
+  but non-destructive (ADR 0019).
+- **`aikata init` in a non-empty directory without `--force` no longer
+  errors** (ADR 0037 D4). It renders the full scaffold under
+  `.aikata-proposed/` and exits 0 with an actionable notice, matching the
+  long-documented adoption fallback. A populated `.aikata-proposed/` is
+  refused (`ErrProposalExists`) rather than overwritten.
+
+### Added
+
+- **`aikata enable env` / `aikata init --with-env`** — opt-in capability
+  that scaffolds the `.env.example` template. Mirrors the v0.9.2
+  reusable-prompts capability: schema-v2 `components.env`,
+  manifest-tracked, `sync`-preserved (ADR 0037 D3). (The `.env` secret
+  ignore is unconditional, independent of this capability.)
+- **`aikata doctor --all-markdown`** — broad-audit mode that restores the
+  whole-repository Markdown walk for projects that want it. aikata's own
+  CI gate uses `--all-markdown --strict` (ADR 0037 D1).
+
+### Migration
+
+- Projects scaffolded before v0.9.7 keep their existing `.gitignore`
+  lines; the smaller managed block is applied the next time the
+  aikata-owned block is refreshed (`aikata init --force`). Nothing is
+  removed automatically.
+- A project that wants the previous broad `aikata doctor` behavior on a
+  CI gate adds `--all-markdown`.
 
 ## [0.9.6] - 2026-06-01
 

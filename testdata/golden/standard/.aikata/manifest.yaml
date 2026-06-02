@@ -2,18 +2,16 @@ version: 1
 preset: standard
 lang: en
 files:
-    - path: .env.example
-      sha256: 9570ad0cd111e1a6dfdf649faddfafa1f6f048f0f0d96271d4ff33fc5a345eb6
     - path: .gitignore
-      sha256: 93419eb87e03defa1031605caa1d6cdb13cbf1b8753de2f8450fb76d9c29f5ba
+      sha256: 93be380260ca44fa333de2406521b37fd03c3c1338a3f1fdbf5c54e93479b48b
     - path: AGENTS.md
-      sha256: 46f9e14184cb79c163e09f21d5a0f97a96e8664612bdf18104b63f2236c63b30
+      sha256: c17bbc165fc435fe6fa18343acc68264ba2b271b49f4a3c4ca60d57f0e307166
     - path: ARCHITECTURE.md
-      sha256: 633ade8fef2f990d8c106fd93b555a730c110aa44936e4a00926bce35dadc5eb
+      sha256: 90090bb355a2673ab15715da15adf1f48f12e20ed3fe3d683cfd87a8c4758cea
     - path: GLOSSARY.md
       sha256: 0188cf160f110994b2fd3de80110458a88defa677752f7159b3d27cc58036bd8
     - path: README.md
-      sha256: ef3f58e2690cf3e2206ff8119c048e20eeb166a42438edcbd6083b9b4532291c
+      sha256: 4331c53d10cbfc0fb949485e9ea2ec668851743e8086fce1d7f67f113afc13a2
     - path: ROADMAP.md
       sha256: b7273f42d86cc3f07bb1fb34af2d498526308c3306038f7fad1507e52b55b035
     - path: SPEC.md

@@ -18,10 +18,11 @@ import (
 // touching the filesystem.
 func newDoctorCmd() *cobra.Command {
 	var (
-		fix     bool
-		dryRun  bool
-		jsonOut bool
-		strict  bool
+		fix         bool
+		dryRun      bool
+		jsonOut     bool
+		strict      bool
+		allMarkdown bool
 	)
 	cmd := &cobra.Command{
 		Use:   "doctor",
@@ -29,6 +30,10 @@ func newDoctorCmd() *cobra.Command {
 		Long: "Run a suite of read-only checks against the project at the\n" +
 			"current working directory. Errors set exit code 3; warnings\n" +
 			"and infos do not unless --strict is passed (warnings also exit 3).\n" +
+			"By default the Markdown checks (frontmatter / updated / glossary)\n" +
+			"validate only the document surface aikata manages (the canonical\n" +
+			"docs, docs/adr, docs/memory, … and any manifest-tracked files);\n" +
+			"pass --all-markdown to audit every Markdown file in the tree.\n" +
 			"Pass --fix to apply the trivially-fixable subset (stale `updated:`\n" +
 			"bumps and missing-frontmatter scaffolds). Combine with --dry-run\n" +
 			"to preview the fix without writing. Pass --json to emit a\n" +
@@ -43,7 +48,15 @@ func newDoctorCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			opts := doctor.Options{TargetDir: target, Excludes: excludes}
+			// Default scope is the aikata-managed document surface
+			// (ADR 0033 / ADR 0037 D1). --all-markdown restores the
+			// whole-tree walk by leaving Includes empty. doctor.exclude
+			// stays additive under either mode.
+			var includes []string
+			if !allMarkdown {
+				includes = doctor.ManagedIncludeGlobs(target)
+			}
+			opts := doctor.Options{TargetDir: target, Excludes: excludes, Includes: includes}
 			issues, err := doctor.Run(opts)
 			if err != nil {
 				return err
@@ -110,6 +123,7 @@ func newDoctorCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "With --fix, show what would change but do not write files")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report to stdout instead of the text format")
 	cmd.Flags().BoolVar(&strict, "strict", false, "Treat warnings as errors (exit 3 if any warning exists). Used by the v0.5+ dogfood CI gate.")
+	cmd.Flags().BoolVar(&allMarkdown, "all-markdown", false, "Audit every Markdown file in the tree (broad mode); default audits only the aikata-managed document surface (ADR 0037)")
 	return cmd
 }
 

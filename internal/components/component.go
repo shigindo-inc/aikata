@@ -227,6 +227,11 @@ func EnableComponentInConfig(targetDir string, field string) error {
 			return nil
 		}
 		cfg.Components.Prompts = true
+	case "env":
+		if cfg.Components.Env {
+			return nil
+		}
+		cfg.Components.Env = true
 	default:
 		return fmt.Errorf("components: enable: unknown components.* field %q", field)
 	}

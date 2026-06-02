@@ -27,7 +27,6 @@ samplekata/
 ├── SPEC.md
 ├── ARCHITECTURE.md
 ├── GLOSSARY.md
-├── .env.example
 ├── .gitignore
 ├── .aikata/
 │   └── aikata.yaml

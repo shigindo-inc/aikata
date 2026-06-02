@@ -42,7 +42,7 @@ audience: [human, agent]
 
 aikata 自身の設定は [`.aikata/aikata.yaml`](./.aikata/aikata.yaml) に保存します。
 samplekata が期待する環境変数は
-[`.env.example`](./.env.example) に記述してください。
+`.env.example` に記述してください。
 
 ## ライセンス
 

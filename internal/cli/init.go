@@ -38,6 +38,7 @@ func newInitCmd() *cobra.Command {
 		withChangelog bool
 		withMonorepo  bool
 		withPrompts   bool
+		withEnv       bool
 		aiToolsCSV    string
 	)
 
@@ -101,6 +102,7 @@ func newInitCmd() *cobra.Command {
 					WithChangelog: cmd.Flags().Changed("with-changelog"),
 					WithMonorepo:  cmd.Flags().Changed("monorepo"),
 					WithPrompts:   cmd.Flags().Changed("with-prompts"),
+					WithEnv:       cmd.Flags().Changed("with-env"),
 					Lang:          cmd.Flags().Changed("lang"),
 					AITools:       cmd.Flags().Changed("ai-tools"),
 				}
@@ -119,6 +121,7 @@ func newInitCmd() *cobra.Command {
 					WithChangelog: withChangelog,
 					WithMonorepo:  withMonorepo,
 					WithPrompts:   withPrompts,
+					WithEnv:       withEnv,
 					Lang:          lang,
 					AITools:       aiTools,
 				}, skip)
@@ -137,6 +140,7 @@ func newInitCmd() *cobra.Command {
 				withChangelog = result.WithChangelog
 				withMonorepo = result.WithMonorepo
 				withPrompts = result.WithPrompts
+				withEnv = result.WithEnv
 				lang = result.Lang
 				aiTools = result.AITools
 			}
@@ -176,13 +180,14 @@ func newInitCmd() *cobra.Command {
 				WithChangelog: withChangelog,
 				WithMonorepo:  withMonorepo,
 				WithPrompts:   withPrompts,
+				WithEnv:       withEnv,
 				Stacks:        normStacks,
 				AITools:       aiTools,
 				Stdout:        cmd.OutOrStdout(),
 			}
 
 			if err := scaffold.Run(opts); err != nil {
-				if errors.Is(err, scaffold.ErrTargetDirNotEmpty) {
+				if errors.Is(err, scaffold.ErrProposalExists) {
 					return &ExitError{Code: 2, Err: err}
 				}
 				return err
@@ -206,6 +211,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&withChangelog, "with-changelog", false, "include release notes at CHANGELOG.md")
 	cmd.Flags().BoolVar(&withMonorepo, "monorepo", false, "configure as a monorepo with nested apps/<name>/AGENTS.md files (v0.6+)")
 	cmd.Flags().BoolVar(&withPrompts, "with-prompts", false, "include a reusable-prompt library at docs/prompts.md (ADR 0034)")
+	cmd.Flags().BoolVar(&withEnv, "with-env", false, "include an environment-variable template at .env.example (ADR 0037)")
 	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .aikata/aikata.yaml (claude | cursor | codex)")
 
 	return cmd

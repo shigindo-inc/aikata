@@ -12,6 +12,7 @@ components:
     changelog: true
     monorepo: false
     prompts: true
+    env: true
 features:
     obsidian_hints: false
 docs:
