@@ -18,6 +18,37 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-06-02
+
+**Fix: `aikata-context` skill frontmatter was unparseable YAML.** The
+v0.10.0 `aikata-context` `description` contained an unquoted `: `
+(colon-space), which the agent-skill ecosystem and Claude Code / Codex
+parse as a YAML mapping — so the skill failed to load on every platform
+(`npx skills add` reported "Found 1 skill", omitting `aikata-context`).
+`aikata doctor` excludes `dist/`, so the existing checks did not catch it.
+
+### Fixed
+
+- **`aikata-context` `description` no longer breaks YAML** — the
+  colon-space is replaced with an em-dash and the slot list is
+  comma-separated. The skill now loads on all platforms.
+- **Universal install command corrected** — point `npx skills add` at the
+  `dist/universal-skill` **container** (it walks one level deep and
+  discovers both skills); a per-skill subdirectory path finds nothing.
+  `dist/README.md` and `README.md` updated, plus a Claude Code / Codex
+  plugin-update path in the reinstall section.
+
+### Added
+
+- **`TestSkillFrontmatterParsesAsYAML`** — every first-party SKILL.md
+  frontmatter must parse as a YAML mapping with a non-empty `name` and
+  `description`, closing the gap that let malformed frontmatter ship
+  (`dist/` is outside `doctor`'s scope).
+
+### Changed
+
+- Version lockstep bumped to **0.10.1**.
+
 ## [0.10.0] - 2026-06-02
 
 **Collaboration-operation skills (ADR 0040).** The single first-party
