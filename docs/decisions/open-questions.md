@@ -300,6 +300,27 @@ Accepted 2026-05-31.)_
   shrinks it to `/.aikata-proposed/`, the AI-tool artifacts, and a
   minimal always-on secret baseline (`.env`, `.env.local`), and keeps
   `.aikata/` committed.
+- **Leading (1) — sync routing**: **yes, unify on managed-append, but
+  demand-driven.** The marker block is a stronger ownership contract
+  than a generic 3-way hunk merge, so routing `aikata sync`'s
+  `.gitignore` handling through `internal/managed.ApplyBlock` (as init
+  already does) makes future block changes land without conflict
+  markers and removes the two-mechanisms-per-file split (write
+  discipline #3 vs #7 in [ARCHITECTURE §3.4](../../ARCHITECTURE.md#34-file-write-disciplines)).
+  Not urgent — ADR 0025 D1 already prevents data loss — so do it
+  alongside the next `.gitignore` block change or a real sync-conflict
+  report; keep `sync.own` as the full opt-out.
+- **Leading (2) — UPPERCASE.md**: **no — do not managed-append into
+  prose.** Injecting an aikata block into `CONTRIBUTING.md` /
+  `SECURITY.md` reintroduces exactly the ownership drift ADR 0037 pushed
+  back against, and prose merge (position / order / heading structure)
+  is genuinely harder than line-oriented rule files. These stay
+  one-shot scaffolds: created whole when absent and left fully
+  user-owned when present (write discipline #4 `writeIfMissing`, **not**
+  #3). A team that ever needs a continuously-synced section should get a
+  separate aikata-owned file to reference, not a block spliced into
+  their prose. (Distinct from #3: the create-if-missing behaviour is
+  fine; only mid-file block injection is rejected.)
 - **Unblocks**: future expansion of the managed-append target list
   and the `aikata sync` integration follow-up.
 - **Updated**: 2026-06-02.

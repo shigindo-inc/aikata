@@ -18,6 +18,18 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **`ARCHITECTURE.md` §3.4 "File write disciplines"** — a single
+  reference table classifying the seven per-file write disciplines
+  (overwrite / atomic full-tree / managed-append / create-or-skip /
+  refuse-on-collision / proposal-fallback / 3-way-merge) and the two
+  cross-cutting modifiers (`sync.own`, manifest tracking), which were
+  previously only documented piecemeal across ADRs and code. Records the
+  leading positions for the two open Q-INTEROP-04 sub-questions (sync
+  `.gitignore` routing → unify on managed-append, demand-driven; prose
+  files → not managed-append targets).
+
 ## [0.9.7] - 2026-06-02
 
 **Adoption mutation boundaries (ADR 0037).** Tightens four ways aikata
