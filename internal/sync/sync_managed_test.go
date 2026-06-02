@@ -186,6 +186,72 @@ func TestRun_ManagedAppend_MigratesPristineLegacyFile(t *testing.T) {
 	}
 }
 
+// TestRun_ManagedAppend_EditedLegacyFileAppendsBlock pins the
+// edited-legacy fall-through (ADR 0038 D5): a markerless `.gitignore`
+// that has DIVERGED from the manifest ancestor is treated as user
+// content, not pristine aikata output, so sync appends the framed block
+// via ApplyBlock rather than replacing wholesale. This is the
+// data-preserving choice (no user line is lost) at the documented cost
+// that aikata's own old rules, now living in the user's unmarked
+// section, appear a second time inside the fresh block. The wart is
+// intentional; this test makes any future "fix" a conscious decision.
+func TestRun_ManagedAppend_EditedLegacyFileAppendsBlock(t *testing.T) {
+	root := t.TempDir()
+	seedStandardProject(t, root)
+
+	gitignorePath := filepath.Join(root, ".gitignore")
+	// A pre-0.9.8, markerless `.gitignore` the user has since edited:
+	// their own line plus old aikata rules, all unmarked.
+	legacy := "# my custom\nsecret-local/\nCLAUDE.md\n.cursor/rules/\n"
+	if err := os.WriteFile(gitignorePath, []byte(legacy), 0o644); err != nil {
+		t.Fatalf("write edited legacy .gitignore: %v", err)
+	}
+	// Point the ancestor hash at something the current file does NOT
+	// match, so it reads as diverged user content (not pristine).
+	manifest, err := config.LoadManifest(root)
+	if err != nil {
+		t.Fatalf("load manifest: %v", err)
+	}
+	for i, f := range manifest.Files {
+		if f.Path == ".gitignore" {
+			manifest.Files[i].SHA256 = config.HashContent([]byte("something-else\n"))
+		}
+	}
+	if err := config.SaveManifest(root, manifest); err != nil {
+		t.Fatalf("save manifest: %v", err)
+	}
+
+	result, err := Run(Options{Root: root, Stdout: &bytes.Buffer{}, Stderr: &bytes.Buffer{}})
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if result.Conflicts != 0 {
+		t.Fatalf("managed-append must never conflict: %+v", result)
+	}
+
+	got, err := os.ReadFile(gitignorePath)
+	if err != nil {
+		t.Fatalf("read .gitignore: %v", err)
+	}
+	out := string(got)
+	// User's own line is preserved (no data loss).
+	if !strings.Contains(out, "# my custom") || !strings.Contains(out, "secret-local/") {
+		t.Errorf("user content lost on edited-legacy append:\n%s", out)
+	}
+	// Exactly one framed block is appended — no conflict markers.
+	if n := strings.Count(out, managed.BlockStart); n != 1 {
+		t.Errorf("expected exactly one appended block, got %d:\n%s", n, out)
+	}
+	if strings.Contains(out, "<<<<<<<") {
+		t.Errorf(".gitignore must not carry conflict markers:\n%s", out)
+	}
+	// Documented wart (ADR 0038 D5): the old aikata rule the user kept in
+	// their unmarked section now also appears inside the fresh block.
+	if n := strings.Count(out, "CLAUDE.md"); n != 2 {
+		t.Errorf("expected CLAUDE.md twice (user section + new block) per ADR 0038 D5, got %d:\n%s", n, out)
+	}
+}
+
 // TestRun_ManagedAppend_RespectsUserDeletion pins that a user who
 // deletes `.gitignore` entirely is not re-created behind their back
 // (ADR 0019 carries over to the managed-append branch).
