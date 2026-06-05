@@ -91,6 +91,8 @@ calls for:
 
 - `aikata doctor` / `aikata doctor --json` — documentation self-check.
 - `aikata sync` — pull newer upstream template content safely.
+- `aikata fill` — write any **missing** canonical document into the repo
+  without overwriting (adopt an existing repo, or restore a deleted doc).
 - `aikata generate` — regenerate `CLAUDE.md` / `.cursor/rules/main.mdc`
   after editing `AGENTS.md` or another canonical doc.
 - `aikata new adr "<title>"` — stamp an auto-numbered ADR for a design

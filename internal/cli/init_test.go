@@ -90,9 +90,16 @@ func TestInit_InteractivePromptHappyPath(t *testing.T) {
 	if !strings.Contains(string(body), "interactiveproj") {
 		t.Errorf("README does not carry interactive name:\n%s", body)
 	}
-	// minimal preset, so .aikata/aikata.yaml must NOT exist.
+	// minimal preset is config-lite (ADR 0024): neither
+	// .aikata/aikata.yaml nor .aikata/manifest.yaml is emitted. The
+	// manifest is kept in lockstep with the config because no command can
+	// consume a manifest without the config (sync/enable/new all require
+	// it), so writing one would only leave an inert file.
 	if _, err := os.Stat(filepath.Join(tmp, ".aikata", "aikata.yaml")); !os.IsNotExist(err) {
 		t.Errorf("minimal preset should not produce .aikata/aikata.yaml: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, ".aikata", "manifest.yaml")); !os.IsNotExist(err) {
+		t.Errorf("minimal preset should not produce .aikata/manifest.yaml: %v", err)
 	}
 }
 
@@ -185,7 +192,7 @@ func TestInit_DryRunWritesNothing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("init dry-run: %v", err)
 	}
-	if !strings.Contains(out, "Would write 4 file(s)") {
+	if !strings.Contains(out, "Would write 3 file(s)") {
 		t.Errorf("dry-run output missing summary: %q", out)
 	}
 	entries, err := os.ReadDir(tmp)

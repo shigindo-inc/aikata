@@ -339,6 +339,30 @@ AI-tool integrations.
   artifacts (`list artifacts`: adr, app-icon, mascot).
 - AI tools the current aikata binary supports.
 
+### 4.8 `aikata fill`
+
+**Purpose**: Bring a repository to a complete canonical document set by
+writing only the documents that are **missing**, never overwriting an
+existing file. Adoption / completion verb (ADR 0042); resolves
+Q-INTEROP-03.
+
+**Behaviour**:
+
+- Option-free and idempotent. Scope is inferred: from `.aikata/`
+  (manifest preset/lang + `aikata.yaml` components) when the project is
+  already managed; otherwise the `standard` scope with project name = the
+  working-directory basename, adopting the repo (writes `aikata.yaml` +
+  `manifest.yaml`).
+- Existing files — including hand-edited ones — are left byte-for-byte
+  untouched (`components.WriteIfMissing`).
+- The manifest is rebuilt from the rendered (upstream) hashes
+  (`components.RecordInManifest`), so a hand-edited file's ancestor is the
+  upstream rendering and a subsequent `aikata sync` classifies it as
+  `user-only-edit` and preserves it.
+- Distinct from `init` (scaffolds new / proposes in a non-empty dir),
+  `sync` (pulls upstream changes, respects deletions), and `enable` (one
+  capability, requires config).
+
 ---
 
 ## 5. Non-Functional Requirements

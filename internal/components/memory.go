@@ -53,7 +53,7 @@ func (memoryComponent) Add(ctx AddContext) error {
 		return printMemoryPlan(ctx.Stdout, ctx.TargetDir, rendered)
 	}
 
-	written, skipped, err := writeIfMissing(ctx.TargetDir, rendered)
+	written, skipped, err := WriteIfMissing(ctx.TargetDir, rendered)
 	if err != nil {
 		return err
 	}
@@ -137,10 +137,17 @@ func RenderMemory(p MemoryParams) (map[string]string, error) {
 	return out, nil
 }
 
-// writeIfMissing writes each (rel, content) pair under targetDir only
+// WriteIfMissing writes each (rel, content) pair under targetDir only
 // when the destination does not already exist. Returns counts of
 // (written, skipped). Intermediate directories are created with 0755.
-func writeIfMissing(targetDir string, rendered map[string]string) (written, skipped int, err error) {
+//
+// This is the shared "additive, never-overwrite" write primitive: the
+// enable-tier components use it so re-running a capability is idempotent,
+// and `aikata fill` uses it to top up a project's canonical document set
+// without clobbering any hand-edited file. Pair it with RecordInManifest
+// so the just-written (and skipped-because-present) files become
+// sync-tracked.
+func WriteIfMissing(targetDir string, rendered map[string]string) (written, skipped int, err error) {
 	for rel, content := range rendered {
 		full := filepath.Join(targetDir, filepath.FromSlash(rel))
 		if _, statErr := os.Stat(full); statErr == nil {
