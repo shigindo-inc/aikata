@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/shigindo-inc/aikata/internal/config"
 	"github.com/shigindo-inc/aikata/internal/managed"
 )
 
@@ -44,14 +45,20 @@ func TestRun_GeneratesAllMinimalFiles(t *testing.T) {
 			t.Errorf("%s is empty", name)
 		}
 	}
-	// Minimal preset writes its three markdown files plus the
-	// `.aikata/manifest.yaml` sync ancestor (ADR 0011 D4).
+	// Minimal scope is config-lite (ADR 0024): it writes exactly its
+	// three markdown files and NO `.aikata/` directory — neither
+	// `aikata.yaml` (never emitted for minimal) nor `manifest.yaml` (no
+	// command can consume it without the config, so it would be inert;
+	// kept in lockstep with aikata.yaml via presetHasStructuredConfig).
 	entries, err := os.ReadDir(tmp)
 	if err != nil {
 		t.Fatalf("ReadDir: %v", err)
 	}
-	if got, want := len(entries), 4; got != want {
+	if got, want := len(entries), 3; got != want {
 		t.Errorf("entry count = %d, want %d (%v)", got, want, entries)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, config.PrimaryDir)); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("minimal scope must not create %s/: %v", config.PrimaryDir, err)
 	}
 }
 
@@ -143,7 +150,7 @@ func TestRun_DryRunWritesNothing(t *testing.T) {
 		t.Errorf("dry-run should not write any files, found %v", entries)
 	}
 	out := buf.String()
-	if !strings.Contains(out, "Would write 4 file(s)") {
+	if !strings.Contains(out, "Would write 3 file(s)") {
 		t.Errorf("dry-run output missing summary line: %q", out)
 	}
 	for _, name := range []string{"README.md", "AGENTS.md", "SPEC.md"} {

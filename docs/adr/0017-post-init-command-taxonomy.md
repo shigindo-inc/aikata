@@ -50,7 +50,15 @@ release whose semantics are tractable.
 | Maintain and restore the already-declared aikata surface (no scope change) | `aikata sync` | shipped v0.5 |
 | Persist a durable project capability (memory, ui, api, tdd, changelog, monorepo, stack `<name>`, ai-tool `<name>`) | `aikata enable <capability>` | **v0.7.1** |
 | Create a one-off authoring artifact (adr `"<title>"`) | `aikata new <artifact>` | **v0.7.1** |
+| Write any **missing** canonical document into the repo (adopt / complete, never overwrite) | `aikata fill` | added — see [ADR 0042](./0042-fill-command-for-canonical-document-completion.md) |
 | Persist a broader document tier (`standard`, `extended`) | `aikata expand <tier>` | deferred |
+
+> **Extension (ADR 0042):** `aikata fill` is a peer verb added after this
+> taxonomy. It is distinct from the rows above: `init` scaffolds from
+> scratch (and proposes in a non-empty dir), `enable` adds one capability,
+> `sync` pulls upstream changes and respects deletions — none write "every
+> canonical doc that is currently missing, in place, without overwriting".
+> See ADR 0042 for the rationale and why it is a verb, not a flag.
 
 ### Why `enable` for capabilities
 

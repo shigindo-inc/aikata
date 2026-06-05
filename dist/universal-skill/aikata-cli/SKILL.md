@@ -1,6 +1,6 @@
 ---
 name: aikata-cli
-description: Use when the user wants to run an aikata CLI lifecycle operation — scaffold a docs project (`aikata init`), regenerate per-AI-tool configs (`aikata generate` → CLAUDE.md / .cursor/rules/main.mdc), self-check documentation (`aikata doctor`, including `--json`), pull template updates (`aikata sync`), or extend a project (`aikata enable <capability>` / `aikata new <artifact>`). Triggers on mentions of aikata commands, "init an aikata project", regenerating AI-tool configs from canonical markdown, or fixing AGENTS.md drift. For the in-repo daily context-maintenance loop (which docs to read, where new context belongs, handoff checks), use `aikata-context` instead.
+description: Use when the user wants to run an aikata CLI lifecycle operation — scaffold a docs project (`aikata init`), write any missing canonical documents into / adopt an existing repo without overwriting (`aikata fill`), regenerate per-AI-tool configs (`aikata generate` → CLAUDE.md / .cursor/rules/main.mdc), self-check documentation (`aikata doctor`, including `--json`), pull template updates (`aikata sync`), or extend a project (`aikata enable <capability>` / `aikata new <artifact>`). Triggers on mentions of aikata commands, "init an aikata project", "add aikata to an existing repo", regenerating AI-tool configs from canonical markdown, or fixing AGENTS.md drift. For the in-repo daily context-maintenance loop (which docs to read, where new context belongs, handoff checks), use `aikata-context` instead.
 ---
 
 # aikata-cli
@@ -72,6 +72,42 @@ Key flags (run `aikata init --help` for the full set):
   before overwriting.
 - `--no-interactive` — required in non-TTY contexts; otherwise aikata
   prompts for any value not supplied via flag.
+
+### Completing / adopting: `aikata fill`
+
+```bash
+aikata fill
+```
+
+Writes any **missing** canonical document into the current repository and
+**never overwrites** an existing file. Option-free and idempotent. Use it
+to:
+
+- **Adopt an existing repo** that already has hand-written docs (a bespoke
+  `AGENTS.md`, etc.): fill writes the documents it lacks, leaves the
+  hand-written ones untouched, and creates `.aikata/aikata.yaml` +
+  `manifest.yaml` so the repo becomes aikata-managed. An unmanaged repo
+  defaults to the `standard` scope (project name = directory name); prune
+  any document that does not fit afterward.
+- **Top up a managed project** that is missing a canonical doc (e.g. one
+  was deleted): fill restores exactly the missing files.
+
+Scope is inferred — from `.aikata/` when the project is already managed,
+else `standard`. After fill on a freshly-adopted repo, run `aikata
+generate` to emit the per-AI-tool configs.
+
+How fill differs from its neighbours:
+
+- vs `aikata init` — init scaffolds a **new** project and, in a non-empty
+  directory, diverts the whole tree to `.aikata-proposed/` for manual
+  merge. fill writes only the gaps, in place.
+- vs `aikata sync` — sync pulls upstream template **changes** and respects
+  deletions (a doc you removed is **not** restored). Note: running
+  `aikata sync --rebaseline` on a repo with absent canonical docs records
+  them as deleted, so they are **not** recovered — use `aikata fill` to
+  add missing docs.
+- vs `aikata enable` — enable adds a single capability and needs existing
+  config; fill completes the whole canonical set and can bootstrap.
 
 ### Generating tool files: `aikata generate`
 
@@ -160,7 +196,12 @@ A typical agent loop:
 - Don't fabricate ADR numbers; let `aikata new adr "<title>"` own the
   auto-numbering.
 - Don't run `aikata init` in a non-empty directory without `--force`
-  unless the user has explicitly asked.
+  unless the user has explicitly asked. To bring aikata into a repo that
+  already has files, prefer `aikata fill` — it writes only the missing
+  canonical docs and never overwrites.
+- Don't use `aikata sync --rebaseline` to "add the docs a repo is missing"
+  — rebaseline records absent docs as deleted and will not create them.
+  Use `aikata fill` for that.
 
 ## Reference
 

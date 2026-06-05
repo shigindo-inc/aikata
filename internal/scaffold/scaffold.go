@@ -277,15 +277,39 @@ func renderInto(opts Options) (map[string]string, error) {
 	// for the 3-way merge. The manifest itself is added to `rendered`
 	// so writeAll and printDryRun treat it like any other emitted
 	// file.
-	manifestRel := config.PrimaryDir + "/" + config.ManifestFilename
-	configRel := config.PrimaryDir + "/" + config.Filename
-	manifest := config.BuildManifest(opts.Preset, opts.Lang, rendered, []string{manifestRel, configRel})
-	manifestBytes, err := config.MarshalManifest(manifest)
-	if err != nil {
-		return nil, err
+	//
+	// Gated to the structured-config presets only. The `minimal` scope
+	// is config-lite (ADR 0024): it ships no `.aikata/aikata.yaml`, and
+	// every command that consumes the manifest (`sync`, `enable`, `new`)
+	// hard-requires that config. A minimal project therefore could never
+	// act on a manifest — `sync` fails at the config load before the
+	// manifest is read, and cross-preset upgrade is out of scope
+	// (ADR 0011, "Out of scope"). Writing one would only leave an inert
+	// file, so we keep `manifest.yaml` in lockstep with `aikata.yaml`.
+	// `doctor` reads the manifest opportunistically but falls back to its
+	// static managed set when it is absent, so dropping it for minimal is
+	// behaviour-preserving there (internal/doctor/scope.go).
+	if presetHasStructuredConfig(opts.Preset) {
+		manifestRel := config.PrimaryDir + "/" + config.ManifestFilename
+		configRel := config.PrimaryDir + "/" + config.Filename
+		manifest := config.BuildManifest(opts.Preset, opts.Lang, rendered, []string{manifestRel, configRel})
+		manifestBytes, err := config.MarshalManifest(manifest)
+		if err != nil {
+			return nil, err
+		}
+		rendered[manifestRel] = string(manifestBytes)
 	}
-	rendered[manifestRel] = string(manifestBytes)
 	return rendered, nil
+}
+
+// presetHasStructuredConfig reports whether a preset ships the
+// `.aikata/` machinery — `aikata.yaml` (structured config) and
+// `manifest.yaml` (sync ancestor). The standard scope and the
+// stack-flavored presets do; the config-lite `minimal` scope does not
+// (ADR 0024). addPresetArtifacts and the manifest builder share this
+// predicate so the two `.aikata/` files are always emitted together.
+func presetHasStructuredConfig(preset string) bool {
+	return preset == "standard" || preset == "flutter" || preset == "typescript"
 }
 
 // addPresetArtifacts injects non-template files that a preset is
@@ -294,7 +318,7 @@ func renderInto(opts Options) (map[string]string, error) {
 // so downstream tooling (aikata generate, doctor) has structured
 // config.
 func addPresetArtifacts(opts Options, rendered map[string]string) error {
-	if opts.Preset == "standard" || opts.Preset == "flutter" || opts.Preset == "typescript" {
+	if presetHasStructuredConfig(opts.Preset) {
 		cfg := config.Default(opts.ProjectName, opts.Lang)
 		if len(opts.Stacks) > 0 {
 			cfg.Stacks = append([]string(nil), opts.Stacks...)
@@ -456,7 +480,7 @@ func writeAll(targetDir string, rendered map[string]string) error {
 		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
 			return fmt.Errorf("scaffold: mkdir %s: %w", filepath.Dir(full), err)
 		}
-		body, werr := contentForWrite(full, rel, rendered[rel])
+		body, werr := ContentForWrite(full, rel, rendered[rel])
 		if werr != nil {
 			return fmt.Errorf("scaffold: prepare %s: %w", full, werr)
 		}
@@ -467,15 +491,19 @@ func writeAll(targetDir string, rendered map[string]string) error {
 	return nil
 }
 
-// contentForWrite returns the bytes writeAll should persist for one
+// ContentForWrite returns the bytes a writer should persist for one
 // rendered (path, content) pair. Managed-append paths (today
 // `.gitignore`, see managed.IsAppendPath) always carry the aikata
-// marker block on disk so init and `aikata sync` share one
-// representation (ADR 0038): a fresh write is the framed standalone
+// marker block on disk so init, `aikata fill`, and `aikata sync` share
+// one representation (ADR 0038): a fresh write is the framed standalone
 // block, and an existing file is merged in place so the user's content
 // outside the markers survives (ADR 0018). For everything else the
 // rendered content is returned verbatim.
-func contentForWrite(fullPath, rel, rendered string) ([]byte, error) {
+//
+// Exported so `aikata fill` reuses the exact same managed-append
+// representation `init` produces instead of writing a raw, markerless
+// `.gitignore` that the next sync would have to reframe.
+func ContentForWrite(fullPath, rel, rendered string) ([]byte, error) {
 	if !managed.IsAppendPath(rel) {
 		return []byte(rendered), nil
 	}

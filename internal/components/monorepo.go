@@ -49,7 +49,7 @@ func (monorepoComponent) Add(ctx AddContext) error {
 		return printMemoryPlan(ctx.Stdout, ctx.TargetDir, rendered)
 	}
 
-	written, skipped, err := writeIfMissing(ctx.TargetDir, rendered)
+	written, skipped, err := WriteIfMissing(ctx.TargetDir, rendered)
 	if err != nil {
 		return err
 	}

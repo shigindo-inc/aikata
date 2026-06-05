@@ -89,7 +89,7 @@ func (c AddContext) Now() time.Time {
 //     same manifest bytes (entries are keyed by path; later writes
 //     overwrite earlier hashes).
 //   - Component implementations call this immediately after their
-//     file-write step (whether writeIfMissing or direct os.WriteFile),
+//     file-write step (whether WriteIfMissing or direct os.WriteFile),
 //     regardless of whether the on-disk file was newly written or
 //     skipped — the manifest tracks the template ancestor, not what's
 //     on disk.

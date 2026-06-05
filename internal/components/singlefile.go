@@ -48,7 +48,7 @@ func (s singleFile) Add(ctx AddContext) error {
 		return nil
 	}
 
-	written, _, err := writeIfMissing(ctx.TargetDir, rendered)
+	written, _, err := WriteIfMissing(ctx.TargetDir, rendered)
 	if err != nil {
 		return err
 	}
