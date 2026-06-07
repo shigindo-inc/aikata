@@ -50,7 +50,7 @@ Read in this order:
 6. [`docs/memory/`](./docs/memory/) — long-term memory (user
    preferences, project context, references). Read at least
    [`feedback.md`](./docs/memory/feedback.md) before non-trivial work.
-7. `docs/tasks/current.md` — current working memory _(not yet present;
+7. `docs/tasks/current.md` — short-term working state _(not yet present;
    introduced with the standard preset in v0.1. Until then, surface
    in-flight work via PR descriptions and commit messages)_.
 
@@ -126,8 +126,12 @@ Three slots, three lifetimes. **Do not blur them.**
   facts and preferences accumulated over time. Append entries with a
   `[YYYY-MM-DD]` prefix; supersede in place, do not delete. See
   [ADR 0004](./docs/adr/0004-long-term-memory-slot.md).
-- **Working memory** (`docs/tasks/current.md`, planned v0.1): current
-  in-flight task state. Rewrite freely.
+- **Working state** (`docs/tasks/current.md`, planned v0.1): short-lived
+  in-flight task state. Rewrite freely; do not treat it as a backlog or
+  task archive.
+- **Decision anchors** ([`docs/adr/`](./docs/adr/)): durable design
+  decisions and rationale. Create or reference an ADR when a choice needs
+  a stable "why" behind it.
 
 When a memory entry and a Hard Rule disagree, **the Hard Rule wins**.
 

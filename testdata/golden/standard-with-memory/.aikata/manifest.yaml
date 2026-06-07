@@ -5,7 +5,7 @@ files:
     - path: .gitignore
       sha256: 93be380260ca44fa333de2406521b37fd03c3c1338a3f1fdbf5c54e93479b48b
     - path: AGENTS.md
-      sha256: 48574ba5db46f14c0e6610ca97f9c5d1651adcc6f1fc1ed5148b89d24d19c663
+      sha256: 0faa92016290b4c34ebc378970703e4327d53a7d979b1f379d5842261142d8d4
     - path: ARCHITECTURE.md
       sha256: 90090bb355a2673ab15715da15adf1f48f12e20ed3fe3d683cfd87a8c4758cea
     - path: GLOSSARY.md
@@ -19,7 +19,7 @@ files:
     - path: docs/adr/0001-record-architecture-decisions.md
       sha256: d01d6255ec1d111509708059ca525cea28ac80fac9b2a9be0547d753dba8ce42
     - path: docs/memory/README.md
-      sha256: be2b198ebee45fca6719e958120e21a0b1810617c37dff0ad80df13facd2b6c3
+      sha256: 47d9c9a29023d18ac8f2189cfb0bd52ec00394f252a3aaa1fa3342a4e655df86
     - path: docs/memory/feedback.md
       sha256: c2f77db40cd5f6e9fd64e119746f43f4caabcbc58280bf1e2fd1cf2d4e97f2f6
     - path: docs/memory/project.md
@@ -29,6 +29,6 @@ files:
     - path: docs/memory/user.md
       sha256: 8fb713600b76a8ed50abeca87118c37e9f29ad7d802056d5bf1be27bf4e6d55a
     - path: docs/tasks/current.md
-      sha256: 6ac92075a5c4ce8b4b6e95f924383b05dc2f1aa0da30bea0d1c804f91daeccd7
+      sha256: 1ad3f141e628330d9c34b24883925bda7e95abe998e250d361a1e452747c99d7
     - path: docs/troubleshooting.md
       sha256: 0e9ece61ea6390db2ba89990b78daa68c7b83948058935c05ca9ebcc8a3fea9c

@@ -7,7 +7,7 @@ files:
     - path: .gitignore
       sha256: 93be380260ca44fa333de2406521b37fd03c3c1338a3f1fdbf5c54e93479b48b
     - path: AGENTS.md
-      sha256: c17bbc165fc435fe6fa18343acc68264ba2b271b49f4a3c4ca60d57f0e307166
+      sha256: f99fbbb00bd741fa4b3b45a7ced8b06c9b06b32804a7316048ff824fdc755744
     - path: API.md
       sha256: 16b0b789b35e2ff4ec16dc9d3bfbb03e641b45671a70aad2a73909957f077631
     - path: ARCHITECTURE.md
@@ -29,7 +29,7 @@ files:
     - path: docs/prompts.md
       sha256: 0a258ad92dfee3738ee14399b795f6935b3db492d3ecc82eb19425f05093224a
     - path: docs/tasks/current.md
-      sha256: 357905705bc63259ed39a8b9d02d2d675cfd39347caee65fd39e3d29463f26e5
+      sha256: 7635be7ad2df364533abd0021f1a284c5141cef3ef437516f64bb1497eae0afa
     - path: docs/testing.md
       sha256: 1d7f01f49e2ae772d0c8ca01bb8ae77da39a3fba1d2f406622d12e339ecec1d0
     - path: docs/troubleshooting.md

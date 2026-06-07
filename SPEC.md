@@ -116,7 +116,7 @@ feature request is judged.
    slots with distinct lifetimes: invariant **rules** live in
    `AGENTS.md`; mutable **long-term memory** (user preferences,
    project context, references) lives under `docs/memory/` (opt-in via
-   `--with-memory`, planned v0.2); ephemeral **working memory** lives
+   `--with-memory`, planned v0.2); ephemeral **working state** lives
    in `docs/tasks/current.md` (created with the standard preset in
    v0.1). Codified in
    [ADR 0004](./docs/adr/0004-long-term-memory-slot.md).

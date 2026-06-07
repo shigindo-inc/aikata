@@ -5,7 +5,7 @@ files:
     - path: .gitignore
       sha256: 93be380260ca44fa333de2406521b37fd03c3c1338a3f1fdbf5c54e93479b48b
     - path: AGENTS.md
-      sha256: 980968620963164fde374614d0af9dc7457e28550a9dd26f3048e5f8f1f79127
+      sha256: ca3180582293861741b2b6fb2e0879b1c72e98f1329c2b3026c3ffc90c7b2447
     - path: ARCHITECTURE.md
       sha256: 7263144eb9b8c1d20129f70dc2456d4a36f7808b948094a6a3895f4b71c908e6
     - path: GLOSSARY.md
@@ -21,6 +21,6 @@ files:
     - path: docs/stacks/typescript.md
       sha256: 7e9e0d20d8d5454f807e1201af1b4a0ca049c61473446c9e5563ca4ccc8d9b4e
     - path: docs/tasks/current.md
-      sha256: 357905705bc63259ed39a8b9d02d2d675cfd39347caee65fd39e3d29463f26e5
+      sha256: 7635be7ad2df364533abd0021f1a284c5141cef3ef437516f64bb1497eae0afa
     - path: docs/troubleshooting.md
       sha256: 56fecd72d68f4984a1810c995b08543af4f9e906ed89e2898ec1687cf1cf47e2

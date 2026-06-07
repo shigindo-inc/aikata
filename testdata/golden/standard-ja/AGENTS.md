@@ -23,7 +23,7 @@ audience: agent
 3. [SPEC.md](./SPEC.md) — 要件
 4. [ARCHITECTURE.md](./ARCHITECTURE.md) — 技術構造
 5. [GLOSSARY.md](./GLOSSARY.md) — 用語
-6. [`docs/tasks/current.md`](./docs/tasks/current.md) — 現在の作業メモ
+6. [`docs/tasks/current.md`](./docs/tasks/current.md) — 短期の作業状態
 
 ## 3. ナビゲーション
 
@@ -50,7 +50,20 @@ audience: agent
   書式は [ADR 0001](./docs/adr/0001-record-architecture-decisions.md) に従う。
 - **新しいドメイン用語が出てきたら [GLOSSARY.md](./GLOSSARY.md) を更新する。**
 
-## 5. 詰まったとき
+## 5. コンテキストの置き場所
+
+次の置き場所を混同しないでください。
+
+| 置き場所 | 寿命 | 用途 |
+|---|---|---|
+| `AGENTS.md` | 長期・不変 | 常に守るルール |
+| `docs/tasks/current.md` | 短期・書き換え可 | 現在進行中の作業状態 |
+| `docs/adr/` | 永続 | 設計判断とその理由 |
+
+`docs/tasks/current.md` をバックログやタスク履歴として使わないでください。
+引き継ぎ前に、永続化すべき情報は適切な置き場所へ移します。
+
+## 6. 詰まったとき
 
 優先順位は次のとおり。
 

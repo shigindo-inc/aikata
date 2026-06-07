@@ -74,7 +74,7 @@ aikata/
 │   ├── stacks/                  # (planned) per-stack guides
 │   ├── workflows/               # (optional) collaboration workflow guides
 │   └── tasks/
-│       └── current.md           # Agent's working memory
+│       └── current.md           # Agent's short-term working state
 ├── examples/                    # Real-world `aikata init` outputs
 ├── testdata/
 │   └── golden/                  # Golden-test expected outputs
@@ -137,7 +137,7 @@ the repository layout in §2 is the **producer**.
 │   │   └── 0001-record-architecture-decisions.md
 │   ├── stacks/            # Populated per preset
 │   ├── tasks/
-│   │   └── current.md     # Agent's working memory
+│   │   └── current.md     # Agent's short-term working state
 │   └── troubleshooting.md
 └── .aikata/
     └── aikata.yaml

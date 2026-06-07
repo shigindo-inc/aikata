@@ -80,8 +80,16 @@ what unblocks a decision, and the latest update date.
   conflict-marks it ([ADR 0025](../adr/0025-sync-divergent-file-preservation.md)
   D2). That settles the *sync* side; the open part remains the
   human-vs-agent in-file editing convention above.
+- **2026-06-07 direction**: keep `docs/tasks/current.md` as the single
+  mandatory entry point for v0.11.1. Clarify that `docs/tasks/` is
+  short-lived working state, not a backlog or task archive.
+- **Deferred option**: allow opt-in per-work files such as
+  `docs/tasks/<slug>.md` for long-running or parallel work, with
+  `current.md` remaining the required index / active pointer. Avoid
+  `next.md` or numbered `next_XX.md` because they obscure which file an
+  agent must read first.
 - **Unblocks**: real dogfooding evidence.
-- **Updated**: 2026-05-30.
+- **Updated**: 2026-06-07.
 
 ### Q-DESIGN-07 — Memory generate-projection across AI-tool memory channels
 

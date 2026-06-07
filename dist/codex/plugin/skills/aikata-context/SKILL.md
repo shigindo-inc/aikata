@@ -61,7 +61,7 @@ each slot has a distinct lifetime and audience:
 | A requirement (what/why the product does X) | `SPEC.md` | Scope and intent, not implementation. |
 | A design decision with trade-offs | `docs/adr/` | Stamp via `aikata new adr`; accepted ADR bodies are immutable. |
 | A durable fact or preference | `docs/memory/` | Dated, append/supersede; never delete. |
-| In-flight state for this task | `docs/tasks/current.md` | Ephemeral working memory. |
+| In-flight state for this task | `docs/tasks/current.md` | Short-lived working state; not a backlog or archive. |
 
 Rules > memory > working state when they conflict. A one-off
 implementation detail that the code already expresses belongs in neither
