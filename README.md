@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-02
+updated: 2026-06-07
 audience: [human, agent]
 ---
 
@@ -22,7 +22,7 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.11.0.**
+> **Status — v0.11.1.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated

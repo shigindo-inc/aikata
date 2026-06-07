@@ -10,13 +10,13 @@ audience: [human, agent]
 
 This directory holds **long-term memory** for agents collaborating on
 samplekata. It is the third class of agent-facing artifact,
-distinct from rules and short-term working memory.
+distinct from rules and short-term working state.
 
 | Artifact | Lifetime | Author | Purpose |
 |---|---|---|---|
 | [`AGENTS.md`](../../AGENTS.md) | Long, invariant | Human (canonical) | **Rules** — what must always be true |
 | `docs/memory/*` | Long, mutable | Agent + Human | **Memory** — what we have learned |
-| [`docs/tasks/current.md`](../tasks/current.md) | Short | Agent (frequent) | **Working memory** — current task state |
+| [`docs/tasks/current.md`](../tasks/current.md) | Short | Agent (frequent) | **Working state** — current in-flight work state |
 
 ---
 
@@ -78,6 +78,7 @@ Memory is preference; rules are invariants.
 ## What this is **not**
 
 - **Not a chat log.** Do not paste session transcripts. Distill.
-- **Not a TODO list.** Use `docs/tasks/current.md`.
+- **Not a TODO list or task archive.** Use `docs/tasks/current.md` only
+  for short-lived in-flight work state.
 - **Not a substitute for ADRs.** Architectural decisions go to
   `docs/adr/`. Memory captures preferences, not decisions.

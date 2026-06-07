@@ -10,13 +10,13 @@ audience: [human, agent]
 
 This directory holds **long-term memory** for agents collaborating on
 this repository. It is the third class of agent-facing artifact, distinct
-from rules and short-term working memory.
+from rules and short-term working state.
 
 | Artifact | Lifetime | Author | Purpose |
 |---|---|---|---|
 | [`AGENTS.md`](../../AGENTS.md) | Long, invariant | Human (canonical) | **Rules** — what must always be true |
 | `docs/memory/*` | Long, mutable | Agent + Human | **Memory** — what we have learned |
-| [`docs/tasks/current.md`](../tasks/current.md) (planned v0.1) | Short | Agent (frequent) | **Working memory** — current task state |
+| [`docs/tasks/current.md`](../tasks/current.md) (planned v0.1) | Short | Agent (frequent) | **Working state** — current in-flight work state |
 
 For the full design rationale, read
 [ADR 0004 — Long-term Memory Slot](../adr/0004-long-term-memory-slot.md).
@@ -90,7 +90,8 @@ collaboration. See ADR 0004 §Context.
 ## What this is **not**
 
 - **Not a chat log.** Do not paste session transcripts here. Distill.
-- **Not a TODO list.** Use `docs/tasks/current.md` (planned v0.1).
+- **Not a TODO list or task archive.** Use `docs/tasks/current.md`
+  (planned v0.1) only for short-lived in-flight work state.
 - **Not a substitute for ADRs.** Architectural decisions still go to
   `docs/adr/`. Memory captures preferences, not decisions.
 - **Not present in user projects by default.** This directory is

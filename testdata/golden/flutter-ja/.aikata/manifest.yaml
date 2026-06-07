@@ -5,7 +5,7 @@ files:
     - path: .gitignore
       sha256: b485fbf57f089709094b9be5b22acb8cc6027b5caa2b744dcac66f02945816c6
     - path: AGENTS.md
-      sha256: 01da6b1659a7d16d6e09d8c470f782012c6eb3e138127da7013706124adcc9d9
+      sha256: 557291f7d659c4d7e883663996c6f0dd04fb04bcbc49c51807811c47e490ad8d
     - path: ARCHITECTURE.md
       sha256: fdda92ee6405151eaa6d421d5e278dbc191b979b38e8463ea1fed4356455e1b0
     - path: GLOSSARY.md
@@ -21,6 +21,6 @@ files:
     - path: docs/stacks/flutter.md
       sha256: 6153f0c8f75b8e789431ec892ae4d953383a511128b83570eabaacf48911e0be
     - path: docs/tasks/current.md
-      sha256: d3f5e708e6abe8a4d598a1f07c32d9a153ab2fa08dc971cbb3388d6847c2ec41
+      sha256: 5c958e6bbbcaa353e377a78cbc01364d5b784ecc64c4a697a82ad2f7b6ba9c4c
     - path: docs/troubleshooting.md
       sha256: a623d23d468cdd27655f9dcb23fbf5ca081f18918f50df5fc1debaa1d269ab23

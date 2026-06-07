@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-05
+updated: 2026-06-07
 audience: [human, agent]
 ---
 
@@ -17,6 +17,20 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.11.1] - 2026-06-07
+
+**Working-state slot clarification.** Tightens the generated context model
+so projects understand the difference between long-term memory, short-term
+working state, and design-decision anchors.
+
+### Changed
+
+- Clarified the generated context-slot model: `docs/memory/` is long-term
+  memory, `docs/tasks/current.md` is short-lived working state rather
+  than a backlog, and `docs/adr/` anchors design decisions. The default
+  task slot remains a single `current.md` entry point for v0.11.1 while
+  optional per-work task files remain a deferred design question.
 
 ## [0.11.0] - 2026-06-05
 
