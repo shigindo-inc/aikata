@@ -13,7 +13,10 @@ func Execute(version string) error {
 }
 
 // newRootCmd constructs the root `aikata` command. The post-init
-// surface follows the v0.7.1 purpose-based split (ADR 0017):
+// surface follows the v0.7.1 purpose-based split (ADR 0017), extended
+// with the `fill` completion verb (ADR 0042):
+//   - `fill` writes any missing canonical document into the current
+//     repository without overwriting existing files (adoption/completion).
 //   - `enable <capability>` persists project features (memory, ui,
 //     monorepo, stack <name>, ai-tool <name>, ...).
 //   - `new <artifact>` creates one-off authoring scaffolds (adr).
@@ -46,6 +49,7 @@ func newRootCmd(version string) *cobra.Command {
 
 	// Subcommands. Keep this list short; each subcommand owns its own file.
 	cmd.AddCommand(newInitCmd())
+	cmd.AddCommand(newFillCmd())
 	cmd.AddCommand(newEnableCmd())
 	cmd.AddCommand(newNewCmd())
 	cmd.AddCommand(newGenerateCmd())

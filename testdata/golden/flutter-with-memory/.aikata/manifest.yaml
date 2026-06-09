@@ -5,7 +5,7 @@ files:
     - path: .gitignore
       sha256: 93be380260ca44fa333de2406521b37fd03c3c1338a3f1fdbf5c54e93479b48b
     - path: AGENTS.md
-      sha256: 9c51c2e136dd9a46fe1b6ca281be11f6bb5ae5a673f7d56945b401bdb5275044
+      sha256: 0142ffc32b8eb0f9c5a2bfdd7405aef6a476761463e6de1c9a7e5ff44ba3c7ef
     - path: ARCHITECTURE.md
       sha256: 829d7c40acbd154a83089773b3da46b83da4f53ac746dd662de7b0c32f40f9b5
     - path: GLOSSARY.md
@@ -19,7 +19,7 @@ files:
     - path: docs/adr/0001-record-architecture-decisions.md
       sha256: d01d6255ec1d111509708059ca525cea28ac80fac9b2a9be0547d753dba8ce42
     - path: docs/memory/README.md
-      sha256: be2b198ebee45fca6719e958120e21a0b1810617c37dff0ad80df13facd2b6c3
+      sha256: 47d9c9a29023d18ac8f2189cfb0bd52ec00394f252a3aaa1fa3342a4e655df86
     - path: docs/memory/feedback.md
       sha256: c2f77db40cd5f6e9fd64e119746f43f4caabcbc58280bf1e2fd1cf2d4e97f2f6
     - path: docs/memory/project.md
@@ -31,6 +31,6 @@ files:
     - path: docs/stacks/flutter.md
       sha256: 09938141a3a1f196fc6ea4168d6d5a01ba60346465e6f2ad4204dd42e11b6e08
     - path: docs/tasks/current.md
-      sha256: 6ac92075a5c4ce8b4b6e95f924383b05dc2f1aa0da30bea0d1c804f91daeccd7
+      sha256: 1ad3f141e628330d9c34b24883925bda7e95abe998e250d361a1e452747c99d7
     - path: docs/troubleshooting.md
       sha256: 576fc5473a31986bc8828d5ba9dc6e2cca82d3a94bf123716a7fcb8a177e6876

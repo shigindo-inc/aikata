@@ -5,7 +5,7 @@ files:
     - path: .gitignore
       sha256: b485fbf57f089709094b9be5b22acb8cc6027b5caa2b744dcac66f02945816c6
     - path: AGENTS.md
-      sha256: adb8fc2b478b506faa4fcea7560a4e3e805d67adc83b6e3e4d255b2e38f04ca4
+      sha256: 7866c956feb55b1399f7a9e2f7e449856c2b3c7486accf8305c3f5d0985032c4
     - path: ARCHITECTURE.md
       sha256: 44d184fb8ac6ac3ef9ed05a4c5244bf1051f77590bd903967da456374056716d
     - path: GLOSSARY.md
@@ -19,6 +19,6 @@ files:
     - path: docs/adr/0001-record-architecture-decisions.md
       sha256: 084f93d2834f8e3b38af161b25c2002b6146eb2b22723e3575bdee57eb870d92
     - path: docs/tasks/current.md
-      sha256: d3f5e708e6abe8a4d598a1f07c32d9a153ab2fa08dc971cbb3388d6847c2ec41
+      sha256: 5c958e6bbbcaa353e377a78cbc01364d5b784ecc64c4a697a82ad2f7b6ba9c4c
     - path: docs/troubleshooting.md
       sha256: 40d841b8d039e64433ab512c5782ef93e5eed5801c055f94c9bdbc3fe6474a60

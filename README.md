@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-02
+updated: 2026-06-07
 audience: [human, agent]
 ---
 
@@ -22,18 +22,21 @@ Japanese users can start from
 [![release](https://img.shields.io/github/v/release/shigindo-inc/aikata?display_name=tag&sort=semver)](https://github.com/shigindo-inc/aikata/releases)
 [![license](https://img.shields.io/github/license/shigindo-inc/aikata)](./LICENSE)
 
-> **Status — v0.10.3.**
+> **Status — v0.11.1.**
 > `aikata init` selects a documentation scope (`--scope minimal |
 > standard`) and an optional target stack (`--stack flutter |
 > typescript`) as orthogonal axes (ADR 0024; `--preset` is a deprecated
 > alias), with bilingual templates (`--lang en|ja`), the long-term
 > agent memory slot (`--with-memory`), and opt-in capabilities
-> (`--with-prompts`, `--with-env`, …). `aikata generate` emits Claude
-> Code (`CLAUDE.md`) and Cursor (`.cursor/rules/main.mdc`) artifacts;
-> Codex passes through `AGENTS.md` directly. `aikata doctor` validates
-> the aikata-managed document surface by default (`--all-markdown` audits
-> every file). Adopting into a non-empty directory writes a reviewable
-> `.aikata-proposed/` scaffold (ADR 0037).
+> (`--with-prompts`, `--with-env`, …). `aikata fill` adopts an existing
+> repo or tops up a managed one by writing only the **missing** canonical
+> documents, never overwriting existing files (ADR 0042). `aikata
+> generate` emits Claude Code (`CLAUDE.md`) and Cursor
+> (`.cursor/rules/main.mdc`) artifacts; Codex passes through `AGENTS.md`
+> directly. `aikata doctor` validates the aikata-managed document surface
+> by default (`--all-markdown` audits every file). Adopting into a
+> non-empty directory writes a reviewable `.aikata-proposed/` scaffold
+> (ADR 0037), or use `aikata fill` for an in-place, non-destructive top-up.
 > [ROADMAP.md](./ROADMAP.md) lists what comes next.
 
 ---
@@ -450,6 +453,7 @@ aikata generate
   - [0039 — Documentation Hygiene & Context Budget](./docs/adr/0039-documentation-hygiene-and-context-budget.md)
   - [0040 — Collaboration-operation Skill Split (aikata-cli + aikata-context)](./docs/adr/0040-collaboration-operation-skill-split.md)
   - [0041 — Skills-only Surface & Claude Code Plugin Skill Layout](./docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md)
+  - [0042 — `fill` Command for Canonical Document Completion](./docs/adr/0042-fill-command-for-canonical-document-completion.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

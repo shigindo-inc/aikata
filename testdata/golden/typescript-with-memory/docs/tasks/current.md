@@ -8,10 +8,15 @@ audience: [human, agent]
 
 # Current Work — samplekata
 
-> This is the agent's **short-term working memory**. Rewrite freely as
-> work progresses. For long-term context that should
-> survive across sessions, prefer `docs/memory/`. Update
-> [AGENTS.md](../../AGENTS.md) for invariant rules.
+> This file is the agent's **short-term working state** for the current
+> in-flight work. Rewrite it freely as work progresses.
+>
+> This directory is **not** a task archive, backlog, or project-management
+> database. Keep only the state needed to resume the current work. Move
+> durable facts or preferences to `docs/memory/`, design decisions to
+> `docs/adr/`, requirements to `SPEC.md`, and invariant rules to
+> [AGENTS.md](../../AGENTS.md). Long-term context that should survive across
+> sessions belongs in `docs/memory/`.
 
 ---
 

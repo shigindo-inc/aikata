@@ -27,7 +27,7 @@ Read in this order (markdown auto-numbers; the `1.` prefix is intentional):
 1. [`docs/memory/`](./docs/memory/) — long-term context (user
    preferences, project notes, references); read at least
    [`feedback.md`](./docs/memory/feedback.md) before non-trivial work
-1. [`docs/tasks/current.md`](./docs/tasks/current.md) — current working memory
+1. [`docs/tasks/current.md`](./docs/tasks/current.md) — short-term working state
 
 ## 3. Navigation matrix
 
@@ -63,7 +63,21 @@ Read in this order (markdown auto-numbers; the `1.` prefix is intentional):
 - **Update [GLOSSARY.md](./GLOSSARY.md)** when introducing new domain
   terms.
 
-## 5. When stuck
+## 5. Context slots
+
+Keep these slots separate:
+
+| Slot | Lifetime | Use for |
+|---|---|---|
+| `AGENTS.md` | Long, invariant | Rules that must always hold |
+| `docs/memory/` | Long, mutable | Durable facts, preferences, and references |
+| `docs/tasks/current.md` | Short, rewriteable | Current in-flight work state |
+| `docs/adr/` | Permanent | Design decisions and their rationale |
+
+Do not use `docs/tasks/current.md` as a backlog or task archive. Move
+durable information out of it before handoff.
+
+## 6. When stuck
 
 In order of preference:
 

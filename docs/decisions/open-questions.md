@@ -80,8 +80,16 @@ what unblocks a decision, and the latest update date.
   conflict-marks it ([ADR 0025](../adr/0025-sync-divergent-file-preservation.md)
   D2). That settles the *sync* side; the open part remains the
   human-vs-agent in-file editing convention above.
+- **2026-06-07 direction**: keep `docs/tasks/current.md` as the single
+  mandatory entry point for v0.11.1. Clarify that `docs/tasks/` is
+  short-lived working state, not a backlog or task archive.
+- **Deferred option**: allow opt-in per-work files such as
+  `docs/tasks/<slug>.md` for long-running or parallel work, with
+  `current.md` remaining the required index / active pointer. Avoid
+  `next.md` or numbered `next_XX.md` because they obscure which file an
+  agent must read first.
 - **Unblocks**: real dogfooding evidence.
-- **Updated**: 2026-05-30.
+- **Updated**: 2026-06-07.
 
 ### Q-DESIGN-07 — Memory generate-projection across AI-tool memory channels
 
@@ -220,14 +228,20 @@ Accepted 2026-05-31.)_
   actually need)?
 - **Leading**: pragmatic for v0.1; aim for strict conformance by v1.0.
 
-### Q-INTEROP-03 — Adopting a user's existing `CLAUDE.md`
+### Q-INTEROP-03 — Adopting a user's existing repository
 
-- A user with a hand-written `CLAUDE.md` running `aikata init` should
-  not lose their work.
-- **Leading**: `aikata init` in a non-empty dir emits proposals to
-  `.aikata-proposed/` (already in [SPEC §4.1](../../SPEC.md#41-aikata-init-name));
-  an `aikata adopt <file>` command (v0.4?) could parse the user's file
-  into the canonical `AGENTS.md` skeleton.
+- A user with hand-written canonical docs (a bespoke `AGENTS.md`, etc.)
+  should be able to bring a repo under aikata without losing their work.
+- **Resolved** by [ADR 0042](../adr/0042-fill-command-for-canonical-document-completion.md):
+  the option-free `aikata fill` writes only the **missing** canonical
+  documents and never overwrites existing files, adopting an unmanaged
+  repo (default scope `standard`) or topping up a managed one. `aikata
+  init` in a non-empty dir still emits the full proposal to
+  `.aikata-proposed/` (SPEC §4.1) for users who prefer a manual merge.
+- **Dropped**: the broader `aikata adopt <file>` idea that would *parse* a
+  hand-written `CLAUDE.md` into the `AGENTS.md` skeleton. It was unproven
+  demand; write-missing covers the real pain, and a parse step can be
+  revisited if a concrete need appears.
 
 ---
 

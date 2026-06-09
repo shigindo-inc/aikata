@@ -149,7 +149,7 @@ minimal` and `--preset standard`.
 ### long-term memory — `docs/memory/`
 
 The third class of agent-facing artifact, complementary to **rules**
-(`AGENTS.md`) and **working memory** (`docs/tasks/current.md`).
+(`AGENTS.md`) and **working state** (`docs/tasks/current.md`).
 Captures mutable facts that should survive across sessions: user
 profile and preferences, validated continuing instructions, ongoing
 project context, and external references. Subdivided into four

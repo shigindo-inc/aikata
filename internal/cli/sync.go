@@ -97,7 +97,7 @@ func newSyncCmd() *cobra.Command {
 				OverrideWithMonorepo: withMonorepoPtr,
 			})
 			if err != nil {
-				if errors.Is(err, sync.ErrNoManifest) {
+				if errors.Is(err, sync.ErrNoManifest) || errors.Is(err, sync.ErrNotManaged) {
 					return &ExitError{Code: 2, Err: err}
 				}
 				return fmt.Errorf("sync: %w", err)

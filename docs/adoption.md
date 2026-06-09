@@ -29,6 +29,25 @@ The contract aikata commits to during adoption is documented in
 The canonical move is to keep your existing `AGENTS.md` and let
 aikata wrap around it.
 
+**Quickest path — `aikata fill`.** From the repo root run:
+
+```bash
+aikata fill
+```
+
+fill writes only the canonical documents your repo is **missing**
+(`SPEC.md`, `ARCHITECTURE.md`, …) and **never overwrites** an existing
+file, so your hand-written `AGENTS.md` is preserved verbatim. It also
+creates `.aikata/aikata.yaml` + `.aikata/manifest.yaml`, recording your
+files' ancestors as the *upstream* rendering so a later `aikata sync`
+treats your edits as `user-only-edit`. An unmanaged repo defaults to the
+`standard` scope — prune any document that does not fit, then run
+`aikata generate`. fill is idempotent and option-free
+([ADR 0042](./adr/0042-fill-command-for-canonical-document-completion.md)).
+
+**Manual merge (full control).** If you would rather review every
+proposed file before it lands:
+
 1. From the repo root, run `aikata init` **without** `--force`. A
    non-empty target directory triggers the proposal fallback: aikata
    writes its full scaffold into `.aikata-proposed/` instead of the
@@ -47,11 +66,12 @@ aikata wrap around it.
    `aikata sync` sees your customisations as `user-only-edit` and
    preserves them.
 
-A future `aikata adopt <file>` parser that hoists an existing
-`AGENTS.md` into the canonical skeleton is tracked in
-[Q-INTEROP-03](./decisions/open-questions.md#q-interop-03--adopting-a-users-existing-claudemd)
-but intentionally not built yet — documentation-first per the
-project's hypotheses.
+A broader `aikata adopt <file>` parser that would hoist an existing
+`AGENTS.md` into the canonical skeleton was considered and **dropped** in
+[ADR 0042](./adr/0042-fill-command-for-canonical-document-completion.md)
+(it resolves [Q-INTEROP-03](./decisions/open-questions.md)): `aikata fill`
+covers the real adoption pain, and a content-parsing step can be revisited
+if a concrete need appears.
 
 ## Scenario 2 — repo already has a hand-written `CLAUDE.md` or `.cursor/rules/`
 

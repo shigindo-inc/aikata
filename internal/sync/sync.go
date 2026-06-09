@@ -141,6 +141,18 @@ var ErrNoManifest = errors.New(
 		"  no source files are modified. After that, `aikata sync` will pull\n" +
 		"  upstream template updates via 3-way merge")
 
+// ErrNotManaged signals that `.aikata/aikata.yaml` is absent, so the
+// directory is not an aikata-managed project (or was scaffolded with the
+// config-lite `--scope minimal`, which intentionally cannot be synced —
+// ADR 0024). The cobra layer maps this to exit code 2 with an actionable
+// message instead of the raw "file does not exist", pointing the user at
+// `aikata fill` (adopt / top up without overwriting) or a standard re-init.
+var ErrNotManaged = errors.New(
+	"sync: .aikata/aikata.yaml not found — this directory is not an aikata-managed project\n" +
+		"  (or was scaffolded with --scope minimal, which is config-lite and does not support sync).\n" +
+		"  Run `aikata fill` to write any missing canonical documents and adopt the repo,\n" +
+		"  or re-init with `--scope standard`")
+
 // Run performs one sync invocation against opts.Root. The return value
 // is non-nil even when conflicts were detected; callers map
 // RunResult.Conflicts > 0 to a non-zero exit code rather than treating
@@ -166,6 +178,14 @@ func Run(opts Options) (RunResult, error) {
 	if err != nil {
 		if errors.Is(err, config.ErrFutureSchema) {
 			return RunResult{}, fmt.Errorf("sync: %w; upgrade aikata via `aikata update --check`", err)
+		}
+		if errors.Is(err, fs.ErrNotExist) {
+			// No .aikata/aikata.yaml: either an unmanaged repository, or a
+			// minimal-scope project (which is config-lite and intentionally
+			// cannot be synced — ADR 0024). Surface the actionable sentinel
+			// (the cli maps it to exit 2 without re-wrapping) instead of the
+			// raw "file does not exist".
+			return RunResult{}, ErrNotManaged
 		}
 		return RunResult{}, fmt.Errorf("sync: load config: %w", err)
 	}

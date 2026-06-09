@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-02
+updated: 2026-06-07
 audience: [human, agent]
 ---
 
@@ -17,6 +17,56 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.11.1] - 2026-06-07
+
+**Working-state slot clarification.** Tightens the generated context model
+so projects understand the difference between long-term memory, short-term
+working state, and design-decision anchors.
+
+### Changed
+
+- Clarified the generated context-slot model: `docs/memory/` is long-term
+  memory, `docs/tasks/current.md` is short-lived working state rather
+  than a backlog, and `docs/adr/` anchors design decisions. The default
+  task slot remains a single `current.md` entry point for v0.11.1 while
+  optional per-work task files remain a deferred design question.
+
+## [0.11.0] - 2026-06-05
+
+**New `aikata fill` verb + minimal-scope manifest fix (ADR 0042).** A
+zero-config way to bring an existing repository under aikata — or top up a
+managed one — by writing only the documents it is missing, never
+overwriting anything.
+
+### Added
+
+- **`aikata fill`.** Renders the canonical document set the repository's
+  scope defines and writes only the **missing** files; existing files
+  (including hand-edited ones) are never overwritten, and the run is
+  idempotent. Scope is inferred with no flags: from `.aikata/` when the
+  project is already managed, otherwise the `standard` scope is used and
+  the repo is adopted (project name = directory name). The manifest is
+  recorded from the upstream rendering, so a hand-edited file is preserved
+  as `user-only-edit` on the next `aikata sync`. Managed-append files
+  (`.gitignore`) get the aikata block merged in place, identical to
+  `aikata init`. Resolves Q-INTEROP-03; the broader CLAUDE.md-parsing
+  `adopt` idea is dropped. See
+  [ADR 0042](./docs/adr/0042-fill-command-for-canonical-document-completion.md).
+
+### Fixed
+
+- **`--scope minimal` no longer writes an unusable manifest.** Minimal is
+  config-lite (ADR 0024): it shipped `.aikata/manifest.yaml` but no
+  `aikata.yaml`, so no command could ever consume that manifest
+  (`sync`/`enable`/`new` all require the config). The manifest is now kept
+  in lockstep with `aikata.yaml` — minimal projects create no `.aikata/`
+  directory. `doctor` reads the manifest opportunistically and falls back
+  cleanly, so this is behaviour-preserving there.
+- **Clearer `aikata sync` error when config is absent.** Running `sync` in
+  an unmanaged directory (or a minimal-scope project) now returns an
+  actionable message pointing at `aikata fill` / `--scope standard`
+  instead of the raw "file does not exist".
 
 ## [0.10.3] - 2026-06-03
 
