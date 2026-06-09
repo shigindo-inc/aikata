@@ -30,18 +30,23 @@ jobs:
         run: sh scripts/package-distribution-assets.sh
 
       - name: Check archive contents
-        # Both first-party skills (aikata-cli, aikata-context) ship in
-        # each archive under a per-skill directory (ADR 0040).
+        # All three first-party skills (manage-docs, track-context,
+        # refresh-docs) ship in each archive under a per-skill directory
+        # (ADR 0043).
         run: |
-          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/aikata-cli/SKILL.md'
-          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/aikata-cli/agents/openai.yaml'
-          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/aikata-context/SKILL.md'
-          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/aikata-context/agents/openai.yaml'
+          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/manage-docs/SKILL.md'
+          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/manage-docs/agents/openai.yaml'
+          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/track-context/SKILL.md'
+          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/track-context/agents/openai.yaml'
+          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/refresh-docs/SKILL.md'
+          tar -tzf dist/aikata-universal-skill.tar.gz | grep -Fx 'universal-skill/refresh-docs/agents/openai.yaml'
           tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/.codex-plugin/plugin.json'
-          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/aikata-cli/SKILL.md'
-          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/aikata-cli/agents/openai.yaml'
-          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/aikata-context/SKILL.md'
-          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/aikata-context/agents/openai.yaml'
+          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/manage-docs/SKILL.md'
+          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/manage-docs/agents/openai.yaml'
+          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/track-context/SKILL.md'
+          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/track-context/agents/openai.yaml'
+          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/refresh-docs/SKILL.md'
+          tar -tzf dist/aikata-codex-plugin.tar.gz | grep -Fx 'plugin/skills/refresh-docs/agents/openai.yaml'
 
   test:
     name: test + lint + build

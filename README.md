@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-07
+updated: 2026-06-09
 audience: [human, agent]
 ---
 
@@ -48,6 +48,15 @@ agents** (Claude Code, Cursor, Codex, Gemini CLI, Copilot, Windsurf, …).
 Today this means hand-maintaining several near-duplicate instruction
 files. aikata fixes that by treating **markdown documents** as the
 single source of truth and **generating** tool-specific files from them.
+
+**What aikata does — and deliberately does not.** aikata prepares,
+generates, and checks the shared "instruction set" (the project's
+canonical documents) that humans and AI agents both develop from. It is
+**not** a code generator: it never writes your application code, never
+calls an LLM, and never installs dependencies. Writing and driving the
+implementation stays with you and your agents — aikata supplies the
+foundation and the map, not the build. The full boundary is enumerated in
+[SPEC.md](./SPEC.md) §2.2 (Non-Goals) and §8 (Out-of-Scope Examples).
 
 For the long-form rationale, read [SPEC.md](./SPEC.md) §1.
 
@@ -157,12 +166,15 @@ not found after install.
 
 ### Agent skills & plugins (optional, v0.3.1+)
 
-aikata ships **two** first-party skills (ADR 0040): `aikata-cli` teaches
-the agent when to call the CLI and how to parse `aikata doctor --json`,
-and `aikata-context` teaches the daily in-repo context-maintenance loop
-(which canonical docs to read, where new context belongs, what to check
-before handoff). Both ship together as the single `aikata` plugin — there
-is no separate install per skill. Pick the surface your agent uses:
+aikata ships **three** first-party skills (ADR 0043): `manage-docs`
+teaches the agent when to call the CLI and how to parse `aikata doctor
+--json`, `track-context` teaches the daily in-repo context-maintenance
+loop (which canonical docs to read, where new context belongs, what to
+check before handoff), and `refresh-docs` teaches the downstream
+maintenance loop that brings a repo's docs up to the latest aikata
+(update, sync, fill, doctor, deprecation cleanup). All ship together as
+the single `aikata` plugin — there is no separate install per skill. Pick
+the surface your agent uses:
 
 ```text
 # Claude Code (self-hosted marketplace)
@@ -182,9 +194,14 @@ npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-s
 ```
 
 Each is a thin wrapper over the aikata CLI — no MCP server, sub-agent, or
-app integration, and no slash commands. In Claude Code the two skills are
-invoked (or appear in the `/` menu) as `/aikata:aikata-cli` and
-`/aikata:aikata-context`; in Codex as `$aikata-cli` / `$aikata-context`.
+app integration. In Claude Code the skills carry simple capability names
+and are fronted by thin slash commands (ADR 0043): `/aikata:manage-docs`
+and `/aikata:refresh-docs` appear in the `/` menu (the skills themselves
+are `user-invocable: false`, so they do not double-list); `track-context`
+fires automatically when non-trivial work begins and has no command. In
+Codex the three skills are model-invoked as `$manage-docs` /
+`$track-context` / `$refresh-docs`. The standalone and universal installs
+are skill-only (no commands) and rely on model invocation.
 To **update**: Claude Code `/plugin marketplace update aikata`; Codex
 `codex plugin marketplace upgrade aikata && codex plugin add aikata@aikata`;
 universal `npx skills update` (add `--global` for the `--agent universal`
@@ -454,6 +471,7 @@ aikata generate
   - [0040 — Collaboration-operation Skill Split (aikata-cli + aikata-context)](./docs/adr/0040-collaboration-operation-skill-split.md)
   - [0041 — Skills-only Surface & Claude Code Plugin Skill Layout](./docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md)
   - [0042 — `fill` Command for Canonical Document Completion](./docs/adr/0042-fill-command-for-canonical-document-completion.md)
+  - [0043 — Command-wrapper Skill Surface & Simple Skill Names](./docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 
