@@ -1,9 +1,10 @@
 ---
-name: aikata-cli
-description: Use when the user wants to run an aikata CLI lifecycle operation — scaffold a docs project (`aikata init`), write any missing canonical documents into / adopt an existing repo without overwriting (`aikata fill`), regenerate per-AI-tool configs (`aikata generate` → CLAUDE.md / .cursor/rules/main.mdc), self-check documentation (`aikata doctor`, including `--json`), pull template updates (`aikata sync`), or extend a project (`aikata enable <capability>` / `aikata new <artifact>`). Triggers on mentions of aikata commands, "init an aikata project", "add aikata to an existing repo", regenerating AI-tool configs from canonical markdown, or fixing AGENTS.md drift. For the in-repo daily context-maintenance loop (which docs to read, where new context belongs, handoff checks), use `aikata-context` instead.
+name: manage-docs
+user-invocable: false
+description: Use when the user wants to run an aikata CLI lifecycle operation — scaffold a docs project (`aikata init`), write any missing canonical documents into / adopt an existing repo without overwriting (`aikata fill`), regenerate per-AI-tool configs (`aikata generate` → CLAUDE.md / .cursor/rules/main.mdc), self-check documentation (`aikata doctor`, including `--json`), pull template updates (`aikata sync`), or extend a project (`aikata enable <capability>` / `aikata new <artifact>`). Triggers on mentions of aikata commands, "init an aikata project", "add aikata to an existing repo", regenerating AI-tool configs from canonical markdown, or fixing AGENTS.md drift. For the in-repo daily context-maintenance loop (which docs to read, where new context belongs, handoff checks), use `track-context` instead. To bring a downstream repo up to the latest aikata (update, sync, fill, doctor, deprecation cleanup), use `refresh-docs`.
 ---
 
-# aikata-cli
+# manage-docs
 
 `aikata` is a single static Go binary that scaffolds and maintains
 AI-readable markdown documentation. This skill teaches an agent how to
@@ -25,7 +26,7 @@ edits.
 > For the everyday operating loop inside an aikata repo — choosing which
 > canonical documents to read, classifying newly-learned context into
 > the right slot, maintaining working state, and checking handoff before
-> completion — use the **`aikata-context`** skill. This skill is the raw
+> completion — use the **`track-context`** skill. This skill is the raw
 > CLI surface it delegates to.
 
 ## When to invoke aikata
@@ -210,4 +211,6 @@ A typical agent loop:
   `ARCHITECTURE.md` (how), `ROADMAP.md` (sequencing), `GLOSSARY.md`.
 - Decisions: `docs/adr/NNNN-*.md`, with open questions in
   `docs/decisions/open-questions.md`.
-- Sibling skill: `aikata-context` (the in-repo context-maintenance loop).
+- Sibling skill: `track-context` (the in-repo context-maintenance loop).
+- Sibling skill: `refresh-docs` (bring a downstream repo's docs up to the
+  latest aikata: update, sync, fill, doctor, deprecation cleanup).

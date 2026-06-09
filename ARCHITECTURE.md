@@ -378,10 +378,16 @@ audience: [human, agent]   # `agent` only for AGENTS.md
 
 ### 6.3.1 Agent skill and plugin distribution
 
-- The first-party surface is **two skills, no slash commands** (ADR 0040,
-  ADR 0041): `aikata-cli` (CLI invocation guidance) and `aikata-context`
-  (the in-repo context-maintenance loop). Both ship from the single
-  `aikata` marketplace entry and plugin, uniformly across platforms.
+- The first-party surface is **three capability-named skills with thin
+  Claude Code command wrappers** (ADR 0040, ADR 0041, ADR 0043):
+  `manage-docs` (CLI invocation guidance), `track-context` (the in-repo
+  context-maintenance loop), and `refresh-docs` (bring a downstream repo
+  up to the latest aikata). All ship from the single `aikata` marketplace
+  entry and plugin. The plugin adds `commands/manage-docs.md` and
+  `commands/refresh-docs.md`; the skills are `user-invocable: false` to
+  avoid double-listing. Codex / standalone / universal are skill-only and
+  model-invoked (the command surface is Claude Code plugin-only — an
+  accepted platform asymmetry, ADR 0043).
 - `dist/universal-skill/<skill>/SKILL.md` is the **single canonical
   source** of each skill's content. Each carries an `agents/openai.yaml`
   with minimal Codex App UI metadata while keeping the skill tool-agnostic.
@@ -394,8 +400,9 @@ audience: [human, agent]   # `agent` only for AGENTS.md
   `dist/claude-code/{skill,plugin}/` are byte-identical copies of the
   canonical sources; copies exist only for per-platform discovery
   location, never for content. Repository tests
-  (`TestSkillCopiesMatchCanonical`, `TestClaudePluginSkillsAreAutoDiscoverable`)
-  enforce the copy boundary and layout.
+  (`TestSkillCopiesMatchCanonical`, `TestClaudePluginSkillsAreAutoDiscoverable`,
+  `TestClaudePluginHasCommands`) enforce the copy boundary, layout, and
+  command-wrapper surface.
 - `.agents/plugins/marketplace.json` exposes the tracked Codex plugin as a
   self-hosted marketplace plugin. Older Codex versions keep using direct
   `.agents/skills/` discovery, which works on CLI `0.125.0`.

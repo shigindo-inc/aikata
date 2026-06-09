@@ -65,11 +65,12 @@ this is the canonical-locale policy in
   `.ai/aikata.yaml` migration helpers.
 - `docs/adr/` — Architecture Decision Records, 4-digit zero-padded.
 - `docs/decisions/open-questions.md` — undecided design items.
-- `dist/` — shippable artifacts attached to releases (the `aikata-cli`
-  and `aikata-context` skills + Claude Code / Codex plugins). The
+- `dist/` — shippable artifacts attached to releases (the `manage-docs`,
+  `track-context`, and `refresh-docs` skills + Claude Code / Codex
+  plugins, with thin command wrappers in the Claude Code plugin). The
   canonical skill source is `dist/universal-skill/<skill>/SKILL.md`; all
   per-platform copies are byte-identical to it and must not be edited
-  directly (ADR 0040).
+  directly (ADR 0040, ADR 0043).
 
 ---
 

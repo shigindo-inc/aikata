@@ -11,10 +11,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// firstPartySkills is the v0.10.0 skill surface (ADR 0040): the
-// CLI-wrapper responsibility and the in-repo context-maintenance loop,
-// shipped from the single aikata plugin.
-var firstPartySkills = []string{"aikata-cli", "aikata-context"}
+// firstPartySkills is the v0.12.0 skill surface (ADR 0043): capability-named
+// skills shipped from the single aikata plugin — the CLI-wrapper
+// responsibility (manage-docs), the in-repo context-maintenance loop
+// (track-context), and the downstream doc-refresh loop (refresh-docs).
+var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs"}
 
 // TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040 /
 // ADR 0041: `dist/universal-skill/<skill>/SKILL.md` is the single
@@ -73,21 +74,35 @@ func TestClaudePluginSkillsAreAutoDiscoverable(t *testing.T) {
 	}
 }
 
-// TestClaudePluginHasNoCommands guards the skills-only surface (ADR 0041):
-// the slash commands were removed in v0.10.3, so neither a `commands/`
-// directory nor a `commands` manifest key may reappear.
-func TestClaudePluginHasNoCommands(t *testing.T) {
+// pluginWrapperCommands are the thin Claude Code command wrappers
+// reintroduced in v0.12.0 (ADR 0043 D2). Each immediately invokes its
+// backing skill; track-context has no wrapper by design (ADR 0043 D4).
+var pluginWrapperCommands = []string{"manage-docs", "refresh-docs"}
+
+// TestClaudePluginHasCommands guards the command-wrapper surface (ADR 0043,
+// reversing ADR 0041 D1): the Claude Code plugin reintroduces thin slash
+// commands for manage-docs and refresh-docs, auto-discovered from
+// `commands/*.md`. The commands are NOT declared in the manifest (ADR 0043
+// D2 / ADR 0041 D3 keep it metadata-only), and the non-standard
+// `components` key stays forbidden.
+func TestClaudePluginHasCommands(t *testing.T) {
 	root := repoRoot(t)
 	pluginDir := filepath.Join(root, "dist", "claude-code", "plugin")
 
-	if info, err := os.Stat(filepath.Join(pluginDir, "commands")); err == nil && info.IsDir() {
-		t.Errorf("dist/claude-code/plugin/commands/ exists; the slash commands were removed in v0.10.3 (ADR 0041)")
+	for _, cmd := range pluginWrapperCommands {
+		mustExistFile(t, filepath.Join(pluginDir, "commands", cmd+".md"))
+	}
+
+	// track-context is skill-only: it fires by description-match and is not
+	// a user-triggered command (ADR 0043 D4).
+	if _, err := os.Stat(filepath.Join(pluginDir, "commands", "track-context.md")); err == nil {
+		t.Errorf("dist/claude-code/plugin/commands/track-context.md exists; track-context ships skill-only (ADR 0043 D4)")
 	}
 
 	var manifest map[string]any
 	readJSON(t, filepath.Join(pluginDir, ".claude-plugin", "plugin.json"), &manifest)
 	if _, ok := manifest["commands"]; ok {
-		t.Errorf("Claude plugin manifest declares `commands`; the skills-only surface forbids it (ADR 0041)")
+		t.Errorf("Claude plugin manifest declares `commands`; commands are auto-discovered, not declared (ADR 0043 D2)")
 	}
 	if _, ok := manifest["components"]; ok {
 		t.Errorf("Claude plugin manifest uses non-standard `components`; use auto-discovery (ADR 0041)")

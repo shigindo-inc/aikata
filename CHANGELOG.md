@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-07
+updated: 2026-06-09
 audience: [human, agent]
 ---
 
@@ -17,6 +17,42 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.12.0] - 2026-06-10
+
+**Command-wrapper skill surface with capability names (ADR 0043).** The
+first-party skills are renamed to capability-stating names and the Claude
+Code plugin regains thin slash commands fronting them, plus a new
+`refresh-docs` skill for keeping a downstream repo current with the latest
+aikata. Supersedes ADR 0040 D1 (the `aikata-` prefix rule) and ADR 0041 D1
+(the skills-only / no-commands surface).
+
+### Added
+
+- New `refresh-docs` skill (and `/aikata:refresh-docs` command): a
+  downstream-maintenance loop that brings a repo's docs up to the latest
+  aikata — check/upgrade the binary (`aikata update`), pull template
+  changes (`aikata sync`), fill missing canonical docs (`aikata fill`),
+  reconcile consistency (`aikata doctor`), retire deprecated docs by
+  judgement, and regenerate tool files (`aikata generate`).
+- Thin Claude Code plugin slash commands `/aikata:manage-docs` and
+  `/aikata:refresh-docs`, auto-discovered from `commands/*.md`.
+
+### Changed
+
+- Renamed the first-party skills to capability names without the `aikata-`
+  prefix: `aikata-cli` → `manage-docs`, `aikata-context` → `track-context`.
+  The command namespace (`aikata:`) now carries attribution.
+- Skills are now `user-invocable: false`, so in the Claude Code plugin the
+  commands are the single user-facing entry and the skills do not
+  double-list in the `/` menu. `track-context` stays skill-only (it fires
+  by description-match and is not user-triggered).
+
+### Notes
+
+- The command surface is Claude Code **plugin**-only; Codex, the Claude
+  Code standalone skill, and the universal install remain skill-only and
+  rely on model invocation (accepted platform asymmetry, see ADR 0043).
 
 ## [0.11.1] - 2026-06-07
 

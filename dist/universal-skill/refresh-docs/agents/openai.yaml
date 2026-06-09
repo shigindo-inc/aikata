@@ -1,0 +1,6 @@
+interface:
+  display_name: "refresh-docs (aikata)"
+  short_description: "Bring a downstream aikata repo's docs up to the latest aikata (update, sync, fill, doctor, cleanup)"
+  default_prompt: "Use $refresh-docs to bring this aikata repo's documentation up to the latest aikata: check the binary, sync templates, fill gaps, run doctor, retire deprecated docs, and regenerate."
+policy:
+  allow_implicit_invocation: true
