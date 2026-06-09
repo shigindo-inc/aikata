@@ -1,30 +1,36 @@
 ---
 project: aikata
 status: draft
-version: 0.11.1
-updated: 2026-06-07
+version: 0.12.0
+updated: 2026-06-09
 audience: [human, agent]
 ---
 
 # aikata — Claude Code Plugin
 
-This directory holds the Claude Code plugin. From v0.10.3 it bundles
-**two** skills and nothing else (no slash commands — ADR 0041):
-`aikata-cli` (CLI invocation guidance) and `aikata-context` (the in-repo
-context-maintenance loop). They appear in the `/` menu and are invoked as
-`/aikata:aikata-cli` and `/aikata:aikata-context`, or Claude loads them
-automatically when relevant.
+This directory holds the Claude Code plugin. From v0.12.0 it bundles
+**three** skills with capability names plus thin slash-command wrappers
+(ADR 0043): `manage-docs` (CLI invocation guidance), `track-context` (the
+in-repo context-maintenance loop), and `refresh-docs` (bring a repo up to
+the latest aikata). The commands `/aikata:manage-docs` and
+`/aikata:refresh-docs` appear in the `/` menu; the skills are
+`user-invocable: false` so they do not double-list. `track-context` has no
+command and loads automatically when relevant.
 
 ## What ships in this plugin
 
 | Component | Source | Purpose |
 |---|---|---|
-| `.claude-plugin/plugin.json` | — | Plugin manifest (metadata only; skills auto-discover) |
-| `skills/aikata-cli/SKILL.md` | mirrors `dist/universal-skill/aikata-cli/SKILL.md` | "When and how to call the aikata CLI" |
-| `skills/aikata-context/SKILL.md` | mirrors `dist/universal-skill/aikata-context/SKILL.md` | "Operating loop inside an aikata repo" |
+| `.claude-plugin/plugin.json` | — | Plugin manifest (metadata only; skills + commands auto-discover) |
+| `commands/manage-docs.md` | — | Thin wrapper → invokes the `manage-docs` skill |
+| `commands/refresh-docs.md` | — | Thin wrapper → invokes the `refresh-docs` skill |
+| `skills/manage-docs/SKILL.md` | mirrors `dist/universal-skill/manage-docs/SKILL.md` | "When and how to call the aikata CLI" |
+| `skills/track-context/SKILL.md` | mirrors `dist/universal-skill/track-context/SKILL.md` | "Operating loop inside an aikata repo" |
+| `skills/refresh-docs/SKILL.md` | mirrors `dist/universal-skill/refresh-docs/SKILL.md` | "Bring the repo's docs up to the latest aikata" |
 
-Skills are auto-discovered from the `skills/<name>/SKILL.md` directories;
-the manifest carries only metadata (`claude plugin validate` passes).
+Skills are auto-discovered from the `skills/<name>/SKILL.md` directories
+and commands from `commands/*.md`; the manifest carries only metadata (no
+`commands` key — `claude plugin validate` passes).
 
 ## Install
 
@@ -55,12 +61,13 @@ above is the supported path today.
 ## Relationship to the standalone skills
 
 The standalone skills under `dist/claude-code/skill/`
-(`aikata-cli/SKILL.md`, `aikata-context/SKILL.md`) are the same two skills
-without the plugin wrapper. Both forms ship byte-identical content from the
+(`manage-docs/SKILL.md`, `track-context/SKILL.md`,
+`refresh-docs/SKILL.md`) are the same three skills without the plugin
+wrapper or commands. Both forms ship byte-identical content from the
 canonical sources at `dist/universal-skill/<skill>/SKILL.md`
 (`internal/repolint/distribution_test.go` asserts this); do not edit the
-plugin copies directly. See ADR 0040 and ADR 0041 for the copy boundary
-and the directory-skill layout.
+plugin copies directly. See ADR 0040, ADR 0041, and ADR 0043 for the copy
+boundary, the directory-skill layout, and the command-wrapper surface.
 
 ## Versioning
 

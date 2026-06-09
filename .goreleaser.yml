@@ -116,10 +116,10 @@ release:
     Released via [GoReleaser](https://goreleaser.com).
   # Ship the first-party skill and plugin bundles alongside the binaries
   # so users can grab them directly from a release asset without cloning.
-  # From v0.10.0 the surface is two skills (aikata-cli, aikata-context;
-  # ADR 0040), so a single-file `.md` asset can no longer represent it —
-  # the universal and Codex tarballs (plus the self-hosted marketplaces)
-  # are the install path.
+  # From v0.12.0 the surface is three skills (manage-docs, track-context,
+  # refresh-docs; ADR 0043), so a single-file `.md` asset can no longer
+  # represent it — the universal and Codex tarballs (plus the self-hosted
+  # marketplaces) are the install path.
   extra_files:
     - glob: dist/aikata-universal-skill.tar.gz
       name_template: aikata-universal-skill.tar.gz

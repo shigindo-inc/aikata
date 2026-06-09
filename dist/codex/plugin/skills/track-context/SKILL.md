@@ -1,9 +1,10 @@
 ---
-name: aikata-context
-description: Use when beginning non-trivial work (a feature, refactor, investigation, or multi-step change) in a repository that aikata manages — recognizable by an `AGENTS.md` at the root and/or a `.aikata/aikata.yaml`. Teaches the daily context-maintenance loop — which canonical documents to read before editing, where newly-learned information belongs (AGENTS.md, SPEC.md, docs/adr/, docs/memory/, docs/tasks/current.md), how to keep working state current, and what to check before handoff. Do not use for trivial one-line edits, for questions unrelated to the project, in repositories without aikata markers, or for raw CLI invocation (use `aikata-cli` for init, generate, doctor, sync, or new).
+name: track-context
+user-invocable: false
+description: Use when beginning non-trivial work (a feature, refactor, investigation, or multi-step change) in a repository that aikata manages — recognizable by an `AGENTS.md` at the root and/or a `.aikata/aikata.yaml`. Teaches the daily context-maintenance loop — which canonical documents to read before editing, where newly-learned information belongs (AGENTS.md, SPEC.md, docs/adr/, docs/memory/, docs/tasks/current.md), how to keep working state current, and what to check before handoff. Do not use for trivial one-line edits, for questions unrelated to the project, in repositories without aikata markers, or for raw CLI invocation (use `manage-docs` for init, generate, doctor, sync, or new).
 ---
 
-# aikata-context
+# track-context
 
 aikata-managed repositories keep their shared human + AI context in a
 small, fixed set of canonical markdown documents. This skill is the
@@ -18,7 +19,7 @@ manifest. If neither is present, this skill does not apply.
 
 This skill does not invoke the CLI directly — when the loop needs
 `doctor`, `sync`, `generate`, or `new adr`, hand off to the
-**`aikata-cli`** skill.
+**`manage-docs`** skill.
 
 ## 1. Read before you edit
 
@@ -73,10 +74,10 @@ Before claiming the work is complete, confirm:
 
 - **Documentation impact** — did an invariant, requirement, or design
   decision change? If so, is it recorded in the correct slot above, and
-  were generated artifacts regenerated (hand off to `aikata-cli` for
+  were generated artifacts regenerated (hand off to `manage-docs` for
   `aikata generate`)?
 - **Verification results** — tests/lint/build run and reported honestly
-  (failures stated, skips named). Run `aikata doctor` via `aikata-cli`
+  (failures stated, skips named). Run `aikata doctor` via `manage-docs`
   to confirm documentation consistency.
 - **Unresolved questions** — anything still open captured in
   `docs/decisions/open-questions.md` (or surfaced to the user), not left
@@ -84,9 +85,9 @@ Before claiming the work is complete, confirm:
 - **Handoff state** — `docs/tasks/current.md` reflects the final state so
   the next human or agent can resume without re-deriving context.
 
-## When to hand off to `aikata-cli`
+## When to hand off to `manage-docs`
 
-Use the `aikata-cli` skill for the actual command invocations this loop
+Use the `manage-docs` skill for the actual command invocations this loop
 calls for:
 
 - `aikata doctor` / `aikata doctor --json` — documentation self-check.
@@ -104,4 +105,4 @@ calls for:
 - Decisions: `docs/adr/NNNN-*.md`; open items in
   `docs/decisions/open-questions.md`.
 - Working state: `docs/tasks/current.md` (when present).
-- Sibling skill: `aikata-cli` (the raw CLI surface).
+- Sibling skill: `manage-docs` (the raw CLI surface).
