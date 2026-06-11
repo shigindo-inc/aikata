@@ -68,6 +68,11 @@ Rules > memory > working state when they conflict. A one-off
 implementation detail that the code already expresses belongs in neither
 — do not record what the repository already records.
 
+These slots already sort content by the *source* of its truth — canonical
+(the sole source), derived (regenerable), and append-only log (memory's
+dated entries) — which is why durable rationale is superseded in place,
+never summarized away (see `docs/adr/0039-*` and `docs/adr/0045-*`).
+
 ## 4. Check before you declare done
 
 Before claiming the work is complete, confirm:

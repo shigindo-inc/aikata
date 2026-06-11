@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-01
+updated: 2026-06-11
 audience: [human, agent]
 ---
 
@@ -113,6 +113,8 @@ aikata/
 | `internal/config` | Parse / write `.aikata/aikata.yaml` | YAML schema and migration logic. |
 | `internal/presets` | Preset registry; merges presets with flags | Pure logic, no I/O. |
 | `internal/templates` | Wraps `embed.FS`, performs Go-template rendering | Knows about template syntax; not about presets. |
+| `internal/docmeta` | Shared document-metadata parsing (frontmatter + Markdown link extraction) | Pure logic, no I/O; reused by `doctor` and `docmap` so link parsing cannot drift. |
+| `internal/docmap` | Build the doc map (`.aikata/docmap.yaml` / `.aikata/docmap.md`) from the document surface | Reads documents only — no source code. See §13. |
 
 ---
 
@@ -121,6 +123,11 @@ aikata/
 This is the layout aikata produces when a user runs `aikata init` on a
 brand-new project (not aikata itself). The structure is the **product**;
 the repository layout in §2 is the **producer**.
+
+> For a single-page, cross-referenced **index** of every recommended path
+> (role · governing capability/ADR · whether `doctor` validates it by
+> default), see [`docs/layout.md`](./docs/layout.md). This section is the
+> narrative; `layout.md` is the tabular governance index.
 
 ### 3.1 Default (`aikata init --scope standard`)
 
@@ -221,7 +228,11 @@ Two cross-cutting modifiers sit on top of the table:
 Config files (`.aikata/aikata.yaml`, `.aikata/manifest.yaml`) are always
 written atomically (temp + rename, `internal/config`), with lazy
 schema-migration rewrites; they are aikata-owned state, not subject to
-the disciplines above.
+the disciplines above. The doc-map outputs (`.aikata/docmap.yaml`,
+`.aikata/docmap.md`, ADR 0044) are the same kind of aikata-owned state:
+written atomically, regenerated rather than merged, **not** manifest-tracked
+and **not** subject to discipline #7 — their freshness is guaranteed by the
+`aikata doctor` check (§13), not by the manifest ancestor.
 
 ---
 
@@ -271,6 +282,13 @@ features:                        # Non-scope ergonomic toggles.
 
 docs:
   task_file_location: docs/tasks/current.md
+
+docmap:                          # Optional. Doc map surface & formats (ADR 0044).
+  formats: [yaml, md]            # Renderings to emit. txt/json/mmd addable.
+  targets: ["**/*.md"]           # Documents to catalog (default: all Markdown).
+  exclude: [".aikata/**"]        # Additional skips; generated AI-tool paths
+                                 # and docmap's own outputs are always excluded.
+                                 # Same matcher as doctor.exclude / sync.own.
 
 sync:                            # Optional. `aikata sync` preferences (ADR 0025).
   own:                           # Globs the user has taken ownership of;
@@ -586,3 +604,61 @@ produced. This list is the executable form of the Phase 2 checklist.
 
 No business logic is in scope for Phase 2. The MVP (`aikata init --scope
 minimal`) is **Phase 3** — see [ROADMAP.md](./ROADMAP.md).
+
+---
+
+## 13. Doc Map (`docmap`)
+
+The **doc map** is a derived artifact describing the *document set itself*
+— inventory, cross-references, freshness, and a managed/external split. It
+is **doc-cartography**, a responsibility distinct from project mission
+(`README.md` / `SPEC.md` / `AGENTS.md`) and from the hand-curated
+Navigation Matrix (`AGENTS.md` §3). The decision and its rationale are
+[ADR 0044](./docs/adr/0044-doc-map-derived-artifact.md); the full design is
+[`docs/decisions/docmap-design.md`](./docs/decisions/docmap-design.md).
+
+### 13.1 Outputs
+
+One scan of the document surface produces two mandatory renderings under
+the aikata-owned machine zone:
+
+- `.aikata/docmap.yaml` — the structured data layer (single source of the
+  map's truth; `docs` sorted by `path` for diff-stable output).
+- `.aikata/docmap.md` — the readable view: a directory tree, a Mermaid
+  `doc → doc` link-graph (degrading to an adjacency list past a node
+  threshold), and a `path → summary` index.
+
+`txt` / `json` / `mmd` are optional, config-gated additional renderers
+(`docmap.formats`). The map excludes its own outputs and the generated
+AI-tool artifacts from the tracked set.
+
+### 13.2 Data sources (documents only)
+
+The map reads **no source code**. It is built from: frontmatter metadata
+(`internal/docmeta`), the Markdown link graph (`internal/docmeta`, shared
+with `doctor`), the filesystem tree, and the managed-surface set
+(`internal/doctor/scope.go` `ManagedIncludeGlobs`, supplying the `managed`
+flag). Per-document summaries degrade gracefully (`summary:` frontmatter →
+leading `>` blockquote → first body paragraph → H1 → filename), so an
+adopted repository needs no document refactor.
+
+### 13.3 Triggers and isolation
+
+- `aikata map` regenerates on demand.
+- `init` / `fill` / `enable` / `sync` / `generate` each run the same
+  rebuild as a **final, isolated step**. It is decoupled from per-tool
+  `generate` provider failures: a failing provider must never leave the
+  map stale, and the map step reports its own status (it does not abort the
+  surrounding command on a non-fatal map issue).
+- `aikata doctor` carries a **freshness check**: it rebuilds the map in
+  memory and compares the `HashContent` of the result to the on-disk
+  `docmap.yaml`. A mismatch is a `warning` (`--json` issue code under the
+  versioned schema); `aikata doctor --fix` regenerates the map.
+
+### 13.4 State class
+
+`docmap.*` are aikata-owned derived state. They are **not** manifest-tracked
+and **not** subject to `aikata sync`'s 3-way merge (§3.4); they are
+regenerated, never merged. They are written atomically via
+`internal/config`'s `writeAtomic`. Configuration lives under the `docmap`
+key of `.aikata/aikata.yaml` (§4.1).

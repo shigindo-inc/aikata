@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-02
+updated: 2026-06-11
 audience: [human, agent]
 ---
 
@@ -327,7 +327,74 @@ Accepted 2026-05-31.)_
 
 ---
 
-## Q-HYPOTHESES (to validate via dogfooding)
+## Q-DOCMAP
+
+Residual design questions for the doc map
+([ADR 0044](../adr/0044-doc-map-derived-artifact.md),
+[design note](./docmap-design.md)). The
+placement (`.aikata/`), mandatory status, two-rendering shape, trigger
+model, and non-manifest-tracking are **settled by ADR 0044**; only the
+items below remain open and none blocks implementation.
+
+### Q-DOCMAP-01 — Default tracked-document breadth
+
+- Should the default `docmap.targets` be **all Markdown** in the repo
+  (tagging each `managed` / external), or **managed-surface only** with
+  external documents added opt-in?
+- **Leading**: all Markdown, with the `managed` flag distinguishing them —
+  it satisfies the stated goal of tracking hand-written / non-managed docs
+  and adopting existing repos without refactor.
+- **Unblocks**: P1 default config. Revisit if a real repo's non-document
+  Markdown (e.g. vendored content) makes the all-Markdown default noisy.
+
+### Q-DOCMAP-02 — Optional `summary:` frontmatter key
+
+- The map extracts a one-line summary best-effort (frontmatter → blockquote
+  → first paragraph → H1 → filename). Should `aikata doctor` ever recognize
+  an **optional** `summary:` frontmatter key (never required) to give
+  authors explicit control of the map line?
+- **Leading**: ship best-effort extraction first; add `summary:` recognition
+  only if dogfooding shows the heuristic picks poor lines. Never make it a
+  required key (that would break the "no document refactor" promise).
+- **Unblocks**: a P5 follow-up, demand-driven.
+
+### Q-DOCMAP-03 — Mermaid graph degrade threshold
+
+- Above what node count does `docmap.md` drop the Mermaid `doc → doc`
+  diagram in favour of a flat adjacency list (to avoid an unreadable,
+  token-heavy graph)?
+- **Leading**: a provisional ~40 nodes; tune against real repositories
+  during P2. Possibly expose as a `docmap` config knob if one value does
+  not fit.
+- **Unblocks**: P2 rendering.
+
+---
+
+## Q-CONTEXT
+
+### Q-CONTEXT-01 — When would per-document retention metadata or compaction tooling become justified?
+
+- **Status**: Deferred by
+  [ADR 0045](../adr/0045-documentation-value-model.md). The conceptual
+  model is recorded there; the per-document `retention:` field and any
+  `aikata compact` / runtime summarization were rejected/deferred because
+  the context-budget pain is already handled by
+  [ADR 0039](../adr/0039-documentation-hygiene-and-context-budget.md) +
+  [ADR 0044](../adr/0044-doc-map-derived-artifact.md) +
+  [ADR 0037](../adr/0037-tighten-adoption-mutation-boundaries.md), and
+  there is no observed residual.
+- **Open part**: this is a **watch-item**, not an unresolved design
+  choice — what *observed* condition would re-open it.
+- **Re-open triggers** (any one, evidenced from dogfooding or users):
+  - A dogfood/user repo's first-read context exceeds the context budget
+    *again* and the ADR 0039 release-ritual + doc map no longer keep it
+    lean by hand.
+  - A concrete document is shown to be misfiled by file-class alone
+    (i.e. file location stops predicting value source), which would argue
+    for the deferred path-based `source:` inference in `doctor` (not a
+    hand-written field).
+- **Unblocks decision**: concrete evidence per ADR 0028's demand-driven
+  test. Until then, no work.
 
 These map to [SPEC.md §7](../../SPEC.md#7-hypotheses-to-validate).
 
