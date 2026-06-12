@@ -166,15 +166,17 @@ not found after install.
 
 ### Agent skills & plugins (optional, v0.3.1+)
 
-aikata ships **three** first-party skills (ADR 0043): `manage-docs`
-teaches the agent when to call the CLI and how to parse `aikata doctor
---json`, `track-context` teaches the daily in-repo context-maintenance
-loop (which canonical docs to read, where new context belongs, what to
-check before handoff), and `refresh-docs` teaches the downstream
-maintenance loop that brings a repo's docs up to the latest aikata
-(update, sync, fill, doctor, deprecation cleanup). All ship together as
-the single `aikata` plugin — there is no separate install per skill. Pick
-the surface your agent uses:
+aikata ships **four** first-party skills (ADR 0043, ADR 0046):
+`manage-docs` teaches the agent when to call the CLI and how to parse
+`aikata doctor --json`, `track-context` teaches the daily in-repo
+context-maintenance loop (which canonical docs to read, where new context
+belongs, what to check before handoff), `refresh-docs` teaches the
+downstream maintenance loop that brings a repo's docs up to the latest
+aikata (update, sync, fill, doctor, deprecation cleanup), and
+`migrate-structure` relocates off-structure documents into the recommended
+layout (`docs/layout.md`) — dry-run first, `git mv` only after you approve.
+All ship together as the single `aikata` plugin — there is no separate
+install per skill. Pick the surface your agent uses:
 
 ```text
 # Claude Code (self-hosted marketplace)
@@ -195,13 +197,14 @@ npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-s
 
 Each is a thin wrapper over the aikata CLI — no MCP server, sub-agent, or
 app integration. In Claude Code the skills carry simple capability names
-and are fronted by thin slash commands (ADR 0043): `/aikata:manage-docs`
-and `/aikata:refresh-docs` appear in the `/` menu (the skills themselves
-are `user-invocable: false`, so they do not double-list); `track-context`
-fires automatically when non-trivial work begins and has no command. In
-Codex the three skills are model-invoked as `$manage-docs` /
-`$track-context` / `$refresh-docs`. The standalone and universal installs
-are skill-only (no commands) and rely on model invocation.
+and are fronted by thin slash commands (ADR 0043): `/aikata:manage-docs`,
+`/aikata:refresh-docs`, and `/aikata:migrate-structure` appear in the `/`
+menu (the skills themselves are `user-invocable: false`, so they do not
+double-list); `track-context` fires automatically when non-trivial work
+begins and has no command. In Codex the four skills are model-invoked as
+`$manage-docs` / `$track-context` / `$refresh-docs` / `$migrate-structure`.
+The standalone and universal installs are skill-only (no commands) and rely
+on model invocation.
 To **update**: Claude Code `/plugin marketplace update aikata`; Codex
 `codex plugin marketplace upgrade aikata && codex plugin add aikata@aikata`;
 universal `npx skills update` (add `--global` for the `--agent universal`
@@ -474,6 +477,7 @@ aikata generate
   - [0043 — Command-wrapper Skill Surface & Simple Skill Names](./docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md)
   - [0044 — Doc Map as a Mandatory Derived Artifact](./docs/adr/0044-doc-map-derived-artifact.md)
   - [0045 — Documentation Value Model: Classify by Source, Not Decay](./docs/adr/0045-documentation-value-model.md)
+  - [0046 — Structure-migration Assistant: observe → propose → confirm-move Boundary](./docs/adr/0046-structure-migration-assistant-boundary.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

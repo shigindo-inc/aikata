@@ -18,6 +18,35 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-06-12
+
+**Structure-migration assistant: the `migrate-structure` skill (ADR 0046).**
+The reconcile corner of the prescriptive / descriptive / reconcile triad:
+`docs/layout.md` says where documents *should* live, the doc map (v0.13.0)
+records where they *do* live, and this skill proposes moving the off-structure
+difference into place — dry-run first, `git mv` only after explicit approval,
+never rewriting document contents. The aikata CLI stays observation-only;
+there is no `aikata migrate` verb.
+
+### Added
+
+- New first-party `migrate-structure` skill: reads the doc map's external
+  (`managed: false`) set, maps each document to its recommended destination
+  per `docs/layout.md`, presents a dry-run plan, and applies approved moves
+  with `git mv`, then rebuilds the doc map. Ships across the universal /
+  Claude Code (plugin + standalone) / Codex trees with a thin
+  `/aikata:migrate-structure` Claude Code plugin command.
+- [ADR 0046](docs/adr/0046-structure-migration-assistant-boundary.md) records
+  the observe → propose → confirm-move mutation boundary, the
+  observation-only CLI contract, and the skill-not-verb decision.
+
+### Notes
+
+- The assistant relocates documents only; it never overwrites a destination,
+  deletes, or edits file contents. Broken links a move causes are surfaced by
+  `aikata doctor` for a separate, reviewable follow-up (ADR 0046 D4).
+- Plugin / marketplace version lockstep bumped to `0.14.0`.
+
 ## [0.13.0] - 2026-06-12
 
 **Doc map: an always-current, machine-derived map of the document set

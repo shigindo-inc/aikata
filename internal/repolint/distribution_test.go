@@ -11,11 +11,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// firstPartySkills is the v0.12.0 skill surface (ADR 0043): capability-named
-// skills shipped from the single aikata plugin — the CLI-wrapper
-// responsibility (manage-docs), the in-repo context-maintenance loop
-// (track-context), and the downstream doc-refresh loop (refresh-docs).
-var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs"}
+// firstPartySkills is the capability-named skill surface (ADR 0043) shipped
+// from the single aikata plugin: the CLI-wrapper responsibility
+// (manage-docs), the in-repo context-maintenance loop (track-context), the
+// downstream doc-refresh loop (refresh-docs), and the structure-migration
+// assistant (migrate-structure, ADR 0046).
+var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure"}
 
 // TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040 /
 // ADR 0041: `dist/universal-skill/<skill>/SKILL.md` is the single
@@ -77,7 +78,7 @@ func TestClaudePluginSkillsAreAutoDiscoverable(t *testing.T) {
 // pluginWrapperCommands are the thin Claude Code command wrappers
 // reintroduced in v0.12.0 (ADR 0043 D2). Each immediately invokes its
 // backing skill; track-context has no wrapper by design (ADR 0043 D4).
-var pluginWrapperCommands = []string{"manage-docs", "refresh-docs"}
+var pluginWrapperCommands = []string{"manage-docs", "refresh-docs", "migrate-structure"}
 
 // TestClaudePluginHasCommands guards the command-wrapper surface (ADR 0043,
 // reversing ADR 0041 D1): the Claude Code plugin reintroduces thin slash
