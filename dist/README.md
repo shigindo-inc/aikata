@@ -4,12 +4,12 @@ Shippable artifacts that ride alongside the aikata binary. Files here
 are **not** compiled into the binary; the release workflow attaches
 them as plain assets so users can copy them where they belong.
 
-From v0.12.0 the first-party skill surface is **three** skills, named by
-capability with thin Claude Code plugin command wrappers (ADR 0043):
+The first-party skill surface is **four** skills, named by capability with
+thin Claude Code plugin command wrappers (ADR 0043, ADR 0046):
 
 - **`manage-docs`** — when and how to invoke the aikata CLI (`init`,
-  `fill`, `generate`, `doctor`, `sync`, `enable`, `new`) and how to parse
-  `aikata doctor --json`.
+  `fill`, `generate`, `doctor`, `sync`, `enable`, `new`, `map`) and how to
+  parse `aikata doctor --json`.
 - **`track-context`** — the daily in-repo context-maintenance loop:
   which canonical documents to read before editing, where newly-learned
   context belongs, how to keep `docs/tasks/current.md` current, and what
@@ -17,12 +17,17 @@ capability with thin Claude Code plugin command wrappers (ADR 0043):
 - **`refresh-docs`** — the downstream-maintenance loop that brings an
   aikata-managed repo up to the latest aikata: `aikata update` → `sync`
   → `fill` → `doctor` → retire deprecated docs → `generate`.
+- **`migrate-structure`** — the reconcile loop that relocates off-structure
+  documents into the homes `docs/layout.md` defines: read the doc map's
+  external set, propose a destination per document, show a dry-run plan,
+  and apply approved moves with `git mv` (ADR 0046).
 
 Every `SKILL.md` carries `user-invocable: false` in its frontmatter. In
 the Claude Code **plugin** only, thin slash-command wrappers under
-`commands/` (`commands/manage-docs.md`, `commands/refresh-docs.md`)
-provide a clean user entry point — `/aikata:manage-docs` and
-`/aikata:refresh-docs` appear in the `/` menu — while the skills
+`commands/` (`commands/manage-docs.md`, `commands/refresh-docs.md`,
+`commands/migrate-structure.md`) provide a clean user entry point —
+`/aikata:manage-docs`, `/aikata:refresh-docs`, and
+`/aikata:migrate-structure` appear in the `/` menu — while the skills
 themselves stay out of the `/` menu (no double listing). `track-context`
 has **no** command wrapper by design; it is meant to fire automatically
 from its description. On Codex, Claude Code standalone, and the universal
@@ -32,7 +37,7 @@ model auto-firing on the skill's description. Only the plugin gets a
 first-class command entry point; ADR 0043 accepts this platform
 asymmetry.
 
-All three ship together from the single `aikata` marketplace entry and plugin.
+All four ship together from the single `aikata` marketplace entry and plugin.
 
 ## Layout
 
@@ -42,17 +47,20 @@ dist/
 │   ├── skill/                              ← standalone skills (no slash commands)
 │   │   ├── manage-docs/SKILL.md
 │   │   ├── track-context/SKILL.md
-│   │   └── refresh-docs/SKILL.md
+│   │   ├── refresh-docs/SKILL.md
+│   │   └── migrate-structure/SKILL.md
 │   └── plugin/
 │       ├── .claude-plugin/plugin.json
 │       ├── README.md
 │       ├── commands/                       ← thin slash-command wrappers (plugin only)
 │       │   ├── manage-docs.md
-│       │   └── refresh-docs.md
+│       │   ├── refresh-docs.md
+│       │   └── migrate-structure.md
 │       └── skills/
 │           ├── manage-docs/SKILL.md        ← byte-identical to the canonical SKILL.md
 │           ├── track-context/SKILL.md      ← byte-identical
-│           └── refresh-docs/SKILL.md       ← byte-identical
+│           ├── refresh-docs/SKILL.md       ← byte-identical
+│           └── migrate-structure/SKILL.md  ← byte-identical
 ├── codex/
 │   └── plugin/
 │       ├── .codex-plugin/plugin.json
@@ -63,17 +71,23 @@ dist/
 │           ├── track-context/
 │           │   ├── SKILL.md                ← byte-identical
 │           │   └── agents/openai.yaml      ← byte-identical
-│           └── refresh-docs/
+│           ├── refresh-docs/
+│           │   ├── SKILL.md                ← byte-identical
+│           │   └── agents/openai.yaml      ← byte-identical
+│           └── migrate-structure/
 │               ├── SKILL.md                ← byte-identical
 │               └── agents/openai.yaml      ← byte-identical
-└── universal-skill/                        ← CANONICAL source for all three skills
+└── universal-skill/                        ← CANONICAL source for all four skills
     ├── manage-docs/
     │   ├── SKILL.md
     │   └── agents/openai.yaml              ← Codex App UI metadata
     ├── track-context/
     │   ├── SKILL.md
     │   └── agents/openai.yaml
-    └── refresh-docs/
+    ├── refresh-docs/
+    │   ├── SKILL.md
+    │   └── agents/openai.yaml
+    └── migrate-structure/
         ├── SKILL.md
         └── agents/openai.yaml
 ```
@@ -87,8 +101,8 @@ skills auto-discover from `skills/<name>/SKILL.md`, Codex reads
 `.agents/skills/<name>/SKILL.md`. Copies exist only for per-platform
 discovery location, never for content (ADR 0040, ADR 0041, ADR 0043). The
 Claude Code plugin additionally carries thin command wrappers under
-`commands/` for `manage-docs` and `refresh-docs` (ADR 0043); the other
-surfaces are skill-only.
+`commands/` for `manage-docs`, `refresh-docs`, and `migrate-structure`
+(ADR 0043, ADR 0046); the other surfaces are skill-only.
 
 The repository root also carries `.claude-plugin/marketplace.json` and
 `.agents/plugins/marketplace.json`. They list the Claude Code and Codex

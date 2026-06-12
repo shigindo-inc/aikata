@@ -64,6 +64,7 @@ docs:
         - docs/adr/0032-split-channel-publication-by-distribution-value.md
         - docs/adr/0035-native-self-update-safety.md
         - docs/adr/0042-fill-command-for-canonical-document-completion.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
     - path: CONTRIBUTING.md
       title: Contributing to aikata
       summary: Thanks for considering a contribution. aikata is a small Go CLI plus a set of canonical markdown documents, so most contributions touch either the `internal/` Go packages or the document set under repo root and `docs/`.
@@ -156,6 +157,7 @@ docs:
         - docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/troubleshooting.md
@@ -185,6 +187,7 @@ docs:
         - docs/adr/0040-collaboration-operation-skill-split.md
         - docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/decisions/docmap-design.md
         - docs/decisions/open-questions.md
         - docs/decisions/v0.9-core-concept-stabilization.md
@@ -557,6 +560,12 @@ docs:
         - docs/adr/0039-documentation-hygiene-and-context-budget.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/decisions/open-questions.md
+    - path: docs/adr/0046-structure-migration-assistant-boundary.md
+      title: 'ADR 0046 - Structure-migration assistant: observe → propose → confirm-move boundary'
+      summary: '- **Status**: Accepted - **Date**: 2026-06-12 - **Deciders**: aikata maintainers - **Related**: ADR 0044 (doc map — the descriptive inventory this assistant reconciles), ADR 0045 (documentation value model), ADR 0043 (command-wrapper skill surface & simple skill names — the skill-not-verb precedent, D5 deprecated-doc cleanup), ADR 0037 (tighten adoption mutation boundaries), ADR 0019 (sync missing-file repair semantics — non-destructive moves), ADR 0002 (`AGENTS.md` is canonical), `docs/layout.md` (the prescriptive target layout).'
+      status: draft
+      updated: "2026-06-12"
+      managed: true
     - path: docs/decisions/docmap-design.md
       title: Design — Doc Map (`docmap`)
       summary: Detailed design for the doc-cartography artifact decided in [ADR 0044](../adr/0044-doc-map-derived-artifact.md). For **why**, read the ADR; this note records the **how** at design depth so the implementation phases can be planned and executed independently.

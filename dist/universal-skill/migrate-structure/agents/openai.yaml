@@ -1,0 +1,6 @@
+interface:
+  display_name: "migrate-structure (aikata)"
+  short_description: "Relocate off-structure docs into aikata's recommended layout (docs/layout.md), dry-run first, git mv on approval"
+  default_prompt: "Use $migrate-structure to bring this repo into aikata's recommended document layout: read the doc map's external set, propose a destination per off-structure doc from docs/layout.md, show a dry-run plan, and apply approved moves with git mv."
+policy:
+  allow_implicit_invocation: true

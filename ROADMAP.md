@@ -540,7 +540,7 @@ Out of v0.13.0 intentionally:
 
 ---
 
-## v0.14.0 — Structure-migration assistant (skill) (pending)
+## v0.14.0 — Structure-migration assistant (skill) ✅ (released 2026-06-12)
 
 **Goal**: help a user bring an existing repository **into** the recommended
 layout (`docs/layout.md`), with every file move gated on explicit user
@@ -565,14 +565,18 @@ Boundary (to be fixed in its own ADR before implementation):
 - No silent restructuring, no overwrite, no deletion — relocation
   suggestions only, applied on approval.
 
-- [ ] **ADR — migration mutation boundary** — record the observe → propose →
-      confirm-move contract and why it is a skill, not a verb.
-- [ ] **`migrate-structure` skill** — read the doc map's `external` set,
-      map each to its recommended destination per `docs/layout.md`, present a
-      dry-run plan, and apply approved moves (`git mv`), then rebuild the doc
-      map.
-- [ ] **Dogfood** — run against a real off-structure repo; confirm no move
-      happens without approval and the doc map reflects the result.
+- [x] **ADR — migration mutation boundary** ✅ — [ADR 0046](./docs/adr/0046-structure-migration-assistant-boundary.md)
+      records the observe → propose → confirm-move contract, the
+      observation-only CLI boundary, and why it is a skill, not a verb.
+- [x] **`migrate-structure` skill** ✅ — reads the doc map's `external`
+      (`managed: false`) set, maps each to its recommended destination per
+      `docs/layout.md`, presents a dry-run plan, and applies approved moves
+      (`git mv`), then rebuilds the doc map. Shipped as a first-party skill
+      across the universal / Claude Code / Codex trees with a thin
+      `/aikata:migrate-structure` plugin command (version lockstep bumped).
+- [x] **Dogfood** ✅ — distribution canonical-copy and command-wrapper tests
+      cover the new skill; the contract forbids any move without explicit
+      approval and rebuilds the map after moves.
 
 Out of v0.14.0 intentionally:
 
