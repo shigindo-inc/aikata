@@ -87,6 +87,7 @@ var builtinChecks = []struct {
 	{"updated", checkUpdated},
 	{"env", checkEnvExample},
 	{"glossary", checkGlossary},
+	{"docmap", checkDocMap},
 }
 
 // Run walks the target directory and produces a sorted slice of

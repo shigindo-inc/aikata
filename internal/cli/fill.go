@@ -36,7 +36,8 @@ func newFillCmd() *cobra.Command {
 			"repository is adopted as an aikata project (project name = directory\n" +
 			"name). Because fill never overwrites, prune any document that does not\n" +
 			"fit afterward.",
-		Args: cobra.NoArgs,
+		Args:     cobra.NoArgs,
+		PostRunE: docMapPostRun, // isolated doc-map rebuild (ADR 0044 D5)
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
 			if err != nil {

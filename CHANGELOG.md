@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-09
+updated: 2026-06-12
 audience: [human, agent]
 ---
 
@@ -17,6 +17,49 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.13.0] - 2026-06-12
+
+**Doc map: an always-current, machine-derived map of the document set
+(ADR 0044).** Every aikata project gains `.aikata/docmap.yaml` (data
+layer) and `.aikata/docmap.md` (readable view) describing its documents —
+inventory, cross-references, freshness, and a managed/external split — so
+an agent or human can orient from one read. Built from documents only (no
+source code is read), preserving the stack-agnostic core. The classifying
+model behind it is recorded in ADR 0045 (source/regenerability, not decay).
+
+### Added
+
+- New `aikata map` command: rebuild the document map explicitly. Catalogs
+  Markdown only — no aikata config required, so it runs in any repository.
+- `.aikata/docmap.yaml` (data layer / single source of the map's truth)
+  and `.aikata/docmap.md` (directory tree + Mermaid `doc → doc` graph,
+  degrading to a flat adjacency list past ~40 nodes, + a `path → summary`
+  index). Summary extraction is best-effort and degrades gracefully
+  (`summary:` frontmatter → leading blockquote → first paragraph → H1 →
+  filename), so a repository adopting aikata later needs no document
+  refactor to be mapped.
+- Isolated doc-map rebuild as a final step of `init` / `fill` / `enable` /
+  `sync` / `generate`, decoupled from per-tool provider failures and
+  suppressed on `--dry-run` and `init` proposal mode.
+- `aikata doctor` freshness check: an in-memory rebuild is compared to the
+  on-disk map; drift or a missing map is a **warning** (never an error),
+  and `aikata doctor --fix` regenerates it. Only structural drift counts —
+  the `generated:` date is aligned before comparing, so the map does not
+  read as stale merely because time has passed.
+- Optional `docmap` config block in `.aikata/aikata.yaml`
+  (`formats` / `targets` / `exclude`) and optional `json` / `txt` / `mmd`
+  renderers. The data layer (`yaml`) is always written.
+- New `internal/docmeta` package: the shared front-matter and link parser
+  used by both `doctor` and the doc map, so link/front-matter parsing and
+  the scan-skip baseline cannot drift between the two surfaces.
+
+### Notes
+
+- The doc map is a mandatory derived artifact under the `.aikata/` machine
+  zone (like `manifest.yaml`); it is committed, not manifest-tracked, and
+  not merged by `sync` — freshness is guaranteed by the doctor check
+  (ADR 0044 D6). It reads documents only and builds no source-code graph.
 
 ## [0.12.0] - 2026-06-10
 

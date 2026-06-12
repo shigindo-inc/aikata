@@ -12,32 +12,13 @@ import (
 	"time"
 
 	"github.com/shigindo-inc/aikata/internal/adr"
+	"github.com/shigindo-inc/aikata/internal/docmeta"
 )
 
 // frontmatterKeys are the keys every markdown file must declare. memory
 // files declare an extra `memory_type` key which is verified by
 // checkMemory rather than here.
 var frontmatterKeys = []string{"project", "status", "version", "updated", "audience"}
-
-// skippedDirs lists directories doctor will not descend into. They are
-// either external (vendored deps, build outputs) or aikata-internal
-// scratch areas (testdata fixtures, ephemeral memory). `dist/` holds
-// first-party distribution artifacts (skill/plugin payloads, not
-// project-managed Markdown); those are validated by the repolint
-// distribution tests, not by doctor.
-var skippedDirs = map[string]struct{}{
-	".git": {}, "node_modules": {}, "build": {}, "dist": {},
-	".dart_tool": {}, ".next": {}, "vendor": {}, ".turbo": {},
-	".cursor": {}, ".github": {}, "testdata": {}, ".remember": {},
-	".serena": {}, ".aikata-proposed": {},
-}
-
-// skippedFiles names individual *.md files doctor should not inspect.
-// These are generated AI-tool artifacts (no frontmatter by design) or
-// project-level boilerplate that lives outside the doctor contract.
-var skippedFiles = map[string]struct{}{
-	"CLAUDE.md": {}, "GEMINI.md": {},
-}
 
 // walkMarkdown invokes fn for every regular *.md file under
 // opts.TargetDir, returning the slash-separated path relative to
@@ -50,7 +31,7 @@ func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 			return walkErr
 		}
 		if d.IsDir() {
-			if _, skip := skippedDirs[d.Name()]; skip {
+			if _, skip := docmeta.DefaultSkipDirs[d.Name()]; skip {
 				return filepath.SkipDir
 			}
 			return nil
@@ -58,7 +39,7 @@ func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 		if !strings.HasSuffix(d.Name(), ".md") {
 			return nil
 		}
-		if _, skip := skippedFiles[d.Name()]; skip {
+		if _, skip := docmeta.DefaultSkipFiles[d.Name()]; skip {
 			return nil
 		}
 		rel, err := filepath.Rel(opts.TargetDir, p)
@@ -83,65 +64,12 @@ func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 	})
 }
 
-// parseFrontmatter extracts the YAML front-matter block delimited by
-// `---` lines at the very start of body. Returns the lines (without
-// the fences) and the byte offset where the body proper begins. If
-// the file has no front-matter, lines is nil and offset is 0.
-func parseFrontmatter(body []byte) (lines []string, offset int) {
-	text := string(body)
-	if !strings.HasPrefix(text, "---\n") && !strings.HasPrefix(text, "---\r\n") {
-		return nil, 0
-	}
-	// Find the closing `---` line.
-	rest := text[len("---\n"):]
-	if strings.HasPrefix(text, "---\r\n") {
-		rest = text[len("---\r\n"):]
-	}
-	end := strings.Index(rest, "\n---\n")
-	if end < 0 {
-		// Also accept `\n---` at EOF.
-		if i := strings.Index(rest, "\n---"); i >= 0 && i+len("\n---") == len(rest) {
-			end = i
-		} else {
-			return nil, 0
-		}
-	}
-	fm := rest[:end]
-	for _, ln := range strings.Split(fm, "\n") {
-		lines = append(lines, strings.TrimRight(ln, "\r"))
-	}
-	// Offset points just past the closing fence.
-	closer := "\n---\n"
-	if !strings.Contains(rest, closer) {
-		closer = "\n---"
-	}
-	offset = len("---\n") + end + len(closer)
-	return lines, offset
-}
-
-// frontmatterValue returns the value associated with key in the parsed
-// front-matter lines. Only top-level scalar keys are supported (which
-// is all aikata uses for required keys).
-func frontmatterValue(lines []string, key string) (value string, line int, ok bool) {
-	prefix := key + ":"
-	for i, ln := range lines {
-		trimmed := strings.TrimLeft(ln, " \t")
-		if !strings.HasPrefix(trimmed, prefix) {
-			continue
-		}
-		v := strings.TrimSpace(trimmed[len(prefix):])
-		v = strings.Trim(v, `"'`)
-		return v, i + 2, true // +1 frontmatter offset, +1 1-based
-	}
-	return "", 0, false
-}
-
 // checkFrontmatter asserts every .md file contains the required
 // frontmatter keys.
 func checkFrontmatter(opts Options) ([]Issue, error) {
 	var issues []Issue
 	err := walkMarkdown(opts, func(rel string, body []byte) error {
-		lines, _ := parseFrontmatter(body)
+		lines, _ := docmeta.ParseFrontmatter(body)
 		if lines == nil {
 			issues = append(issues, Issue{
 				Level: LevelError, File: rel, Line: 1,
@@ -152,7 +80,7 @@ func checkFrontmatter(opts Options) ([]Issue, error) {
 			return nil
 		}
 		for _, key := range frontmatterKeys {
-			if _, _, ok := frontmatterValue(lines, key); !ok {
+			if _, _, ok := docmeta.FrontmatterValue(lines, key); !ok {
 				issues = append(issues, Issue{
 					Level: LevelError, File: rel,
 					Code:    "frontmatter.missing-key." + key,
@@ -165,13 +93,9 @@ func checkFrontmatter(opts Options) ([]Issue, error) {
 	return issues, err
 }
 
-// linkRE matches markdown links of the form [text](path) where path is
-// not an absolute URL. The relative paths it captures are subject to
-// the link-existence check.
-var linkRE = regexp.MustCompile(`\[[^\]]*\]\(([^)]+)\)`)
-
 // checkLinks verifies that every relative markdown link in AGENTS.md
-// resolves to an existing file under TargetDir.
+// resolves to an existing file under TargetDir. Link extraction is
+// shared with `aikata map` via internal/docmeta so the two cannot drift.
 func checkLinks(opts Options) ([]Issue, error) {
 	agentsPath := filepath.Join(opts.TargetDir, "AGENTS.md")
 	body, err := os.ReadFile(agentsPath)
@@ -186,45 +110,22 @@ func checkLinks(opts Options) ([]Issue, error) {
 	}
 
 	var issues []Issue
-	lineNum := 0
-	for _, line := range strings.Split(string(body), "\n") {
-		lineNum++
-		for _, m := range linkRE.FindAllStringSubmatch(line, -1) {
-			target := m[1]
-			// Strip URL fragment and query.
-			if i := strings.IndexAny(target, "#?"); i >= 0 {
-				target = target[:i]
-			}
-			target = strings.TrimSpace(target)
-			if target == "" {
-				continue
-			}
-			if isAbsoluteURL(target) || strings.HasPrefix(target, "mailto:") {
-				continue
-			}
-			// Resolve relative to AGENTS.md's directory.
-			rel := target
-			if strings.HasPrefix(target, "./") {
-				rel = target[2:]
-			}
-			full := filepath.Join(opts.TargetDir, filepath.FromSlash(rel))
-			if _, err := os.Stat(full); err != nil {
-				if errors.Is(err, fs.ErrNotExist) {
-					issues = append(issues, Issue{
-						Level: LevelError, File: "AGENTS.md", Line: lineNum,
-						Message: fmt.Sprintf("broken link: %s", m[1]),
-					})
-				} else {
-					return nil, err
-				}
+	for _, link := range docmeta.ExtractLinks(body) {
+		// AGENTS.md lives in the project root, so links resolve relative
+		// to TargetDir.
+		full := filepath.Join(opts.TargetDir, filepath.FromSlash(link.Target))
+		if _, err := os.Stat(full); err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				issues = append(issues, Issue{
+					Level: LevelError, File: "AGENTS.md", Line: link.Line,
+					Message: fmt.Sprintf("broken link: %s", link.Raw),
+				})
+			} else {
+				return nil, err
 			}
 		}
 	}
 	return issues, nil
-}
-
-func isAbsoluteURL(s string) bool {
-	return strings.HasPrefix(s, "http://") || strings.HasPrefix(s, "https://")
 }
 
 // adrStatusRE captures the value after `**Status**:` on a single ADR
@@ -349,8 +250,8 @@ func checkMemory(opts Options) ([]Issue, error) {
 		if err != nil {
 			return nil, err
 		}
-		lines, _ := parseFrontmatter(body)
-		mt, _, ok := frontmatterValue(lines, "memory_type")
+		lines, _ := docmeta.ParseFrontmatter(body)
+		mt, _, ok := docmeta.FrontmatterValue(lines, "memory_type")
 		if !ok {
 			issues = append(issues, Issue{
 				Level: LevelError, File: rel,
@@ -382,11 +283,11 @@ func checkUpdated(opts Options) ([]Issue, error) {
 	cutoff := opts.Now.AddDate(-1, 0, 0)
 	var issues []Issue
 	err := walkMarkdown(opts, func(rel string, body []byte) error {
-		lines, _ := parseFrontmatter(body)
+		lines, _ := docmeta.ParseFrontmatter(body)
 		if lines == nil {
 			return nil
 		}
-		raw, lineNum, ok := frontmatterValue(lines, "updated")
+		raw, lineNum, ok := docmeta.FrontmatterValue(lines, "updated")
 		if !ok {
 			return nil
 		}

@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/shigindo-inc/aikata/internal/docmap"
 )
 
 // FixableCodes lists the Issue.Code values that Fix knows how to
@@ -19,6 +21,8 @@ var FixableCodes = []string{
 	"frontmatter.missing-key.updated",
 	"frontmatter.missing-key.audience",
 	"updated.stale",
+	"docmap.missing",
+	"docmap.stale",
 }
 
 // FixResult summarizes the outcome of a Fix pass.
@@ -70,6 +74,8 @@ func Fix(opts Options, issues []Issue) (FixResult, error) {
 			changed, err = fixMissingKey(full, key, today)
 		case iss.Code == "updated.stale":
 			changed, err = fixStaleUpdated(full, today)
+		case iss.Code == "docmap.missing" || iss.Code == "docmap.stale":
+			changed, err = fixDocMap(opts.TargetDir)
 		default:
 			res.Skipped++
 			continue
@@ -123,6 +129,19 @@ func placeholderForKey(key, today string) string {
 		return "[human, agent]"
 	}
 	return "TODO"
+}
+
+// fixDocMap regenerates `.aikata/docmap.{yaml,md}` for targetDir. Unlike
+// the per-file frontmatter fixers, the map is a derived artifact rebuilt
+// wholesale, so the fix is a full regeneration rather than an in-place
+// edit. The managed/external flag reuses the same ManagedIncludeGlobs as
+// the freshness check so the rebuilt map matches what `aikata map`
+// writes.
+func fixDocMap(targetDir string) (bool, error) {
+	if err := docmap.Generate(docmap.OptionsFor(targetDir, ManagedIncludeGlobs(targetDir))); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func fixMissingFrontmatter(path, today string) (bool, error) {
@@ -203,7 +222,7 @@ func fixStaleUpdated(path, today string) (bool, error) {
 }
 
 // hasFrontmatter reports whether body begins with a YAML frontmatter
-// fence. parseFrontmatter (in checks.go) handles parsing; this
+// fence. docmeta.ParseFrontmatter handles full parsing; this
 // lightweight check exists so the fixers don't depend on its return
 // type.
 func hasFrontmatter(body []byte) bool {

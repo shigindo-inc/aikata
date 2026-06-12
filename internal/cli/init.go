@@ -54,7 +54,8 @@ func newInitCmd() *cobra.Command {
 			"a TTY), the project name must be supplied either as the positional\n" +
 			"argument or via --name. The target directory is always the current\n" +
 			"working directory.",
-		Args: cobra.MaximumNArgs(1),
+		Args:     cobra.MaximumNArgs(1),
+		PostRunE: docMapPostRun, // isolated doc-map rebuild (ADR 0044 D5)
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 1 && name == "" {
 				name = args[0]

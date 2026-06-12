@@ -32,6 +32,27 @@ type AikataYaml struct {
 	Docs       Docs            `yaml:"docs,omitempty"`
 	Doctor     Doctor          `yaml:"doctor,omitempty"`
 	Sync       Sync            `yaml:"sync,omitempty"`
+	Docmap     Docmap          `yaml:"docmap,omitempty"`
+}
+
+// Docmap holds optional tuning for the doc map (ADR 0044). The zero value
+// is the default behaviour: emit `yaml` + `md` for every Markdown file.
+// All three fields are additive overrides, not requirements — an absent
+// block keeps the defaults, so existing projects need no migration.
+type Docmap struct {
+	// Formats selects the renderings emitted under `.aikata/`. The data
+	// layer (`docmap.yaml`) is always written regardless of this list —
+	// it is the single source of the map's truth and what `aikata doctor`
+	// checks for freshness. Recognised values: yaml, md, json, txt, mmd.
+	// Empty means the default set [yaml, md].
+	Formats []string `yaml:"formats,omitempty"`
+	// Targets are the catalog globs (slash-form, relative to the project
+	// root). Empty means the default ["**/*.md"].
+	Targets []string `yaml:"targets,omitempty"`
+	// Exclude lists additional catalog skips on top of the always-applied
+	// built-in skips (vendored deps, build outputs, machine/scratch areas,
+	// generated AI-tool artifacts).
+	Exclude []string `yaml:"exclude,omitempty"`
 }
 
 // Project carries the human-facing identity of the project.

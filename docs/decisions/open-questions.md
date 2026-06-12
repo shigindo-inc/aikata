@@ -333,40 +333,33 @@ Residual design questions for the doc map
 ([ADR 0044](../adr/0044-doc-map-derived-artifact.md),
 [design note](./docmap-design.md)). The
 placement (`.aikata/`), mandatory status, two-rendering shape, trigger
-model, and non-manifest-tracking are **settled by ADR 0044**; only the
-items below remain open and none blocks implementation.
+model, and non-manifest-tracking are **settled by ADR 0044**. The three
+items below are now **Resolved by the v0.13.0 implementation** and are
+retained only until the next release-ritual prune (ADR 0039).
 
 ### Q-DOCMAP-01 — Default tracked-document breadth
 
-- Should the default `docmap.targets` be **all Markdown** in the repo
-  (tagging each `managed` / external), or **managed-surface only** with
-  external documents added opt-in?
-- **Leading**: all Markdown, with the `managed` flag distinguishing them —
-  it satisfies the stated goal of tracking hand-written / non-managed docs
-  and adopting existing repos without refactor.
-- **Unblocks**: P1 default config. Revisit if a real repo's non-document
-  Markdown (e.g. vendored content) makes the all-Markdown default noisy.
+- **Resolved**: default `docmap.targets` is **all Markdown** with the
+  per-document `managed` flag distinguishing the aikata-managed surface
+  from external documents. A shared built-in skip set
+  (`docmeta.DefaultSkipDirs` / `DefaultSkipFiles`, also used by `doctor`)
+  excludes vendored/build/machine/scratch areas (`node_modules`, `vendor`,
+  `.git`, `.aikata`, generated AI-tool artifacts, …) so the all-Markdown
+  default is not noisy; `docmap.exclude` adds project-specific skips.
 
 ### Q-DOCMAP-02 — Optional `summary:` frontmatter key
 
-- The map extracts a one-line summary best-effort (frontmatter → blockquote
-  → first paragraph → H1 → filename). Should `aikata doctor` ever recognize
-  an **optional** `summary:` frontmatter key (never required) to give
-  authors explicit control of the map line?
-- **Leading**: ship best-effort extraction first; add `summary:` recognition
-  only if dogfooding shows the heuristic picks poor lines. Never make it a
-  required key (that would break the "no document refactor" promise).
-- **Unblocks**: a P5 follow-up, demand-driven.
+- **Resolved**: an optional `summary:` frontmatter key **is recognized**
+  (first in the extraction order: `summary:` → leading blockquote → first
+  paragraph after H1 → H1 → filename). It is never required, preserving the
+  "no document refactor to adopt" promise.
 
 ### Q-DOCMAP-03 — Mermaid graph degrade threshold
 
-- Above what node count does `docmap.md` drop the Mermaid `doc → doc`
-  diagram in favour of a flat adjacency list (to avoid an unreadable,
-  token-heavy graph)?
-- **Leading**: a provisional ~40 nodes; tune against real repositories
-  during P2. Possibly expose as a `docmap` config knob if one value does
-  not fit.
-- **Unblocks**: P2 rendering.
+- **Resolved**: `docmap.md` drops the Mermaid `doc → doc` diagram for a
+  flat adjacency list above **40 participating nodes** (a package constant,
+  `degradeThreshold`). Exposing it as a `docmap` config knob is a
+  demand-driven follow-up, not currently warranted.
 
 ---
 
