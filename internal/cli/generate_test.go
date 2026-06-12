@@ -140,8 +140,11 @@ func TestGenerate_DoesNotReadAIConfig(t *testing.T) {
 	if err := os.Remove(manifestPath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("rm manifest.yaml: %v", err)
 	}
-	if err := os.Remove(filepath.Dir(newPath)); err != nil {
-		t.Fatalf("rm empty .aikata dir: %v", err)
+	// init's doc-map hook (ADR 0044) also populated .aikata/docmap.{yaml,md},
+	// so remove the whole directory to simulate a project with no aikata
+	// config present.
+	if err := os.RemoveAll(filepath.Dir(newPath)); err != nil {
+		t.Fatalf("rm .aikata dir: %v", err)
 	}
 
 	out, err := runGenerate(t)

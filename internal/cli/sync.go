@@ -54,7 +54,8 @@ func newSyncCmd() *cobra.Command {
 			"they are not written back to either file. See ADR 0013 for\n" +
 			"the hierarchy and rationale.\n\n" +
 			"See docs/adr/0011-aikata-sync-design.md for the merge contract.",
-		Args: cobra.NoArgs,
+		Args:     cobra.NoArgs,
+		PostRunE: docMapPostRun, // isolated doc-map rebuild (ADR 0044 D5)
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
 			if err != nil {

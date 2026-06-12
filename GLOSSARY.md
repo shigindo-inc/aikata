@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-05-30
+updated: 2026-06-11
 audience: [human, agent]
 ---
 
@@ -88,6 +88,21 @@ and the **no-AI-signature** rule.
 
 ## D
 
+### doc map — `.aikata/docmap.{yaml,md}`
+
+A derived, machine-generated artifact describing the **document set
+itself**: the inventory of documents, their cross-references, their
+freshness, and a [managed / external](#managed--external-document)
+distinction. Its responsibility is **doc-cartography** — a map of the
+documents as assets — and is deliberately distinct from project mission
+(owned by `README.md` / `SPEC.md` / `AGENTS.md`) and from the hand-curated
+Navigation Matrix in `AGENTS.md` §3 (which keeps human judgement). Built
+from documents only — no source code is read. One scan emits a structured
+data layer (`docmap.yaml`) and a readable view (`docmap.md`: tree + Mermaid
+link-graph + summaries). Mandatory aikata-owned state, not manifest-tracked;
+freshness is enforced by `aikata doctor`. Defined by
+[ADR 0044](./docs/adr/0044-doc-map-derived-artifact.md).
+
 ### dogfooding (ドッグフーディング)
 
 Using one's own product internally. aikata is dogfooded: the aikata repo
@@ -167,6 +182,19 @@ authoritative and regeneration is cheap (Design Principle 7).
 ---
 
 ## M
+
+### managed / external document
+
+The two classes a [doc map](#doc-map--aikatadocmapyamlmd) tags each
+document with. A **managed** document is one inside the surface aikata owns
+— the canonical top-level documents plus the known `docs/` subtrees and any
+manifest-tracked Markdown (computed by `ManagedIncludeGlobs` in
+`internal/doctor/scope.go`, the same set `aikata doctor` validates by
+default). An **external** document is any other tracked Markdown — a
+hand-written or third-party document aikata catalogs but does not govern.
+The flag lets the map cover a whole repository (including documents written
+before aikata was adopted) without claiming ownership of files it does not
+manage.
 
 ### memory type — `user` / `feedback` / `project` / `reference`
 

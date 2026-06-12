@@ -26,6 +26,11 @@ func newGenerateCmd() *cobra.Command {
 			"and emits per-AI-tool artifacts (CLAUDE.md, etc.) from the canonical AGENTS.md. Existing files are\n" +
 			"overwritten; generated artifacts are disposable (ADR 0002).",
 		Args: cobra.NoArgs,
+		// Rebuild the doc map as a final, isolated step (ADR 0044 D5),
+		// decoupled from the per-tool provider work above: a provider
+		// failure returns before this runs, and a map failure here never
+		// changes generate's exit status.
+		PostRunE: docMapPostRun,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
 			if err != nil {

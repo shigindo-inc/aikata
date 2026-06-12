@@ -472,6 +472,8 @@ aikata generate
   - [0041 — Skills-only Surface & Claude Code Plugin Skill Layout](./docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md)
   - [0042 — `fill` Command for Canonical Document Completion](./docs/adr/0042-fill-command-for-canonical-document-completion.md)
   - [0043 — Command-wrapper Skill Surface & Simple Skill Names](./docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md)
+  - [0044 — Doc Map as a Mandatory Derived Artifact](./docs/adr/0044-doc-map-derived-artifact.md)
+  - [0045 — Documentation Value Model: Classify by Source, Not Decay](./docs/adr/0045-documentation-value-model.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

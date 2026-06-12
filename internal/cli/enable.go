@@ -36,8 +36,12 @@ func newEnableCmd() *cobra.Command {
 		RunE: func(_ *cobra.Command, args []string) error {
 			return unknownCapabilityError(args[0])
 		},
-		SilenceErrors: true,
-		SilenceUsage:  true,
+		// Inherited by the capability leaves: cobra runs the nearest
+		// PersistentPostRunE after the leaf's RunE succeeds, so enabling a
+		// capability rebuilds the doc map as an isolated step (ADR 0044 D5).
+		PersistentPostRunE: docMapPostRun,
+		SilenceErrors:      true,
+		SilenceUsage:       true,
 	}
 
 	for _, c := range components.Capabilities() {

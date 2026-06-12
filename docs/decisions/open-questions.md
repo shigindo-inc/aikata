@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-02
+updated: 2026-06-11
 audience: [human, agent]
 ---
 
@@ -327,7 +327,67 @@ Accepted 2026-05-31.)_
 
 ---
 
-## Q-HYPOTHESES (to validate via dogfooding)
+## Q-DOCMAP
+
+Residual design questions for the doc map
+([ADR 0044](../adr/0044-doc-map-derived-artifact.md),
+[design note](./docmap-design.md)). The
+placement (`.aikata/`), mandatory status, two-rendering shape, trigger
+model, and non-manifest-tracking are **settled by ADR 0044**. The three
+items below are now **Resolved by the v0.13.0 implementation** and are
+retained only until the next release-ritual prune (ADR 0039).
+
+### Q-DOCMAP-01 — Default tracked-document breadth
+
+- **Resolved**: default `docmap.targets` is **all Markdown** with the
+  per-document `managed` flag distinguishing the aikata-managed surface
+  from external documents. A shared built-in skip set
+  (`docmeta.DefaultSkipDirs` / `DefaultSkipFiles`, also used by `doctor`)
+  excludes vendored/build/machine/scratch areas (`node_modules`, `vendor`,
+  `.git`, `.aikata`, generated AI-tool artifacts, …) so the all-Markdown
+  default is not noisy; `docmap.exclude` adds project-specific skips.
+
+### Q-DOCMAP-02 — Optional `summary:` frontmatter key
+
+- **Resolved**: an optional `summary:` frontmatter key **is recognized**
+  (first in the extraction order: `summary:` → leading blockquote → first
+  paragraph after H1 → H1 → filename). It is never required, preserving the
+  "no document refactor to adopt" promise.
+
+### Q-DOCMAP-03 — Mermaid graph degrade threshold
+
+- **Resolved**: `docmap.md` drops the Mermaid `doc → doc` diagram for a
+  flat adjacency list above **40 participating nodes** (a package constant,
+  `degradeThreshold`). Exposing it as a `docmap` config knob is a
+  demand-driven follow-up, not currently warranted.
+
+---
+
+## Q-CONTEXT
+
+### Q-CONTEXT-01 — When would per-document retention metadata or compaction tooling become justified?
+
+- **Status**: Deferred by
+  [ADR 0045](../adr/0045-documentation-value-model.md). The conceptual
+  model is recorded there; the per-document `retention:` field and any
+  `aikata compact` / runtime summarization were rejected/deferred because
+  the context-budget pain is already handled by
+  [ADR 0039](../adr/0039-documentation-hygiene-and-context-budget.md) +
+  [ADR 0044](../adr/0044-doc-map-derived-artifact.md) +
+  [ADR 0037](../adr/0037-tighten-adoption-mutation-boundaries.md), and
+  there is no observed residual.
+- **Open part**: this is a **watch-item**, not an unresolved design
+  choice — what *observed* condition would re-open it.
+- **Re-open triggers** (any one, evidenced from dogfooding or users):
+  - A dogfood/user repo's first-read context exceeds the context budget
+    *again* and the ADR 0039 release-ritual + doc map no longer keep it
+    lean by hand.
+  - A concrete document is shown to be misfiled by file-class alone
+    (i.e. file location stops predicting value source), which would argue
+    for the deferred path-based `source:` inference in `doctor` (not a
+    hand-written field).
+- **Unblocks decision**: concrete evidence per ADR 0028's demand-driven
+  test. Until then, no work.
 
 These map to [SPEC.md §7](../../SPEC.md#7-hypotheses-to-validate).
 
