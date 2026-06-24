@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-11
+updated: 2026-06-24
 audience: [human, agent]
 ---
 
@@ -147,8 +147,17 @@ the repository layout in §2 is the **producer**.
 │   │   └── current.md     # Agent's short-term working state
 │   └── troubleshooting.md
 └── .aikata/
-    └── aikata.yaml
+    ├── aikata.yaml        # Project config (schema v2)
+    ├── manifest.yaml      # Rendered-file hashes for `sync` (ADR 0014)
+    ├── docmap.yaml        # Doc map — structured data (derived; ADR 0044)
+    └── docmap.md          # Doc map — tree + Mermaid link-graph (derived)
 ```
+
+> The `.aikata/` machine zone is written by `init` itself: `aikata.yaml` +
+> `manifest.yaml` during the scaffold, and the two `docmap.*` renderings as
+> the final, isolated step (also re-run by `fill` / `enable` / `sync` /
+> `generate`; see §13). `docmap.*` are aikata-owned derived state — not
+> manifest-tracked, not subject to `sync` (§3.4).
 
 > `.env.example` (`--with-env` / `enable env`, ADR 0037) and
 > `docs/prompts.md` (`--with-prompts` / `enable prompts`, ADR 0034) are
@@ -166,6 +175,9 @@ the repository layout in §2 is the **producer**.
 | `docs/prompts.md` | `--with-prompts` / `enable prompts` | v0.9.2 | Reusable-prompt library (opt-in; was a default through v0.9.1). See [ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md). |
 | `.env.example` | `--with-env` / `enable env` | v0.9.7 | Environment-variable template (opt-in; was a default through v0.9.6). The `.env` secret ignore is unconditional and independent of this capability. See [ADR 0037](./docs/adr/0037-tighten-adoption-mutation-boundaries.md). |
 | `docs/memory/` (5 files) | `--with-memory` | v0.2 | Long-term agent memory (`user`, `feedback`, `project`, `reference` + `README`). See [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). |
+| `docs/workflows/<domain>.md` | `enable workflow <domain>` | v0.8.4 | Opt-in collaboration policy (git first). `AGENTS.md` gains a short pointer only, never the policy body. See [ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md). |
+| `docs/monorepo.md` + `apps/**/AGENTS.md` | `--monorepo` / `enable monorepo` | v0.7.1 | Nested per-app instructions (see §3.5). |
+| `docs/design/*.md` | `new app-icon` / `new mascot` | v0.9.2 | One-off brand-exploration artifacts (not a capability; not manifest-tracked, `sync` does not restore them). See [ADR 0031](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md). |
 | `CONTRIBUTING.md` | `--oss` | v1.0 | Contributor guide |
 | `SECURITY.md` | `--oss` | v1.0 | Security policy |
 | `ROADMAP.md` | `--oss` | v1.0 | Roadmap |
@@ -181,6 +193,25 @@ the repository layout in §2 is the **producer**.
 - **`GLOSSARY.md`** — terminology pin; ja/en bilingual when applicable.
 - **`docs/adr/`** — one ADR per decision; never edited after `Accepted`.
 - **`docs/tasks/current.md`** — frequently rewritten by the agent; isolated.
+- **`docs/troubleshooting.md`** — common failures & fixes; the first stop
+  when stuck (per `AGENTS.md`).
+- **`docs/stacks/<name>.md`** — per-stack brief; code-free, included into
+  `AGENTS.md` only when the stack is enabled. See
+  [ADR 0029](./docs/adr/0029-stack-brief-layout-convention.md) /
+  [ADR 0030](./docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md).
+- **`docs/memory/`** — long-term agent memory, opt-in (`--with-memory`).
+  Four content files (`user`, `feedback`, `project`, `reference`) + a
+  `README`. Mutable but **append-only / supersede-in-place**: facts are
+  added or superseded, never silently deleted — the `log`-class lifetime of
+  [ADR 0045](./docs/adr/0045-documentation-value-model.md), defined in
+  [ADR 0004](./docs/adr/0004-long-term-memory-slot.md). Distinct from the
+  short-term, freely-rewritten `docs/tasks/current.md`.
+- **`docs/workflows/<domain>.md`** — opt-in collaboration policy; the full
+  policy lives here while `AGENTS.md` carries only a pointer
+  ([ADR 0026](./docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md)).
+- **`docs/design/*.md`** — one-off brand-exploration scaffolds from
+  `new app-icon` / `new mascot`; authored once, not regenerated or synced
+  ([ADR 0031](./docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md)).
 
 There is intentionally no generic `DESIGN.md` in built-in presets. Product
 requirements live in `SPEC.md`, technical design lives in
@@ -233,6 +264,28 @@ the disciplines above. The doc-map outputs (`.aikata/docmap.yaml`,
 written atomically, regenerated rather than merged, **not** manifest-tracked
 and **not** subject to discipline #7 — their freshness is guaranteed by the
 `aikata doctor` check (§13), not by the manifest ancestor.
+
+### 3.5 Monorepo layout (`--monorepo` / `enable monorepo`)
+
+When the monorepo capability is enabled, the structure gains a nested
+per-app tier on top of §3.1: the root `AGENTS.md` holds shared,
+cross-app rules and each app carries its own `AGENTS.md` for local
+instructions.
+
+```
+/<project>
+├── AGENTS.md              # Root: shared, cross-app rules
+├── docs/
+│   └── monorepo.md        # How the nested layout works
+└── apps/
+    ├── README.md
+    └── <app>/
+        └── AGENTS.md       # Per-app instructions (extends the root)
+```
+
+Default scope still caps the project root per top-level minimalism; the
+nested `apps/**/AGENTS.md` files are not root-level and do not count
+against it.
 
 ---
 
