@@ -13,6 +13,7 @@ components:
     monorepo: false
     prompts: true
     env: true
+    modeling: false
 features:
     obsidian_hints: false
 docs:

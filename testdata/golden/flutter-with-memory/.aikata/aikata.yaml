@@ -15,6 +15,7 @@ components:
     monorepo: false
     prompts: false
     env: false
+    modeling: false
 features:
     obsidian_hints: false
 docs:
