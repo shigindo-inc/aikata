@@ -79,6 +79,48 @@ func TestModeling_IsIdempotentAndNeverClobbers(t *testing.T) {
 	}
 }
 
+func TestModeling_PartialPreExistence_ReportsOnlyActuallyWrittenFiles(t *testing.T) {
+	tmp := t.TempDir()
+	// Pre-create only docs/domain.md, as a hand-authored file, before
+	// modeling is ever enabled.
+	domainPath := filepath.Join(tmp, "docs", "domain.md")
+	if err := os.MkdirAll(filepath.Dir(domainPath), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(domainPath, []byte("hand-authored\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	var stdout bytes.Buffer
+	err := Modeling.Add(AddContext{
+		TargetDir:   tmp,
+		ProjectName: "demo",
+		Lang:        "en",
+		Clock:       fixedClock,
+		Stdout:      &stdout,
+		Stderr:      &bytes.Buffer{},
+	})
+	if err != nil {
+		t.Fatalf("Add: %v", err)
+	}
+
+	out := stdout.String()
+	if !strings.Contains(out, "wrote docs/usecases.md") {
+		t.Errorf("stdout must report docs/usecases.md as written, got %q", out)
+	}
+	if strings.Contains(out, "wrote docs/domain.md") {
+		t.Errorf("stdout must NOT claim the pre-existing docs/domain.md was written, got %q", out)
+	}
+
+	b, rerr := os.ReadFile(domainPath)
+	if rerr != nil {
+		t.Fatalf("read domain.md: %v", rerr)
+	}
+	if string(b) != "hand-authored\n" {
+		t.Errorf("pre-existing docs/domain.md was clobbered: %q", b)
+	}
+}
+
 func TestModeling_IsRegisteredAsCapability(t *testing.T) {
 	if _, ok := GetCapability("modeling"); !ok {
 		t.Errorf("modeling is not registered in the capabilities registry")

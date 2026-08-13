@@ -2,6 +2,8 @@ package components
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/shigindo-inc/aikata/internal/templates"
 )
@@ -96,6 +98,23 @@ func (m modelingComponent) Add(ctx AddContext) error {
 		return nil
 	}
 
+	// Record which paths already exist *before* WriteIfMissing runs, so
+	// the post-write "wrote" message can be gated per file rather than
+	// on the aggregate written count. Without this, a partial write
+	// (one file present, one absent) would print "wrote" for both,
+	// falsely claiming a hand-authored file was written when it was
+	// left untouched (mirrors the fileExists check in workflow.go /
+	// stack.go's Add).
+	existed := make(map[string]bool, len(rendered))
+	for rel := range rendered {
+		full := filepath.Join(ctx.TargetDir, filepath.FromSlash(rel))
+		if _, statErr := os.Stat(full); statErr == nil {
+			existed[rel] = true
+		} else if !os.IsNotExist(statErr) {
+			return fmt.Errorf("components: modeling: stat %s: %w", full, statErr)
+		}
+	}
+
 	written, skipped, err := WriteIfMissing(ctx.TargetDir, rendered)
 	if err != nil {
 		return err
@@ -116,6 +135,9 @@ func (m modelingComponent) Add(ctx AddContext) error {
 		return nil
 	}
 	for _, rel := range sortedKeys(rendered) {
+		if existed[rel] {
+			continue
+		}
 		if _, werr := fmt.Fprintf(stdout(ctx), "wrote %s\n", rel); werr != nil {
 			return werr
 		}
