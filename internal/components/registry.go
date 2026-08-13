@@ -13,6 +13,7 @@ var capabilities = []Component{
 	Changelog,
 	Env,
 	Memory,
+	Modeling,
 	Monorepo,
 	Prompts,
 	Stack,
