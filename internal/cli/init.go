@@ -16,7 +16,8 @@ import (
 // surface is two orthogonal axes — `--scope` (documentation breadth)
 // and `--stack` (target technology) — plus `--lang`, `--ai-tools`, and
 // the optional-component flags (`--with-memory`, `--with-ui`,
-// `--with-api`, `--with-tdd`, `--with-changelog`, `--monorepo`).
+// `--with-api`, `--with-tdd`, `--with-changelog`, `--monorepo`,
+// `--with-modeling`).
 //
 // `--preset` survives as a deprecated alias for `--scope` / `--stack`
 // (ADR 0024) and is removed in v1.0. The post-init counterpart lives
@@ -38,6 +39,7 @@ func newInitCmd() *cobra.Command {
 		withChangelog bool
 		withMonorepo  bool
 		withPrompts   bool
+		withModeling  bool
 		withEnv       bool
 		aiToolsCSV    string
 	)
@@ -103,6 +105,7 @@ func newInitCmd() *cobra.Command {
 					WithChangelog: cmd.Flags().Changed("with-changelog"),
 					WithMonorepo:  cmd.Flags().Changed("monorepo"),
 					WithPrompts:   cmd.Flags().Changed("with-prompts"),
+					WithModeling:  cmd.Flags().Changed("with-modeling"),
 					WithEnv:       cmd.Flags().Changed("with-env"),
 					Lang:          cmd.Flags().Changed("lang"),
 					AITools:       cmd.Flags().Changed("ai-tools"),
@@ -122,6 +125,7 @@ func newInitCmd() *cobra.Command {
 					WithChangelog: withChangelog,
 					WithMonorepo:  withMonorepo,
 					WithPrompts:   withPrompts,
+					WithModeling:  withModeling,
 					WithEnv:       withEnv,
 					Lang:          lang,
 					AITools:       aiTools,
@@ -141,6 +145,7 @@ func newInitCmd() *cobra.Command {
 				withChangelog = result.WithChangelog
 				withMonorepo = result.WithMonorepo
 				withPrompts = result.WithPrompts
+				withModeling = result.WithModeling
 				withEnv = result.WithEnv
 				lang = result.Lang
 				aiTools = result.AITools
@@ -181,6 +186,7 @@ func newInitCmd() *cobra.Command {
 				WithChangelog: withChangelog,
 				WithMonorepo:  withMonorepo,
 				WithPrompts:   withPrompts,
+				WithModeling:  withModeling,
 				WithEnv:       withEnv,
 				Stacks:        normStacks,
 				AITools:       aiTools,
@@ -212,6 +218,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&withChangelog, "with-changelog", false, "include release notes at CHANGELOG.md")
 	cmd.Flags().BoolVar(&withMonorepo, "monorepo", false, "configure as a monorepo with nested apps/<name>/AGENTS.md files (v0.6+)")
 	cmd.Flags().BoolVar(&withPrompts, "with-prompts", false, "include a reusable-prompt library at docs/prompts.md (ADR 0034)")
+	cmd.Flags().BoolVar(&withModeling, "with-modeling", false, "include a use-case ledger and domain model at docs/usecases.md + docs/domain.md")
 	cmd.Flags().BoolVar(&withEnv, "with-env", false, "include an environment-variable template at .env.example (ADR 0037)")
 	cmd.Flags().StringVar(&aiToolsCSV, "ai-tools", "claude", "comma-separated AI tools to enable in .aikata/aikata.yaml (claude | cursor | codex)")
 
