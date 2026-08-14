@@ -89,22 +89,14 @@ func (m modelingComponent) Add(ctx AddContext) error {
 		return err
 	}
 
-	if ctx.DryRun {
-		for _, rel := range sortedKeys(rendered) {
-			if _, werr := fmt.Fprintf(stdout(ctx), "Would write %s\n", rel); werr != nil {
-				return werr
-			}
-		}
-		return nil
-	}
-
-	// Record which paths already exist *before* WriteIfMissing runs, so
+	// Record which paths already exist *before* either the dry-run
+	// preview or WriteIfMissing runs, so both the dry-run message and
 	// the post-write "wrote" message can be gated per file rather than
 	// on the aggregate written count. Without this, a partial write
-	// (one file present, one absent) would print "wrote" for both,
-	// falsely claiming a hand-authored file was written when it was
-	// left untouched (mirrors the fileExists check in workflow.go /
-	// stack.go's Add).
+	// (one file present, one absent) would claim "wrote"/"Would write"
+	// for both, falsely claiming a hand-authored file was (or will be)
+	// written when it was left untouched (mirrors the fileExists check
+	// in workflow.go / stack.go's Add).
 	existed := make(map[string]bool, len(rendered))
 	for rel := range rendered {
 		full := filepath.Join(ctx.TargetDir, filepath.FromSlash(rel))
@@ -113,6 +105,18 @@ func (m modelingComponent) Add(ctx AddContext) error {
 		} else if !os.IsNotExist(statErr) {
 			return fmt.Errorf("components: modeling: stat %s: %w", full, statErr)
 		}
+	}
+
+	if ctx.DryRun {
+		for _, rel := range sortedKeys(rendered) {
+			if existed[rel] {
+				continue
+			}
+			if _, werr := fmt.Fprintf(stdout(ctx), "Would write %s\n", rel); werr != nil {
+				return werr
+			}
+		}
+		return nil
 	}
 
 	written, skipped, err := WriteIfMissing(ctx.TargetDir, rendered)

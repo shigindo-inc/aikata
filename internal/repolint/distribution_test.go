@@ -101,6 +101,12 @@ func TestClaudePluginHasCommands(t *testing.T) {
 		t.Errorf("dist/claude-code/plugin/commands/track-context.md exists; track-context ships skill-only (ADR 0043 D4)")
 	}
 
+	// model-feature is likewise skill-only: it fires by description-match
+	// and is not a user-triggered command (ADR 0047 D4).
+	if _, err := os.Stat(filepath.Join(pluginDir, "commands", "model-feature.md")); err == nil {
+		t.Errorf("dist/claude-code/plugin/commands/model-feature.md exists; model-feature ships skill-only (ADR 0047 D4)")
+	}
+
 	var manifest map[string]any
 	readJSON(t, filepath.Join(pluginDir, ".claude-plugin", "plugin.json"), &manifest)
 	if _, ok := manifest["commands"]; ok {

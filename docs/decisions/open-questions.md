@@ -442,6 +442,34 @@ forbids.
 - **Unblocks**: work actually blocked on a store declaration or
   permission design, on a project that has `modeling` enabled.
 
+### Q-MODELING-03 — `aikata sync` never re-renders the modeling pair
+
+- **Status**: Open. Pre-existing gap, not introduced by ADR 0047; noted
+  here because `modeling` is the third capability it now covers.
+- **Question**: `internal/sync/plan.go`'s `withFlags` struct carries
+  `WithMemory`, `WithUI`, `WithAPI`, `WithTDD`, `WithChangelog`, and
+  `WithMonorepo`, but has no `WithPrompts`, `WithEnv`, or `WithModeling`
+  field. The upstream render `derivePlan` builds therefore omits
+  `docs/usecases.md` and `docs/domain.md` even though the manifest
+  tracks them (recorded via `RecordInManifest` on `enable modeling`), so
+  every `aikata sync` reports both files as `upstream-removed`.
+  `--with-prompts --with-env` reproduce the identical gap for the
+  `prompts` and `env` capabilities; `--with-memory` does not, because
+  `WithMemory` is one of the flags that exists.
+- **Impact**: info-level and non-destructive — the files are left in
+  place on disk, nothing is deleted or overwritten — but it means
+  template improvements to any of the three capabilities can never
+  reach an already-adopted project via `sync`; only a fresh `enable`
+  re-render would pick them up.
+- **Leading**: adding the three missing fields to `withFlags` (and their
+  `inferFlags` / CLI-flag wiring) is the structurally obvious fix, but is
+  deliberately **not done in this branch** — it touches sync behavior
+  broadly and deserves its own scoped change with before/after coverage,
+  not a drive-by inside the modeling-capability branch.
+- **Unblocks**: a scoped `sync` fix that adds `WithPrompts`, `WithEnv`,
+  and `WithModeling` to `withFlags`/`inferFlags` with regression coverage
+  proving `upstream-removed` no longer fires for any of the three pairs.
+
 ---
 
 ## Q-DIFFERENTIATION (continuous)

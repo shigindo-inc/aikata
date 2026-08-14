@@ -4,8 +4,8 @@ Shippable artifacts that ride alongside the aikata binary. Files here
 are **not** compiled into the binary; the release workflow attaches
 them as plain assets so users can copy them where they belong.
 
-The first-party skill surface is **four** skills, named by capability with
-thin Claude Code plugin command wrappers (ADR 0043, ADR 0046):
+The first-party skill surface is **five** skills, named by capability with
+thin Claude Code plugin command wrappers (ADR 0043, ADR 0046, ADR 0047):
 
 - **`manage-docs`** — when and how to invoke the aikata CLI (`init`,
   `fill`, `generate`, `doctor`, `sync`, `enable`, `new`, `map`) and how to
@@ -21,6 +21,10 @@ thin Claude Code plugin command wrappers (ADR 0043, ADR 0046):
   documents into the homes `docs/layout.md` defines: read the doc map's
   external set, propose a destination per document, show a dry-run plan,
   and apply approved moves with `git mv` (ADR 0046).
+- **`model-feature`** — the per-feature design loop: walks a single
+  feature from use case to domain model to a hand-off point just before
+  implementation, writing into `docs/usecases.md` and `docs/domain.md`
+  (the opt-in `modeling` capability, ADR 0047).
 
 Every `SKILL.md` carries `user-invocable: false` in its frontmatter. In
 the Claude Code **plugin** only, thin slash-command wrappers under
@@ -29,15 +33,16 @@ the Claude Code **plugin** only, thin slash-command wrappers under
 `/aikata:manage-docs`, `/aikata:refresh-docs`, and
 `/aikata:migrate-structure` appear in the `/` menu — while the skills
 themselves stay out of the `/` menu (no double listing). `track-context`
-has **no** command wrapper by design; it is meant to fire automatically
-from its description. On Codex, Claude Code standalone, and the universal
+and `model-feature` have **no** command wrapper by design (ADR 0047 D4 for
+`model-feature`); both are meant to fire automatically from their
+descriptions. On Codex, Claude Code standalone, and the universal
 install there are no commands, so `user-invocable: false` means a user
 cannot launch a skill directly with `/` — those platforms rely on the
 model auto-firing on the skill's description. Only the plugin gets a
 first-class command entry point; ADR 0043 accepts this platform
 asymmetry.
 
-All four ship together from the single `aikata` marketplace entry and plugin.
+All five ship together from the single `aikata` marketplace entry and plugin.
 
 ## Layout
 
@@ -48,7 +53,8 @@ dist/
 │   │   ├── manage-docs/SKILL.md
 │   │   ├── track-context/SKILL.md
 │   │   ├── refresh-docs/SKILL.md
-│   │   └── migrate-structure/SKILL.md
+│   │   ├── migrate-structure/SKILL.md
+│   │   └── model-feature/SKILL.md
 │   └── plugin/
 │       ├── .claude-plugin/plugin.json
 │       ├── README.md
@@ -60,7 +66,8 @@ dist/
 │           ├── manage-docs/SKILL.md        ← byte-identical to the canonical SKILL.md
 │           ├── track-context/SKILL.md      ← byte-identical
 │           ├── refresh-docs/SKILL.md       ← byte-identical
-│           └── migrate-structure/SKILL.md  ← byte-identical
+│           ├── migrate-structure/SKILL.md  ← byte-identical
+│           └── model-feature/SKILL.md      ← byte-identical (no command wrapper)
 ├── codex/
 │   └── plugin/
 │       ├── .codex-plugin/plugin.json
@@ -74,10 +81,13 @@ dist/
 │           ├── refresh-docs/
 │           │   ├── SKILL.md                ← byte-identical
 │           │   └── agents/openai.yaml      ← byte-identical
-│           └── migrate-structure/
+│           ├── migrate-structure/
+│           │   ├── SKILL.md                ← byte-identical
+│           │   └── agents/openai.yaml      ← byte-identical
+│           └── model-feature/
 │               ├── SKILL.md                ← byte-identical
 │               └── agents/openai.yaml      ← byte-identical
-└── universal-skill/                        ← CANONICAL source for all four skills
+└── universal-skill/                        ← CANONICAL source for all five skills
     ├── manage-docs/
     │   ├── SKILL.md
     │   └── agents/openai.yaml              ← Codex App UI metadata
@@ -87,7 +97,10 @@ dist/
     ├── refresh-docs/
     │   ├── SKILL.md
     │   └── agents/openai.yaml
-    └── migrate-structure/
+    ├── migrate-structure/
+    │   ├── SKILL.md
+    │   └── agents/openai.yaml
+    └── model-feature/
         ├── SKILL.md
         └── agents/openai.yaml
 ```
@@ -102,7 +115,9 @@ skills auto-discover from `skills/<name>/SKILL.md`, Codex reads
 discovery location, never for content (ADR 0040, ADR 0041, ADR 0043). The
 Claude Code plugin additionally carries thin command wrappers under
 `commands/` for `manage-docs`, `refresh-docs`, and `migrate-structure`
-(ADR 0043, ADR 0046); the other surfaces are skill-only.
+(ADR 0043, ADR 0046); `track-context` and `model-feature` are skill-only
+even in the plugin (ADR 0047 D4), and the other surfaces are skill-only
+for every skill.
 
 The repository root also carries `.claude-plugin/marketplace.json` and
 `.agents/plugins/marketplace.json`. They list the Claude Code and Codex
@@ -158,11 +173,12 @@ The full install instructions for each surface are below.
 
 ## Claude Code plugin (v0.6+)
 
-The Claude Code plugin bundles the three skills plus thin command wrappers
-(ADR 0043). `/aikata:manage-docs` and `/aikata:refresh-docs` appear in the
-`/` menu; the skills themselves are `user-invocable: false` so they do not
-double-list. `track-context` has no command and loads automatically when
-relevant.
+The Claude Code plugin bundles the five skills plus thin command wrappers
+(ADR 0043, ADR 0046, ADR 0047). `/aikata:manage-docs`,
+`/aikata:refresh-docs`, and `/aikata:migrate-structure` appear in the `/`
+menu; the skills themselves are `user-invocable: false` so they do not
+double-list. `track-context` and `model-feature` have no command and load
+automatically when relevant.
 
 Install it as a self-hosted marketplace (v0.9.3+):
 
@@ -192,15 +208,18 @@ skill directories into `~/.claude/skills/` (personal skills use the same
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r dist/claude-code/skill/manage-docs    ~/.claude/skills/manage-docs
-cp -r dist/claude-code/skill/track-context  ~/.claude/skills/track-context
-cp -r dist/claude-code/skill/refresh-docs   ~/.claude/skills/refresh-docs
+cp -r dist/claude-code/skill/manage-docs        ~/.claude/skills/manage-docs
+cp -r dist/claude-code/skill/track-context      ~/.claude/skills/track-context
+cp -r dist/claude-code/skill/refresh-docs       ~/.claude/skills/refresh-docs
+cp -r dist/claude-code/skill/migrate-structure  ~/.claude/skills/migrate-structure
+cp -r dist/claude-code/skill/model-feature      ~/.claude/skills/model-feature
 ```
 
 Restart Claude Code, then ask it about scaffolding/regenerating an aikata
 project (`manage-docs`), start non-trivial work in an aikata repo
-(`track-context`), or bring a repo up to the latest aikata
-(`refresh-docs`) — it picks up the right skill automatically. The
+(`track-context`), bring a repo up to the latest aikata (`refresh-docs`),
+relocate off-structure documents (`migrate-structure`), or design a single
+feature (`model-feature`) — it picks up the right skill automatically. The
 standalone install has no command wrappers, and the skills are
 `user-invocable: false`, so you cannot launch them with `/` directly; they
 fire from the model on a matching request.
@@ -213,7 +232,7 @@ one directory per skill — the `.agents/skills/<name>/SKILL.md` layout that
 Claude Code, Codex, Cursor, Gemini CLI, and other AGENTS.md-aware tools
 read. It does not install third-party skills.
 
-Install **all three** skills in one command by pointing the installer at
+Install **all five** skills in one command by pointing the installer at
 the `universal-skill` container directory — it walks the container one
 level deep and discovers each `<skill>/SKILL.md`:
 
@@ -224,9 +243,9 @@ npx skills add https://github.com/shigindo-inc/aikata/tree/main/dist/universal-s
 Point at the container, **not** an individual skill subdirectory: the
 installer treats the given path as a container of skills, so a path like
 `.../dist/universal-skill/track-context` finds nothing. Add `--skill
-manage-docs` (or `track-context` / `refresh-docs`) to install just one.
-`dist/universal-skill/` is the canonical source; no publication mirror
-repository is required.
+manage-docs` (or `track-context` / `refresh-docs` / `migrate-structure` /
+`model-feature`) to install just one. `dist/universal-skill/` is the
+canonical source; no publication mirror repository is required.
 
 The `tree/main/...` URL tracks the default branch. To **update** an
 installed skill to the latest, use the dedicated update command:
@@ -234,7 +253,7 @@ installed skill to the latest, use the dedicated update command:
 ```bash
 npx skills update                 # update all (interactive scope prompt)
 npx skills update --global -y     # the --agent universal install is global
-npx skills update manage-docs track-context refresh-docs   # or name them
+npx skills update manage-docs track-context refresh-docs migrate-structure model-feature   # or name them
 ```
 
 For Codex CLI `0.125.0+`, direct installation into `.agents/skills/` is
@@ -243,13 +262,15 @@ release tarball, or copy the directories from a checkout:
 
 ```bash
 mkdir -p ~/.agents/skills
-cp -r dist/universal-skill/manage-docs    ~/.agents/skills/manage-docs
-cp -r dist/universal-skill/track-context  ~/.agents/skills/track-context
-cp -r dist/universal-skill/refresh-docs   ~/.agents/skills/refresh-docs
+cp -r dist/universal-skill/manage-docs        ~/.agents/skills/manage-docs
+cp -r dist/universal-skill/track-context      ~/.agents/skills/track-context
+cp -r dist/universal-skill/refresh-docs       ~/.agents/skills/refresh-docs
+cp -r dist/universal-skill/migrate-structure  ~/.agents/skills/migrate-structure
+cp -r dist/universal-skill/model-feature      ~/.agents/skills/model-feature
 ```
 
 Restart Codex after installation. The release ships
-`aikata-universal-skill.tar.gz` for the complete three-skill directory.
+`aikata-universal-skill.tar.gz` for the complete five-skill directory.
 
 ## Codex plugin (v0.9.6+)
 
@@ -276,7 +297,7 @@ tag (it never advances), so moving to a newer release means
 `codex plugin marketplace remove aikata` then re-adding with the new
 `--ref` (see "Reinstalling" above).
 
-The plugin is a thin wrapper over the CLI: all three skills, each with its
+The plugin is a thin wrapper over the CLI: all five skills, each with its
 own `agents/openai.yaml` UI metadata, no MCP server, and no app
 integration. Codex has no slash-command mechanism, so the command wrappers
 are Claude Code-only; on Codex the skills are model-invoked.

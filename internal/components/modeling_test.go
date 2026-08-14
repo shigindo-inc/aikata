@@ -54,6 +54,27 @@ func TestModeling_DomainLinksToUsecasesAndBack(t *testing.T) {
 	}
 }
 
+func TestModeling_RelatedUCColumn_PerLocale(t *testing.T) {
+	cases := []struct {
+		lang    string
+		heading string
+	}{
+		{lang: "en", heading: "Related UC"},
+		{lang: "ja", heading: "関連UC"},
+	}
+	for _, tc := range cases {
+		rendered, err := RenderModeling(ModelingParams{
+			Lang: tc.lang, ProjectName: "demo", Clock: fixedClock,
+		})
+		if err != nil {
+			t.Fatalf("RenderModeling(%s): %v", tc.lang, err)
+		}
+		if !strings.Contains(rendered["docs/domain.md"], tc.heading) {
+			t.Errorf("domain.md (%s) must carry the field-granular %q column", tc.lang, tc.heading)
+		}
+	}
+}
+
 func TestModeling_IsIdempotentAndNeverClobbers(t *testing.T) {
 	tmp := t.TempDir()
 	ctx := AddContext{
@@ -118,6 +139,49 @@ func TestModeling_PartialPreExistence_ReportsOnlyActuallyWrittenFiles(t *testing
 	}
 	if string(b) != "hand-authored\n" {
 		t.Errorf("pre-existing docs/domain.md was clobbered: %q", b)
+	}
+}
+
+func TestModeling_DryRun_DoesNotClaimItWillWritePreExistingFile(t *testing.T) {
+	tmp := t.TempDir()
+	// Pre-create only docs/domain.md, as a hand-authored file, before
+	// modeling is ever enabled.
+	domainPath := filepath.Join(tmp, "docs", "domain.md")
+	if err := os.MkdirAll(filepath.Dir(domainPath), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(domainPath, []byte("hand-authored\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	var stdout bytes.Buffer
+	err := Modeling.Add(AddContext{
+		TargetDir:   tmp,
+		ProjectName: "demo",
+		Lang:        "en",
+		Clock:       fixedClock,
+		DryRun:      true,
+		Stdout:      &stdout,
+		Stderr:      &bytes.Buffer{},
+	})
+	if err != nil {
+		t.Fatalf("Add: %v", err)
+	}
+
+	out := stdout.String()
+	if !strings.Contains(out, "Would write docs/usecases.md") {
+		t.Errorf("dry-run stdout must report docs/usecases.md as would-write, got %q", out)
+	}
+	if strings.Contains(out, "Would write docs/domain.md") {
+		t.Errorf("dry-run stdout must NOT claim the pre-existing docs/domain.md will be written, got %q", out)
+	}
+
+	b, rerr := os.ReadFile(domainPath)
+	if rerr != nil {
+		t.Fatalf("read domain.md: %v", rerr)
+	}
+	if string(b) != "hand-authored\n" {
+		t.Errorf("dry-run must never write; pre-existing docs/domain.md changed: %q", b)
 	}
 }
 

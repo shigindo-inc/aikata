@@ -43,6 +43,12 @@ change is about to alter externally observable behaviour.
 - `track-context` now hands off to `model-feature` when the work about
   to start changes externally observable behaviour.
 
+**Adopting into an existing repo?** `docs/domain.md` is a plausible
+pre-existing filename. If you already have a hand-authored file at that
+path and don't want it held to the `modeling` frontmatter contract, add
+it to `doctor.exclude` in `.aikata/aikata.yaml` before enabling the
+capability.
+
 ## [0.14.0] - 2026-06-12
 
 **Structure-migration assistant: the `migrate-structure` skill (ADR 0046).**

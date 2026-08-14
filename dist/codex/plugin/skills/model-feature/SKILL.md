@@ -1,7 +1,7 @@
 ---
 name: model-feature
 user-invocable: false
-description: Use when designing one feature whose externally observable behaviour changes, in a repository that has aikata's modeling capability enabled (`docs/usecases.md` and `docs/domain.md` present). Walks a single feature from use case to domain model to a hand-off point just before implementation — writing the use case into docs/usecases.md, propagating required data into docs/domain.md, fixing new terms in GLOSSARY.md, and recording a decision in docs/adr/ when alternatives existed. Do not use for refactors, bug fixes, copy changes, or UI position adjustments (no observable behaviour change), in repositories without docs/usecases.md, or to carry out the implementation itself — this skill stops at the hand-off. For the daily context loop use `track-context`; for CLI invocation use `manage-docs`.
+description: Use when designing one feature whose externally observable behaviour changes, in a repository that has aikata's modeling capability enabled (`docs/usecases.md` and `docs/domain.md` present). Walks a single feature from use case to domain model to a hand-off point just before implementation — writing the use case into docs/usecases.md, propagating required data into docs/domain.md, fixing new terms in GLOSSARY.md, and recording a decision in docs/adr/ when alternatives existed. Do not use for refactors, bug fixes, copy changes, or UI position adjustments (no observable behaviour change), in repositories aikata does not manage, or to carry out the implementation itself — this skill stops at the hand-off. For the daily context loop use `track-context`; for CLI invocation use `manage-docs`.
 ---
 
 # model-feature
@@ -120,6 +120,10 @@ to catch.
 
 List only fields that carry meaning. Mechanical ones (`id`,
 `created_at`) are omitted.
+
+Use the field labels and column heading already present in the file —
+Japanese projects render these in Japanese; do not translate them or add
+a parallel column.
 
 ## Boundaries
 
