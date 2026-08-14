@@ -16,7 +16,7 @@ import (
 // (manage-docs), the in-repo context-maintenance loop (track-context), the
 // downstream doc-refresh loop (refresh-docs), and the structure-migration
 // assistant (migrate-structure, ADR 0046).
-var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure"}
+var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure", "model-feature"}
 
 // TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040 /
 // ADR 0041: `dist/universal-skill/<skill>/SKILL.md` is the single
