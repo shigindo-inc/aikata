@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-09
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -478,6 +478,7 @@ aikata generate
   - [0044 — Doc Map as a Mandatory Derived Artifact](./docs/adr/0044-doc-map-derived-artifact.md)
   - [0045 — Documentation Value Model: Classify by Source, Not Decay](./docs/adr/0045-documentation-value-model.md)
   - [0046 — Structure-migration Assistant: observe → propose → confirm-move Boundary](./docs/adr/0046-structure-migration-assistant-boundary.md)
+  - [0047 — Modeling Capability and Per-feature Design Loop: Boundary](./docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md)
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
 

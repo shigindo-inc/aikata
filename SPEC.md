@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-11
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -180,6 +180,9 @@ The pre-v0.7.1 `aikata add` parent was removed without an alias.
   reusable-prompt library per
   [ADR 0034](./docs/adr/0034-reusable-prompts-opt-in-capability.md)).
 - The long-term memory slot (`enable memory`).
+- The modeling document pair (`enable modeling` → `docs/usecases.md` +
+  `docs/domain.md`, always rendered together) per
+  [ADR 0047](./docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md).
 - A stack (`enable stack flutter`) and an AI-tool target
   (`enable ai-tool cursor`).
 - The monorepo layout (`enable monorepo`) and a workflow guide

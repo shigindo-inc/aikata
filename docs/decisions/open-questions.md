@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-11
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -399,6 +399,48 @@ These map to [SPEC.md §7](../../SPEC.md#7-hypotheses-to-validate).
 | H4 | Japanese OSS identity is a strength | Japanese-language issues / posts referencing aikata by v0.3 |
 
 Each will be revisited at the v0.3 → v0.4 transition.
+
+---
+
+## Q-MODELING
+
+Deferred out of [ADR 0047](../adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md)
+(the `modeling` capability and the `model-feature` per-feature design
+loop). Neither item is listed in [ROADMAP.md](../../ROADMAP.md) — listing
+deferred work as planned would be the speculative commitment ADR 0028
+forbids.
+
+### Q-MODELING-01 — Test strategy for the per-feature design loop
+
+- **Status**: Open. `model-feature` ends its loop at the hand-off just
+  before implementation and deliberately does not extend into test
+  authoring.
+- **Question**: whether and how to connect a use case's mandatory
+  exception path to a test scenario — extend the `tdd` component, add a
+  `docs/workflows/testing.md` workflow guide, or leave it to the
+  project's own process.
+- **Leading**: neither yet. The mandatory exception path in each
+  `docs/usecases.md` entry is already the natural input a future
+  extension would consume, and use-case IDs are already the join key it
+  would use — but building that link now would be speculative ahead of
+  evidence.
+- **Unblocks**: a concrete instance of agent/human disagreement about
+  test layers or scope on a project that has `modeling` enabled.
+
+### Q-MODELING-02 — Data handling & privacy declarations
+
+- **Status**: Open. Out of scope for the initial `modeling` capability.
+- **Question**: how collected fields, permissions, and store privacy
+  declarations should be derived from `docs/domain.md` — e.g. "personal
+  data?" and "retention" columns on the field table.
+- **Open sub-question**: generic capability versus a `flutter`-stack-only
+  brief, since iOS and Android declaration formats differ and a
+  stack-agnostic answer may not be reachable.
+- **Leading**: none yet. `docs/domain.md`'s field table (already
+  field-granular per ADR 0047 D4) is the intended carrier if this is
+  ever picked up, so no structural change would be needed to start.
+- **Unblocks**: work actually blocked on a store declaration or
+  permission design, on a project that has `modeling` enabled.
 
 ---
 
