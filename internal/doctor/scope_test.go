@@ -62,3 +62,20 @@ func TestManagedIncludeGlobs_UnionsManifestEntries(t *testing.T) {
 		t.Errorf("manifest-tracked path should be in scope: %v", globs)
 	}
 }
+
+func TestManagedIncludeGlobs_CoversModelingPair(t *testing.T) {
+	globs := ManagedIncludeGlobs(t.TempDir())
+	want := []string{"docs/usecases.md", "docs/domain.md"}
+	for _, w := range want {
+		found := false
+		for _, g := range globs {
+			if g == w {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("managed globs missing %q; got %v", w, globs)
+		}
+	}
+}
