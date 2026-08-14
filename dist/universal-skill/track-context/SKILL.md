@@ -104,6 +104,15 @@ calls for:
 - `aikata new adr "<title>"` — stamp an auto-numbered ADR for a design
   decision.
 
+## When to hand off to `model-feature`
+
+If the work about to start changes **externally observable behaviour**
+(a new or altered feature, not a refactor or bug fix), use the
+`model-feature` skill first: it writes the use case into
+`docs/usecases.md`, propagates the required data into `docs/domain.md`,
+and hands back just before implementation. Skip it for refactors, bug
+fixes, copy changes, and UI position adjustments.
+
 ## Reference
 
 - Canonical docs: `AGENTS.md`, `SPEC.md`, `ARCHITECTURE.md`, `GLOSSARY.md`.
@@ -111,3 +120,4 @@ calls for:
   `docs/decisions/open-questions.md`.
 - Working state: `docs/tasks/current.md` (when present).
 - Sibling skill: `manage-docs` (the raw CLI surface).
+- Sibling skill: `model-feature` (per-feature design loop into `docs/usecases.md` + `docs/domain.md`).
