@@ -1,6 +1,86 @@
 version: 1
-generated: "2026-06-24"
+generated: "2026-08-15"
 docs:
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/progress.md
+      title: 'SDD ledger — plan: docs/superpowers/plans/2026-08-14-modeling-capability-and-model-feature-skill.md'
+      summary: 'Spec: docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md (read, reachable) Branch: feat/modeling-capability Branch base: d2f5713 (main) Plan/spec commit: a9f55b0'
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-1-brief.md
+      title: task-1-brief.md
+      summary: task-1-brief.md
+      updated: "2026-08-13"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-1-report.md
+      title: 'Task 1 Report: Schema — `components.modeling`'
+      summary: DONE
+      updated: "2026-08-13"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-2-brief.md
+      title: Use cases — {{.ProjectName}}
+      summary: Each use case owns an ID (`UC-NN`). `docs/domain.md` references these IDs per field, so **never reuse an ID** after retiring a use case.
+      updated: "2026-08-13"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-2-report.md
+      title: Task 2 report — `modeling` capability
+      summary: 'Implemented the `modeling` capability exactly as specified in the brief: templates (en/ja), `internal/components/modeling.go`, registration in `internal/components/registry.go`, and the test file `internal/components/modeling_test.go`. Verified end-to-end against the real CLI binary. Committed as a single commit.'
+      updated: "2026-08-13"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-3-brief.md
+      title: task-3-brief.md
+      summary: task-3-brief.md
+      updated: "2026-08-13"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-3-report.md
+      title: 'Task 3 report — init-time wiring: `--with-modeling`'
+      summary: 1. Read `internal/scaffold/scaffold_test.go` before writing the new test. `Options` requires `Preset` (structured-config presets only emit `.aikata/aikata.yaml`, and this test needs to read that file back), so the test mirrors `standardOpts(tmp)` (used by e.g. `TestRun_GitignoreSecretBaselineIsUnconditional`) plus `opts.WithModeling = true`, rather than the brief's unverified bare `Options{...}` literal. 2. Verified `aikata init` / `aikata enable` have no `--dir` flag; Step 11 end-to-end verification `cd`s into the temp directory instead of passing `--dir`.
+      updated: "2026-08-13"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-4-brief.md
+      title: task-4-brief.md
+      summary: task-4-brief.md
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-4-report.md
+      title: 'Task 4 report: `doctor` managed surface'
+      summary: Added `docs/usecases.md` and `docs/domain.md` to `managedDocGlobs` in `internal/doctor/scope.go`, after `docs/prompts.md`, so `aikata doctor`'s default (non `--all-markdown`) walk validates the modeling pair's frontmatter/link/freshness like every other managed doc. No new check was added — only the two glob entries, as scoped.
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-5-brief.md
+      title: model-feature
+      summary: 'Design one feature at a time by writing it into the canonical documents, in an order that keeps the data model honest: **behaviour first, structure second**. Modelling data before behaviour is what admits fields nothing actually needs.'
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-5-report.md
+      title: 'Task 5 report: `model-feature` skill'
+      summary: 'Implemented the `model-feature` skill across all four distribution channels, following the TDD order specified in the brief: modify the parity test''s `firstPartySkills` list first, confirm RED, create the six files (canonical `SKILL.md` + `agents/openai.yaml` under `dist/universal-skill/model-feature/`, mirrored via `cp` into `dist/codex/plugin/skills/model-feature/` (both files), `dist/claude-code/plugin/skills/model-feature/SKILL.md`, and `dist/claude-code/skill/model-feature/SKILL.md`), confirm GREEN, then commit. No command wrapper was created (skill-only, per `track-context` precedent / ADR 0043 D4).'
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-6-brief.md
+      title: task-6-brief.md
+      summary: task-6-brief.md
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-6-report.md
+      title: 'Task 6 report: point `track-context` at `model-feature`'
+      summary: Edited the canonical copy `dist/universal-skill/track-context/SKILL.md`, then mirrored it byte-for-byte to the three distribution channels named in the brief.
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-7-brief.md
+      title: task-7-brief.md
+      summary: task-7-brief.md
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-7-report.md
+      title: Task 7 report — boundary ADR and canonical document updates
+      summary: '`11e194f` — `docs(adr): record the modeling capability and per-feature design loop boundary`'
+      updated: "2026-08-14"
+      managed: false
+    - path: .superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-8-brief.md
+      title: task-8-brief.md
+      summary: task-8-brief.md
+      updated: "2026-08-14"
+      managed: false
     - path: AGENTS.md
       title: Agent Instructions for aikata Development
       summary: '**You are reading the canonical source** for agent behavior in this repository. Tool-specific files (`CLAUDE.md`, `.cursor/rules/`, …), when present, are **generated** from this file. If they disagree, this file wins. See [ADR 0002](./docs/adr/0002-agents-md-as-canonical.md).'
@@ -24,7 +104,7 @@ docs:
       title: ARCHITECTURE — How
       summary: This document explains **how** aikata is built and how it produces its output. For **what / why**, read [SPEC.md](./SPEC.md). For the **when**, read [ROADMAP.md](./ROADMAP.md). Individual decisions live under [`docs/adr/`](./docs/adr/).
       status: draft
-      updated: "2026-06-24"
+      updated: "2026-08-14"
       managed: true
       links:
         - CONTRIBUTING.md
@@ -47,13 +127,14 @@ docs:
         - docs/adr/0040-collaboration-operation-skill-split.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
         - docs/layout.md
     - path: CHANGELOG.md
       title: Changelog
       summary: All notable changes to **aikata** are documented in this file.
       status: draft
-      updated: "2026-06-12"
+      updated: "2026-08-14"
       managed: true
       links:
         - AGENTS.md
@@ -89,11 +170,12 @@ docs:
       title: Glossary
       summary: Terminology used across aikata documentation and source code. Each entry contains the English term, an optional Japanese reading (`yomi`), and a short definition. Terms marked **(domain)** are aikata-specific concepts; others are industry-standard but redefined here to fix the project's interpretation.
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: true
       links:
         - AGENTS.md
         - ROADMAP.md
+        - SPEC.md
         - docs/adr/0001-record-architecture-decisions.md
         - docs/adr/0002-agents-md-as-canonical.md
         - docs/adr/0004-long-term-memory-slot.md
@@ -102,11 +184,12 @@ docs:
         - docs/adr/0025-sync-divergent-file-preservation.md
         - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
     - path: README.md
       title: aikata
       summary: '**aikata** (相方, *ai-kata*, /aɪˈkɑːtə/) — a lightweight CLI that scaffolds AI-readable markdown documents and per-AI-tool config files in a single command.'
       status: draft
-      updated: "2026-06-09"
+      updated: "2026-08-14"
       managed: true
       links:
         - AGENTS.md
@@ -163,6 +246,7 @@ docs:
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0045-documentation-value-model.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/troubleshooting.md
@@ -170,7 +254,7 @@ docs:
       title: ROADMAP
       summary: 'Direction, not promises. Versions are scoped by *what they unlock*, not by dates. The single ordering rule: **each milestone must leave aikata usable by its current user base** — never break Phase N users to ship Phase N+1.'
       status: draft
-      updated: "2026-06-12"
+      updated: "2026-08-14"
       managed: true
       links:
         - ARCHITECTURE.md
@@ -193,6 +277,7 @@ docs:
         - docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
         - docs/decisions/open-questions.md
         - docs/decisions/v0.9-core-concept-stabilization.md
@@ -207,7 +292,7 @@ docs:
       title: SPEC — What & Why
       summary: This document describes **what** aikata does and **why**. For technical design (the **how**), read [ARCHITECTURE.md](./ARCHITECTURE.md). For the release timeline, read [ROADMAP.md](./ROADMAP.md). For terminology, read [GLOSSARY.md](./GLOSSARY.md).
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: true
       links:
         - ARCHITECTURE.md
@@ -225,6 +310,7 @@ docs:
         - docs/adr/0034-reusable-prompts-opt-in-capability.md
         - docs/adr/0037-tighten-adoption-mutation-boundaries.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/open-questions.md
     - path: docs/adoption.md
       title: Adopting aikata in an existing repository
@@ -571,6 +657,19 @@ docs:
       status: draft
       updated: "2026-06-12"
       managed: true
+    - path: docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
+      title: 'ADR 0047 - Modeling capability and per-feature design loop: boundary'
+      summary: '- **Status**: Accepted - **Date**: 2026-08-14 - **Deciders**: aikata maintainers - **Related**: ADR 0007 (no generic `DESIGN.md` — the "prove no existing document can own it" test this decision discharges), ADR 0017 (post-init command taxonomy — `enable` for capabilities), ADR 0026 (workflow guides as opt-in collaboration docs — the slot this decision deliberately leaves unused), ADR 0028 (prioritize core-concept stabilization — demand-driven, not speculative), ADR 0031 (brand exploration documents as one-off artifacts — why `docs/design/` is already taken), ADR 0043 (command-wrapper skill surface & simple skill names — the skill-not-verb precedent), ADR 0045 (documentation value model — both new documents are canonical stock), ADR 0046 (structure- migration assistant boundary — the sibling boundary-ADR pattern this one follows).'
+      status: draft
+      updated: "2026-08-14"
+      managed: true
+      links:
+        - ARCHITECTURE.md
+        - GLOSSARY.md
+        - SPEC.md
+        - docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md
+        - docs/decisions/open-questions.md
+        - docs/layout.md
     - path: docs/decisions/2026-06-17-watched-external-doc-homes-design.md
       title: Design — CLI/skill responsibility split & watched external doc homes
       summary: 'Design note (rationale source) for two decisions that ship together: a foundational **CLI ↔ skill division-of-labor principle** and its first application, **lifecycle observation of foreign-owned ("watched") document homes**. The durable records are two ADRs in `docs/adr/` (ADR-A principle, ADR-B feature); this note carries the reasoning they cite. It mirrors how [`v0.9-core-concept-stabilization.md`](./v0.9-core-concept-stabilization.md) backs ADR 0028/0033/0034.'
@@ -592,6 +691,25 @@ docs:
         - docs/adr/0045-documentation-value-model.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/layout.md
+    - path: docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md
+      title: Design — `modeling` capability & the `model-feature` skill
+      summary: 'Design note (rationale source) for two things that ship together: an opt-in **`modeling` capability** that renders a document pair (`docs/usecases.md` + `docs/domain.md`), and a first-party **`model-feature` skill** that fills that pair one feature at a time. The durable record will be a boundary ADR under `docs/adr/` (in the spirit of [ADR 0046](../adr/0046-structure-migration-assistant-boundary.md)); this note carries the reasoning it cites. Mirrors how [`2026-06-17-watched-external-doc-homes-design.md`](./2026-06-17-watched-external-doc-homes-design.md) backs its ADR pair.'
+      status: draft
+      updated: "2026-08-14"
+      managed: false
+      links:
+        - SPEC.md
+        - docs/adr/0007-no-generic-design-md.md
+        - docs/adr/0017-post-init-command-taxonomy.md
+        - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
+        - docs/adr/0028-prioritize-core-concept-stabilization.md
+        - docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md
+        - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/decisions/2026-06-17-watched-external-doc-homes-design.md
+        - docs/decisions/2026-06-24-agile-lifecycle-scope-stance.md
+        - docs/decisions/open-questions.md
+        - docs/layout.md
     - path: docs/decisions/docmap-design.md
       title: Design — Doc Map (`docmap`)
       summary: Detailed design for the doc-cartography artifact decided in [ADR 0044](../adr/0044-doc-map-derived-artifact.md). For **why**, read the ADR; this note records the **how** at design depth so the implementation phases can be planned and executed independently.
@@ -605,7 +723,7 @@ docs:
       title: Open Questions
       summary: Decisions that are **not yet** made. When one of these is resolved, the resolution moves to an ADR under [`docs/adr/`](../adr/) and the entry here is removed.
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: false
       links:
         - ROADMAP.md
@@ -629,6 +747,7 @@ docs:
         - docs/adr/0042-fill-command-for-canonical-document-completion.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
     - path: docs/decisions/v0.9-core-concept-stabilization.md
       title: v0.9.0 Core-Concept Stabilization
@@ -664,7 +783,7 @@ docs:
       title: Recommended Layout — the aikata structure on one page
       summary: 'The single, cross-referenced index of **where each kind of document belongs** in an aikata project, what governs it, and whether `aikata doctor` validates it by default. This is the **prescriptive** counterpart to the **descriptive** [doc map](./decisions/docmap-design.md) (`.aikata/docmap.{yaml,md}`, [ADR 0044](./adr/0044-doc-map-derived-artifact.md)): `layout.md` says *what should exist*; the doc map records *what does exist*; reconciling the two is a future migration assistant (ROADMAP v0.14.0).'
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: false
       links:
         - ARCHITECTURE.md
@@ -684,6 +803,7 @@ docs:
         - docs/adr/0037-tighten-adoption-mutation-boundaries.md
         - docs/adr/0039-documentation-hygiene-and-context-budget.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
     - path: docs/memory/README.md
       title: '`docs/memory/` — Long-term Agent Memory'
@@ -763,6 +883,13 @@ docs:
         - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
         - docs/adr/0027-verification-expectation-in-generated-templates.md
         - docs/adr/0039-documentation-hygiene-and-context-budget.md
+    - path: docs/superpowers/plans/2026-08-14-modeling-capability-and-model-feature-skill.md
+      title: '`modeling` Capability & `model-feature` Skill Implementation Plan'
+      summary: '**For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.'
+      updated: "2026-08-13"
+      managed: false
+      links:
+        - docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md
     - path: docs/troubleshooting.md
       title: Troubleshooting
       summary: Known setup problems for aikata itself. Keep entries short, concrete, and based on real failures.

@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-12
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -17,6 +17,31 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.15.0] - 2026-08-14
+
+**Modeling capability + `model-feature` skill (ADR 0047).** An opt-in
+per-feature design loop: `docs/usecases.md` and `docs/domain.md` give a
+project a lightweight use-case ledger and domain model, and the
+`model-feature` skill writes to them before implementation whenever a
+change is about to alter externally observable behaviour.
+
+### Added
+
+- `aikata enable modeling` / `aikata init --with-modeling` scaffolds an
+  opt-in document pair: `docs/usecases.md` (use-case ledger) and
+  `docs/domain.md` (domain model, with per-field use-case links).
+  Both join the default `aikata doctor` managed surface. (ADR 0047)
+- `model-feature` first-party skill — a per-feature design loop that
+  writes a use case, propagates it into the domain model, fixes new
+  terms in `GLOSSARY.md`, and hands off before implementation. Fires
+  only when externally observable behaviour changes; advisory, never
+  gating. (ADR 0047)
+
+### Changed
+
+- `track-context` now hands off to `model-feature` when the work about
+  to start changes externally observable behaviour.
 
 ## [0.14.0] - 2026-06-12
 
