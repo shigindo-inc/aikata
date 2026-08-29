@@ -91,6 +91,9 @@ this is the canonical-locale policy in
    user-visible change.
 6. **CI green.** The 3-OS matrix (macOS / Linux / Windows × Go 1.24),
    `golangci-lint`, and the install-script smoke job must all pass.
+   Branch protection requires the aggregate `ci gate` job rather than the
+   individual matrix checks — matrix check names embed the Go version, so
+   requiring them directly would wedge every PR on a toolchain bump.
 
 For docs-only changes, the same English / CHANGELOG / CI rules apply,
 but no tests are required.

@@ -179,3 +179,23 @@ jobs:
           distribution: goreleaser
           version: "~> v2"
           args: check
+
+  ci-gate:
+    # Single stable check name for branch protection. The matrix job's own
+    # check names embed the Go version ("test + lint + build (macos-latest,
+    # 1.24)"), so requiring those directly wedges the repo on every
+    # toolchain bump: the old names stop being reported, GitHub keeps
+    # waiting for them, and no PR can merge until someone edits the
+    # protection rule by hand. Require this job instead — its name never
+    # changes.
+    name: ci gate
+    needs: [test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the test matrix succeeded
+        env:
+          RESULT: ${{ needs.test.result }}
+        run: |
+          echo "test matrix result: $RESULT"
+          test "$RESULT" = success
