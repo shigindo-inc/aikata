@@ -59,8 +59,8 @@ var validAITools = map[string]struct{}{
 }
 
 // runPrompt asks the user for the values needed by `aikata init`. The
-// flow is deliberately bufio-based so aikata stays Go-1.21 compatible
-// and free of bubbletea-class dependencies (see ARCHITECTURE.md §10).
+// flow is deliberately bufio-based to keep aikata free of
+// bubbletea-class dependencies (see ARCHITECTURE.md §10).
 // Defaults are shown in brackets; pressing Enter keeps the default.
 // Questions whose corresponding flag was explicitly supplied are
 // silently skipped via the `skip` argument.

@@ -42,6 +42,15 @@ change is about to alter externally observable behaviour.
 
 - `track-context` now hands off to `model-feature` when the work about
   to start changes externally observable behaviour.
+- **Go toolchain floor raised to 1.24** — `go.mod`, the CI matrix, and the
+  release workflow. macOS 26's dynamic loader rejects Mach-O binaries with
+  no `LC_UUID` load command, and the Go linker only began emitting one in
+  1.24; under 1.21 every externally linked test binary (anything reaching
+  `net`, `crypto/x509`, or `os/user`) aborted at startup on the
+  `macos-latest` runner. Installing from a release archive or via the
+  install script is unaffected — those binaries are cross-compiled with
+  `CGO_ENABLED=0`, link internally, and always ran. `go install` from
+  source now requires Go 1.24+.
 
 **Adopting into an existing repo?** `docs/domain.md` is a plausible
 pre-existing filename. If you already have a hand-authored file at that

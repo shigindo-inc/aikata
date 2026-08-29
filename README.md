@@ -149,7 +149,7 @@ less install.sh
 sh install.sh
 ```
 
-### From source — `go install` (requires Go 1.21+)
+### From source — `go install` (requires Go 1.24+)
 
 ```bash
 go install github.com/shigindo-inc/aikata/cmd/aikata@latest

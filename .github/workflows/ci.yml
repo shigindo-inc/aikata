@@ -1,6 +1,6 @@
 # CI for aikata.
 #
-# Scope (Task 8 onward): macOS + Linux + Windows on Go 1.21. The
+# Scope (Task 8 onward): macOS + Linux + Windows on Go 1.24. The
 # golden tree assumes LF line endings — see .gitattributes for the
 # normalization that keeps the Windows runner byte-identical.
 #
@@ -54,7 +54,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        go: ["1.21"]
+        go: ["1.24"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -179,3 +179,26 @@ jobs:
           distribution: goreleaser
           version: "~> v2"
           args: check
+
+  ci-gate:
+    # Single stable check name for branch protection. The matrix job's own
+    # check names embed the Go version ("test + lint + build (macos-latest,
+    # 1.24)"), so requiring those directly wedges the repo on every
+    # toolchain bump: the old names stop being reported, GitHub keeps
+    # waiting for them, and no PR can merge until someone edits the
+    # protection rule by hand. Require this job instead — its name never
+    # changes.
+    name: ci gate
+    needs: [test, install-script]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the required jobs succeeded
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          INSTALL_RESULT: ${{ needs['install-script'].result }}
+        run: |
+          echo "test matrix:        $TEST_RESULT"
+          echo "install-script:     $INSTALL_RESULT"
+          test "$TEST_RESULT" = success
+          test "$INSTALL_RESULT" = success
