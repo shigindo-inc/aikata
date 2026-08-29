@@ -8,7 +8,7 @@ import (
 
 // withFlags mirrors the optional-component knobs that scaffold.Options
 // carries. We keep them in one struct so derivePlan returns a single
-// value (LoD) instead of six parameters.
+// value (LoD) instead of one parameter per component.
 type withFlags struct {
 	WithMemory    bool
 	WithUI        bool
@@ -16,6 +16,9 @@ type withFlags struct {
 	WithTDD       bool
 	WithChangelog bool
 	WithMonorepo  bool
+	WithPrompts   bool
+	WithModeling  bool
+	WithEnv       bool
 }
 
 // overrides carries one-off CLI scope overrides into derivePlan. Each
@@ -106,6 +109,15 @@ func derivePlan(ancestor config.Manifest, cfg config.AikataYaml, manifestPresent
 	if cfg.Components.Monorepo {
 		flags.WithMonorepo = true
 	}
+	if cfg.Components.Prompts {
+		flags.WithPrompts = true
+	}
+	if cfg.Components.Modeling {
+		flags.WithModeling = true
+	}
+	if cfg.Components.Env {
+		flags.WithEnv = true
+	}
 	if cfg.Features != nil {
 		if cfg.Features["monorepo"] {
 			flags.WithMonorepo = true
@@ -134,12 +146,13 @@ func derivePlan(ancestor config.Manifest, cfg config.AikataYaml, manifestPresent
 
 // inferFlags maps the manifest's recorded file paths back to the
 // `--with-*` flags the user originally passed. Detection rules are
-// kept narrow: each flag is owned by exactly one canonical filename
-// (or path prefix) so a false positive is unlikely.
+// kept narrow: every path that sets a flag is written by exactly one
+// component's renderer, so a false positive is unlikely.
 //
-// monorepo detection looks for either the `docs/monorepo.md`
-// explainer or any `apps/...` entry; both are written by the
-// monorepo component's renderer.
+// Two flags own more than one path. monorepo matches either the
+// `docs/monorepo.md` explainer or any `apps/...` entry; modeling
+// matches either half of its document pair, so a project that has
+// hand-deleted one of the two still re-renders the other.
 func inferFlags(m config.Manifest) withFlags {
 	var f withFlags
 	for _, file := range m.Files {
@@ -156,6 +169,12 @@ func inferFlags(m config.Manifest) withFlags {
 			f.WithChangelog = true
 		case file.Path == "docs/monorepo.md", strings.HasPrefix(file.Path, "apps/"):
 			f.WithMonorepo = true
+		case file.Path == "docs/prompts.md":
+			f.WithPrompts = true
+		case file.Path == "docs/usecases.md", file.Path == "docs/domain.md":
+			f.WithModeling = true
+		case file.Path == ".env.example":
+			f.WithEnv = true
 		}
 	}
 	return f

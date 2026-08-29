@@ -18,6 +18,19 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`aikata sync` now re-renders the `modeling`, `prompts`, and `env`
+  documents.** `internal/sync`'s flag struct had no field for these three
+  capabilities, so their files were missing from the upstream render:
+  sync reported `docs/usecases.md`, `docs/domain.md`, `docs/prompts.md`,
+  and `.env.example` as `upstream-removed` and **dropped their manifest
+  entries**, after which aikata stopped tracking those documents
+  entirely. Nothing was ever deleted or overwritten on disk. Adopted
+  projects recover on the next `aikata sync`. Note that a hand-edited
+  file among these will now classify as divergent rather than being
+  ignored — preserved, not overwritten, per ADR 0025.
+
 ## [0.15.0] - 2026-08-14
 
 **Modeling capability + `model-feature` skill (ADR 0047).** An opt-in
