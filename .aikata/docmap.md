@@ -2,30 +2,11 @@
 
 > Machine-generated inventory of this project's document set (ADR 0044). Derived from `.aikata/docmap.yaml`; do not edit by hand — `aikata map` and the doctor freshness check keep it current.
 
-_generated: 2026-08-15_
+_generated: 2026-08-29_
 
 ## Documents
 
 ```
-├── .superpowers/
-│   └── sdd/
-│       └── 2026-08-14-modeling-capability-and-model-feature-skill/
-│           ├── progress.md — SDD ledger — plan: docs/superpowers/plans/2026-08-14-modeling-capability-and-model-feature-skill.md · 2026-08-14 · (external)
-│           ├── task-1-brief.md — task-1-brief.md · 2026-08-13 · (external)
-│           ├── task-1-report.md — Task 1 Report: Schema — `components.modeling` · 2026-08-13 · (external)
-│           ├── task-2-brief.md — Use cases — {{.ProjectName}} · 2026-08-13 · (external)
-│           ├── task-2-report.md — Task 2 report — `modeling` capability · 2026-08-13 · (external)
-│           ├── task-3-brief.md — task-3-brief.md · 2026-08-13 · (external)
-│           ├── task-3-report.md — Task 3 report — init-time wiring: `--with-modeling` · 2026-08-13 · (external)
-│           ├── task-4-brief.md — task-4-brief.md · 2026-08-14 · (external)
-│           ├── task-4-report.md — Task 4 report: `doctor` managed surface · 2026-08-14 · (external)
-│           ├── task-5-brief.md — model-feature · 2026-08-14 · (external)
-│           ├── task-5-report.md — Task 5 report: `model-feature` skill · 2026-08-14 · (external)
-│           ├── task-6-brief.md — task-6-brief.md · 2026-08-14 · (external)
-│           ├── task-6-report.md — Task 6 report: point `track-context` at `model-feature` · 2026-08-14 · (external)
-│           ├── task-7-brief.md — task-7-brief.md · 2026-08-14 · (external)
-│           ├── task-7-report.md — Task 7 report — boundary ADR and canonical document updates · 2026-08-14 · (external)
-│           └── task-8-brief.md — task-8-brief.md · 2026-08-14 · (external)
 ├── docs/
 │   ├── adr/
 │   │   ├── 0001-record-architecture-decisions.md — ADR 0001 — Record Architecture Decisions · draft · 2026-05-20
@@ -88,9 +69,6 @@ _generated: 2026-08-15_
 │   │   ├── project.md — Memory — `project` · draft · 2026-05-31
 │   │   ├── reference.md — Memory — `reference` · draft · 2026-05-21
 │   │   └── user.md — Memory — `user` · draft · 2026-05-21
-│   ├── superpowers/
-│   │   └── plans/
-│   │       └── 2026-08-14-modeling-capability-and-model-feature-skill.md — `modeling` Capability & `model-feature` Skill Implementation Plan · 2026-08-13 · (external)
 │   ├── adoption.md — Adopting aikata in an existing repository · draft · 2026-05-29 · (external)
 │   ├── japanese-users.ja.md — Japanese Users · draft · 2026-05-28 · (external)
 │   ├── layout.md — Recommended Layout — the aikata structure on one page · draft · 2026-08-14 · (external)
@@ -150,26 +128,9 @@ _generated: 2026-08-15_
 - `docs/memory/reference.md` → `AGENTS.md`, `ARCHITECTURE.md`, `README.md`, `ROADMAP.md`, `SPEC.md`, `docs/decisions/open-questions.md`, `docs/memory/README.md`
 - `docs/memory/user.md` → `ARCHITECTURE.md`, `docs/memory/README.md`
 - `docs/roadmap-archive.md` → `CHANGELOG.md`, `ROADMAP.md`, `SPEC.md`, `docs/adr/0004-long-term-memory-slot.md`, `docs/adr/0005-cursor-codex-pass-through.md`, `docs/adr/0006-locale-and-japanese-documentation-policy.md`, `docs/adr/0010-memory-projection-deferred-to-v0-6.md`, `docs/adr/0012-memory-projection-deferral-extended.md`, `docs/adr/0020-retire-ai-config-fallback.md`, `docs/adr/0024-scope-stack-axes-split.md`, `docs/adr/0025-sync-divergent-file-preservation.md`, `docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md`, `docs/adr/0027-verification-expectation-in-generated-templates.md`, `docs/adr/0039-documentation-hygiene-and-context-budget.md`
-- `docs/superpowers/plans/2026-08-14-modeling-capability-and-model-feature-skill.md` → `docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md`
 
 ## Index
 
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/progress.md` — Spec: docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md (read, reachable) Branch: feat/modeling-capability Branch base: d2f5713 (main) Plan/spec commit: a9f55b0
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-1-brief.md` — task-1-brief.md
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-1-report.md` — DONE
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-2-brief.md` — Each use case owns an ID (`UC-NN`). `docs/domain.md` references these IDs per field, so **never reuse an ID** after retiring a use case.
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-2-report.md` — Implemented the `modeling` capability exactly as specified in the brief: templates (en/ja), `internal/components/modeling.go`, registration in `internal/components/registry.go`, and the test file `internal/components/modeling_test.go`. Verified end-to-end against the real CLI binary. Committed as a single commit.
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-3-brief.md` — task-3-brief.md
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-3-report.md` — 1. Read `internal/scaffold/scaffold_test.go` before writing the new test. `Options` requires `Preset` (structured-config presets only emit `.aikata/aikata.yaml`, and this test needs to read that file back), so the test mirrors `standardOpts(tmp)` (used by e.g. `TestRun_GitignoreSecretBaselineIsUnconditional`) plus `opts.WithModeling = true`, rather than the brief's unverified bare `Options{...}` literal. 2. Verified `aikata init` / `aikata enable` have no `--dir` flag; Step 11 end-to-end verification `cd`s into the temp directory instead of passing `--dir`.
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-4-brief.md` — task-4-brief.md
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-4-report.md` — Added `docs/usecases.md` and `docs/domain.md` to `managedDocGlobs` in `internal/doctor/scope.go`, after `docs/prompts.md`, so `aikata doctor`'s default (non `--all-markdown`) walk validates the modeling pair's frontmatter/link/freshness like every other managed doc. No new check was added — only the two glob entries, as scoped.
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-5-brief.md` — Design one feature at a time by writing it into the canonical documents, in an order that keeps the data model honest: **behaviour first, structure second**. Modelling data before behaviour is what admits fields nothing actually needs.
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-5-report.md` — Implemented the `model-feature` skill across all four distribution channels, following the TDD order specified in the brief: modify the parity test's `firstPartySkills` list first, confirm RED, create the six files (canonical `SKILL.md` + `agents/openai.yaml` under `dist/universal-skill/model-feature/`, mirrored via `cp` into `dist/codex/plugin/skills/model-feature/` (both files), `dist/claude-code/plugin/skills/model-feature/SKILL.md`, and `dist/claude-code/skill/model-feature/SKILL.md`), confirm GREEN, then commit. No command wrapper was created (skill-only, per `track-context` precedent / ADR 0043 D4).
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-6-brief.md` — task-6-brief.md
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-6-report.md` — Edited the canonical copy `dist/universal-skill/track-context/SKILL.md`, then mirrored it byte-for-byte to the three distribution channels named in the brief.
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-7-brief.md` — task-7-brief.md
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-7-report.md` — `11e194f` — `docs(adr): record the modeling capability and per-feature design loop boundary`
-- `.superpowers/sdd/2026-08-14-modeling-capability-and-model-feature-skill/task-8-brief.md` — task-8-brief.md
 - `AGENTS.md` — **You are reading the canonical source** for agent behavior in this repository. Tool-specific files (`CLAUDE.md`, `.cursor/rules/`, …), when present, are **generated** from this file. If they disagree, this file wins. See [ADR 0002](./docs/adr/0002-agents-md-as-canonical.md).
 - `ARCHITECTURE.md` — This document explains **how** aikata is built and how it produces its output. For **what / why**, read [SPEC.md](./SPEC.md). For the **when**, read [ROADMAP.md](./ROADMAP.md). Individual decisions live under [`docs/adr/`](./docs/adr/).
 - `CHANGELOG.md` — All notable changes to **aikata** are documented in this file.
@@ -241,6 +202,5 @@ _generated: 2026-08-15_
 - `docs/memory/reference.md` — Pointers to external systems and authoritative external references relevant to this project. Reading these is often required to resolve a question; bookmark them here so they are one click away. See [`README.md`](./README.md) for write rules.
 - `docs/memory/user.md` — Profile, role, knowledge, and persistent preferences of the user. See [`README.md`](./README.md) for write rules.
 - `docs/roadmap-archive.md` — Historical record. These milestones are **all released**; their detailed per-version checklists were moved out of [ROADMAP.md](../ROADMAP.md) to keep the live roadmap focused on the current and upcoming surface ([ADR 0039](./adr/0039-documentation-hygiene-and-context-budget.md)). The binding decisions live in [`docs/adr/`](./adr/) and the shipped changes in [CHANGELOG.md](../CHANGELOG.md); this file preserves the planning detail verbatim. For current direction, see [ROADMAP.md](../ROADMAP.md).
-- `docs/superpowers/plans/2026-08-14-modeling-capability-and-model-feature-skill.md` — **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 - `docs/troubleshooting.md` — Known setup problems for aikata itself. Keep entries short, concrete, and based on real failures.
 
