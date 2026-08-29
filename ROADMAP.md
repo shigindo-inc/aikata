@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-06-12
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -585,6 +585,55 @@ Out of v0.14.0 intentionally:
   with the author / other skills).
 - A CLI `aikata migrate` mutate verb (the skill + observation-only CLI is the
   chosen shape unless dogfooding shows it insufficient).
+
+---
+
+## v0.15.0 — Modeling capability + `model-feature` skill ✅ (released 2026-08-14)
+
+**Goal**: close the gap between `SPEC.md` (what/why) and `ARCHITECTURE.md`
+(how) where behaviour and structure actually get designed — *who does
+what, triggered by what, reaching what outcome, failing how*, and the
+entities/fields/invariants that outcome needs — so agents stop
+fabricating fields and use cases drift less between design and code.
+
+Dogfooding surfaced this as a concrete, not hypothetical, failure:
+without a written record, data-model fields get invented speculatively
+with nothing to say whether anything actually needs them. The decision
+is recorded in
+[ADR 0047](./docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md).
+
+- [x] **`modeling` capability** ✅ — `aikata enable modeling` /
+      `aikata init --with-modeling` scaffolds an opt-in document pair:
+      `docs/usecases.md` (use-case ledger) and `docs/domain.md` (domain
+      model, with a per-field `Related UC` column). The pair is enabled
+      together, never separately, and joins the default `aikata doctor`
+      managed surface with no new checks — existing frontmatter / link /
+      unused-`GLOSSARY.md`-term validation applies for free.
+- [x] **`model-feature` skill** ✅ — a new first-party per-feature design
+      loop, distinct from `track-context` (different trigger condition):
+      write a use case → propagate it into the domain model → fix new
+      terms in `GLOSSARY.md` → confirm the bidirectional field/use-case
+      check → hand off before implementation. Fires on exactly one
+      criterion — externally observable behaviour changes — and is
+      advisory, never gating. Shipped across the universal / Claude Code
+      (plugin + standalone) / Codex distribution trees.
+- [x] **`track-context` hand-off** ✅ — `track-context` now hands off to
+      `model-feature` when the work about to start changes externally
+      observable behaviour, so the two skills compose instead of
+      overlapping.
+
+Out of v0.15.0 intentionally:
+
+- Any new CLI verb — `modeling` is scaffolding-only, reachable through
+  the existing `enable` / `init` / `doctor` / `fill` / `map` surface.
+- Extending traceability into code or tests — aikata does not read code,
+  so such links would rot silently instead of being caught by `doctor`.
+- Carrying the loop into implementation — `model-feature` ends at the
+  hand-off; implementation stays with the project's normal development
+  flow and the wider planning/implementation skill ecosystem.
+
+This is not a distribution-channel change (no cadence-table row): it
+ships across the same channels v0.10.0 established.
 
 ---
 

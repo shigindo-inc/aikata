@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-11
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -102,6 +102,14 @@ data layer (`docmap.yaml`) and a readable view (`docmap.md`: tree + Mermaid
 link-graph + summaries). Mandatory aikata-owned state, not manifest-tracked;
 freshness is enforced by `aikata doctor`. Defined by
 [ADR 0044](./docs/adr/0044-doc-map-derived-artifact.md).
+
+### document-centered
+
+aikata's positioning: the unit of truth is the markdown document rather
+than a rules artifact ([SPEC §1.2](./SPEC.md)). Describes **structure**
+— which document owns which fact. Distinct from the process layer added
+on top of it; see
+[per-feature design loop](#per-feature-design-loop).
 
 ### dogfooding (ドッグフーディング)
 
@@ -244,6 +252,19 @@ breadth, aikata is closer to Vite/Astro.
 ---
 
 ## P
+
+### per-feature design loop
+
+The ordering `use case → domain model → decision → hand-off` walked by
+the `model-feature` skill, one feature per run, when the opt-in
+`modeling` capability is enabled (`docs/usecases.md` +
+`docs/domain.md`). Describes **process**, and sits on top of the
+[document-centered](#document-centered) structure rather than
+replacing it. Deliberately not abbreviated and deliberately not named
+after the established industry term for structuring a domain model
+around behaviour — that term carries a strong LLM prior toward a
+specific, heavyweight design school, which this loop does not assume or
+require. See [ADR 0047](./docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md).
 
 ### preset — (プリセット)
 

@@ -1,0 +1,40 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Domain model — {{.ProjectName}}
+
+> The entities this project reasons about: what they hold, what must
+> always be true of them, and how they change state. The behavioural
+> counterpart is [`docs/usecases.md`](./usecases.md). Terms introduced
+> here belong in [`GLOSSARY.md`](../GLOSSARY.md); structure and
+> implementation approach belong in
+> [`ARCHITECTURE.md`](../ARCHITECTURE.md).
+
+Every principal field carries a **Related UC**. This runs the check in
+both directions: a use case whose success state needs data absent from
+this file, and a field here that no use case reaches, are both visible.
+The second direction is the point — it is what catches a speculative
+field.
+
+List only fields that carry meaning. Mechanical ones (`id`,
+`created_at`) are omitted deliberately.
+
+---
+
+## Entities
+
+### _TODO: EntityName_
+
+- **Description**: _TODO: what one of these represents_
+- **Invariant**: _TODO: what must always hold, however it is reached_
+
+| Field | Type | Meaning | Related UC |
+|---|---|---|---|
+| _TODO_ | _TODO_ | _TODO_ | UC-01 |
+
+- **Transitions**: _TODO: stateA → stateB (UC-01)_

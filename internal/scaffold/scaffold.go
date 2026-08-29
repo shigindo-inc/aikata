@@ -54,6 +54,9 @@ type Options struct {
 	// templates do not branch on this flag. Off by default — the file
 	// was a default scaffold through v0.9.1 and is now opt-in.
 	WithPrompts bool
+	// WithModeling provisions the opt-in use-case ledger and domain
+	// model at docs/usecases.md + docs/domain.md.
+	WithModeling bool
 	// WithEnv provisions the opt-in environment-variable template at
 	// .env.example (ADR 0037). Single-file component. Off by default —
 	// the file was a default scaffold through v0.9.6 and is now opt-in.
@@ -242,6 +245,13 @@ func renderInto(opts Options) (map[string]string, error) {
 			})
 		}},
 		{opts.WithPrompts, func() (map[string]string, error) { return components.RenderPrompts(sfp) }},
+		{opts.WithModeling, func() (map[string]string, error) {
+			return components.RenderModeling(components.ModelingParams{
+				Lang:        opts.Lang,
+				ProjectName: opts.ProjectName,
+				Clock:       opts.Clock,
+			})
+		}},
 		{opts.WithEnv, func() (map[string]string, error) { return components.RenderEnv(sfp) }},
 	}
 	for _, spec := range optionalSpecs {
@@ -336,6 +346,7 @@ func addPresetArtifacts(opts Options, rendered map[string]string) error {
 		cfg.Components.Changelog = opts.WithChangelog
 		cfg.Components.Monorepo = opts.WithMonorepo
 		cfg.Components.Prompts = opts.WithPrompts
+		cfg.Components.Modeling = opts.WithModeling
 		cfg.Components.Env = opts.WithEnv
 		buf, err := config.Marshal(cfg)
 		if err != nil {

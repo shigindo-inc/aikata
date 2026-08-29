@@ -1,0 +1,30 @@
+---
+project: {{.ProjectName}}
+status: draft
+version: 0.0.1
+updated: {{now}}
+audience: [human, agent]
+---
+
+# Use cases — {{.ProjectName}}
+
+> One entry per externally observable behaviour: who acts, what triggers
+> it, what success looks like, and how it fails. The structural
+> counterpart is [`docs/domain.md`](./domain.md), whose field table links
+> back to the IDs here. For what and why, read
+> [`SPEC.md`](../SPEC.md).
+
+Each use case owns an ID (`UC-NN`). `docs/domain.md` references these IDs
+per field, so **never reuse an ID** after retiring a use case.
+
+Four fields are required. Add `Precondition` only where it carries
+weight — an optional field that is always empty teaches nothing.
+
+---
+
+## UC-01 — _TODO: the outcome an actor achieves, phrased as a goal_
+
+- **Actor**: _TODO: who initiates this_
+- **Trigger**: _TODO: what starts it_
+- **Success state**: _TODO: what is true afterwards_
+- **Main exception**: _TODO: the most likely way this fails, and what happens then_

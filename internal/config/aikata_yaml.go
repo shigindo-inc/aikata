@@ -84,6 +84,10 @@ type Components struct {
 	// the key and read as false (the file was default-scaffolded by the
 	// standard / stack scopes through v0.9.6 and is now opt-in).
 	Env bool `yaml:"env"`
+	// Modeling records the opt-in use-case ledger and domain model at
+	// docs/usecases.md + docs/domain.md. New in v0.15.0; pre-v0.15.0 v2
+	// configs omit the key and read as false.
+	Modeling bool `yaml:"modeling"`
 }
 
 // Docs holds documentation-related preferences.

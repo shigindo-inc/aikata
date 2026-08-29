@@ -1,5 +1,5 @@
 version: 1
-generated: "2026-06-12"
+generated: "2026-08-29"
 docs:
     - path: AGENTS.md
       title: Agent Instructions for aikata Development
@@ -24,7 +24,7 @@ docs:
       title: ARCHITECTURE — How
       summary: This document explains **how** aikata is built and how it produces its output. For **what / why**, read [SPEC.md](./SPEC.md). For the **when**, read [ROADMAP.md](./ROADMAP.md). Individual decisions live under [`docs/adr/`](./docs/adr/).
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: true
       links:
         - CONTRIBUTING.md
@@ -36,19 +36,25 @@ docs:
         - docs/adr/0008-aikata-owned-config-directory.md
         - docs/adr/0020-retire-ai-config-fallback.md
         - docs/adr/0025-sync-divergent-file-preservation.md
+        - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
+        - docs/adr/0029-stack-brief-layout-convention.md
+        - docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md
+        - docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md
         - docs/adr/0034-reusable-prompts-opt-in-capability.md
         - docs/adr/0035-native-self-update-safety.md
         - docs/adr/0036-codex-native-distribution.md
         - docs/adr/0037-tighten-adoption-mutation-boundaries.md
         - docs/adr/0040-collaboration-operation-skill-split.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
         - docs/layout.md
     - path: CHANGELOG.md
       title: Changelog
       summary: All notable changes to **aikata** are documented in this file.
       status: draft
-      updated: "2026-06-12"
+      updated: "2026-08-14"
       managed: true
       links:
         - AGENTS.md
@@ -84,11 +90,12 @@ docs:
       title: Glossary
       summary: Terminology used across aikata documentation and source code. Each entry contains the English term, an optional Japanese reading (`yomi`), and a short definition. Terms marked **(domain)** are aikata-specific concepts; others are industry-standard but redefined here to fix the project's interpretation.
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: true
       links:
         - AGENTS.md
         - ROADMAP.md
+        - SPEC.md
         - docs/adr/0001-record-architecture-decisions.md
         - docs/adr/0002-agents-md-as-canonical.md
         - docs/adr/0004-long-term-memory-slot.md
@@ -97,11 +104,12 @@ docs:
         - docs/adr/0025-sync-divergent-file-preservation.md
         - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
     - path: README.md
       title: aikata
       summary: '**aikata** (相方, *ai-kata*, /aɪˈkɑːtə/) — a lightweight CLI that scaffolds AI-readable markdown documents and per-AI-tool config files in a single command.'
       status: draft
-      updated: "2026-06-09"
+      updated: "2026-08-14"
       managed: true
       links:
         - AGENTS.md
@@ -158,6 +166,7 @@ docs:
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0045-documentation-value-model.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/troubleshooting.md
@@ -165,7 +174,7 @@ docs:
       title: ROADMAP
       summary: 'Direction, not promises. Versions are scoped by *what they unlock*, not by dates. The single ordering rule: **each milestone must leave aikata usable by its current user base** — never break Phase N users to ship Phase N+1.'
       status: draft
-      updated: "2026-06-12"
+      updated: "2026-08-14"
       managed: true
       links:
         - ARCHITECTURE.md
@@ -188,6 +197,7 @@ docs:
         - docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
         - docs/decisions/open-questions.md
         - docs/decisions/v0.9-core-concept-stabilization.md
@@ -202,7 +212,7 @@ docs:
       title: SPEC — What & Why
       summary: This document describes **what** aikata does and **why**. For technical design (the **how**), read [ARCHITECTURE.md](./ARCHITECTURE.md). For the release timeline, read [ROADMAP.md](./ROADMAP.md). For terminology, read [GLOSSARY.md](./GLOSSARY.md).
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: true
       links:
         - ARCHITECTURE.md
@@ -220,6 +230,7 @@ docs:
         - docs/adr/0034-reusable-prompts-opt-in-capability.md
         - docs/adr/0037-tighten-adoption-mutation-boundaries.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/open-questions.md
     - path: docs/adoption.md
       title: Adopting aikata in an existing repository
@@ -566,6 +577,59 @@ docs:
       status: draft
       updated: "2026-06-12"
       managed: true
+    - path: docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
+      title: 'ADR 0047 - Modeling capability and per-feature design loop: boundary'
+      summary: '- **Status**: Accepted - **Date**: 2026-08-14 - **Deciders**: aikata maintainers - **Related**: ADR 0007 (no generic `DESIGN.md` — the "prove no existing document can own it" test this decision discharges), ADR 0017 (post-init command taxonomy — `enable` for capabilities), ADR 0026 (workflow guides as opt-in collaboration docs — the slot this decision deliberately leaves unused), ADR 0028 (prioritize core-concept stabilization — demand-driven, not speculative), ADR 0031 (brand exploration documents as one-off artifacts — why `docs/design/` is already taken), ADR 0043 (command-wrapper skill surface & simple skill names — the skill-not-verb precedent), ADR 0045 (documentation value model — both new documents are canonical stock), ADR 0046 (structure- migration assistant boundary — the sibling boundary-ADR pattern this one follows).'
+      status: draft
+      updated: "2026-08-14"
+      managed: true
+      links:
+        - ARCHITECTURE.md
+        - GLOSSARY.md
+        - SPEC.md
+        - docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md
+        - docs/decisions/open-questions.md
+        - docs/layout.md
+    - path: docs/decisions/2026-06-17-watched-external-doc-homes-design.md
+      title: Design — CLI/skill responsibility split & watched external doc homes
+      summary: 'Design note (rationale source) for two decisions that ship together: a foundational **CLI ↔ skill division-of-labor principle** and its first application, **lifecycle observation of foreign-owned ("watched") document homes**. The durable records are two ADRs in `docs/adr/` (ADR-A principle, ADR-B feature); this note carries the reasoning they cite. It mirrors how [`v0.9-core-concept-stabilization.md`](./v0.9-core-concept-stabilization.md) backs ADR 0028/0033/0034.'
+      status: draft
+      updated: "2026-06-17"
+      managed: false
+      links:
+        - docs/decisions/v0.9-core-concept-stabilization.md
+    - path: docs/decisions/2026-06-24-agile-lifecycle-scope-stance.md
+      title: Stance — agile/scrum lifecycle coverage & where the boundary holds
+      summary: 'A **stance note**, not a decision: it records *why aikata does not absorb agile/scrum process-management*, so the proposal "let''s add backlog / sprint / board management" does not get re-litigated from scratch each time it resurfaces. It promises nothing operationally. If real demand appears, the resolution path is a boundary ADR under `docs/adr/` (in the spirit of [ADR 0046](../adr/0046-structure-migration-assistant-boundary.md)), not this note. Sits underneath [SPEC §2.2](../../SPEC.md) (Non-Goal: no PM features) and [ADR 0045](../adr/0045-documentation-value-model.md) (the value model that already draws the line).'
+      status: draft
+      updated: "2026-06-24"
+      managed: false
+      links:
+        - SPEC.md
+        - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
+        - docs/adr/0028-prioritize-core-concept-stabilization.md
+        - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/layout.md
+    - path: docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md
+      title: Design — `modeling` capability & the `model-feature` skill
+      summary: 'Design note (rationale source) for two things that ship together: an opt-in **`modeling` capability** that renders a document pair (`docs/usecases.md` + `docs/domain.md`), and a first-party **`model-feature` skill** that fills that pair one feature at a time. The durable record will be a boundary ADR under `docs/adr/` (in the spirit of [ADR 0046](../adr/0046-structure-migration-assistant-boundary.md)); this note carries the reasoning it cites. Mirrors how [`2026-06-17-watched-external-doc-homes-design.md`](./2026-06-17-watched-external-doc-homes-design.md) backs its ADR pair.'
+      status: draft
+      updated: "2026-08-14"
+      managed: false
+      links:
+        - SPEC.md
+        - docs/adr/0007-no-generic-design-md.md
+        - docs/adr/0017-post-init-command-taxonomy.md
+        - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
+        - docs/adr/0028-prioritize-core-concept-stabilization.md
+        - docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md
+        - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/decisions/2026-06-17-watched-external-doc-homes-design.md
+        - docs/decisions/2026-06-24-agile-lifecycle-scope-stance.md
+        - docs/decisions/open-questions.md
+        - docs/layout.md
     - path: docs/decisions/docmap-design.md
       title: Design — Doc Map (`docmap`)
       summary: Detailed design for the doc-cartography artifact decided in [ADR 0044](../adr/0044-doc-map-derived-artifact.md). For **why**, read the ADR; this note records the **how** at design depth so the implementation phases can be planned and executed independently.
@@ -579,7 +643,7 @@ docs:
       title: Open Questions
       summary: Decisions that are **not yet** made. When one of these is resolved, the resolution moves to an ADR under [`docs/adr/`](../adr/) and the entry here is removed.
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: false
       links:
         - ROADMAP.md
@@ -603,6 +667,7 @@ docs:
         - docs/adr/0042-fill-command-for-canonical-document-completion.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0045-documentation-value-model.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
     - path: docs/decisions/v0.9-core-concept-stabilization.md
       title: v0.9.0 Core-Concept Stabilization
@@ -638,7 +703,7 @@ docs:
       title: Recommended Layout — the aikata structure on one page
       summary: 'The single, cross-referenced index of **where each kind of document belongs** in an aikata project, what governs it, and whether `aikata doctor` validates it by default. This is the **prescriptive** counterpart to the **descriptive** [doc map](./decisions/docmap-design.md) (`.aikata/docmap.{yaml,md}`, [ADR 0044](./adr/0044-doc-map-derived-artifact.md)): `layout.md` says *what should exist*; the doc map records *what does exist*; reconciling the two is a future migration assistant (ROADMAP v0.14.0).'
       status: draft
-      updated: "2026-06-11"
+      updated: "2026-08-14"
       managed: false
       links:
         - ARCHITECTURE.md
@@ -658,6 +723,7 @@ docs:
         - docs/adr/0037-tighten-adoption-mutation-boundaries.md
         - docs/adr/0039-documentation-hygiene-and-context-budget.md
         - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
     - path: docs/memory/README.md
       title: '`docs/memory/` — Long-term Agent Memory'

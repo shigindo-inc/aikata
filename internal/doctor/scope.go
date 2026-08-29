@@ -32,6 +32,11 @@ var managedDocGlobs = []string{
 	"docs/design/**",
 	"docs/troubleshooting.md",
 	"docs/prompts.md",
+	// The opt-in modeling pair. Listed individually (not as a subtree)
+	// because they are two fixed files, and validated whenever a
+	// project has enabled the capability.
+	"docs/usecases.md",
+	"docs/domain.md",
 	"docs/monorepo.md",
 	// Monorepo per-app instructions follow aikata's AGENTS.md
 	// frontmatter contract even though they are user-managed (the

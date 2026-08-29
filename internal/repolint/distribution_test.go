@@ -14,9 +14,10 @@ import (
 // firstPartySkills is the capability-named skill surface (ADR 0043) shipped
 // from the single aikata plugin: the CLI-wrapper responsibility
 // (manage-docs), the in-repo context-maintenance loop (track-context), the
-// downstream doc-refresh loop (refresh-docs), and the structure-migration
-// assistant (migrate-structure, ADR 0046).
-var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure"}
+// downstream doc-refresh loop (refresh-docs), the structure-migration
+// assistant (migrate-structure, ADR 0046), and the per-feature design loop
+// (model-feature).
+var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure", "model-feature"}
 
 // TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040 /
 // ADR 0041: `dist/universal-skill/<skill>/SKILL.md` is the single
@@ -98,6 +99,12 @@ func TestClaudePluginHasCommands(t *testing.T) {
 	// a user-triggered command (ADR 0043 D4).
 	if _, err := os.Stat(filepath.Join(pluginDir, "commands", "track-context.md")); err == nil {
 		t.Errorf("dist/claude-code/plugin/commands/track-context.md exists; track-context ships skill-only (ADR 0043 D4)")
+	}
+
+	// model-feature is likewise skill-only: it fires by description-match
+	// and is not a user-triggered command (ADR 0047 D4).
+	if _, err := os.Stat(filepath.Join(pluginDir, "commands", "model-feature.md")); err == nil {
+		t.Errorf("dist/claude-code/plugin/commands/model-feature.md exists; model-feature ships skill-only (ADR 0047 D4)")
 	}
 
 	var manifest map[string]any

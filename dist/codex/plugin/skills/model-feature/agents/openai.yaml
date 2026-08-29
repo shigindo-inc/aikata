@@ -1,0 +1,6 @@
+interface:
+  display_name: "model-feature (aikata)"
+  short_description: "Design one feature from use case to domain model before implementing"
+  default_prompt: "Use $model-feature when a change alters externally observable behaviour: write the use case, propagate it into the domain model, then hand off."
+policy:
+  allow_implicit_invocation: true

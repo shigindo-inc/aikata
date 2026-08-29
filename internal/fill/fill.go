@@ -293,6 +293,7 @@ func resolvePlan(root string) (scaffold.Options, bool, error) {
 		opts.WithChangelog = cfg.Components.Changelog
 		opts.WithMonorepo = cfg.Components.Monorepo
 		opts.WithPrompts = cfg.Components.Prompts
+		opts.WithModeling = cfg.Components.Modeling
 		opts.WithEnv = cfg.Components.Env
 		// Honour the pre-v2 features map too, mirroring sync.derivePlan,
 		// so legacy projects that predate the components.* schema still

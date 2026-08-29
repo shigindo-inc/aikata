@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-06-11
+updated: 2026-08-14
 audience: [human, agent]
 ---
 
@@ -59,6 +59,8 @@ The surface `aikata doctor` manages by default (`managedDocGlobs`).
 | `docs/tasks/current.md` | Short-term working state (not a backlog) | standard | [SPEC §4.1](../SPEC.md) |
 | `docs/troubleshooting.md` | Common failures & fixes | standard | — |
 | `docs/memory/` | Long-term agent memory (`user`/`feedback`/`project`/`reference`) | `--with-memory` | [ADR 0004](./adr/0004-long-term-memory-slot.md) |
+| `docs/usecases.md` | Use-case ledger (behaviour) | `enable modeling` | [ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md) |
+| `docs/domain.md` | Domain model (structure) | `enable modeling` | [ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md) |
 | `docs/stacks/<name>.md` | Per-stack brief (code-free) | `--stack` | [ADR 0029](./adr/0029-stack-brief-layout-convention.md) |
 | `docs/workflows/<domain>.md` | Opt-in collaboration policy | `enable workflow` | [ADR 0026](./adr/0026-workflow-guides-as-opt-in-collaboration-docs.md) |
 | `docs/design/` | One-off brand-exploration artifacts | `new app-icon` / `new mascot` | [ADR 0031](./adr/0031-brand-exploration-documents-as-one-off-artifacts.md) |

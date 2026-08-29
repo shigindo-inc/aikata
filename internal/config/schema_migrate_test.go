@@ -152,3 +152,24 @@ func TestLoadMigrated_MissingConfigReturnsErrNotExist(t *testing.T) {
 		t.Fatalf("expected error on missing config")
 	}
 }
+
+func TestUpsertComponentsBlock_SeedsModelingKey(t *testing.T) {
+	body := []byte("version: 1\nproject:\n  name: legacy\n  lang: en\n")
+	got, migrated, err := MigrateAikataYaml(body)
+	if err != nil {
+		t.Fatalf("MigrateAikataYaml: %v", err)
+	}
+	if !migrated {
+		t.Fatalf("v1 payload should report migrated=true")
+	}
+	if got.Components.Modeling {
+		t.Errorf("modeling should default to false on migration, got true")
+	}
+	out, err := Marshal(got)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), "modeling:") {
+		t.Errorf("migrated config must carry an explicit modeling key:\n%s", out)
+	}
+}
