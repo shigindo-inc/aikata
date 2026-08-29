@@ -470,6 +470,29 @@ forbids.
   and `WithModeling` to `withFlags`/`inferFlags` with regression coverage
   proving `upstream-removed` no longer fires for any of the three pairs.
 
+### Q-MODELING-04 — Is per-feature the right granularity for the loop?
+
+- **Status**: Open, and not answerable from inside this repository.
+  ADR 0047 shipped the `model-feature` loop at per-feature granularity
+  without first running it on a real feature; its Consequences record
+  that as a pre-measurement decision that may need a successor.
+- **Question**: whether one-feature-per-run is the right unit, or
+  whether it is too fine (one feature yields several use cases that
+  wanted a single pass), too coarse (one use case deserved its own
+  pass), or simply wrong at project kickoff, where there is no single
+  feature to anchor the loop on.
+- **How to answer**: run `model-feature` on one real feature in an
+  application repository with `modeling` enabled and record what the
+  run produced — how many use cases one invocation yielded, whether the
+  domain-model propagation step had anything to do, and whether the
+  bidirectional check actually caught a field with no reachable use
+  case.
+- **Constraint**: ADR bodies are immutable once Accepted (ADR 0001), so
+  a negative result needs a successor ADR rather than an edit to 0047.
+- **Unblocks**: the first feature built in an app repo that has
+  `modeling` enabled. No amount of work inside aikata produces this
+  evidence.
+
 ---
 
 ## Q-DIFFERENTIATION (continuous)
