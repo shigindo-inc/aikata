@@ -189,13 +189,16 @@ jobs:
     # protection rule by hand. Require this job instead — its name never
     # changes.
     name: ci gate
-    needs: [test]
+    needs: [test, install-script]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Verify the test matrix succeeded
+      - name: Verify the required jobs succeeded
         env:
-          RESULT: ${{ needs.test.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          INSTALL_RESULT: ${{ needs['install-script'].result }}
         run: |
-          echo "test matrix result: $RESULT"
-          test "$RESULT" = success
+          echo "test matrix:        $TEST_RESULT"
+          echo "install-script:     $INSTALL_RESULT"
+          test "$TEST_RESULT" = success
+          test "$INSTALL_RESULT" = success
