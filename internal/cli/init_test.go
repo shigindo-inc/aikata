@@ -13,8 +13,7 @@ import (
 
 // chdir switches the test process into dir for the lifetime of t. It is
 // not parallel-safe — tests in this package therefore must not call
-// t.Parallel. (Go 1.24's testing.T.Chdir would be ideal but go.mod
-// targets 1.21.)
+// t.Parallel.
 func chdir(t *testing.T, dir string) {
 	t.Helper()
 	prev, err := os.Getwd()

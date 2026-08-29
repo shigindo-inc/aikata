@@ -44,7 +44,7 @@ aikata init my-app --scope standard --lang ja --no-interactive
   指定してください。配置先は `AIKATA_INSTALL_DIR` で変更できます。
   Windows は手動ダウンロード経路をご利用ください。
 - **Go ユーザー向け**: `go install github.com/shigindo-inc/aikata/cmd/aikata@latest`
-  （Go 1.21 以上）。`$(go env GOPATH)/bin` が PATH に入っている必要が
+  （Go 1.24 以上）。`$(go env GOPATH)/bin` が PATH に入っている必要が
   あります。
 - **今後の予定**: Homebrew tap と `npx aikata` は v0.9.x に延期しました。
   [ROADMAP.md](../ROADMAP.md) を参照してください。

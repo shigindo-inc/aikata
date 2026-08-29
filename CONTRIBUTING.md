@@ -26,7 +26,7 @@ the `internal/` Go packages or the document set under repo root and
 git clone https://github.com/shigindo-inc/aikata.git
 cd aikata
 
-# Run the test suite (Go 1.21+ required):
+# Run the test suite (Go 1.24+ required):
 go test ./...
 
 # Build and self-check the repo:
@@ -89,8 +89,11 @@ this is the canonical-locale policy in
 4. **`aikata doctor` clean.** Run it on the repo before pushing.
 5. **CHANGELOG.** Add an entry under `[Unreleased]` describing the
    user-visible change.
-6. **CI green.** The 3-OS matrix (macOS / Linux / Windows × Go 1.21),
+6. **CI green.** The 3-OS matrix (macOS / Linux / Windows × Go 1.24),
    `golangci-lint`, and the install-script smoke job must all pass.
+   Branch protection requires the aggregate `ci gate` job rather than the
+   individual matrix checks — matrix check names embed the Go version, so
+   requiring them directly would wedge every PR on a toolchain bump.
 
 For docs-only changes, the same English / CHANGELOG / CI rules apply,
 but no tests are required.

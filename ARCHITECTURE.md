@@ -22,7 +22,7 @@ prerequisite decisions are captured here.
 
 ## 1. Implementation Language
 
-**Decision**: Go 1.21+.
+**Decision**: Go 1.24+.
 
 **Rationale**:
 
@@ -38,7 +38,12 @@ prerequisite decisions are captured here.
 TypeScript (Node dependency hurts the "lightweight" story), shell
 (insufficient for templated generation).
 
-**Minimum version**: Go 1.21+ (stable, has `embed.FS` mature, `slog` available).
+**Minimum version**: Go 1.24+. Raised from 1.21 because the macOS 26
+dynamic loader rejects Mach-O binaries with no `LC_UUID` load command, and
+the Go linker only began emitting one in 1.24 — under older toolchains every
+externally linked binary (anything reaching `net`, `crypto/x509`, or
+`os/user`) aborts at startup. The original 1.21 requirements, mature
+`embed.FS` and `slog`, are unaffected.
 
 ---
 
@@ -539,7 +544,7 @@ Contributors never push tags directly.
 
 ### 8.3 CI
 
-- GitHub Actions matrix: macOS, Linux, Windows × Go 1.21 (Phase 2 task).
+- GitHub Actions matrix: macOS, Linux, Windows × Go 1.24 (Phase 2 task).
 
 ---
 
