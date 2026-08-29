@@ -247,7 +247,9 @@ func renderInto(opts Options) (map[string]string, error) {
 		{opts.WithPrompts, func() (map[string]string, error) { return components.RenderPrompts(sfp) }},
 		{opts.WithModeling, func() (map[string]string, error) {
 			return components.RenderModeling(components.ModelingParams{
-				Lang: sfp.Lang, ProjectName: sfp.ProjectName, Clock: sfp.Clock,
+				Lang:        opts.Lang,
+				ProjectName: opts.ProjectName,
+				Clock:       opts.Clock,
 			})
 		}},
 		{opts.WithEnv, func() (map[string]string, error) { return components.RenderEnv(sfp) }},
