@@ -65,6 +65,13 @@ stakeholders, and current "north stars." See
   the GitHub PR page references. Revisit before flipping visibility
   to PUBLIC in Task 8 — if scrub is still desired, do it then with a
   documented force-push window.
+- [2026-08-29] **Language floor raised to Go 1.24+**, superseding the
+  1.21 anchor above. Forced, not chosen: macOS 26's dynamic loader
+  requires an `LC_UUID` load command that the Go linker only emits from
+  1.24, so every externally linked test binary aborted on the
+  `macos-latest` CI runner. Released binaries were never affected —
+  goreleaser cross-compiles with `CGO_ENABLED=0`, which links
+  internally and records `minos 11.0`.
 
 ## Active deferrals
 

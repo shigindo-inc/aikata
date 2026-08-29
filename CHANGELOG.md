@@ -18,6 +18,18 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Changed
+
+- **Go toolchain floor raised to 1.24** — `go.mod`, the CI matrix, and the
+  release workflow. macOS 26's dynamic loader rejects Mach-O binaries with
+  no `LC_UUID` load command, and the Go linker only began emitting one in
+  1.24; under 1.21 every externally linked test binary (anything reaching
+  `net`, `crypto/x509`, or `os/user`) aborted at startup on the
+  `macos-latest` runner. Installing from a release archive or via the
+  install script is unaffected — those binaries are cross-compiled with
+  `CGO_ENABLED=0`, link internally, and always ran. `go install` from
+  source now requires Go 1.24+.
+
 ## [0.14.0] - 2026-06-12
 
 **Structure-migration assistant: the `migrate-structure` skill (ADR 0046).**
