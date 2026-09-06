@@ -588,7 +588,7 @@ Out of v0.14.0 intentionally:
 
 ---
 
-## v0.15.0 — Modeling capability + `model-feature` skill ✅ (released 2026-08-14)
+## v0.15.0 — Modeling capability + `model-feature` skill ✅ (released 2026-09-06)
 
 **Goal**: close the gap between `SPEC.md` (what/why) and `ARCHITECTURE.md`
 (how) where behaviour and structure actually get designed — *who does

@@ -18,7 +18,7 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
-## [0.15.0] - 2026-08-14
+## [0.15.0] - 2026-09-06
 
 **Modeling capability + `model-feature` skill (ADR 0047).** An opt-in
 per-feature design loop: `docs/usecases.md` and `docs/domain.md` give a
@@ -51,6 +51,21 @@ change is about to alter externally observable behaviour.
   install script is unaffected — those binaries are cross-compiled with
   `CGO_ENABLED=0`, link internally, and always ran. `go install` from
   source now requires Go 1.24+.
+
+### Fixed
+
+- **`aikata sync` now re-renders the `modeling`, `prompts`, and `env`
+  documents.** `internal/sync`'s flag struct had no field for these
+  three capabilities, so their files were missing from the upstream
+  render: sync reported `docs/usecases.md`, `docs/domain.md`,
+  `docs/prompts.md`, and `.env.example` as `upstream-removed` and
+  **dropped their manifest entries**, after which aikata stopped
+  tracking those documents entirely. Nothing was ever deleted or
+  overwritten on disk. `modeling` ships with this fixed from the start;
+  `prompts` and `env` adopters have carried the bug since those
+  capabilities were added and recover on their next `aikata sync`. Note
+  that a hand-edited file among the four will now classify as divergent
+  rather than being ignored — preserved, not overwritten, per ADR 0025.
 
 **Adopting into an existing repo?** `docs/domain.md` is a plausible
 pre-existing filename. If you already have a hand-authored file at that

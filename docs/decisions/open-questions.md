@@ -444,8 +444,11 @@ forbids.
 
 ### Q-MODELING-03 — `aikata sync` never re-renders the modeling pair
 
-- **Status**: Open. Pre-existing gap, not introduced by ADR 0047; noted
-  here because `modeling` is the third capability it now covers.
+- **Status**: Resolved. `withFlags` gained `WithPrompts`,
+  `WithModeling`, and `WithEnv`; `derivePlan` OR-merges the matching
+  `components.*` keys and `inferFlags` recognises `docs/prompts.md`,
+  `docs/usecases.md` / `docs/domain.md`, and `.env.example`. Regression
+  coverage lives in `internal/sync/sync_optin_component_test.go`.
 - **Question**: `internal/sync/plan.go`'s `withFlags` struct carries
   `WithMemory`, `WithUI`, `WithAPI`, `WithTDD`, `WithChangelog`, and
   `WithMonorepo`, but has no `WithPrompts`, `WithEnv`, or `WithModeling`
@@ -456,19 +459,42 @@ forbids.
   `--with-prompts --with-env` reproduce the identical gap for the
   `prompts` and `env` capabilities; `--with-memory` does not, because
   `WithMemory` is one of the flags that exists.
-- **Impact**: info-level and non-destructive — the files are left in
-  place on disk, nothing is deleted or overwritten — but it means
-  template improvements to any of the three capabilities can never
-  reach an already-adopted project via `sync`; only a fresh `enable`
-  re-render would pick them up.
-- **Leading**: adding the three missing fields to `withFlags` (and their
-  `inferFlags` / CLI-flag wiring) is the structurally obvious fix, but is
-  deliberately **not done in this branch** — it touches sync behavior
-  broadly and deserves its own scoped change with before/after coverage,
-  not a drive-by inside the modeling-capability branch.
-- **Unblocks**: a scoped `sync` fix that adds `WithPrompts`, `WithEnv`,
-  and `WithModeling` to `withFlags`/`inferFlags` with regression coverage
-  proving `upstream-removed` no longer fires for any of the three pairs.
+- **Impact (measured while fixing, worse than first recorded)**: the
+  files are indeed left on disk and nothing is deleted or overwritten,
+  but the first `aikata sync` also **drops the manifest entry**. After
+  one sync aikata no longer tracks the file at all: a second sync does
+  not list it, so the damage is not merely that template improvements
+  cannot reach an adopted project — the project silently stops being a
+  managed-surface participant for that document.
+- **Behaviour change to be aware of**: the three capabilities' files now
+  take part in the normal sync merge, so an adopted project that has
+  hand-edited one of them will see it classified as divergent rather
+  than ignored. That is the intended outcome and ADR 0025's
+  divergent-file preservation covers it — nothing is overwritten — but
+  it is a status a `prompts` or `env` adopter has never seen before.
+
+### Q-MODELING-04 — Is per-feature the right granularity for the loop?
+
+- **Status**: Open, and not answerable from inside this repository.
+  ADR 0047 shipped the `model-feature` loop at per-feature granularity
+  without first running it on a real feature; its Consequences record
+  that as a pre-measurement decision that may need a successor.
+- **Question**: whether one-feature-per-run is the right unit, or
+  whether it is too fine (one feature yields several use cases that
+  wanted a single pass), too coarse (one use case deserved its own
+  pass), or simply wrong at project kickoff, where there is no single
+  feature to anchor the loop on.
+- **How to answer**: run `model-feature` on one real feature in an
+  application repository with `modeling` enabled and record what the
+  run produced — how many use cases one invocation yielded, whether the
+  domain-model propagation step had anything to do, and whether the
+  bidirectional check actually caught a field with no reachable use
+  case.
+- **Constraint**: ADR bodies are immutable once Accepted (ADR 0001), so
+  a negative result needs a successor ADR rather than an edit to 0047.
+- **Unblocks**: the first feature built in an app repo that has
+  `modeling` enabled. No amount of work inside aikata produces this
+  evidence.
 
 ---
 

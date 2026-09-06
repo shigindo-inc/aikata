@@ -240,6 +240,9 @@ func Run(opts Options) (RunResult, error) {
 		WithTDD:       withFlags.WithTDD,
 		WithChangelog: withFlags.WithChangelog,
 		WithMonorepo:  withFlags.WithMonorepo,
+		WithPrompts:   withFlags.WithPrompts,
+		WithModeling:  withFlags.WithModeling,
+		WithEnv:       withFlags.WithEnv,
 		Stdout:        opts.Stderr, // route any fallback notice to stderr
 	}
 	upstream, err := scaffold.Render(scaffoldOpts)
