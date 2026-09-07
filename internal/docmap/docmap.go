@@ -31,8 +31,8 @@ const Version = 1
 // Markdown file, with the per-document `managed` flag distinguishing the
 // aikata-managed surface from external documents. The built-in scan
 // skips (vendored deps, build outputs, machine/scratch areas, generated
-// AI-tool artifacts) are shared with doctor via docmeta.DefaultSkipDirs /
-// DefaultSkipFiles so the two surfaces cannot drift.
+// AI-tool artifacts, nested git worktrees) are shared with doctor via
+// docmeta.SkipDir so the two surfaces cannot drift.
 var defaultTargets = []string{"**/*.md"}
 
 // Options carries the inputs Build needs.
@@ -142,7 +142,7 @@ func scan(dir string, targets, exclude []string) (paths []string, bodies map[str
 			return walkErr
 		}
 		if d.IsDir() {
-			if _, skip := docmeta.DefaultSkipDirs[d.Name()]; skip {
+			if docmeta.SkipDir(d.Name(), p, dir) {
 				return filepath.SkipDir
 			}
 			return nil

@@ -172,6 +172,37 @@ func TestCheckFrontmatter_SkipsSerenaLocalState(t *testing.T) {
 	}
 }
 
+func TestCheckFrontmatter_SkipsNestedWorktrees(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+
+	claudeCopy := filepath.Join(tmp, ".claude", "worktrees", "agent-1", "AGENTS.md")
+	if err := os.MkdirAll(filepath.Dir(claudeCopy), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(claudeCopy, []byte("# worktree copy, no frontmatter\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	wt := filepath.Join(tmp, "scratch", "wt")
+	if err := os.MkdirAll(wt, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(wt, ".git"), []byte("gitdir: /somewhere\n"), 0o644); err != nil {
+		t.Fatalf("write .git: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(wt, "AGENTS.md"), []byte("# nested checkout, no frontmatter\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	issues := runDoctor(t, tmp)
+	for _, iss := range issues {
+		if strings.Contains(iss.File, ".claude/worktrees/") || strings.HasPrefix(iss.File, "scratch/wt/") {
+			t.Fatalf("expected nested worktree files to be skipped, got issue: %+v", iss)
+		}
+	}
+}
+
 func TestCheckLinks_BrokenLinkIsError(t *testing.T) {
 	tmp := t.TempDir()
 	scaffoldHealthyProject(t, tmp)

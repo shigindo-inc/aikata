@@ -22,8 +22,8 @@ var frontmatterKeys = []string{"project", "status", "version", "updated", "audie
 
 // walkMarkdown invokes fn for every regular *.md file under
 // opts.TargetDir, returning the slash-separated path relative to
-// TargetDir. Skipped directories and generated artifact files are
-// excluded, as are paths matching any user-configured
+// TargetDir. Skipped directories (docmeta.SkipDir) and generated
+// artifact files are excluded, as are paths matching any user-configured
 // opts.Excludes glob (see ADR 0021).
 func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 	return filepath.WalkDir(opts.TargetDir, func(p string, d fs.DirEntry, walkErr error) error {
@@ -31,7 +31,7 @@ func walkMarkdown(opts Options, fn func(rel string, body []byte) error) error {
 			return walkErr
 		}
 		if d.IsDir() {
-			if _, skip := docmeta.DefaultSkipDirs[d.Name()]; skip {
+			if docmeta.SkipDir(d.Name(), p, opts.TargetDir) {
 				return filepath.SkipDir
 			}
 			return nil

@@ -155,6 +155,34 @@ func TestBuild_ExcludesMachineZoneAndArtifacts(t *testing.T) {
 	}
 }
 
+func TestBuild_SkipsNestedWorktreesAndClaudeRuntime(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "README.md", "# root\n")
+	writeFile(t, root, "docs/note.md", "# note\n")
+	writeFile(t, root, ".claude/worktrees/agent-1/AGENTS.md", "# copy\n")
+	writeFile(t, root, "scratch/wt/AGENTS.md", "# worktree copy\n")
+	if err := os.WriteFile(filepath.Join(root, "scratch", "wt", ".git"), []byte("gitdir: /somewhere\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	m := buildTestMap(t, root)
+	if len(m.Docs) != 2 {
+		t.Fatalf("expected README.md and docs/note.md, got %#v", m.Docs)
+	}
+	if _, ok := docByPath(m, "README.md"); !ok {
+		t.Fatal("README.md missing")
+	}
+	if _, ok := docByPath(m, "docs/note.md"); !ok {
+		t.Fatal("docs/note.md missing")
+	}
+	if _, ok := docByPath(m, ".claude/worktrees/agent-1/AGENTS.md"); ok {
+		t.Fatal(".claude worktree markdown must not be catalogued")
+	}
+	if _, ok := docByPath(m, "scratch/wt/AGENTS.md"); ok {
+		t.Fatal("nested git worktree markdown must not be catalogued")
+	}
+}
+
 func TestBuild_TargetsAndExclude(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, root, "keep.md", "# keep\n")

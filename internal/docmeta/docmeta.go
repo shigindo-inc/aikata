@@ -6,11 +6,14 @@
 // between the two features (docmap-design.md §6).
 //
 // The package reads document text only: front-matter, headings, the
-// first lines, and a link regex. It never reads source code, which keeps
-// the stack-agnostic core intact (ADR 0044 D4).
+// first lines, and a link regex. SkipDir inspects directory names and
+// the presence of a `.git` entry; it never reads source code. That
+// keeps the stack-agnostic core intact (ADR 0044 D4).
 package docmeta
 
 import (
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -26,18 +29,39 @@ import (
 // (docmap.{yaml,md}) and doctor never flags the generated, frontmatter-
 // free docmap.md. `dist` holds first-party distribution payloads
 // (skill/plugin Markdown) validated by the repolint distribution tests,
-// not by doctor; `testdata` holds golden fixtures.
+// not by doctor; `testdata` holds golden fixtures. `.claude` is skipped
+// for the same reason as `.cursor`: it is an AI-tool runtime tree, and
+// in-tree agent worktrees live under `.claude/worktrees/` (#155).
 var DefaultSkipDirs = map[string]struct{}{
 	".git": {}, "node_modules": {}, "build": {}, "dist": {},
 	".dart_tool": {}, ".next": {}, "vendor": {}, ".turbo": {},
-	".cursor": {}, ".github": {}, "testdata": {}, ".remember": {},
-	".serena": {}, ".aikata-proposed": {}, ".aikata": {},
+	".cursor": {}, ".claude": {}, ".github": {}, "testdata": {},
+	".remember": {}, ".serena": {}, ".aikata-proposed": {}, ".aikata": {},
 }
 
 // DefaultSkipFiles names individual *.md leaves the scan always skips:
 // generated AI-tool artifacts that carry no front-matter by design.
 var DefaultSkipFiles = map[string]struct{}{
 	"CLAUDE.md": {}, "GEMINI.md": {},
+}
+
+// SkipDir reports whether a directory walk should prune dirPath.
+// name is the directory's base name; walkRoot is the scan root and is
+// never treated as a nested VCS checkout even if it contains `.git`.
+//
+// A directory is skipped when its name is in DefaultSkipDirs, or when it
+// is a nested VCS root (a `.git` file or directory — git worktrees use
+// a file). Callers must use this helper rather than reading
+// DefaultSkipDirs alone, so doctor and map cannot drift (#155).
+func SkipDir(name, dirPath, walkRoot string) bool {
+	if _, skip := DefaultSkipDirs[name]; skip {
+		return true
+	}
+	if filepath.Clean(dirPath) == filepath.Clean(walkRoot) {
+		return false
+	}
+	_, err := os.Lstat(filepath.Join(dirPath, ".git"))
+	return err == nil
 }
 
 // ParseFrontmatter extracts the YAML front-matter block delimited by
