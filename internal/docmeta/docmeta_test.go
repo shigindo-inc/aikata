@@ -50,11 +50,11 @@ func TestExtractLinks(t *testing.T) {
 }
 
 func TestSkipDir_NameDenylist(t *testing.T) {
-	if !SkipDir(".claude", "/tmp/proj/.claude", "/tmp/proj") {
-		t.Fatal(".claude must be skipped (parity with .cursor)")
-	}
 	if !SkipDir(".cursor", "/tmp/proj/.cursor", "/tmp/proj") {
 		t.Fatal(".cursor must stay skipped")
+	}
+	if SkipDir(".claude", "/tmp/proj/.claude", "/tmp/proj") {
+		t.Fatal(".claude must not be skipped by name; nested .git handles worktrees")
 	}
 }
 

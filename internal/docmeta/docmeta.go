@@ -29,14 +29,12 @@ import (
 // (docmap.{yaml,md}) and doctor never flags the generated, frontmatter-
 // free docmap.md. `dist` holds first-party distribution payloads
 // (skill/plugin Markdown) validated by the repolint distribution tests,
-// not by doctor; `testdata` holds golden fixtures. `.claude` is skipped
-// for the same reason as `.cursor`: it is an AI-tool runtime tree, and
-// in-tree agent worktrees live under `.claude/worktrees/` (#155).
+// not by doctor; `testdata` holds golden fixtures.
 var DefaultSkipDirs = map[string]struct{}{
 	".git": {}, "node_modules": {}, "build": {}, "dist": {},
 	".dart_tool": {}, ".next": {}, "vendor": {}, ".turbo": {},
-	".cursor": {}, ".claude": {}, ".github": {}, "testdata": {},
-	".remember": {}, ".serena": {}, ".aikata-proposed": {}, ".aikata": {},
+	".cursor": {}, ".github": {}, "testdata": {}, ".remember": {},
+	".serena": {}, ".aikata-proposed": {}, ".aikata": {},
 }
 
 // DefaultSkipFiles names individual *.md leaves the scan always skips:

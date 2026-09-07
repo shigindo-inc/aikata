@@ -344,9 +344,9 @@ retained only until the next release-ritual prune (ADR 0039).
   from external documents. A shared built-in skip set
   (`docmeta.SkipDir` / `DefaultSkipFiles`, also used by `doctor`)
   excludes vendored/build/machine/scratch areas (`node_modules`, `vendor`,
-  `.git`, `.aikata`, `.claude`, nested git worktrees, generated AI-tool
-  artifacts, …) so the all-Markdown default is not noisy;
-  `docmap.exclude` adds project-specific skips.
+  `.git`, `.aikata`, nested git worktrees, generated AI-tool artifacts,
+  …) so the all-Markdown default is not noisy; `docmap.exclude` adds
+  project-specific skips.
 
 ### Q-DOCMAP-02 — Optional `summary:` frontmatter key
 
