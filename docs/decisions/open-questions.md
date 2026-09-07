@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-08-14
+updated: 2026-09-07
 audience: [human, agent]
 ---
 
@@ -342,10 +342,11 @@ retained only until the next release-ritual prune (ADR 0039).
 - **Resolved**: default `docmap.targets` is **all Markdown** with the
   per-document `managed` flag distinguishing the aikata-managed surface
   from external documents. A shared built-in skip set
-  (`docmeta.DefaultSkipDirs` / `DefaultSkipFiles`, also used by `doctor`)
+  (`docmeta.SkipDir` / `DefaultSkipFiles`, also used by `doctor`)
   excludes vendored/build/machine/scratch areas (`node_modules`, `vendor`,
-  `.git`, `.aikata`, generated AI-tool artifacts, …) so the all-Markdown
-  default is not noisy; `docmap.exclude` adds project-specific skips.
+  `.git`, `.aikata`, nested git worktrees, generated AI-tool artifacts,
+  …) so the all-Markdown default is not noisy; `docmap.exclude` adds
+  project-specific skips.
 
 ### Q-DOCMAP-02 — Optional `summary:` frontmatter key
 

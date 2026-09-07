@@ -1,6 +1,10 @@
 package docmeta
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func TestParseFrontmatter(t *testing.T) {
 	body := []byte("---\nproject: aikata\nstatus: draft\n---\n# Title\n\nBody.\n")
@@ -42,5 +46,43 @@ func TestExtractLinks(t *testing.T) {
 		if got[tgt] != line {
 			t.Fatalf("target %q line = %d, want %d (%#v)", tgt, got[tgt], line, links)
 		}
+	}
+}
+
+func TestSkipDir_NameDenylist(t *testing.T) {
+	if !SkipDir(".cursor", "/tmp/proj/.cursor", "/tmp/proj") {
+		t.Fatal(".cursor must stay skipped")
+	}
+	if SkipDir(".claude", "/tmp/proj/.claude", "/tmp/proj") {
+		t.Fatal(".claude must not be skipped by name; nested .git handles worktrees")
+	}
+}
+
+func TestSkipDir_NestedVCSRoot(t *testing.T) {
+	root := t.TempDir()
+	if err := os.Mkdir(filepath.Join(root, ".git"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if SkipDir(filepath.Base(root), root, root) {
+		t.Fatal("scan root must not be skipped for containing .git")
+	}
+
+	wt := filepath.Join(root, "linked-worktree")
+	if err := os.Mkdir(wt, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(wt, ".git"), []byte("gitdir: /somewhere\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if !SkipDir("linked-worktree", wt, root) {
+		t.Fatal("nested git worktree (.git file) must be skipped")
+	}
+
+	plain := filepath.Join(root, "docs")
+	if err := os.Mkdir(plain, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if SkipDir("docs", plain, root) {
+		t.Fatal("ordinary subdirectory must not be skipped")
 	}
 }

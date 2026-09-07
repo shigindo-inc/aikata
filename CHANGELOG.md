@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-08-14
+updated: 2026-09-07
 audience: [human, agent]
 ---
 
@@ -17,6 +17,21 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+### Fixed
+
+- **`aikata map` no longer indexes in-tree git worktrees.** The scan
+  walked every Markdown file under the project root and skipped
+  directories only by a fixed name denylist, so a nested checkout
+  (a directory with its own `.git` file or directory) was catalogued
+  as if it were part of the document set. In-tree agent worktrees
+  therefore filled `docmap` with thousands of duplicate entries, and
+  maintainers stopped regenerating it (#155). `docmeta.SkipDir` now
+  prunes any nested VCS root, regardless of the directory name;
+  `aikata doctor` uses the same walk. Vendor-named trees such as
+  `.claude` are not skipped as a whole, so committed files under
+  `.claude/skills/` stay on the map. Project-specific noise still
+  goes in `docmap.exclude` (ADR 0044 D7).
 
 ## [0.15.0] - 2026-09-06
 

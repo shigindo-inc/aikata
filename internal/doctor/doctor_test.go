@@ -172,6 +172,55 @@ func TestCheckFrontmatter_SkipsSerenaLocalState(t *testing.T) {
 	}
 }
 
+func TestCheckFrontmatter_SkipsNestedWorktrees(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+
+	claudeWT := filepath.Join(tmp, ".claude", "worktrees", "agent-1")
+	if err := os.MkdirAll(claudeWT, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(claudeWT, ".git"), []byte("gitdir: /somewhere\n"), 0o644); err != nil {
+		t.Fatalf("write .git: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(claudeWT, "AGENTS.md"), []byte("# worktree copy, no frontmatter\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	wt := filepath.Join(tmp, "scratch", "wt")
+	if err := os.MkdirAll(wt, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(wt, ".git"), []byte("gitdir: /somewhere\n"), 0o644); err != nil {
+		t.Fatalf("write .git: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(wt, "AGENTS.md"), []byte("# nested checkout, no frontmatter\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	skill := filepath.Join(tmp, ".claude", "skills", "local", "SKILL.md")
+	if err := os.MkdirAll(filepath.Dir(skill), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(skill, []byte("# committed skill, no frontmatter\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	issues := runDoctor(t, tmp)
+	sawSkill := false
+	for _, iss := range issues {
+		if strings.Contains(iss.File, ".claude/worktrees/") || strings.HasPrefix(iss.File, "scratch/wt/") {
+			t.Fatalf("expected nested worktree files to be skipped, got issue: %+v", iss)
+		}
+		if iss.File == ".claude/skills/local/SKILL.md" {
+			sawSkill = true
+		}
+	}
+	if !sawSkill {
+		t.Fatal("committed .claude skill must still be walked")
+	}
+}
+
 func TestCheckLinks_BrokenLinkIsError(t *testing.T) {
 	tmp := t.TempDir()
 	scaffoldHealthyProject(t, tmp)
