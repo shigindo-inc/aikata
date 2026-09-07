@@ -81,7 +81,7 @@ _generated: 2026-09-07_
 ├── CONTRIBUTING.md — Contributing to aikata · draft · 2026-06-01 · (external)
 ├── GLOSSARY.md — Glossary · draft · 2026-08-14
 ├── README.md — aikata · draft · 2026-08-14
-├── ROADMAP.md — ROADMAP · draft · 2026-08-14
+├── ROADMAP.md — ROADMAP · draft · 2026-09-07
 ├── SECURITY.md — Security Policy · draft · 2026-05-29 · (external)
 └── SPEC.md — SPEC — What & Why · draft · 2026-08-14
 ```

@@ -174,7 +174,7 @@ docs:
       title: ROADMAP
       summary: 'Direction, not promises. Versions are scoped by *what they unlock*, not by dates. The single ordering rule: **each milestone must leave aikata usable by its current user base** — never break Phase N users to ship Phase N+1.'
       status: draft
-      updated: "2026-08-14"
+      updated: "2026-09-07"
       managed: true
       links:
         - ARCHITECTURE.md

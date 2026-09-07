@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-08-14
+updated: 2026-09-07
 audience: [human, agent]
 ---
 
@@ -634,6 +634,22 @@ Out of v0.15.0 intentionally:
 
 This is not a distribution-channel change (no cadence-table row): it
 ships across the same channels v0.10.0 established.
+
+---
+
+## v0.15.1 — Nested worktrees out of the doc map ✅ (released 2026-09-07)
+
+**Goal**: stop `aikata map` (and the `generate` rebuild) from cataloguing
+in-tree git worktrees as if they were the project's document set.
+
+- [x] **Nested VCS skip** ✅ — `docmeta.SkipDir` prunes any directory
+      other than the scan root that has its own `.git` (file or
+      directory). `aikata map` and `aikata doctor` share the helper.
+      Vendor-named trees such as `.claude` are not skipped as a whole;
+      committed files under `.claude/skills/` stay on the map. Project-
+      specific noise still uses `docmap.exclude` (ADR 0044 D7).
+
+This is not a distribution-channel change (no cadence-table row).
 
 ---
 
