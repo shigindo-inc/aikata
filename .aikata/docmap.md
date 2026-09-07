@@ -62,7 +62,7 @@ _generated: 2026-09-07_
 │   │   ├── 2026-08-14-modeling-capability-and-model-feature-skill-design.md — Design — `modeling` capability & the `model-feature` skill · draft · 2026-08-14 · (external)
 │   │   ├── 2026-09-07-downstream-friction-field-report.md — Field report — friction observed in a downstream project · draft · 2026-09-07 · (external)
 │   │   ├── docmap-design.md — Design — Doc Map (`docmap`) · draft · 2026-06-11 · (external)
-│   │   ├── open-questions.md — Open Questions · draft · 2026-08-14 · (external)
+│   │   ├── open-questions.md — Open Questions · draft · 2026-09-07 · (external)
 │   │   └── v0.9-core-concept-stabilization.md — v0.9.0 Core-Concept Stabilization · draft · 2026-05-31 · (external)
 │   ├── memory/
 │   │   ├── README.md — `docs/memory/` — Long-term Agent Memory · draft · 2026-05-21
@@ -77,7 +77,7 @@ _generated: 2026-09-07_
 │   └── troubleshooting.md — Troubleshooting · draft · 2026-05-23
 ├── AGENTS.md — Agent Instructions for aikata Development · draft · 2026-05-31
 ├── ARCHITECTURE.md — ARCHITECTURE — How · draft · 2026-08-14
-├── CHANGELOG.md — Changelog · draft · 2026-08-14
+├── CHANGELOG.md — Changelog · draft · 2026-09-07
 ├── CONTRIBUTING.md — Contributing to aikata · draft · 2026-06-01 · (external)
 ├── GLOSSARY.md — Glossary · draft · 2026-08-14
 ├── README.md — aikata · draft · 2026-08-14

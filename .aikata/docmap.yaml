@@ -54,7 +54,7 @@ docs:
       title: Changelog
       summary: All notable changes to **aikata** are documented in this file.
       status: draft
-      updated: "2026-08-14"
+      updated: "2026-09-07"
       managed: true
       links:
         - AGENTS.md
@@ -649,7 +649,7 @@ docs:
       title: Open Questions
       summary: Decisions that are **not yet** made. When one of these is resolved, the resolution moves to an ADR under [`docs/adr/`](../adr/) and the entry here is removed.
       status: draft
-      updated: "2026-08-14"
+      updated: "2026-09-07"
       managed: false
       links:
         - ROADMAP.md
