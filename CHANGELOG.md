@@ -18,6 +18,13 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-09-07
+
+**Docmap no longer indexes nested git worktrees.** A scan that treated
+in-tree agent checkouts as part of the document set produced
+thousand-line diffs on ordinary document edits, so maintainers stopped
+regenerating the map.
+
 ### Fixed
 
 - **`aikata map` no longer indexes in-tree git worktrees.** The scan
