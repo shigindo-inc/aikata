@@ -1,5 +1,5 @@
 version: 1
-generated: "2026-08-29"
+generated: "2026-09-07"
 docs:
     - path: AGENTS.md
       title: Agent Instructions for aikata Development
@@ -630,6 +630,12 @@ docs:
         - docs/decisions/2026-06-24-agile-lifecycle-scope-stance.md
         - docs/decisions/open-questions.md
         - docs/layout.md
+    - path: docs/decisions/2026-09-07-downstream-friction-field-report.md
+      title: Field report — friction observed in a downstream project
+      summary: 'Measured findings from one real aikata-managed project (`itteco`: a Flutter + Cloud Functions app, 47 ADRs, ~200 docs, several LLM agents working in parallel). Not a decision note. Each finding below is a candidate issue with the measurement that produced it, so a maintainer can judge disposition without re-deriving the evidence.  Measured on 2026-09-07 against aikata CLI v0.14.0 unless stated. The upstream research note that produced these lives in the downstream repo at `docs/research/2026-09-06-aikata-adoption-and-session-friction.md`.'
+      status: draft
+      updated: "2026-09-07"
+      managed: false
     - path: docs/decisions/docmap-design.md
       title: Design — Doc Map (`docmap`)
       summary: Detailed design for the doc-cartography artifact decided in [ADR 0044](../adr/0044-doc-map-derived-artifact.md). For **why**, read the ADR; this note records the **how** at design depth so the implementation phases can be planned and executed independently.
