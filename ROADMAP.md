@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-09-07
+updated: 2026-10-05
 audience: [human, agent]
 ---
 
@@ -648,6 +648,19 @@ in-tree git worktrees as if they were the project's document set.
       Vendor-named trees such as `.claude` are not skipped as a whole;
       committed files under `.claude/skills/` stay on the map. Project-
       specific noise still uses `docmap.exclude` (ADR 0044 D7).
+
+This is not a distribution-channel change (no cadence-table row).
+
+---
+
+## v0.15.2 — `CLAUDE.md` imports `AGENTS.md` ✅ (released 2026-10-05)
+
+**Goal**: make the canonical `AGENTS.md` actually reach Claude Code
+sessions, which skip `AGENTS.md` whenever a `CLAUDE.md` exists.
+
+- [x] **`@AGENTS.md` import** ✅ — the generated `CLAUDE.md` (`en` / `ja`)
+      imports `AGENTS.md` on its own line instead of only linking to it.
+      Tests pin the import line for both languages.
 
 This is not a distribution-channel change (no cadence-table row).
 
