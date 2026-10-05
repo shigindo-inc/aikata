@@ -1,8 +1,11 @@
 # CLAUDE.md
 
 This file is **generated** by `aikata generate` from
-[`AGENTS.md`](./AGENTS.md). The canonical source is `AGENTS.md` —
-read that file in full.
+[`AGENTS.md`](./AGENTS.md). The canonical source is `AGENTS.md`; the
+line below imports it in full. Claude Code does not load `AGENTS.md` on
+its own when a `CLAUDE.md` exists, so the import is required.
+
+@AGENTS.md
 
 Do not edit `CLAUDE.md` directly; rerun `aikata generate` instead.
 
