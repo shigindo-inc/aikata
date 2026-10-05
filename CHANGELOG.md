@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-09-07
+updated: 2026-10-05
 audience: [human, agent]
 ---
 
@@ -17,6 +17,24 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.15.2] - 2026-10-05
+
+**Generated `CLAUDE.md` now imports `AGENTS.md`.** Claude Code does not
+read `AGENTS.md` on its own when a `CLAUDE.md` exists, so the rules in the
+canonical file only reached Claude when an agent chose to open it.
+
+### Fixed
+
+- **`aikata generate` emits `@AGENTS.md` in `CLAUDE.md`.** The generated
+  wrapper used to link to `AGENTS.md` and ask the reader to read it in
+  full. A link is not an import, so Claude Code sessions (and subagents)
+  started without the canonical rules in context; a downstream project
+  traced a run of design-rule violations to this gap. Both the `en` and
+  `ja` templates now carry the import on its own line, which makes
+  ADR 0002 ("`AGENTS.md` is canonical") hold for Claude as well (#161).
+  Re-run `aikata generate` to pick it up. The whole of `AGENTS.md` now
+  loads at session start, so a long `AGENTS.md` costs context up front.
 
 ## [0.15.1] - 2026-09-07
 
