@@ -109,6 +109,7 @@ func TestRun_ClaudeProducesCLAUDE(t *testing.T) {
 	out := string(body)
 	for _, needle := range []string{
 		"AGENTS.md",
+		"\n@AGENTS.md\n",
 		"canonical",
 		"aikata generate",
 		"samplekata",
@@ -166,6 +167,9 @@ func TestRun_LangRoutesToJaTemplate(t *testing.T) {
 	// resolveLangTemplate routed to ai_tools/claude/ja/.
 	if !strings.Contains(out, "規範ソース") {
 		t.Errorf("expected ja routing to include 規範ソース header; got:\n%s", out)
+	}
+	if !strings.Contains(out, "\n@AGENTS.md\n") {
+		t.Errorf("ja CLAUDE.md must import AGENTS.md on its own line; got:\n%s", out)
 	}
 }
 
