@@ -86,6 +86,16 @@ func MigrateAikataYaml(data []byte) (AikataYaml, bool, error) {
 // migration is built into sync rather than living in a separate
 // command.
 func LoadMigrated(root string) (AikataYaml, bool, error) {
+	return loadMigration(root, true)
+}
+
+// PreviewMigration reads and migrates the configuration in memory. The
+// returned boolean reports whether a migration would be persisted.
+func PreviewMigration(root string) (AikataYaml, bool, error) {
+	return loadMigration(root, false)
+}
+
+func loadMigration(root string, persist bool) (AikataYaml, bool, error) {
 	path, err := Resolve(root)
 	if err != nil {
 		return AikataYaml{}, false, err
@@ -101,7 +111,7 @@ func LoadMigrated(root string) (AikataYaml, bool, error) {
 	if err != nil {
 		return AikataYaml{}, false, err
 	}
-	if migrated {
+	if migrated && persist {
 		upgraded, err := Marshal(cfg)
 		if err != nil {
 			return cfg, true, err

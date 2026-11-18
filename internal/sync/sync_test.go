@@ -183,6 +183,15 @@ func TestRun_TrueConflict_WritesMarkers(t *testing.T) {
 	if !bytes.Contains(got, userContent) {
 		t.Errorf("user content not present in conflict body:\n%s", got)
 	}
+
+	retry := runSync(t, root, Options{})
+	after, err := os.ReadFile(specPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if retry.Conflicts != 1 || !bytes.Equal(after, got) {
+		t.Fatal("retry must report the conflict without changing the marked file")
+	}
 }
 
 func TestRun_DryRun_NoWrites(t *testing.T) {
