@@ -93,13 +93,16 @@ func TestBuild_CoreFields(t *testing.T) {
 		t.Errorf("SPEC summary = %q", spec.Summary)
 	}
 
-	// ADR has no frontmatter: title/summary from headings, updated from mtime.
+	// ADR has no frontmatter: title and summary come from headings, with no invented update date.
 	adr, _ := docByPath(m, "docs/adr/0001-x.md")
 	if adr.Title != "ADR 0001" {
 		t.Errorf("ADR title = %q", adr.Title)
 	}
 	if adr.Summary != "First decision." {
 		t.Errorf("ADR summary = %q", adr.Summary)
+	}
+	if adr.Updated != "" {
+		t.Errorf("ADR updated = %q, want empty", adr.Updated)
 	}
 	if adr.Status != "" {
 		t.Errorf("ADR status = %q, want empty", adr.Status)

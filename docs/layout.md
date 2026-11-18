@@ -46,8 +46,8 @@ Top-level minimalism caps the project root at **8 non-hidden files** after
 | `API.md` | API interface spec | `--with-api` | — | ✅ canonical |
 | `CONTRIBUTING.md` / `SECURITY.md` | Contributor / security policy | `--oss` (v1.0) | — | prose (not frontmatter-validated) |
 
-"✅ canonical" = present in `canonicalDocNames`; validated for frontmatter,
-links, and freshness under the default `doctor` scope.
+"✅ canonical" = present in `canonicalDocNames`; checked for frontmatter and update dates under the default `doctor`
+scope. The relative-file link check applies to the root `AGENTS.md`.
 
 ## 2. `docs/` subtrees (scaffolded for user projects)
 
@@ -59,8 +59,8 @@ The surface `aikata doctor` manages by default (`managedDocGlobs`).
 | `docs/tasks/current.md` | Short-term working state (not a backlog) | standard | [SPEC §4.1](../SPEC.md) |
 | `docs/troubleshooting.md` | Common failures & fixes | standard | — |
 | `docs/memory/` | Long-term agent memory (`user`/`feedback`/`project`/`reference`) | `--with-memory` | [ADR 0004](./adr/0004-long-term-memory-slot.md) |
-| `docs/usecases.md` | Use-case ledger (behaviour) | `enable modeling` | [ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md) |
-| `docs/domain.md` | Domain model (structure) | `enable modeling` | [ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md) |
+| `docs/usecases.md` | Use-case ledger (behaviour) | `enable modeling` (v0.15.0+) | [ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md) |
+| `docs/domain.md` | Domain model (structure) | `enable modeling` (v0.15.0+) | [ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md) |
 | `docs/stacks/<name>.md` | Per-stack brief (code-free) | `--stack` | [ADR 0029](./adr/0029-stack-brief-layout-convention.md) |
 | `docs/workflows/<domain>.md` | Opt-in collaboration policy | `enable workflow` | [ADR 0026](./adr/0026-workflow-guides-as-opt-in-collaboration-docs.md) |
 | `docs/design/` | One-off brand-exploration artifacts | `new app-icon` / `new mascot` | [ADR 0031](./adr/0031-brand-exploration-documents-as-one-off-artifacts.md) |

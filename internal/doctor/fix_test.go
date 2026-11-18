@@ -65,7 +65,7 @@ func TestFix_MissingKeyInjectsBeforeClosingFence(t *testing.T) {
 	}
 }
 
-func TestFix_StaleUpdatedBumpsToToday(t *testing.T) {
+func TestFix_StaleUpdatedPreservesDate(t *testing.T) {
 	tmp := t.TempDir()
 	original := "---\nproject: sample\nstatus: draft\nversion: 0.0.1\nupdated: 2020-01-01\naudience: [human, agent]\n---\n\n# Glossary\n"
 	writeMD(t, filepath.Join(tmp, "GLOSSARY.md"), original)
@@ -76,15 +76,12 @@ func TestFix_StaleUpdatedBumpsToToday(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Fix: %v", err)
 	}
-	if res.Fixed != 1 {
-		t.Fatalf("Fixed = %d, want 1", res.Fixed)
+	if res.Fixed != 0 || res.Skipped != 1 {
+		t.Fatalf("expected stale date to be advisory, got %+v", res)
 	}
-	got, _ := os.ReadFile(filepath.Join(tmp, "GLOSSARY.md"))
-	if strings.Contains(string(got), "2020-01-01") {
-		t.Errorf("old date still present:\n%s", string(got))
-	}
-	if !strings.Contains(string(got), "updated: 2026-05-24") {
-		t.Errorf("expected today's date, got:\n%s", string(got))
+	got, err := os.ReadFile(filepath.Join(tmp, "GLOSSARY.md"))
+	if err != nil || string(got) != original {
+		t.Fatalf("document changed: %q, %v", got, err)
 	}
 }
 
@@ -132,8 +129,8 @@ func TestFix_IsIdempotent(t *testing.T) {
 func TestFix_ReducesIssuesEndToEnd(t *testing.T) {
 	tmp := t.TempDir()
 	scaffoldHealthyProject(t, tmp)
-	// Make SPEC.md frontmatter stale and drop `version:` from GLOSSARY.md.
-	stale := "---\nproject: sample\nstatus: draft\nversion: 0.0.1\nupdated: 2020-01-01\naudience: [human, agent]\n---\n\n# Spec\n"
+	// Make SPEC.md frontmatter stale and remove its version field.
+	stale := "---\nproject: sample\nstatus: draft\nupdated: 2020-01-01\naudience: [human, agent]\n---\n\n# Spec\n"
 	if err := os.WriteFile(filepath.Join(tmp, "SPEC.md"), []byte(stale), 0o644); err != nil {
 		t.Fatalf("rewrite SPEC.md: %v", err)
 	}

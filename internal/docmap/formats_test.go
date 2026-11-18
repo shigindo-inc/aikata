@@ -1,6 +1,7 @@
 package docmap
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
@@ -81,7 +82,10 @@ func TestOptionsFor_ReadsConfig(t *testing.T) {
 		"  exclude: [\"docs/scratch/**\"]\n"
 	writeFile(t, root, ".aikata/aikata.yaml", cfg)
 
-	opts := OptionsFor(root, []string{"AGENTS.md"})
+	opts, err := OptionsFor(root, []string{"AGENTS.md"})
+	if err != nil {
+		t.Fatal(err)
+	}
 	if opts.TargetDir != root {
 		t.Errorf("TargetDir = %q", opts.TargetDir)
 	}
@@ -101,8 +105,39 @@ func TestOptionsFor_ReadsConfig(t *testing.T) {
 
 func TestOptionsFor_NoConfigFallsBack(t *testing.T) {
 	root := t.TempDir()
-	opts := OptionsFor(root, nil)
+	opts, err := OptionsFor(root, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(opts.Targets) != 0 || len(opts.Formats) != 0 {
 		t.Errorf("expected empty (default) options without config, got %#v", opts)
+	}
+}
+
+func TestGenerate_StableWithoutDocumentChanges(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "A.md", "# A\n")
+	opts := Options{TargetDir: root, Now: fixedClock}
+	if err := Generate(opts); err != nil {
+		t.Fatal(err)
+	}
+	path := YAMLPath(root)
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	opts.Now = opts.Now.AddDate(0, 0, 1)
+	if err := os.Chtimes(filepath.Join(root, "A.md"), opts.Now, opts.Now); err != nil {
+		t.Fatal(err)
+	}
+	if err := Generate(opts); err != nil {
+		t.Fatal(err)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(before, after) {
+		t.Fatalf("unchanged documents changed the map:\n%s\n%s", before, after)
 	}
 }

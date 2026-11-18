@@ -37,10 +37,17 @@ documents that bound the work — do not guess project rules:
 Stop and surface a conflict if the task contradicts a Hard Rule, an
 Accepted ADR, or a recorded preference, rather than silently choosing.
 
+An accepted ADR records a decision. Confirm delivery on the relevant
+branch or release using implementation, tests, or release evidence.
+When they differ, report the observed gap and whether rollout or
+implementation status is known.
+
 ## 2. Keep working state current
 
 If `docs/tasks/current.md` exists, treat it as the shared working-memory
-slot and update it:
+slot and update it. On resumption, check the next action against the
+branch, PR, or issue it names. Replace completed work with the next
+useful action and keep durable decisions in their owning documents:
 
 - **At task start** — record what you are about to do and why.
 - **At meaningful progress** — decisions made, blockers hit, what is

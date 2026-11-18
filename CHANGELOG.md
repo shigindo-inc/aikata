@@ -18,6 +18,20 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Fixed
+
+- `sync` preserves existing conflict markers on retry. Use
+  `sync --accept-conflict <path>` to record an edited resolution per file.
+- Doc maps omit unknown update dates, keep unchanged generations stable,
+  and report invalid configuration. `doctor` checks enabled map views.
+- `doctor` diagnoses invalid update dates and leaves stale dates for review.
+
+### Changed
+
+- Simplify onboarding and move released roadmap detail to the archive.
+- Show what requirement needs each modeled field and distinguish design
+  verification from `doctor` diagnostics in the implementation handoff.
+
 ## [0.15.2] - 2026-10-05
 
 **Generated `CLAUDE.md` now imports `AGENTS.md`.** Claude Code does not

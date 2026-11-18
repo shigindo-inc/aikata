@@ -20,7 +20,6 @@ var FixableCodes = []string{
 	"frontmatter.missing-key.version",
 	"frontmatter.missing-key.updated",
 	"frontmatter.missing-key.audience",
-	"updated.stale",
 	"docmap.missing",
 	"docmap.stale",
 }
@@ -46,7 +45,6 @@ type FixResult struct {
 //   - "frontmatter.missing"          → write a default 5-key block.
 //   - "frontmatter.missing-key.<k>"  → append the missing key with
 //     a placeholder value.
-//   - "updated.stale"                → bump `updated:` to today.
 //
 // Today is taken from opts.Now to keep tests deterministic; the CLI
 // layer passes a zero Time so doctor's Run substitutes time.Now.
@@ -72,8 +70,6 @@ func Fix(opts Options, issues []Issue) (FixResult, error) {
 		case strings.HasPrefix(iss.Code, "frontmatter.missing-key."):
 			key := strings.TrimPrefix(iss.Code, "frontmatter.missing-key.")
 			changed, err = fixMissingKey(full, key, today)
-		case iss.Code == "updated.stale":
-			changed, err = fixStaleUpdated(full, today)
 		case iss.Code == "docmap.missing" || iss.Code == "docmap.stale":
 			changed, err = fixDocMap(opts.TargetDir)
 		default:
@@ -138,7 +134,11 @@ func placeholderForKey(key, today string) string {
 // the freshness check so the rebuilt map matches what `aikata map`
 // writes.
 func fixDocMap(targetDir string) (bool, error) {
-	if err := docmap.Generate(docmap.OptionsFor(targetDir, ManagedIncludeGlobs(targetDir))); err != nil {
+	opts, err := docmap.OptionsFor(targetDir, ManagedIncludeGlobs(targetDir))
+	if err != nil {
+		return false, err
+	}
+	if err := docmap.Generate(opts); err != nil {
 		return false, err
 	}
 	return true, nil
@@ -193,34 +193,6 @@ func fixMissingKey(path, key, today string) (bool, error) {
 	return true, writeFileAtomic(path, []byte(out))
 }
 
-func fixStaleUpdated(path, today string) (bool, error) {
-	body, err := os.ReadFile(path)
-	if err != nil {
-		return false, err
-	}
-	if !hasFrontmatter(body) {
-		return false, nil
-	}
-	text := string(body)
-	openLen := frontmatterOpenLen(text)
-	rest := text[openLen:]
-	closeIdx := strings.Index(rest, "\n---\n")
-	if closeIdx < 0 {
-		closeIdx = strings.Index(rest, "\n---\r\n")
-		if closeIdx < 0 {
-			return false, nil
-		}
-	}
-	absClose := openLen + closeIdx + 1
-	block := text[:absClose]
-	newBlock, replaced := replaceFrontmatterValue(block, "updated", today)
-	if !replaced {
-		return false, nil
-	}
-	out := newBlock + text[absClose:]
-	return out != text, writeFileAtomic(path, []byte(out))
-}
-
 // hasFrontmatter reports whether body begins with a YAML frontmatter
 // fence. docmeta.ParseFrontmatter handles full parsing; this
 // lightweight check exists so the fixers don't depend on its return
@@ -254,27 +226,6 @@ func blockHasKey(block, key string) bool {
 	return false
 }
 
-// replaceFrontmatterValue substitutes the value of `key:` inside the
-// supplied frontmatter block. Returns the rewritten block and a flag
-// indicating whether a substitution actually happened.
-func replaceFrontmatterValue(block, key, value string) (string, bool) {
-	lines := strings.Split(block, "\n")
-	prefix := key + ":"
-	for i, line := range lines {
-		trimmed := strings.TrimLeft(line, " \t")
-		if strings.HasPrefix(trimmed, prefix) {
-			indentLen := len(line) - len(trimmed)
-			lines[i] = line[:indentLen] + key + ": " + value
-			return strings.Join(lines, "\n"), true
-		}
-	}
-	return block, false
-}
-
-// writeFileAtomic writes b to path via a temporary file + rename so
-// the destination never sees a partial write. Permission bits mirror
-// the existing file or default to 0644 when the target does not yet
-// exist.
 func writeFileAtomic(path string, b []byte) error {
 	dir := filepath.Dir(path)
 	tmp, err := os.CreateTemp(dir, ".aikata-doctor-fix-*")

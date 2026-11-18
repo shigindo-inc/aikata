@@ -31,7 +31,12 @@ times.
 
 ## The loop
 
-### Step 1 — Write the use case
+### Step 1 — Ground the use case
+
+Read the relevant requirements, existing use cases, and decisions.
+For a claim that affects the design, locate its source: a user
+requirement, an authoritative specification, or observed project behaviour.
+Keep unresolved assumptions visible in the handoff.
 
 Add or update an entry in `docs/usecases.md`. Give a new use case the
 next free `UC-NN` id; never reuse a retired id.
@@ -49,16 +54,17 @@ state transitions this use case implies. Put every new term into
 
 **Done when both directions hold:**
 
-- **Forward** — every piece of data the use case's success state needs
-  exists in `docs/domain.md`.
+- **Forward** — the model provides the data needed for the use case's
+  success, its documented exceptions, and the applicable invariants.
 - **Reverse** — no field or state you just added is unreachable from any
   use case.
 
-The reverse direction is the point of this step. Forward-only catches
-omissions but not drift; only the reverse direction catches a field that
-nothing needs. When it fails you have two honest options — delete the
-field, or write the use case that justifies it. Say which one you are
-taking.
+For each new principal field or state, identify the exact step,
+outcome, exception, or invariant that needs it. Ask what would fail
+without the field and whether existing data is sufficient. A UC ID
+alone does not establish that need. Omit unsupported additions and
+surface the gap. Add a missing use case only when a confirmed
+requirement calls for it.
 
 Expect to go **back to Step 1** here. Sketching the model routinely
 invalidates a use case; that round trip is the loop working, not a
@@ -73,7 +79,10 @@ Skip this step when there was no genuine fork. Most features have none.
 
 ### Step 4 — Check and hand off
 
-- Run `aikata doctor` (via `manage-docs`) and report the result.
+- Report what changed, the source for any consequential design decision,
+  and any open assumption or scenario the implementation should verify.
+- Run `aikata doctor` (via `manage-docs`) and report its document
+  diagnostics separately from the content checks above.
 - Check `GLOSSARY.md` has no unused terms.
 - Note the in-flight feature in `docs/tasks/current.md` — **one line**.
   Step-by-step progress is not tracked anywhere; that is working state,
@@ -96,8 +105,8 @@ and never silently fill a gap with a guess.
 ## UC-01 — Cancel an order
 - Actor: buyer
 - Trigger: chooses "cancel" on the order detail screen
-- Success state: order becomes `cancelled`; a refund is scheduled
-- Main exception: already shipped ⇒ cancellation refused, routed to returns
+- Success state: order becomes `cancelled`
+- Main exception: already shipped ⇒ cancellation refused
 ```
 
 `docs/domain.md` — per entity, with `Related UC` at **field**
@@ -112,10 +121,9 @@ to catch.
 
 | Field | Type | Meaning | Related UC |
 |---|---|---|---|
-| status | enum | progress state of the order | UC-01, UC-03 |
-| cancel_reason | text | why it was cancelled | UC-01 |
+| status | enum | Refuse cancellation once shipped and record successful cancellation | UC-01 |
 
-- Transitions: placed → shipped (UC-02) / placed → cancelled (UC-01)
+- Transitions: placed → cancelled (UC-01)
 ```
 
 List only fields that carry meaning. Mechanical ones (`id`,

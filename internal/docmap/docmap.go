@@ -117,7 +117,7 @@ func Build(opts Options) (Map, error) {
 			Title:   title(lines, body, offset, rel),
 			Summary: summary(lines, body, offset, rel),
 			Status:  frontmatterScalar(lines, "status"),
-			Updated: updated(lines, opts.TargetDir, rel),
+			Updated: frontmatterScalar(lines, "updated"),
 			Managed: glob.MatchAny(opts.ManagedGlobs, rel),
 			Links:   edges(body, rel, tracked),
 		})
@@ -217,18 +217,4 @@ func frontmatterScalar(lines []string, key string) string {
 		return ""
 	}
 	return strings.TrimSpace(v)
-}
-
-// updated returns the document's `updated:` front-matter value when
-// present, else the file's modification date (YYYY-MM-DD). A stat
-// failure degrades to "" rather than failing the whole scan.
-func updated(lines []string, targetDir, rel string) string {
-	if v := frontmatterScalar(lines, "updated"); v != "" {
-		return v
-	}
-	info, err := os.Stat(filepath.Join(targetDir, filepath.FromSlash(rel)))
-	if err != nil {
-		return ""
-	}
-	return info.ModTime().UTC().Format("2006-01-02")
 }

@@ -15,11 +15,10 @@ audience: [human, agent]
 > implementation approach belong in
 > [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 
-Every principal field carries a **Related UC**. This runs the check in
-both directions: a use case whose success state needs data absent from
-this file, and a field here that no use case reaches, are both visible.
-The second direction is the point — it is what catches a speculative
-field.
+For each principal field, use **Meaning** to say which behaviour
+needs it and **Related UC** to point to a confirmed use case. Check
+both directions: the model covers documented outcomes and exceptions,
+and each new field contributes to a requirement or invariant.
 
 List only fields that carry meaning. Mechanical ones (`id`,
 `created_at`) are omitted deliberately.

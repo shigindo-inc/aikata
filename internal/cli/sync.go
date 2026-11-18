@@ -27,14 +27,15 @@ import (
 //   - 1: I/O or load error before the merge even ran.
 func newSyncCmd() *cobra.Command {
 	var (
-		dryRun       bool
-		rebaseline   bool
-		reseed       bool
-		jsonOut      bool
-		preset       string
-		lang         string
-		stacks       []string
-		withMonorepo bool
+		dryRun          bool
+		rebaseline      bool
+		reseed          bool
+		acceptConflicts []string
+		jsonOut         bool
+		preset          string
+		lang            string
+		stacks          []string
+		withMonorepo    bool
 	)
 	cmd := &cobra.Command{
 		Use:   "sync",
@@ -42,7 +43,10 @@ func newSyncCmd() *cobra.Command {
 		Long: "Performs a 3-way diff-merge against `.aikata/manifest.yaml`\n" +
 			"and the latest aikata templates. User edits are preserved;\n" +
 			"upstream-only changes are auto-applied; true conflicts are\n" +
-			"written back with git-style markers for manual resolution.\n\n" +
+			"written back with git-style markers for manual resolution.\n" +
+			"After editing a conflicted file and removing the markers, run\n" +
+			"aikata sync --accept-conflict <path> with the same template overrides,\n" +
+			"then run sync again. Acceptance updates only the named manifest entries.\n\n" +
 			"Run `aikata sync --rebaseline` once in projects that pre-date\n" +
 			"the v0.5 manifest to seed the ancestor from current on-disk\n" +
 			"state. Rebaseline is non-destructive: it only writes\n" +
@@ -54,8 +58,13 @@ func newSyncCmd() *cobra.Command {
 			"they are not written back to either file. See ADR 0013 for\n" +
 			"the hierarchy and rationale.\n\n" +
 			"See docs/adr/0011-aikata-sync-design.md for the merge contract.",
-		Args:     cobra.NoArgs,
-		PostRunE: docMapPostRun, // isolated doc-map rebuild (ADR 0044 D5)
+		Args: cobra.NoArgs,
+		PostRunE: func(cmd *cobra.Command, args []string) error {
+			if len(acceptConflicts) > 0 {
+				return nil // Acceptance only updates the manifest.
+			}
+			return docMapPostRun(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
 			if err != nil {
@@ -90,6 +99,7 @@ func newSyncCmd() *cobra.Command {
 				DryRun:               dryRun,
 				Rebaseline:           rebaseline,
 				Reseed:               reseed,
+				AcceptConflicts:      acceptConflicts,
 				Stdout:               cmd.OutOrStdout(),
 				Stderr:               cmd.ErrOrStderr(),
 				OverridePreset:       presetPtr,
@@ -119,6 +129,7 @@ func newSyncCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "report the merge plan without writing to disk")
 	cmd.Flags().BoolVar(&rebaseline, "rebaseline", false, "seed a missing manifest from the current upstream rendering (non-destructive: no source files are modified). No-op with a notice if a manifest already exists — use --reseed")
 	cmd.Flags().BoolVar(&reseed, "reseed", false, "re-anchor an existing manifest to the current upstream rendering and exit (manifest-only write; no source files are modified)")
+	cmd.Flags().StringArrayVar(&acceptConflicts, "accept-conflict", nil, "accept the edited resolution for a project-relative path (repeatable; manifest only)")
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON envelope (shape: {version: 1, kind: \"sync\", ...})")
 	// Scope override flags (ADR 0013). Each one is a transient lens
 	// over this invocation only; the manifest and `aikata.yaml` are
@@ -152,11 +163,6 @@ func writeSyncText(w io.Writer, r sync.RunResult, dryRun bool) error {
 	}
 	for _, note := range r.Notes {
 		if _, err := fmt.Fprintln(w, note); err != nil {
-			return err
-		}
-	}
-	if r.Conflicts > 0 && !dryRun {
-		if _, err := fmt.Fprintln(w, "Resolve the conflict markers in the listed files and re-run `aikata sync`."); err != nil {
 			return err
 		}
 	}

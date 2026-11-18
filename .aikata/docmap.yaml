@@ -1,5 +1,5 @@
 version: 1
-generated: "2026-10-05"
+generated: "2026-11-18"
 docs:
     - path: AGENTS.md
       title: Agent Instructions for aikata Development
@@ -167,38 +167,27 @@ docs:
         - docs/adr/0045-documentation-value-model.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
+        - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
+        - docs/layout.md
         - docs/troubleshooting.md
     - path: ROADMAP.md
       title: ROADMAP
       summary: 'Direction, not promises. Versions are scoped by *what they unlock*, not by dates. The single ordering rule: **each milestone must leave aikata usable by its current user base** — never break Phase N users to ship Phase N+1.'
       status: draft
-      updated: "2026-10-05"
+      updated: "2026-11-18"
       managed: true
       links:
         - ARCHITECTURE.md
         - CHANGELOG.md
         - SPEC.md
-        - docs/adr/0015-first-party-skill-plugin-distribution.md
         - docs/adr/0028-prioritize-core-concept-stabilization.md
         - docs/adr/0029-stack-brief-layout-convention.md
         - docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md
-        - docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md
-        - docs/adr/0032-split-channel-publication-by-distribution-value.md
         - docs/adr/0033-doctor-default-scope-direction.md
         - docs/adr/0034-reusable-prompts-opt-in-capability.md
-        - docs/adr/0035-native-self-update-safety.md
-        - docs/adr/0036-codex-native-distribution.md
-        - docs/adr/0037-tighten-adoption-mutation-boundaries.md
-        - docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md
         - docs/adr/0039-documentation-hygiene-and-context-budget.md
-        - docs/adr/0040-collaboration-operation-skill-split.md
-        - docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md
-        - docs/adr/0044-doc-map-derived-artifact.md
-        - docs/adr/0046-structure-migration-assistant-boundary.md
-        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
-        - docs/decisions/docmap-design.md
         - docs/decisions/open-questions.md
         - docs/decisions/v0.9-core-concept-stabilization.md
         - docs/roadmap-archive.md
@@ -231,6 +220,7 @@ docs:
         - docs/adr/0037-tighten-adoption-mutation-boundaries.md
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
+        - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/decisions/open-questions.md
     - path: docs/adoption.md
       title: Adopting aikata in an existing repository
@@ -590,6 +580,12 @@ docs:
         - docs/decisions/2026-08-14-modeling-capability-and-model-feature-skill-design.md
         - docs/decisions/open-questions.md
         - docs/layout.md
+    - path: docs/adr/0048-accept-sync-conflicts-per-file.md
+      title: ADR 0048 — Accept sync conflicts per file
+      summary: '- **Status**: Accepted - **Date**: 2026-11-18'
+      status: draft
+      updated: "2026-11-18"
+      managed: true
     - path: docs/decisions/2026-06-17-watched-external-doc-homes-design.md
       title: Design — CLI/skill responsibility split & watched external doc homes
       summary: 'Design note (rationale source) for two decisions that ship together: a foundational **CLI ↔ skill division-of-labor principle** and its first application, **lifecycle observation of foreign-owned ("watched") document homes**. The durable records are two ADRs in `docs/adr/` (ADR-A principle, ADR-B feature); this note carries the reasoning they cite. It mirrors how [`v0.9-core-concept-stabilization.md`](./v0.9-core-concept-stabilization.md) backs ADR 0028/0033/0034.'
@@ -789,10 +785,10 @@ docs:
         - ARCHITECTURE.md
         - docs/memory/README.md
     - path: docs/roadmap-archive.md
-      title: ROADMAP archive — released milestones (Phase 1 – v0.8.5)
+      title: ROADMAP archive — released milestones (Phase 1 – v0.15.2)
       summary: Historical record. These milestones are **all released**; their detailed per-version checklists were moved out of [ROADMAP.md](../ROADMAP.md) to keep the live roadmap focused on the current and upcoming surface ([ADR 0039](./adr/0039-documentation-hygiene-and-context-budget.md)). The binding decisions live in [`docs/adr/`](./adr/) and the shipped changes in [CHANGELOG.md](../CHANGELOG.md); this file preserves the planning detail verbatim. For current direction, see [ROADMAP.md](../ROADMAP.md).
       status: draft
-      updated: "2026-06-02"
+      updated: "2026-11-18"
       managed: false
       links:
         - CHANGELOG.md
@@ -803,12 +799,27 @@ docs:
         - docs/adr/0006-locale-and-japanese-documentation-policy.md
         - docs/adr/0010-memory-projection-deferred-to-v0-6.md
         - docs/adr/0012-memory-projection-deferral-extended.md
+        - docs/adr/0015-first-party-skill-plugin-distribution.md
         - docs/adr/0020-retire-ai-config-fallback.md
         - docs/adr/0024-scope-stack-axes-split.md
         - docs/adr/0025-sync-divergent-file-preservation.md
         - docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md
         - docs/adr/0027-verification-expectation-in-generated-templates.md
+        - docs/adr/0031-brand-exploration-documents-as-one-off-artifacts.md
+        - docs/adr/0032-split-channel-publication-by-distribution-value.md
+        - docs/adr/0034-reusable-prompts-opt-in-capability.md
+        - docs/adr/0035-native-self-update-safety.md
+        - docs/adr/0036-codex-native-distribution.md
+        - docs/adr/0037-tighten-adoption-mutation-boundaries.md
+        - docs/adr/0038-unify-gitignore-managed-block-across-init-and-sync.md
         - docs/adr/0039-documentation-hygiene-and-context-budget.md
+        - docs/adr/0040-collaboration-operation-skill-split.md
+        - docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md
+        - docs/adr/0044-doc-map-derived-artifact.md
+        - docs/adr/0046-structure-migration-assistant-boundary.md
+        - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
+        - docs/decisions/docmap-design.md
+        - docs/decisions/open-questions.md
     - path: docs/troubleshooting.md
       title: Troubleshooting
       summary: Known setup problems for aikata itself. Keep entries short, concrete, and based on real failures.

@@ -63,6 +63,9 @@ const (
 	// changed it AND the two diverge. File-level conflict markers
 	// were written; manual resolution is required.
 	StatusConflict Status = "conflict"
+	// StatusResolutionAccepted means the upstream baseline was advanced
+	// for an explicitly accepted local resolution.
+	StatusResolutionAccepted Status = "resolution-accepted"
 	// StatusUpstreamAdded means the file did not exist locally and
 	// upstream now renders it. The file is auto-written.
 	StatusUpstreamAdded Status = "upstream-added"
@@ -118,8 +121,11 @@ type Options struct {
 	// touched. Unlike --rebaseline (which seeds a *missing* manifest),
 	// --reseed deliberately overwrites an existing one.
 	Reseed bool
-	Stdout io.Writer
-	Stderr io.Writer
+	// AcceptConflicts advances the upstream baseline for the named, manually
+	// resolved files without writing project documents.
+	AcceptConflicts []string
+	Stdout          io.Writer
+	Stderr          io.Writer
 
 	OverridePreset       *string
 	OverrideLang         *string
@@ -161,6 +167,9 @@ func Run(opts Options) (RunResult, error) {
 	if opts.Root == "" {
 		return RunResult{}, errors.New("sync: Root is required")
 	}
+	if len(opts.AcceptConflicts) > 0 && (opts.Reseed || opts.Rebaseline) {
+		return RunResult{}, errors.New("--accept-conflict cannot be combined with --reseed or --rebaseline")
+	}
 	if opts.Stdout == nil {
 		opts.Stdout = os.Stdout
 	}
@@ -174,7 +183,11 @@ func Run(opts Options) (RunResult, error) {
 	// payload. v0.5 ships with zero registered migrations, so the
 	// path is effectively a pass-through; v2+ schemas slot in as
 	// one-row additions to the registry.
-	cfg, migrated, err := config.LoadMigrated(opts.Root)
+	loadConfig := config.LoadMigrated
+	if opts.DryRun || len(opts.AcceptConflicts) > 0 {
+		loadConfig = config.PreviewMigration
+	}
+	cfg, migrated, err := loadConfig(opts.Root)
 	if err != nil {
 		if errors.Is(err, config.ErrFutureSchema) {
 			return RunResult{}, fmt.Errorf("sync: %w; upgrade aikata via `aikata update --check`", err)
@@ -189,7 +202,7 @@ func Run(opts Options) (RunResult, error) {
 		}
 		return RunResult{}, fmt.Errorf("sync: load config: %w", err)
 	}
-	if migrated {
+	if migrated && !opts.DryRun && len(opts.AcceptConflicts) == 0 {
 		if _, werr := fmt.Fprintln(opts.Stderr, "sync: migrated .aikata/aikata.yaml to the current schema version"); werr != nil {
 			return RunResult{}, werr
 		}
@@ -326,6 +339,10 @@ func Run(opts Options) (RunResult, error) {
 		ancestorHash[f.Path] = f.SHA256
 	}
 
+	if len(opts.AcceptConflicts) > 0 {
+		return acceptConflicts(opts, ancestor, ancestorHash, upstream, isOwned)
+	}
+
 	// Collect every path that appears in ancestor or upstream; sort
 	// for stable iteration / output.
 	paths := make(map[string]struct{}, len(ancestorHash)+len(upstream))
@@ -406,7 +423,7 @@ func Run(opts Options) (RunResult, error) {
 		}
 	} else {
 		result.Notes = append(result.Notes,
-			"Manifest not updated because conflicts remain. Resolve them and re-run `aikata sync`.")
+			"Manifest not updated because conflicts remain. Remove the markers and use `aikata sync --accept-conflict <path>` to record each resolution.")
 	}
 
 	return result, nil
@@ -448,6 +465,9 @@ func classifyAndMerge(path string, ancestorHash map[string]string, upstream map[
 
 	currentHash := ""
 	if hasCurrent {
+		if hasSyncConflictMarkers(currentBody) {
+			return FileResult{Path: path, Status: StatusConflict}, nil, nil
+		}
 		currentHash = config.HashContent(currentBody)
 	}
 	upstreamHash := ""
@@ -561,12 +581,12 @@ func mergeThreeWay(path, ancestorHash, currentHash, upstreamHash string, current
 // pain point shows up.
 func conflictMarkers(ours, ancestor, theirs string) string {
 	var b strings.Builder
-	b.WriteString("<<<<<<< current (your edits)\n")
+	b.WriteString(conflictStart + "\n")
 	b.WriteString(ours)
 	if !strings.HasSuffix(ours, "\n") {
 		b.WriteString("\n")
 	}
-	b.WriteString("||||||| ancestor (.aikata/manifest.yaml)\n")
+	b.WriteString(conflictAncestor + "\n")
 	b.WriteString(ancestor)
 	if ancestor != "" && !strings.HasSuffix(ancestor, "\n") {
 		b.WriteString("\n")
@@ -576,6 +596,6 @@ func conflictMarkers(ours, ancestor, theirs string) string {
 	if !strings.HasSuffix(theirs, "\n") {
 		b.WriteString("\n")
 	}
-	b.WriteString(">>>>>>> upstream\n")
+	b.WriteString(conflictEnd + "\n")
 	return b.String()
 }

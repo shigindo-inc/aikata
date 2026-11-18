@@ -34,8 +34,8 @@ func newDoctorCmd() *cobra.Command {
 			"validate only the document surface aikata manages (the canonical\n" +
 			"docs, docs/adr, docs/memory, … and any manifest-tracked files);\n" +
 			"pass --all-markdown to audit every Markdown file in the tree.\n" +
-			"Pass --fix to apply the trivially-fixable subset (stale `updated:`\n" +
-			"bumps and missing-frontmatter scaffolds). Combine with --dry-run\n" +
+			"Pass --fix to apply the trivially-fixable subset (map regeneration and\n" +
+			"missing-frontmatter scaffolds). Combine with --dry-run\n" +
 			"to preview the fix without writing. Pass --json to emit a\n" +
 			"machine-readable report instead of the human-readable text format.",
 		Args: cobra.NoArgs,

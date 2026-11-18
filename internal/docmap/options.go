@@ -1,6 +1,14 @@
 package docmap
 
-import "github.com/shigindo-inc/aikata/internal/config"
+import (
+	"errors"
+	"fmt"
+	"io/fs"
+	"slices"
+	"strings"
+
+	"github.com/shigindo-inc/aikata/internal/config"
+)
 
 // OptionsFor assembles the Build/Generate options for targetDir, reading
 // the optional `docmap:` block from `.aikata/aikata.yaml` for targets,
@@ -12,15 +20,24 @@ import "github.com/shigindo-inc/aikata/internal/config"
 // It is the single place that maps config to Options, so the explicit
 // `aikata map` verb, the lifecycle hooks, and the doctor freshness check
 // all build the map identically (no drift between writer and checker).
-// A missing or unreadable config falls back to the built-in defaults.
-func OptionsFor(targetDir string, managedGlobs []string) Options {
+// An absent config uses the built-in defaults.
+func OptionsFor(targetDir string, managedGlobs []string) (Options, error) {
 	opts := Options{TargetDir: targetDir, ManagedGlobs: managedGlobs}
 	cfg, err := config.Load(targetDir)
+	if errors.Is(err, fs.ErrNotExist) {
+		return opts, nil
+	}
 	if err != nil {
-		return opts
+		return Options{}, fmt.Errorf("load doc map config: %w", err)
+	}
+	for _, format := range cfg.Docmap.Formats {
+		name := strings.ToLower(strings.TrimSpace(format))
+		if !slices.ContainsFunc(renderers, func(r renderer) bool { return r.name == name }) {
+			return Options{}, fmt.Errorf("unknown docmap format %q", format)
+		}
 	}
 	opts.Targets = cfg.Docmap.Targets
 	opts.Exclude = cfg.Docmap.Exclude
 	opts.Formats = cfg.Docmap.Formats
-	return opts
+	return opts, nil
 }

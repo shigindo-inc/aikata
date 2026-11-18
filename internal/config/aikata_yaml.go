@@ -42,8 +42,7 @@ type AikataYaml struct {
 type Docmap struct {
 	// Formats selects the renderings emitted under `.aikata/`. The data
 	// layer (`docmap.yaml`) is always written regardless of this list —
-	// it is the single source of the map's truth and what `aikata doctor`
-	// checks for freshness. Recognised values: yaml, md, json, txt, mmd.
+	// it is the source used to check freshness of the enabled views. Recognised values: yaml, md, json, txt, mmd.
 	// Empty means the default set [yaml, md].
 	Formats []string `yaml:"formats,omitempty"`
 	// Targets are the catalog globs (slash-form, relative to the project

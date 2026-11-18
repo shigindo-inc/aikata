@@ -93,3 +93,22 @@ func TestMap_Deterministic(t *testing.T) {
 		t.Fatalf("docmap.yaml not deterministic:\n%s\n---\n%s", first, second)
 	}
 }
+
+func TestMap_InvalidConfigDoesNotWrite(t *testing.T) {
+	for name, config := range map[string]string{
+		"invalid YAML":   "docmap: [broken\n",
+		"unknown format": "version: 2\ndocmap:\n  formats: [markdown]\n",
+	} {
+		t.Run(name, func(t *testing.T) {
+			root := t.TempDir()
+			chdir(t, root)
+			writeMD(t, root, ".aikata/aikata.yaml", config)
+			if _, err := runMap(t); err == nil {
+				t.Fatal("expected an error from invalid config")
+			}
+			if _, err := os.Stat(filepath.Join(root, ".aikata", "docmap.yaml")); !os.IsNotExist(err) {
+				t.Fatalf("map should be absent, stat returned %v", err)
+			}
+		})
+	}
+}

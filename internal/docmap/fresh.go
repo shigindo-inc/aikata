@@ -5,43 +5,66 @@ import (
 	"errors"
 	"io/fs"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
-// Fresh reports whether the on-disk `.aikata/docmap.yaml` still matches a
-// fresh in-memory rebuild from opts. It is the comparison behind the
-// doctor freshness check (ADR 0044 D6): the map is not manifest-tracked
-// and not merged by sync, so this hash compare is what guarantees it
-// stays current.
-//
-//   - missing is true when no map file exists yet (never generated).
-//   - fresh is true when the on-disk bytes equal the rebuild.
-//
-// Only structural drift counts: the rebuild's `generated:` date is
-// aligned to the on-disk value before comparing, so the map does not read
-// as stale merely because time has passed since it was written. A map
-// file that fails to parse is treated as not fresh (drift), so `--fix`
-// regenerates it.
-func Fresh(opts Options) (fresh bool, missing bool, err error) {
-	onDisk, err := os.ReadFile(YAMLPath(opts.TargetDir))
-	if errors.Is(err, fs.ErrNotExist) {
-		return false, true, nil
-	}
-	if err != nil {
-		return false, false, err
-	}
+// FirstDrift reports the first missing or stale enabled map file. An empty
+// filename means every enabled view matches the current document map.
+func FirstDrift(opts Options) (file string, missing bool, err error) {
 	m, err := Build(opts)
 	if err != nil {
-		return false, false, err
+		return "", false, err
+	}
+	if err := preserveGeneration(opts.TargetDir, &m); err != nil {
+		return "", false, err
+	}
+
+	for _, r := range selectedRenderers(opts.Formats) {
+		current, err := os.ReadFile(pathFor(opts.TargetDir, r.file))
+		if errors.Is(err, fs.ErrNotExist) {
+			return r.file, true, nil
+		}
+		if err != nil {
+			return "", false, err
+		}
+		expected, err := r.body(m)
+		if err != nil {
+			return "", false, err
+		}
+		if !bytes.Equal(expected, current) {
+			return r.file, false, nil
+		}
+	}
+	return "", false, nil
+}
+
+// preserveGeneration keeps the previous date when the map data is identical.
+// Both generation and diagnosis use it, so time alone never creates drift.
+func preserveGeneration(root string, m *Map) error {
+	current, err := os.ReadFile(YAMLPath(root))
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
 	}
 	var prev Map
-	if e := yaml.Unmarshal(onDisk, &prev); e == nil && prev.Generated != "" {
+	if err := yaml.Unmarshal(current, &prev); err != nil {
+		return nil // Malformed generated output can be regenerated.
+	}
+	if _, err := time.Parse("2006-01-02", prev.Generated); err != nil {
+		return nil
+	}
+	candidate := *m
+	candidate.Generated = prev.Generated
+	expected, err := MarshalYAML(candidate)
+	if err != nil {
+		return err
+	}
+	if bytes.Equal(expected, current) {
 		m.Generated = prev.Generated
 	}
-	rebuilt, err := MarshalYAML(m)
-	if err != nil {
-		return false, false, err
-	}
-	return bytes.Equal(rebuilt, onDisk), false, nil
+	return nil
 }

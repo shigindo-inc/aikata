@@ -125,3 +125,25 @@ func TestFix_RegeneratesStaleDocMap(t *testing.T) {
 		t.Fatalf("map still stale after --fix: %#v", after)
 	}
 }
+
+func TestCheckDocMap_RepairsConfiguredView(t *testing.T) {
+	dir := seedProject(t)
+	genMap(t, dir)
+	path := docmap.MarkdownPath(dir)
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	opts := Options{TargetDir: dir}
+	issues, err := checkDocMap(opts)
+	if err != nil || len(issues) != 1 || issues[0].Code != "docmap.missing" || issues[0].File != ".aikata/docmap.md" {
+		t.Fatalf("missing Markdown view: issues=%#v, err=%v", issues, err)
+	}
+	if _, err := Fix(opts, issues); err != nil {
+		t.Fatal(err)
+	}
+	writeProjectFile(t, dir, ".aikata/docmap.md", "# Stale view")
+	issues, err = checkDocMap(opts)
+	if err != nil || len(issues) != 1 || issues[0].Code != "docmap.stale" || issues[0].File != ".aikata/docmap.md" {
+		t.Fatalf("stale Markdown view: issues=%#v, err=%v", issues, err)
+	}
+}
