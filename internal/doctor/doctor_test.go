@@ -532,3 +532,12 @@ func TestHasErrors(t *testing.T) {
 		t.Error("HasErrors on mixed should be true")
 	}
 }
+
+func TestCheckUpdated_InvalidDate(t *testing.T) {
+	dir := t.TempDir()
+	writeMD(t, filepath.Join(dir, "SPEC.md"), "---\nupdated: 2026-02-30\n---\n# SPEC\n")
+	issues, err := checkUpdated(Options{TargetDir: dir, Now: fixedDate()})
+	if err != nil || len(issues) != 1 || issues[0].Code != "updated.invalid" || issues[0].Level != LevelError {
+		t.Fatalf("expected invalid date diagnostic, got %+v, %v", issues, err)
+	}
+}

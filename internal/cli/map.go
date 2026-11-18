@@ -37,8 +37,7 @@ func newMapCmd() *cobra.Command {
 			if err := rebuildDocMap(target); err != nil {
 				return fmt.Errorf("map: %w", err)
 			}
-			if _, err := fmt.Fprintf(cmd.OutOrStdout(), "wrote %s and %s\n",
-				docmap.YAMLPath(target), docmap.MarkdownPath(target)); err != nil {
+			if _, err := fmt.Fprintf(cmd.OutOrStdout(), "generated document map at %s\n", docmap.YAMLPath(target)); err != nil {
 				return fmt.Errorf("map: write status: %w", err)
 			}
 			return nil
@@ -51,7 +50,11 @@ func newMapCmd() *cobra.Command {
 // surfaces agree; docmap itself never imports doctor (the dependency runs
 // one way so doctor's freshness check can import docmap).
 func rebuildDocMap(targetDir string) error {
-	return docmap.Generate(docmap.OptionsFor(targetDir, doctor.ManagedIncludeGlobs(targetDir)))
+	opts, err := docmap.OptionsFor(targetDir, doctor.ManagedIncludeGlobs(targetDir))
+	if err != nil {
+		return err
+	}
+	return docmap.Generate(opts)
 }
 
 // docMapPostRun is the isolated lifecycle hook wired onto init / fill /

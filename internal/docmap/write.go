@@ -1,7 +1,10 @@
 package docmap
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -26,34 +29,32 @@ func Generate(opts Options) error {
 		return err
 	}
 
+	if err := preserveGeneration(opts.TargetDir, &m); err != nil {
+		return fmt.Errorf("docmap: read previous generation: %w", err)
+	}
 	dir := filepath.Join(opts.TargetDir, config.PrimaryDir)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("docmap: mkdir %s: %w", dir, err)
 	}
 
-	want := resolveFormats(opts.Formats)
-	for _, r := range renderers {
-		if !contains(want, r.name) {
-			continue
-		}
+	for _, r := range selectedRenderers(opts.Formats) {
 		body, err := r.body(m)
 		if err != nil {
 			return err
 		}
-		if err := writeAtomic(pathFor(opts.TargetDir, r.file), body, 0o644); err != nil {
+		path := pathFor(opts.TargetDir, r.file)
+		existing, err := os.ReadFile(path)
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return fmt.Errorf("docmap: read %s: %w", r.file, err)
+		}
+		if err == nil && bytes.Equal(existing, body) {
+			continue
+		}
+		if err := writeAtomic(path, body, 0o644); err != nil {
 			return fmt.Errorf("docmap: write %s: %w", r.file, err)
 		}
 	}
 	return nil
-}
-
-func contains(set []string, s string) bool {
-	for _, v := range set {
-		if v == s {
-			return true
-		}
-	}
-	return false
 }
 
 // writeAtomic writes body to path via a temp file + rename so the

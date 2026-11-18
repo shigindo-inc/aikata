@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/shigindo-inc/aikata/internal/config"
@@ -61,6 +62,17 @@ func resolveFormats(configured []string) []string {
 		out = append(out, f)
 	}
 	return out
+}
+
+func selectedRenderers(configured []string) []renderer {
+	want := resolveFormats(configured)
+	var selected []renderer
+	for _, r := range renderers {
+		if slices.Contains(want, r.name) {
+			selected = append(selected, r)
+		}
+	}
+	return selected
 }
 
 // MarshalJSON renders the Map as pretty-printed JSON. Field order follows

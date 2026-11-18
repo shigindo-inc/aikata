@@ -678,7 +678,7 @@ Navigation Matrix (`AGENTS.md` §3). The decision and its rationale are
 
 ### 13.1 Outputs
 
-One scan of the document surface produces two mandatory renderings under
+One scan of the document surface produces the default renderings under
 the aikata-owned machine zone:
 
 - `.aikata/docmap.yaml` — the structured data layer (single source of the
@@ -710,14 +710,14 @@ adopted repository needs no document refactor.
   map stale, and the map step reports its own status (it does not abort the
   surrounding command on a non-fatal map issue).
 - `aikata doctor` carries a **freshness check**: it rebuilds the map in
-  memory and compares the `HashContent` of the result to the on-disk
-  `docmap.yaml`. A mismatch is a `warning` (`--json` issue code under the
-  versioned schema); `aikata doctor --fix` regenerates the map.
+  memory and compares each enabled rendering with its on-disk file.
+  Missing or stale renderings produce a warning. `aikata doctor --fix`
+  regenerates them. The generation date is retained while the map data
+  stays the same, and document dates come from frontmatter.
 
 ### 13.4 State class
 
 `docmap.*` are aikata-owned derived state. They are **not** manifest-tracked
 and **not** subject to `aikata sync`'s 3-way merge (§3.4); they are
-regenerated, never merged. They are written atomically via
-`internal/config`'s `writeAtomic`. Configuration lives under the `docmap`
+regenerated, never merged. Changed renderings are written atomically. Configuration lives under the `docmap`
 key of `.aikata/aikata.yaml` (§4.1).

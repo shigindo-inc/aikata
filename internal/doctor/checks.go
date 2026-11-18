@@ -277,8 +277,7 @@ func checkMemory(opts Options) ([]Issue, error) {
 }
 
 // checkUpdated warns when a frontmatter `updated:` field is older than
-// 365 days. Only ISO 8601 (YYYY-MM-DD) values are recognised; other
-// formats are skipped without an error.
+// one year and rejects dates outside the YYYY-MM-DD format.
 func checkUpdated(opts Options) ([]Issue, error) {
 	cutoff := opts.Now.AddDate(-1, 0, 0)
 	var issues []Issue
@@ -293,6 +292,11 @@ func checkUpdated(opts Options) ([]Issue, error) {
 		}
 		t, err := time.Parse("2006-01-02", strings.TrimSpace(raw))
 		if err != nil {
+			issues = append(issues, Issue{
+				Level: LevelError, File: rel, Line: lineNum,
+				Code:    "updated.invalid",
+				Message: "updated must be a calendar date in YYYY-MM-DD format",
+			})
 			return nil
 		}
 		if t.Before(cutoff) {
