@@ -44,14 +44,17 @@ wants doc changes, not a binary upgrade.
 ### 2. Pull upstream template changes
 
 ```bash
-aikata sync                  # 3-way merge; preserves your edits and deletions
-aikata sync --dry-run        # preview the plan first when the repo has many local edits
+aikata sync --dry-run        # preview the plan before applying it
+aikata sync                  # apply the merge plan
 ```
 
 `sync` also forward-migrates `.aikata/aikata.yaml` (schema v1 → v2) in the
 same run, so this is where doc-schema migration happens. If sync writes
-conflict markers (`<<<<<<<` / `=======` / `>>>>>>>`), resolve them with
-the user before continuing — do not auto-pick a side.
+conflict markers (`<<<<<<<` / `=======` / `>>>>>>>`), review the two
+sides with the user. After editing a file and removing all markers,
+use `aikata sync --accept-conflict <path>` with the same render overrides
+to record the resolution. Check the installed `aikata sync --help`
+for flag availability.
 
 Note the boundary: `sync` respects deletions and will **not** restore a
 doc the repo is missing — that is step 3's job. Do not reach for
@@ -72,28 +75,19 @@ records hand-written files so the next `sync` preserves them.
 
 ```bash
 aikata doctor --json         # machine-readable; parse summary.errors
-aikata doctor --fix          # apply the trivially-fixable subset (stale dates, missing frontmatter)
+aikata doctor --fix          # apply the trivially-fixable subset (stale map views, missing frontmatter)
 aikata doctor --json         # re-run; report remaining issues as file:line
 ```
 
 Report anything `doctor` cannot auto-fix with `file:line` references the
 user can open.
 
-### 5. Retire deprecated docs (judgement + confirmation)
+### 5. Preserve decision history
 
-`doctor` flags deprecated ADRs (`Status: deprecated`) and requires each to
-reference its replacement ("Replaced by" / "Superseded by"). When a
-deprecated doc is genuinely dead:
-
-- Confirm with the user before deleting anything.
-- Remove the deprecated file and update any cross-references that pointed
-  at it (other docs, `docs/decisions/open-questions.md`, links in
-  `AGENTS.md`).
-- Do **not** delete a deprecated ADR that is still referenced as live
-  rationale elsewhere; surface the conflict instead.
-
-There is no `aikata` command for this cleanup by design — it needs
-judgement. Keep it conservative.
+For deprecated or superseded ADRs, keep the historical record and check
+that readers can find the live replacement. Update active references
+to point to the current decision. Review old `updated:` dates against
+document content before changing them.
 
 ### 6. Regenerate tool files
 

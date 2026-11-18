@@ -130,17 +130,17 @@ aikata doctor --fix         # apply auto-fixes for the trivially-fixable subset
 aikata doctor --fix --dry-run   # preview --fix without writing
 ```
 
-`doctor` runs eight consistency checks: frontmatter presence/keys,
-internal links, ADR numbering, memory layout, `updated:` freshness,
-environment-example sync, glossary references, and language
-consistency.
+The diagnostics cover frontmatter, links in the root `AGENTS.md`,
+ADR metadata, memory layout, update dates, environment variable
+references, glossary references, and generated document-map views.
+Check the document's claims separately.
 
 ## Post-init: growing the project
 
 After `init`, extend an aikata project with two verbs (ADR 0017):
 
 - **`aikata enable <capability>`** — add a *durable* capability: `ui`,
-  `api`, `tdd`, `changelog`, `prompts` (single-file docs), `memory`,
+  `api`, `tdd`, `changelog`, `prompts` (single-file docs), `memory`, `modeling`,
   `monorepo`, or `stack <name>` / `ai-tool <name>` / `workflow <domain>`.
   Each renders its files, records them in `.aikata/manifest.yaml` (so
   `aikata sync` preserves them), and updates `.aikata/aikata.yaml`.
@@ -192,8 +192,7 @@ A typical agent loop:
 
 - Don't hand-edit `CLAUDE.md`, `GEMINI.md`, or `.cursor/rules/main.mdc` —
   they are regenerated.
-- Don't bump `updated:` manually on a stale doc; let `aikata doctor --fix`
-  do it.
+- Review the content of a stale document before updating its date.
 - Don't fabricate ADR numbers; let `aikata new adr "<title>"` own the
   auto-numbering.
 - Don't run `aikata init` in a non-empty directory without `--force`

@@ -2,11 +2,11 @@
 project: aikata
 status: draft
 version: 0.1.0
-updated: 2026-06-02
+updated: 2026-11-18
 audience: [human, agent]
 ---
 
-# ROADMAP archive — released milestones (Phase 1 – v0.8.5)
+# ROADMAP archive — released milestones (Phase 1 – v0.15.2)
 
 > Historical record. These milestones are **all released**; their detailed
 > per-version checklists were moved out of [ROADMAP.md](../ROADMAP.md) to keep
@@ -956,3 +956,524 @@ Out of v0.8.5 intentionally:
 - **Test-first as a default.** Not happening — ADR 0003 keeps test-first
   opt-in. v0.8.5 adds verification, not methodology.
 
+---
+
+## v0.9.2 — Scope discipline ✅ (released 2026-06-01)
+
+Two scope-discipline changes that keep the default `standard` scaffold
+lean: add opt-in brand-exploration artifacts, and move the empty
+reusable-prompt library off the default surface. Both follow the v0.9.0
+core-concept stabilization principle (ADR 0028) — the default scaffold
+carries only documents with a distinct, non-latent role; convenience
+documents are opt-in.
+
+**Brand-exploration artifacts** ([ADR 0031](./adr/0031-brand-exploration-documents-as-one-off-artifacts.md)).
+Mobile-app dogfooding showed that icon and mascot exploration documents
+repeatedly save product-context reconstruction work, especially when
+prompts must be passed to an external image-generation LLM that cannot
+read the repository.
+
+- [x] **`aikata new app-icon`** — stamp
+      `docs/design/app-icon-concepts.md` with a concise bilingual starter
+      structure: external-LLM product context, brand / technical
+      constraints, concept comparison, image-generation prompts,
+      negative prompts, and selection follow-up.
+- [x] **`aikata new mascot`** — stamp
+      `docs/design/mascot-character-ideas.md` with a concise bilingual
+      starter structure: external-LLM product context, mascot role /
+      tone, candidate comparison, image-generation prompts, intended
+      product surfaces, and selection follow-up.
+- [x] **One-off artifact semantics** — both registered under
+      `aikata list artifacts`; no config flags, init prompts, preset
+      defaults, or `.aikata/manifest.yaml` entries. After stamping, the
+      project owns the files and `aikata sync` does not restore or merge
+      them. Collision refuses rather than overwriting.
+
+**Reusable-prompts opt-in** ([ADR 0034](./adr/0034-reusable-prompts-opt-in-capability.md),
+Q-DESIGN-12). The empty `docs/prompts.md` skeleton is removed from the
+default `standard` / `flutter` / `typescript` scopes and offered as an
+opt-in capability.
+
+- [x] **`aikata enable prompts` / `--with-prompts`** — single-file
+      capability rendering `docs/prompts.md`; schema-v2
+      `components.prompts`, manifest-recorded, `sync`-preserved. Removal
+      from the default scaffold is sync-visible but non-destructive
+      (ADR 0019).
+- [x] **Verification** — component / CLI tests for en + ja rendering,
+      collision refusal, dry-run output, artifact listing; golden trees
+      confirm `docs/prompts.md` leaves the default scopes and appears only
+      in `standard-with-extras`; `minimal` golden trees are unchanged.
+
+Out of v0.9.2 intentionally:
+
+- Default inclusion of brand artifacts in `standard`, `extended`,
+  `--with-ui`, or stack selections.
+- A branding hierarchy or speculative `new logo` / `new brand-guide`
+  commands without repeated dogfooding evidence.
+
+---
+
+## v0.9.3 — Agent-ecosystem distribution ✅ (released 2026-05-31)
+
+First of the three value-ordered channel-publication lines that
+[ADR 0032](./adr/0032-split-channel-publication-by-distribution-value.md)
+split out of the former single v0.9.9 line. v0.9.3 ships the distribution
+surface that matches aikata's core identity — agent-facing shared-context
+tooling, discoverable where its users already work (ADR 0028) — and is the
+**prioritized** line. Numeric order is direction, not ship order: v0.9.3
+is independent of the still-unshipped v0.9.2 brand-exploration line (the
+v0.8.3-before-v0.8.2 precedent).
+
+- [x] **Universal `npx skills add` package** — first-party aikata usage
+      guidance at `dist/universal-skill/SKILL.md` per
+      [ADR 0015](./adr/0015-first-party-skill-plugin-distribution.md).
+      A tool-agnostic skill installed via
+      `npx skills add …/tree/main/dist/universal-skill --agent universal`;
+      `dist/universal-skill/` is canonical, so no publication mirror is
+      required. Also shipped as the `aikata-universal-skill.md` release
+      asset.
+- [x] **Claude Code marketplace readiness** — a root
+      `.claude-plugin/marketplace.json` lists the v0.6.0 plugin scaffold,
+      making the repo installable as a self-hosted marketplace
+      (`/plugin marketplace add shigindo-inc/aikata`); `plugin.json` is
+      finalized for listing (version → 0.9.3, `category` / `keywords`).
+      The **submission act stays gated** on the upstream marketplace flow
+      plus a maintainer submitting for review; per the v0.6.0
+      agent-doable-subset precedent that external step does not block the
+      release. The manual plugin-install path stays supported regardless.
+
+Out of v0.9.3 intentionally:
+
+- Homebrew tap and npm wrapper (deferred to v0.9.9 — convenience-only).
+- Native `aikata update --apply` (v0.9.4).
+
+---
+
+## v0.9.4 — Native self-update for existing channels ✅ (released 2026-06-01)
+
+Second value-ordered line (ADR 0032 D2). Ships `aikata update --apply`
+covering the channels that exist today. The foundation
+(`internal/install.Detect()` and the `aikata.install-source` marker
+written by `scripts/install.sh`) shipped in v0.6.0. The safety model is
+recorded in [ADR 0035](./adr/0035-native-self-update-safety.md).
+
+- [x] **`aikata update --apply`** ✅ — consumes `internal/install.Detect()`
+      and picks the safe path per channel (ADR 0035 D1):
+      `install-script` / `github-release` do an in-place **binary swap**
+      (download → verify SHA-256 against `checksums.txt` → extract →
+      atomic replace); `go-install` is shown the channel-native
+      `go install …@latest`; `homebrew` / `npm` are stubbed with an
+      actionable "use your package manager" message until those channels
+      are real (v0.9.9); Windows and unknown installs get manual-download
+      guidance. Verify-before-swap plus a tampered-archive regression
+      test back the RCE-surface review (ADR 0035 D2 / `SECURITY.md`).
+
+Native self-update is a convenience, not essential; v0.9.4 keeps it
+isolated from the v0.9.3 ecosystem work so neither blocks the other.
+
+---
+
+## v0.9.5 — Plugin command surface + version lockstep ✅ (released 2026-06-01)
+
+Rounds out the Claude Code plugin so it exposes aikata's authoring-growth
+verbs, not just the init / sync / doctor / generate lifecycle loop, and
+pins the distribution-metadata versioning policy. No CLI behaviour change;
+the binary surface is unchanged.
+
+- [x] **`/aikata-new` and `/aikata-enable` plugin slash commands** —
+      thin `$ARGUMENTS` wrappers over `aikata new <artifact>` (adr /
+      app-icon / mascot) and `aikata enable <capability>` (ui / api /
+      tdd / changelog / prompts / memory / monorepo / stack / ai-tool /
+      workflow). The plugin previously surfaced neither verb, so creating
+      an ADR or enabling a capability had no plugin-level affordance.
+- [x] **Both first-party skills document `enable` / `new`** —
+      `dist/claude-code/skill/SKILL.md` and `dist/universal-skill/SKILL.md`
+      gain a short post-init section (they previously omitted these
+      commands entirely).
+- [x] **`plugin.json` / `marketplace.json` version lockstep** — both bump
+      with every release going forward (CONTRIBUTING § Release flow,
+      ARCHITECTURE §6.5); set to `0.9.5`, resolving the v0.9.4 gap where
+      the marketplace still showed `0.9.3`.
+
+This is not a distribution *channel* change (no cadence-table row): the
+plugin and `npx skills add` surfaces already exist from v0.6 / v0.9.3.
+
+---
+
+## v0.9.6 — Codex native distribution ✅ (released 2026-06-01)
+
+Advances the Codex skill-only native wrapper from ADR 0015's v1.0
+deferral now that the platform shape needed by aikata is stable. No Go
+CLI behaviour changes: Codex gets a native install path and App metadata
+around the same thin CLI wrapper already shipped as the universal skill.
+
+- [x] **Codex App skill-card metadata** —
+      `dist/universal-skill/agents/openai.yaml` adds the `aikata` display
+      name, concise description, `$aikata` starter prompt, and implicit
+      invocation policy without speculative icons, colors, dependencies,
+      or branding assets.
+- [x] **First-party Codex plugin** — `dist/codex/plugin/` contains
+      `.codex-plugin/plugin.json` plus byte-identical copies of the
+      universal skill and `agents/openai.yaml`. Root
+      `.agents/plugins/marketplace.json` exposes the tracked plugin for
+      the self-hosted Codex marketplace flow.
+- [x] **Versioned native install guidance** — Codex CLI `0.135.0+`
+      prefers `codex plugin marketplace add shigindo-inc/aikata --ref
+      v0.9.6` followed by `codex plugin add aikata@aikata`. Direct
+      universal-skill discovery remains the fallback for older Codex
+      versions and works on CLI `0.125.0`.
+- [x] **Release bundles + CI smoke coverage** — preserve
+      `aikata-universal-skill.md`; add generated
+      `aikata-universal-skill.tar.gz` and `aikata-codex-plugin.tar.gz`
+      assets, with archive-entry smoke checks and repository lockstep
+      tests.
+
+Cursor and Gemini CLI native wrappers remain v1.0 work. The rationale
+and Do-No-Harm analysis are recorded in
+[ADR 0036](./adr/0036-codex-native-distribution.md).
+
+---
+
+## v0.9.7 — Adoption mutation boundaries ✅ (released 2026-06-02)
+
+Dogfooding `aikata init` + `aikata doctor --fix` against the existing
+`shigindo-flutter-skills` Agent Skills repository exposed an ownership
+boundary failure: broad Markdown validation modified third-party
+`skills/**` contracts and project-owned prose, while the scaffolded
+`.gitignore` block carried stack and editor policies beyond aikata's
+shared-context-document purpose. The public `.aikata-proposed/` adoption
+fallback was also documented but unimplemented.
+
+[ADR 0037](./adr/0037-tighten-adoption-mutation-boundaries.md) is
+**Accepted**; all four maintainer-confirmed boundary fixes ship together.
+
+- [x] **Managed-surface `doctor` default** — implement ADR 0033's
+      deferred behavior flip: validate canonical names, known
+      aikata-owned document directories (`docs/adr`, `docs/memory`,
+      `docs/stacks`, `docs/tasks`, `docs/workflows`, `docs/design`, …),
+      and manifest Markdown entries; leave arbitrary repository Markdown
+      alone unless broad audit is explicitly selected. `doctor.exclude`
+      stays additive (`internal/doctor/scope.go`,
+      `Options.Includes`).
+- [x] **Explicit broad audit mode** — `aikata doctor --all-markdown`
+      restores the whole-repository walk. aikata's own CI gate uses
+      `--all-markdown --strict` (the repo has no manifest and ships docs
+      outside the managed surface).
+- [x] **Minimal `.gitignore` managed block** — keep ADR 0018's
+      non-destructive markers but remove future-tool, stack-build,
+      editor / OS, coverage, and `*.local` rules. Emit only
+      `/.aikata-proposed/`, the AI-tool artifacts, and a minimal
+      **always-on** secret baseline (`.env`, `.env.local`). Stale
+      `docs.generate_gitignore: false` template guidance removed.
+- [x] **`.env.example` opt-in `env` capability** — `aikata enable env` /
+      `aikata init --with-env`; schema-v2 `components.env`,
+      manifest-tracked, `sync`-preserved. Only the example file is
+      opt-in; the `.env` secret ignore stays unconditional. Canonical
+      `AGENTS.md` / `README.md` mention `.env.example` as a pattern (no
+      dangling hard link).
+- [x] **`.aikata-proposed/` contract repair** — non-empty-directory
+      `init` without `--force` renders the proposal under
+      `.aikata-proposed/` and exits 0; a populated proposal tree is
+      refused with `ErrProposalExists`.
+- [x] **Regression and migration proof** — byte-identity tests for
+      third-party `skills/**` + `CONTRIBUTING.md` under default scope,
+      broad-audit coverage, proposal-tree creation/collision tests,
+      `.gitignore`/`.env.example` golden updates, and a CHANGELOG
+      migration note for projects carrying the previous broad block.
+
+Out of v0.9.7 intentionally:
+
+- Stack-native project scaffolding. Flutter / TypeScript build ignores
+  belong to downstream project tooling unless a later opt-in capability
+  demonstrates recurring value.
+- Auto-detection of third-party Markdown schemas. The managed-surface
+  default removes the need to chase external format registries.
+
+---
+
+## v0.9.8 — `.gitignore` managed-block unification + doc hygiene ✅ (released 2026-06-02)
+
+Internal hardening, no new user-facing commands. Two follow-ups from the
+v0.9.7 work, shipped together.
+
+[ADR 0038](./adr/0038-unify-gitignore-managed-block-across-init-and-sync.md)
+and [ADR 0039](./adr/0039-documentation-hygiene-and-context-budget.md)
+are **Accepted**.
+
+- [x] **`.gitignore` unified on the managed block** — `aikata sync` now
+      refreshes only the `# >>> aikata managed >>>` block instead of the
+      generic 3-way merge, so the file can never grow conflict markers.
+      Fresh `aikata init` writes the framed block too (one
+      representation), and a pre-0.9.8 markerless file is migrated in
+      place on first sync without duplication. Shared
+      `managed.IsAppendPath` keeps init and sync in lockstep and guards
+      the (b) decision (never managed-append into prose). Closes
+      Q-INTEROP-04 (a) and (b).
+- [x] **Documentation hygiene rubric + pass** — ADR 0039 records a
+      per-file-class policy (prune resolved first-read context each
+      release; archive released ROADMAP/CHANGELOG detail by move-not-
+      delete; never edit accepted ADR bodies; condense shipped design
+      notes to pointers). Applied: eight resolved open-questions removed,
+      Phase 1 – v0.8.5 ROADMAP detail archived to
+      `docs/roadmap-archive.md`, the v0.9 stabilization note condensed.
+      `CONTRIBUTING.md` links the rubric into the release ritual.
+
+Out of v0.9.8 intentionally:
+
+- Managed-append for prose (`CONTRIBUTING.md` / `SECURITY.md`). Rejected
+  by ADR 0038; prose stays create-if-missing one-shot scaffolds.
+- Archiving `CHANGELOG.md`. Not first-read context; Keep-a-Changelog
+  favours completeness (ADR 0039).
+
+---
+
+## v0.10.0 — Collaboration-operation skills ✅ (released 2026-06-02)
+
+**Goal**: turn aikata's document-centered collaboration model into an
+agent-usable daily operating loop, not only a CLI bootstrap and maintenance
+surface.
+
+This milestone took priority over the convenience-only v0.9.9 package-manager
+channels and shipped before them. The previous first-party skill taught agents
+when and how to invoke the aikata CLI, but did not teach agents how to operate
+an aikata-managed repository during ordinary development: which canonical
+documents to read, where newly learned context belongs, how to maintain
+working state, or what to check before handoff. That gap weakened the core
+product claim that aikata reduces the human cost of maintaining shared context
+for humans and AI coding agents. The decision is recorded in
+[ADR 0040](./adr/0040-collaboration-operation-skill-split.md).
+
+- [x] **Split the first-party skill surface by responsibility** — rename the
+      existing CLI-wrapper responsibility to `aikata-cli`, covering `init`,
+      `enable`, `new`, `generate`, `doctor`, `sync`, generated-artifact safety,
+      and `doctor --json` parsing.
+- [x] **Add the `aikata-context` MVP skill** — trigger for non-trivial work in
+      an aikata-managed repository and teach the daily context-maintenance
+      loop:
+      - choose the relevant canonical documents to read before editing;
+      - update `docs/tasks/current.md` at task start, during meaningful
+        progress, and at completion when the slot exists;
+      - classify durable information into the correct slot: invariant rules
+        (`AGENTS.md`), requirements (`SPEC.md`), design decisions
+        (`docs/adr/`), long-term facts and preferences (`docs/memory/`), or
+        in-flight state (`docs/tasks/current.md`);
+      - check documentation impact, verification results, unresolved
+        questions, and handoff state before declaring work complete;
+      - invoke `aikata-cli` when the operating loop needs `doctor`, `sync`,
+        `generate`, or `new adr`.
+- [x] **Keep one install surface** — ship `aikata-cli` and `aikata-context`
+      together from the existing `aikata` marketplace entry and plugin. Do not
+      create separate marketplace entries or plugins for the two skills.
+      Preserve the `aikata-` prefix so globally installed skills remain
+      attributable and avoid generic-name collisions.
+- [x] **Apply the split consistently across first-party distributions** —
+      update the canonical universal-skill tree, the Codex plugin copies, and
+      the Claude Code standalone / plugin layouts; keep repository tests for
+      canonical-copy boundaries and release archives.
+- [x] **Record the design in a focused ADR before implementation** — refine
+      ADR 0015's thin CLI-wrapper scope without introducing an "aikata agent",
+      runtime personality, MCP server, or app integration. The selected model
+      remains small composable skills used by the user's existing agent.
+- [x] **No backward-compatibility layer for the old single-skill layout** —
+      the only existing user is the maintainer, so v0.10.0 may replace the old
+      `aikata` skill layout directly. Document the reinstall / migration step,
+      but do not retain aliases, duplicate legacy skill files, or transitional
+      packaging solely for compatibility.
+- [x] **Dogfood the trigger boundary** — verify that ordinary non-trivial
+      repository work activates `aikata-context`, pure CLI lifecycle requests
+      activate `aikata-cli`, and the skills remain small enough that agents can
+      select the correct responsibility without loading an all-purpose
+      workflow manual.
+
+Out of v0.10.0 intentionally:
+
+- Splitting `aikata-context` into narrower `aikata-memory`, `aikata-adr`, or
+  handoff skills before dogfooding demonstrates that the MVP is too broad.
+- A separate aikata runtime agent, MCP server, or app integration.
+- Third-party skill catalog management or native wrappers for additional AI
+  tools.
+
+---
+
+## v0.13.0 — Doc Map (`docmap`) ✅ (released 2026-06-12)
+
+**Goal**: give every aikata repository an always-current, machine-derived
+map of its **document set** — inventory, cross-references, freshness, and a
+managed/external split — so an agent or human can orient from one read
+instead of several.
+
+This extends the context-budget thesis of
+[ADR 0039](./adr/0039-documentation-hygiene-and-context-budget.md). The
+artifact is **doc-cartography**, a responsibility distinct from project
+mission (`README.md` / `SPEC.md` / `AGENTS.md`) and from the hand-curated
+Navigation Matrix (`AGENTS.md` §3, which keeps human judgement). It is built
+from documents only — no source code is read — so the stack-agnostic core is
+preserved. The decision is
+[ADR 0044](./adr/0044-doc-map-derived-artifact.md); the design note is
+[`docs/decisions/docmap-design.md`](./decisions/docmap-design.md).
+
+Shipped in PR-sized phases (each ≤ ~400 lines, golden-tested):
+
+- [x] **P0 — prescriptive structure index** ✅ — `docs/layout.md`, the
+      single-page, cross-referenced index of the recommended layout (each
+      path → role → governing capability/ADR → doctor-managed?). It is the
+      **prescriptive** counterpart to the **descriptive** doc map and the
+      reference the v0.14.0 migration assistant reconciles against; it does
+      not duplicate `ARCHITECTURE.md` §3 (narrative) or `scope.go`
+      (enforced set) but indexes them. Doc-only, no code.
+- [x] **P1 — scan + data layer** ✅ — `internal/docmap` builds
+      `.aikata/docmap.yaml` from frontmatter + link graph + filesystem tree;
+      the shared `internal/docmeta` parser is extracted from `doctor` (and
+      carries the shared scan-skip baseline) so link parsing cannot drift.
+- [x] **P2 — readable view** ✅ — `.aikata/docmap.md`: directory tree + Mermaid
+      `doc → doc` graph (adjacency-list degrade past a 40-node threshold) +
+      `path → summary` index, with best-effort summary extraction.
+- [x] **P3 — `aikata map` + isolated hooks** ✅ — the explicit verb plus a
+      final, isolated rebuild step in `init` / `fill` / `enable` / `sync` /
+      `generate`, decoupled from per-tool `generate` provider failures and
+      suppressed on `--dry-run` / proposal mode.
+- [x] **P4 — `doctor` freshness check** ✅ — in-memory rebuild compared by
+      `HashContent` (date aligned so only structural drift counts); warning
+      on drift, regenerated by `--fix`; `--json` code.
+- [x] **P5 — config + optional renderers** ✅ — `docmap.{formats,targets,exclude}`
+      and the optional `txt` / `json` / `mmd` outputs.
+
+This is a core CLI behaviour change, not a distribution channel: it adds no
+cadence-table row. Residual design questions are tracked under
+[Q-DOCMAP](./decisions/open-questions.md#q-docmap).
+
+Out of v0.13.0 intentionally:
+
+- Reading source code / building code dependency graphs (a different tool
+  category; breaks the stack-agnostic core).
+- Generating an actual documentation website (the Markdown tree satisfies
+  the sitemap-like intent).
+- Runtime context selection or token counting (scaffold-time tool only).
+
+---
+
+## v0.14.0 — Structure-migration assistant (skill) ✅ (released 2026-06-12)
+
+**Goal**: help a user bring an existing repository **into** the recommended
+layout (`docs/layout.md`), with every file move gated on explicit user
+approval.
+
+This is the **reconcile** corner of the prescriptive / descriptive /
+reconcile triad: `docs/layout.md` (v0.13.0 P0) defines the target, the doc
+map (v0.13.0) reports which documents are `external` (off-structure), and
+this skill proposes moving them into place. It depends on v0.13.0 shipping
+first.
+
+Boundary (to be fixed in its own ADR before implementation):
+
+- Ships as a **skill**, not a CLI verb — keeps the CLI thin, matching the
+  skill-guided deprecated-doc cleanup precedent
+  ([ADR 0043](./adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md) D5).
+- The aikata CLI stays **observation-only**: the doc map *reports*
+  off-structure documents; the CLI never moves user files. The agent
+  performs moves under the skill, **dry-run by default**, and only after
+  explicit per-move (or batched) user confirmation, preferring `git mv` to
+  preserve history.
+- No silent restructuring, no overwrite, no deletion — relocation
+  suggestions only, applied on approval.
+
+- [x] **ADR — migration mutation boundary** ✅ — [ADR 0046](./adr/0046-structure-migration-assistant-boundary.md)
+      records the observe → propose → confirm-move contract, the
+      observation-only CLI boundary, and why it is a skill, not a verb.
+- [x] **`migrate-structure` skill** ✅ — reads the doc map's `external`
+      (`managed: false`) set, maps each to its recommended destination per
+      `docs/layout.md`, presents a dry-run plan, and applies approved moves
+      (`git mv`), then rebuilds the doc map. Shipped as a first-party skill
+      across the universal / Claude Code / Codex trees with a thin
+      `/aikata:migrate-structure` plugin command (version lockstep bumped).
+- [x] **Dogfood** ✅ — distribution canonical-copy and command-wrapper tests
+      cover the new skill; the contract forbids any move without explicit
+      approval and rebuilds the map after moves.
+
+Out of v0.14.0 intentionally:
+
+- Any automatic / unattended reorganization.
+- Rewriting document *contents* (this is relocation only; content edits stay
+  with the author / other skills).
+- A CLI `aikata migrate` mutate verb (the skill + observation-only CLI is the
+  chosen shape unless dogfooding shows it insufficient).
+
+---
+
+## v0.15.0 — Modeling capability + `model-feature` skill ✅ (released 2026-09-06)
+
+**Goal**: close the gap between `SPEC.md` (what/why) and `ARCHITECTURE.md`
+(how) where behaviour and structure actually get designed — *who does
+what, triggered by what, reaching what outcome, failing how*, and the
+entities/fields/invariants that outcome needs — so agents stop
+fabricating fields and use cases drift less between design and code.
+
+Dogfooding surfaced this as a concrete, not hypothetical, failure:
+without a written record, data-model fields get invented speculatively
+with nothing to say whether anything actually needs them. The decision
+is recorded in
+[ADR 0047](./adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md).
+
+- [x] **`modeling` capability** ✅ — `aikata enable modeling` /
+      `aikata init --with-modeling` scaffolds an opt-in document pair:
+      `docs/usecases.md` (use-case ledger) and `docs/domain.md` (domain
+      model, with a per-field `Related UC` column). The pair is enabled
+      together, never separately, and joins the default `aikata doctor`
+      managed surface with no new checks — existing frontmatter / link /
+      unused-`GLOSSARY.md`-term validation applies for free.
+- [x] **`model-feature` skill** ✅ — a new first-party per-feature design
+      loop, distinct from `track-context` (different trigger condition):
+      write a use case → propagate it into the domain model → fix new
+      terms in `GLOSSARY.md` → confirm the bidirectional field/use-case
+      check → hand off before implementation. Fires on exactly one
+      criterion — externally observable behaviour changes — and is
+      advisory, never gating. Shipped across the universal / Claude Code
+      (plugin + standalone) / Codex distribution trees.
+- [x] **`track-context` hand-off** ✅ — `track-context` now hands off to
+      `model-feature` when the work about to start changes externally
+      observable behaviour, so the two skills compose instead of
+      overlapping.
+
+Out of v0.15.0 intentionally:
+
+- Any new CLI verb — `modeling` is scaffolding-only, reachable through
+  the existing `enable` / `init` / `doctor` / `fill` / `map` surface.
+- Extending traceability into code or tests — aikata does not read code,
+  so such links would rot silently instead of being caught by `doctor`.
+- Carrying the loop into implementation — `model-feature` ends at the
+  hand-off; implementation stays with the project's normal development
+  flow and the wider planning/implementation skill ecosystem.
+
+This is not a distribution-channel change (no cadence-table row): it
+ships across the same channels v0.10.0 established.
+
+---
+
+## v0.15.1 — Nested worktrees out of the doc map ✅ (released 2026-09-07)
+
+**Goal**: stop `aikata map` (and the `generate` rebuild) from cataloguing
+in-tree git worktrees as if they were the project's document set.
+
+- [x] **Nested VCS skip** ✅ — `docmeta.SkipDir` prunes any directory
+      other than the scan root that has its own `.git` (file or
+      directory). `aikata map` and `aikata doctor` share the helper.
+      Vendor-named trees such as `.claude` are not skipped as a whole;
+      committed files under `.claude/skills/` stay on the map. Project-
+      specific noise still uses `docmap.exclude` (ADR 0044 D7).
+
+This is not a distribution-channel change (no cadence-table row).
+
+---
+
+## v0.15.2 — `CLAUDE.md` imports `AGENTS.md` ✅ (released 2026-10-05)
+
+**Goal**: make the canonical `AGENTS.md` actually reach Claude Code
+sessions, which skip `AGENTS.md` whenever a `CLAUDE.md` exists.
+
+- [x] **`@AGENTS.md` import** ✅ — the generated `CLAUDE.md` (`en` / `ja`)
+      imports `AGENTS.md` on its own line instead of only linking to it.
+      Tests pin the import line for both languages.
+
+This is not a distribution-channel change (no cadence-table row).
+
+---
