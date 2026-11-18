@@ -582,7 +582,7 @@ docs:
         - docs/layout.md
     - path: docs/adr/0048-accept-sync-conflicts-per-file.md
       title: ADR 0048 — Accept sync conflicts per file
-      summary: '- **Status**: Proposed - **Date**: 2026-11-18'
+      summary: '- **Status**: Accepted - **Date**: 2026-11-18'
       status: draft
       updated: "2026-11-18"
       managed: true

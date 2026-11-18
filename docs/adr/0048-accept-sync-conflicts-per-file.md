@@ -8,7 +8,7 @@ audience: [human, agent]
 
 # ADR 0048 — Accept sync conflicts per file
 
-- **Status**: Proposed
+- **Status**: Accepted
 - **Date**: 2026-11-18
 
 ## Context
