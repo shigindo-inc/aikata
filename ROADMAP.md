@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-11-18
+updated: 2026-11-21
 audience: [human, agent]
 ---
 
@@ -56,6 +56,7 @@ binding decisions are in [`docs/adr/`](./docs/adr/); shipped changes in
 | v0.8.3 | 2026-05-30 | `sync` divergent-file preservation (ADR 0025) |
 | v0.8.4 | 2026-05-31 | Workflow guide opt-in (ADR 0026) |
 | v0.8.5 | 2026-05-31 | Verification expectation in templates (ADR 0027) |
+| v0.9.0 | 2026-05-31 | Core-concept stabilization (ADR 0028) |
 | v0.9.2 | 2026-06-01 | Scope discipline |
 | v0.9.3 | 2026-05-31 | Agent-ecosystem distribution |
 | v0.9.4 | 2026-06-01 | Native self-update for existing channels |
@@ -69,10 +70,11 @@ binding decisions are in [`docs/adr/`](./docs/adr/); shipped changes in
 | v0.15.0 | 2026-09-06 | Modeling capability + `model-feature` skill |
 | v0.15.1 | 2026-09-07 | Nested worktrees out of the doc map |
 | v0.15.2 | 2026-10-05 | `CLAUDE.md` imports `AGENTS.md` |
+| v0.15.3 | 2026-11-21 | Per-file sync conflict acceptance; stable doc maps |
 
 ---
 
-## v0.9.0 — Core-concept stabilization (pending)
+## v0.9.0 — Core-concept stabilization ✅ (released 2026-05-31)
 
 **Goal**: make the existing product easier to understand and trust
 before widening its ecosystem surface in v1.0+.
@@ -131,7 +133,7 @@ Out of v0.9.0 intentionally:
 
 ---
 
-## v0.9.9 — Native package-manager channels (pending)
+## v0.9.9 — Native package-manager channels (deferred until demand)
 
 Third and lowest-priority channel-publication line (ADR 0032 D3). The
 convenience-only package-manager channels and their dependent self-update
