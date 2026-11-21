@@ -18,6 +18,19 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Changed
+
+- **`doctor` reports duplicate ADR numbers as errors.** A shared number
+  makes every "ADR NNNN" reference ambiguous. Gaps stay info
+  ([ADR 0049](./docs/adr/0049-doctor-reports-what-needs-action.md)).
+- `doctor` reports unreferenced GLOSSARY terms only with `--verbose`.
+
+### Fixed
+
+- `doctor` reads the ADR status from a `**状態**` line or the frontmatter
+  `status` key, so ADRs written that way no longer warn about a missing
+  `**Status**` line.
+
 ## [0.15.3] - 2026-11-21
 
 **`sync` keeps conflicts you have not resolved yet, and doc maps stop
