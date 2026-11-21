@@ -72,6 +72,7 @@ docs:
         - docs/adr/0042-fill-command-for-canonical-document-completion.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
+        - docs/adr/0049-doctor-reports-what-needs-action.md
     - path: CONTRIBUTING.md
       title: Contributing to aikata
       summary: Thanks for considering a contribution. aikata is a small Go CLI plus a set of canonical markdown documents, so most contributions touch either the `internal/` Go packages or the document set under repo root and `docs/`.
@@ -110,7 +111,7 @@ docs:
       title: aikata
       summary: '**aikata** (相方, *ai-kata*, /aɪˈkɑːtə/) — a lightweight CLI that scaffolds AI-readable markdown documents and per-AI-tool config files in a single command.'
       status: draft
-      updated: "2026-08-14"
+      updated: "2026-11-21"
       managed: true
       links:
         - AGENTS.md
@@ -169,6 +170,7 @@ docs:
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
+        - docs/adr/0049-doctor-reports-what-needs-action.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/layout.md
@@ -202,7 +204,7 @@ docs:
       title: SPEC — What & Why
       summary: This document describes **what** aikata does and **why**. For technical design (the **how**), read [ARCHITECTURE.md](./ARCHITECTURE.md). For the release timeline, read [ROADMAP.md](./ROADMAP.md). For terminology, read [GLOSSARY.md](./GLOSSARY.md).
       status: draft
-      updated: "2026-08-14"
+      updated: "2026-11-21"
       managed: true
       links:
         - ARCHITECTURE.md
@@ -586,6 +588,12 @@ docs:
       summary: '- **Status**: Accepted - **Date**: 2026-11-18'
       status: draft
       updated: "2026-11-18"
+      managed: true
+    - path: docs/adr/0049-doctor-reports-what-needs-action.md
+      title: ADR 0049 — Doctor reports what needs action
+      summary: '- **Status**: Accepted - **Date**: 2026-11-21 - **Related**: ADR 0039 (its "info-level GLOSSARY orphans" bullet is superseded here), ADR 0033 (doctor scope)'
+      status: draft
+      updated: "2026-11-21"
       managed: true
     - path: docs/decisions/2026-06-17-watched-external-doc-homes-design.md
       title: Design — CLI/skill responsibility split & watched external doc homes

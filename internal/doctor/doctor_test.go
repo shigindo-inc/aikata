@@ -353,10 +353,23 @@ func TestCheckEnvExample_UnreferencedIsWarning(t *testing.T) {
 	}
 }
 
-func TestCheckGlossary_UnusedTermIsInfo(t *testing.T) {
+func TestCheckGlossary_SilentByDefault(t *testing.T) {
 	tmp := t.TempDir()
 	scaffoldHealthyProject(t, tmp)
-	issues := runDoctor(t, tmp)
+	for _, iss := range runDoctor(t, tmp) {
+		if iss.File == "GLOSSARY.md" {
+			t.Errorf("glossary check must not report without Verbose, got: %+v", iss)
+		}
+	}
+}
+
+func TestCheckGlossary_UnusedTermIsInfoWhenVerbose(t *testing.T) {
+	tmp := t.TempDir()
+	scaffoldHealthyProject(t, tmp)
+	issues, err := Run(Options{TargetDir: tmp, Now: fixedNow(), Verbose: true})
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
 	found := false
 	for _, iss := range issues {
 		if iss.File == "GLOSSARY.md" && iss.Level == LevelInfo && strings.Contains(iss.Message, "orphan-term") {
@@ -368,7 +381,7 @@ func TestCheckGlossary_UnusedTermIsInfo(t *testing.T) {
 	}
 }
 
-func TestCheckADRNumbering_DuplicateAndGapAreInfo(t *testing.T) {
+func TestCheckADRNumbering_DuplicateIsErrorGapIsInfo(t *testing.T) {
 	tmp := t.TempDir()
 	scaffoldHealthyProject(t, tmp)
 	// Healthy scaffold already has 0001-foo.md. Add a duplicate of
@@ -394,26 +407,86 @@ audience: [human, agent]
 
 	issues := runDoctor(t, tmp)
 
-	var foundDup, foundGap bool
+	dupFiles := map[string]bool{}
+	var foundGap bool
 	for _, iss := range issues {
-		if iss.Level != LevelInfo {
-			continue
-		}
 		if strings.Contains(iss.Message, "duplicate ADR number 0001") {
-			foundDup = true
+			if iss.Level != LevelError {
+				t.Errorf("duplicate ADR number must be an error, got %+v", iss)
+			}
+			dupFiles[iss.File] = true
 		}
 		if strings.Contains(iss.Message, "ADR number 0002 is unused") {
+			if iss.Level != LevelInfo {
+				t.Errorf("ADR number gap must stay info, got %+v", iss)
+			}
 			foundGap = true
 		}
 	}
-	if !foundDup {
-		t.Errorf("expected duplicate-number info issue, got:\n%+v", issues)
+	if !dupFiles["docs/adr/0001-foo.md"] || !dupFiles["docs/adr/0001-bar.md"] {
+		t.Errorf("expected a duplicate-number error on both 0001 files, got:\n%+v", issues)
 	}
 	if !foundGap {
 		t.Errorf("expected gap info issue for 0002, got:\n%+v", issues)
 	}
-	if HasErrors(issues) {
-		t.Errorf("ADR numbering findings must stay at info level, got errors:\n%+v", issues)
+}
+
+func TestCheckADR_StatusSources(t *testing.T) {
+	cases := []struct {
+		name, body  string
+		wantMissing bool
+		wantDepErr  bool
+	}{
+		{
+			name: "japanese status line with full-width colon",
+			body: "---\nproject: sample\nstatus: draft\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n\n> **状態**：active\n",
+		},
+		{
+			name: "frontmatter status only",
+			body: "---\nproject: sample\nstatus: accepted\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n",
+		},
+		{
+			name:       "body line wins over frontmatter",
+			body:       "---\nproject: sample\nstatus: draft\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n\n- **Status**: Deprecated\n",
+			wantDepErr: true,
+		},
+		{
+			name:       "deprecated in frontmatter still needs a replacement",
+			body:       "---\nproject: sample\nstatus: deprecated\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n",
+			wantDepErr: true,
+		},
+		{
+			name:        "no status anywhere",
+			body:        "# ADR\n\nNo metadata.\n",
+			wantMissing: true,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tmp := t.TempDir()
+			scaffoldHealthyProject(t, tmp)
+			if err := os.WriteFile(filepath.Join(tmp, "docs", "adr", "0002-case.md"), []byte(tc.body), 0o644); err != nil {
+				t.Fatalf("write: %v", err)
+			}
+			var gotMissing, gotDep bool
+			for _, iss := range runDoctor(t, tmp) {
+				if iss.File != "docs/adr/0002-case.md" {
+					continue
+				}
+				if iss.Code == "adr.missing-status" {
+					gotMissing = true
+				}
+				if strings.Contains(iss.Message, "Deprecated ADR") {
+					gotDep = true
+				}
+			}
+			if gotMissing != tc.wantMissing {
+				t.Errorf("missing-status reported = %v, want %v", gotMissing, tc.wantMissing)
+			}
+			if gotDep != tc.wantDepErr {
+				t.Errorf("deprecated error reported = %v, want %v", gotDep, tc.wantDepErr)
+			}
+		})
 	}
 }
 
@@ -482,6 +555,7 @@ updated: 2024-01-01
 			TargetDir: tmp,
 			Now:       fixedNow(),
 			Excludes:  []string{"plugins/**"},
+			Verbose:   true,
 		})
 		if err != nil {
 			t.Fatalf("Run: %v", err)
