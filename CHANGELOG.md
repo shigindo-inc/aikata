@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-10-05
+updated: 2026-11-21
 audience: [human, agent]
 ---
 
@@ -17,6 +17,14 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.15.3] - 2026-11-21
+
+**`sync` keeps conflicts you have not resolved yet, and doc maps stop
+churning.** Re-running `sync` no longer overwrites conflict markers, and
+`sync --accept-conflict <path>` records a resolution per file
+([ADR 0048](./docs/adr/0048-accept-sync-conflicts-per-file.md)). Regenerating
+a doc map without document changes leaves it byte-identical.
 
 ### Fixed
 
