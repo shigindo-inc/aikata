@@ -18,6 +18,15 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-21
+
+**`doctor` reports what needs action, and the doc map becomes opt-in.**
+ADRs that declare their status in Japanese or only in frontmatter no longer
+warn, duplicate ADR numbers are errors, and unreferenced GLOSSARY terms
+appear only with `--verbose`. The doc map is no longer rebuilt or checked
+unless `docmap.enabled: true` is set; existing map files trigger one
+`doctor` warning that names the two ways forward.
+
 ### Changed
 
 - **Breaking: the doc map is off by default.** Lifecycle commands no
