@@ -71,6 +71,7 @@ binding decisions are in [`docs/adr/`](./docs/adr/); shipped changes in
 | v0.15.1 | 2026-09-07 | Nested worktrees out of the doc map |
 | v0.15.2 | 2026-10-05 | `CLAUDE.md` imports `AGENTS.md` |
 | v0.15.3 | 2026-11-21 | Per-file sync conflict acceptance; stable doc maps |
+| v0.16.0 | 2026-11-21 | `doctor` reports what needs action; doc map opt-in |
 
 ---
 
