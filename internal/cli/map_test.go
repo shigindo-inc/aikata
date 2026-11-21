@@ -55,16 +55,39 @@ func TestMap_CreatesDocMapWithoutConfig(t *testing.T) {
 	}
 }
 
-func TestMap_HookRunsAfterInit(t *testing.T) {
+func TestMap_HookOffByDefault(t *testing.T) {
 	tmp := t.TempDir()
 	chdir(t, tmp)
 	if _, err := runInit(t, "demo", "--preset", "standard", "--no-interactive"); err != nil {
 		t.Fatalf("init: %v", err)
 	}
-	// The init PostRunE hook should have produced the doc map.
+	for _, leaf := range []string{"docmap.yaml", "docmap.md"} {
+		if _, err := os.Stat(filepath.Join(tmp, ".aikata", leaf)); !os.IsNotExist(err) {
+			t.Fatalf("init wrote %s without docmap.enabled (err=%v)", leaf, err)
+		}
+	}
+}
+
+func TestMap_HookRunsWhenEnabled(t *testing.T) {
+	tmp := t.TempDir()
+	chdir(t, tmp)
+	if _, err := runInit(t, "demo", "--preset", "standard", "--no-interactive"); err != nil {
+		t.Fatalf("init: %v", err)
+	}
+	cfgPath := filepath.Join(tmp, ".aikata", "aikata.yaml")
+	cfg, err := os.ReadFile(cfgPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(cfgPath, append(cfg, []byte("docmap:\n    enabled: true\n")...), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if out, err := runGenerate(t); err != nil {
+		t.Fatalf("generate: %v (out: %s)", err, out)
+	}
 	for _, leaf := range []string{"docmap.yaml", "docmap.md"} {
 		if _, err := os.Stat(filepath.Join(tmp, ".aikata", leaf)); err != nil {
-			t.Fatalf("init did not rebuild %s: %v", leaf, err)
+			t.Fatalf("generate did not rebuild %s with docmap.enabled: %v", leaf, err)
 		}
 	}
 }

@@ -66,7 +66,8 @@ func rebuildDocMap(targetDir string) error {
 // changes the command's exit status, keeping the map step decoupled from
 // the command that triggered it (ADR 0044 D5 / docmap-design.md §5).
 //
-// The hook is suppressed in two cases so it never writes when the command
+// The hook runs only when `docmap.enabled` is true (ADR 0050). It is also
+// suppressed in two cases so it never writes when the command
 // itself wrote nothing: a `--dry-run` invocation, and any directory that
 // is not yet an established aikata project (notably `init`'s proposal
 // mode, which writes `.aikata-proposed/` rather than `.aikata/`). The
@@ -83,7 +84,14 @@ func docMapPostRun(cmd *cobra.Command, _ []string) error {
 	if _, err := config.Resolve(target); err != nil {
 		return nil
 	}
-	if err := rebuildDocMap(target); err != nil {
+	opts, err := docmap.OptionsFor(target, doctor.ManagedIncludeGlobs(target))
+	if err == nil && !opts.Enabled {
+		return nil
+	}
+	if err == nil {
+		err = docmap.Generate(opts)
+	}
+	if err != nil {
 		_, _ = fmt.Fprintf(cmd.ErrOrStderr(), "warning: doc map rebuild failed: %v\n", err)
 	}
 	return nil

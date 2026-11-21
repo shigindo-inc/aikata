@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-08-14
+updated: 2026-11-21
 audience: [human, agent]
 ---
 
@@ -476,6 +476,7 @@ aikata generate
 - [`docs/decisions/open-questions.md`](./docs/decisions/open-questions.md) — what is **not** yet decided.
 - [`docs/adoption.md`](./docs/adoption.md) — adopting aikata in an existing repository.
   - [0048 — Accept Sync Conflicts Per File](./docs/adr/0048-accept-sync-conflicts-per-file.md)
+  - [0050 — Doc Map Off by Default](./docs/adr/0050-doc-map-off-by-default.md)
 
 ### AI-tool entry points
 

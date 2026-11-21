@@ -39,5 +39,6 @@ func OptionsFor(targetDir string, managedGlobs []string) (Options, error) {
 	opts.Targets = cfg.Docmap.Targets
 	opts.Exclude = cfg.Docmap.Exclude
 	opts.Formats = cfg.Docmap.Formats
+	opts.Enabled = cfg.Docmap.Enabled
 	return opts, nil
 }

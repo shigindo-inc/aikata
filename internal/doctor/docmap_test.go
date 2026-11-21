@@ -8,12 +8,13 @@ import (
 	"github.com/shigindo-inc/aikata/internal/docmap"
 )
 
-// seedProject creates a minimal aikata project: an `.aikata/aikata.yaml`
-// marker (so config.Resolve succeeds) plus one canonical document.
+// seedProject creates a minimal aikata project with the doc map enabled:
+// an `.aikata/aikata.yaml` (so config.Resolve succeeds) plus one canonical
+// document.
 func seedProject(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
-	writeProjectFile(t, dir, ".aikata/aikata.yaml", "version: 2\n")
+	writeProjectFile(t, dir, ".aikata/aikata.yaml", "version: 2\ndocmap:\n  enabled: true\n")
 	writeProjectFile(t, dir, "AGENTS.md",
 		"---\nproject: x\nstatus: draft\nversion: 0.0.1\nupdated: 2026-06-01\naudience: [agent]\n---\n# AGENTS\n\n> Rules.\n")
 	return dir
@@ -80,6 +81,38 @@ func TestCheckDocMap_StaleAfterDocChange(t *testing.T) {
 	}
 	if len(issues) != 1 || issues[0].Code != "docmap.stale" {
 		t.Fatalf("expected docmap.stale warning, got %#v", issues)
+	}
+}
+
+func TestCheckDocMap_DisabledWithoutFilesIsSilent(t *testing.T) {
+	dir := seedProject(t)
+	writeProjectFile(t, dir, ".aikata/aikata.yaml", "version: 2\n")
+	issues, err := checkDocMap(Options{TargetDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(issues) != 0 {
+		t.Fatalf("a disabled map with no files should not be reported, got %#v", issues)
+	}
+}
+
+func TestCheckDocMap_DisabledWithFilesIsUnmaintained(t *testing.T) {
+	dir := seedProject(t)
+	genMap(t, dir)
+	writeProjectFile(t, dir, ".aikata/aikata.yaml", "version: 2\n")
+	issues, err := checkDocMap(Options{TargetDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(issues) != 1 || issues[0].Code != "docmap.unmaintained" || issues[0].Level != LevelWarning {
+		t.Fatalf("expected one docmap.unmaintained warning, got %#v", issues)
+	}
+	res, err := Fix(Options{TargetDir: dir}, issues)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Fixed != 0 {
+		t.Errorf("--fix must not delete or rebuild an unmaintained map, fixed %d", res.Fixed)
 	}
 }
 

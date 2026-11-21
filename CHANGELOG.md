@@ -18,6 +18,15 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking: the doc map is off by default.** Lifecycle commands no
+  longer rebuild `.aikata/docmap.*` and `doctor` no longer checks it unless
+  `.aikata/aikata.yaml` sets `docmap: {enabled: true}`. `aikata map` still
+  builds it on demand. If map files exist while the map is off, `doctor`
+  warns so you can enable it or delete them
+  ([ADR 0050](./docs/adr/0050-doc-map-off-by-default.md)).
+
 ## [0.15.3] - 2026-11-21
 
 **`sync` keeps conflicts you have not resolved yet, and doc maps stop

@@ -59,6 +59,9 @@ type Options struct {
 	// doctor, which keeps the dependency one-directional (doctor's
 	// freshness check imports docmap, not the reverse).
 	ManagedGlobs []string
+	// Enabled mirrors `docmap.enabled`: whether lifecycle commands keep
+	// the map rebuilt and doctor checks it. Build and Generate ignore it.
+	Enabled bool
 }
 
 // Doc is one catalogued document. All fields are mechanically derived;

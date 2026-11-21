@@ -35,11 +35,13 @@ type AikataYaml struct {
 	Docmap     Docmap          `yaml:"docmap,omitempty"`
 }
 
-// Docmap holds optional tuning for the doc map (ADR 0044). The zero value
-// is the default behaviour: emit `yaml` + `md` for every Markdown file.
-// All three fields are additive overrides, not requirements — an absent
-// block keeps the defaults, so existing projects need no migration.
+// Docmap holds the doc map settings (ADR 0044). The zero value leaves the
+// map off: lifecycle commands do not rebuild it and doctor does not check
+// its freshness (ADR 0050). The explicit `aikata map` verb works either way.
 type Docmap struct {
+	// Enabled keeps `.aikata/docmap.*` rebuilt by init / fill / enable /
+	// sync / generate and checked by doctor.
+	Enabled bool `yaml:"enabled,omitempty"`
 	// Formats selects the renderings emitted under `.aikata/`. The data
 	// layer (`docmap.yaml`) is always written regardless of this list —
 	// it is the source used to check freshness of the enabled views. Recognised values: yaml, md, json, txt, mmd.
