@@ -10,6 +10,23 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// ExistingFiles lists the map files of any format present under
+// `.aikata/`, by file name.
+func ExistingFiles(root string) ([]string, error) {
+	var found []string
+	for _, r := range renderers {
+		_, err := os.Stat(pathFor(root, r.file))
+		if errors.Is(err, fs.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		found = append(found, r.file)
+	}
+	return found, nil
+}
+
 // FirstDrift reports the first missing or stale enabled map file. An empty
 // filename means every enabled view matches the current document map.
 func FirstDrift(opts Options) (file string, missing bool, err error) {

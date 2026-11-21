@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-08-14
+updated: 2026-11-21
 audience: [human, agent]
 ---
 
@@ -159,9 +159,9 @@ the repository layout in §2 is the **producer**.
 ```
 
 > The `.aikata/` machine zone is written by `init` itself: `aikata.yaml` +
-> `manifest.yaml` during the scaffold, and the two `docmap.*` renderings as
-> the final, isolated step (also re-run by `fill` / `enable` / `sync` /
-> `generate`; see §13). `docmap.*` are aikata-owned derived state — not
+> `manifest.yaml` during the scaffold. The two `docmap.*` renderings exist
+> only after `aikata map`, or when `docmap.enabled` is set (then `init` /
+> `fill` / `enable` / `sync` / `generate` rebuild them; see §13). `docmap.*` are aikata-owned derived state — not
 > manifest-tracked, not subject to `sync` (§3.4).
 
 > `.env.example` (`--with-env` / `enable env`, ADR 0037) and
@@ -343,6 +343,7 @@ docs:
   task_file_location: docs/tasks/current.md
 
 docmap:                          # Optional. Doc map surface & formats (ADR 0044).
+  enabled: true                  # Keep the map rebuilt and checked (default off, ADR 0050).
   formats: [yaml, md]            # Renderings to emit. txt/json/mmd addable.
   targets: ["**/*.md"]           # Documents to catalog (default: all Markdown).
   exclude: [".aikata/**"]        # Additional skips; generated AI-tool paths
@@ -703,14 +704,17 @@ adopted repository needs no document refactor.
 
 ### 13.3 Triggers and isolation
 
-- `aikata map` regenerates on demand.
-- `init` / `fill` / `enable` / `sync` / `generate` each run the same
-  rebuild as a **final, isolated step**. It is decoupled from per-tool
+- `aikata map` regenerates on demand, whether or not the map is enabled.
+- With `docmap.enabled: true` (default off, ADR 0050), `init` / `fill` /
+  `enable` / `sync` / `generate` each run the same rebuild as a **final,
+  isolated step**. It is decoupled from per-tool
   `generate` provider failures: a failing provider must never leave the
   map stale, and the map step reports its own status (it does not abort the
   surrounding command on a non-fatal map issue).
-- `aikata doctor` carries a **freshness check**: it rebuilds the map in
-  memory and compares each enabled rendering with its on-disk file.
+- When the map is enabled, `aikata doctor` carries a **freshness check**: it
+  rebuilds the map in memory and compares each enabled rendering with its
+  on-disk file. When it is off but map files exist, `doctor` warns
+  (`docmap.unmaintained`) and `--fix` leaves them alone.
   Missing or stale renderings produce a warning. `aikata doctor --fix`
   regenerates them. The generation date is retained while the map data
   stays the same, and document dates come from frontmatter.

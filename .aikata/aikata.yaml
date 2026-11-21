@@ -24,3 +24,7 @@ docs:
     # managed `.gitignore` block here; the removed `generate_gitignore`
     # flag (ADR 0025 D3) is no longer part of the schema.
     task_file_location: docs/tasks/current.md
+docmap:
+    # aikata documents and tests the map against its own repository
+    # (docs/layout.md, the migrate-structure skill), so it stays on here.
+    enabled: true

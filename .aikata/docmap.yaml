@@ -24,7 +24,7 @@ docs:
       title: ARCHITECTURE — How
       summary: This document explains **how** aikata is built and how it produces its output. For **what / why**, read [SPEC.md](./SPEC.md). For the **when**, read [ROADMAP.md](./ROADMAP.md). Individual decisions live under [`docs/adr/`](./docs/adr/).
       status: draft
-      updated: "2026-08-14"
+      updated: "2026-11-21"
       managed: true
       links:
         - CONTRIBUTING.md
@@ -73,6 +73,7 @@ docs:
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/adr/0049-doctor-reports-what-needs-action.md
+        - docs/adr/0050-doc-map-off-by-default.md
     - path: CONTRIBUTING.md
       title: Contributing to aikata
       summary: Thanks for considering a contribution. aikata is a small Go CLI plus a set of canonical markdown documents, so most contributions touch either the `internal/` Go packages or the document set under repo root and `docs/`.
@@ -171,6 +172,7 @@ docs:
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/adr/0049-doctor-reports-what-needs-action.md
+        - docs/adr/0050-doc-map-off-by-default.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/layout.md
@@ -224,6 +226,7 @@ docs:
         - docs/adr/0044-doc-map-derived-artifact.md
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
+        - docs/adr/0050-doc-map-off-by-default.md
         - docs/decisions/open-questions.md
     - path: docs/adoption.md
       title: Adopting aikata in an existing repository
@@ -592,6 +595,12 @@ docs:
     - path: docs/adr/0049-doctor-reports-what-needs-action.md
       title: ADR 0049 — Doctor reports what needs action
       summary: '- **Status**: Accepted - **Date**: 2026-11-21 - **Related**: ADR 0039 (its "info-level GLOSSARY orphans" bullet is superseded here), ADR 0033 (doctor scope)'
+      status: draft
+      updated: "2026-11-21"
+      managed: true
+    - path: docs/adr/0050-doc-map-off-by-default.md
+      title: ADR 0050 — Doc map off by default
+      summary: '- **Status**: Accepted - **Date**: 2026-11-21 - **Related**: ADR 0044 (doc map as a derived artifact; its D5 "rebuild on every lifecycle command" now applies only when enabled)'
       status: draft
       updated: "2026-11-21"
       managed: true
