@@ -72,6 +72,7 @@ docs:
         - docs/adr/0042-fill-command-for-canonical-document-completion.md
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
+        - docs/adr/0049-doctor-reports-what-needs-action.md
         - docs/adr/0050-doc-map-off-by-default.md
     - path: CONTRIBUTING.md
       title: Contributing to aikata
@@ -170,6 +171,7 @@ docs:
         - docs/adr/0046-structure-migration-assistant-boundary.md
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
+        - docs/adr/0049-doctor-reports-what-needs-action.md
         - docs/adr/0050-doc-map-off-by-default.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
@@ -589,6 +591,12 @@ docs:
       summary: '- **Status**: Accepted - **Date**: 2026-11-18'
       status: draft
       updated: "2026-11-18"
+      managed: true
+    - path: docs/adr/0049-doctor-reports-what-needs-action.md
+      title: ADR 0049 — Doctor reports what needs action
+      summary: '- **Status**: Accepted - **Date**: 2026-11-21 - **Related**: ADR 0039 (its "info-level GLOSSARY orphans" bullet is superseded here), ADR 0033 (doctor scope)'
+      status: draft
+      updated: "2026-11-21"
       managed: true
     - path: docs/adr/0050-doc-map-off-by-default.md
       title: ADR 0050 — Doc map off by default

@@ -211,9 +211,12 @@ scaffolds with no durable schema change:
 **Must check**:
 
 - Every file `AGENTS.md` links to exists.
-- Every term defined in `GLOSSARY.md` is used at least once elsewhere
-  (warning only).
-- No ADR is in the `Deprecated` status without a replacement reference.
+- Every ADR declares a status (a `**Status**` / `**状態**` line, or the
+  frontmatter `status` key), and no ADR is `Deprecated` without a
+  replacement reference.
+- No two ADRs share a number (error). Gaps in the numbering are info.
+- With `--verbose` only: every term defined in `GLOSSARY.md` is used at
+  least once elsewhere (info).
 - Every variable in `.env.example` is mentioned in `AGENTS.md` or
   `ARCHITECTURE.md` (when `.env.example` is present; it is opt-in via the
   `env` capability from v0.9.7).

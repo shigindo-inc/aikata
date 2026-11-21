@@ -23,6 +23,7 @@ func newDoctorCmd() *cobra.Command {
 		jsonOut     bool
 		strict      bool
 		allMarkdown bool
+		verbose     bool
 	)
 	cmd := &cobra.Command{
 		Use:   "doctor",
@@ -56,7 +57,7 @@ func newDoctorCmd() *cobra.Command {
 			if !allMarkdown {
 				includes = doctor.ManagedIncludeGlobs(target)
 			}
-			opts := doctor.Options{TargetDir: target, Excludes: excludes, Includes: includes}
+			opts := doctor.Options{TargetDir: target, Excludes: excludes, Includes: includes, Verbose: verbose}
 			issues, err := doctor.Run(opts)
 			if err != nil {
 				return err
@@ -124,6 +125,7 @@ func newDoctorCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&jsonOut, "json", false, "Emit a machine-readable JSON report to stdout instead of the text format")
 	cmd.Flags().BoolVar(&strict, "strict", false, "Treat warnings as errors (exit 3 if any warning exists). Used by the v0.5+ dogfood CI gate.")
 	cmd.Flags().BoolVar(&allMarkdown, "all-markdown", false, "Audit every Markdown file in the tree (broad mode); default audits only the aikata-managed document surface (ADR 0037)")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "Also run advisory checks that are off by default (GLOSSARY terms no other document references)")
 	return cmd
 }
 

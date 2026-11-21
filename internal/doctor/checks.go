@@ -128,9 +128,26 @@ func checkLinks(opts Options) ([]Issue, error) {
 	return issues, nil
 }
 
-// adrStatusRE captures the value after `**Status**:` on a single ADR
-// metadata line.
-var adrStatusRE = regexp.MustCompile(`(?i)\*\*Status\*\*:\s*([^\n]+)`)
+// adrStatusRE captures the value after `**Status**:` (or the Japanese
+// `**状態**:`, with either an ASCII or a full-width colon) on a single ADR
+// metadata line. The ja templates keep the English key, but ADRs written
+// by hand in Japanese projects use the localized one.
+var adrStatusRE = regexp.MustCompile(`(?i)\*\*(?:Status|状態)\*\*\s*[:：]\s*([^\n]+)`)
+
+// adrStatus returns the ADR's decision status. The body metadata line wins
+// because aikata's own templates use the frontmatter `status` for the
+// document lifecycle (draft / stable) and the body line for the decision;
+// projects that keep only the frontmatter key fall back to it.
+func adrStatus(body []byte) (string, bool) {
+	if m := adrStatusRE.FindSubmatch(body); m != nil {
+		return strings.TrimSpace(string(m[1])), true
+	}
+	lines, _ := docmeta.ParseFrontmatter(body)
+	if v, _, ok := docmeta.FrontmatterValue(lines, "status"); ok && v != "" {
+		return v, true
+	}
+	return "", false
+}
 
 // checkADR verifies Deprecated ADRs reference their replacement.
 func checkADR(opts Options) ([]Issue, error) {
@@ -155,15 +172,15 @@ func checkADR(opts Options) ([]Issue, error) {
 		if err != nil {
 			return nil, err
 		}
-		m := adrStatusRE.FindStringSubmatch(string(body))
-		if m == nil {
+		status, ok := adrStatus(body)
+		if !ok {
 			issues = append(issues, Issue{
 				Level: LevelWarning, File: rel,
-				Message: "ADR missing **Status** line",
+				Code:    "adr.missing-status",
+				Message: "ADR has no status (expected a **Status** line or frontmatter status)",
 			})
 			continue
 		}
-		status := strings.TrimSpace(m[1])
 		if strings.HasPrefix(strings.ToLower(status), "deprecated") {
 			if !strings.Contains(string(body), "Replaced by") &&
 				!strings.Contains(string(body), "Superseded by") {
@@ -177,10 +194,10 @@ func checkADR(opts Options) ([]Issue, error) {
 	return issues, nil
 }
 
-// checkADRNumbering reports duplicate numbers and missing slots in the
-// 0001..max range. Findings are LevelInfo because the project may
-// intentionally retire a number; the advisory only flags them so a
-// human (or `aikata add adr` later on) can decide what to do.
+// checkADRNumbering reports duplicate numbers as errors and missing slots
+// in the 0001..max range as info. A duplicate makes "ADR NNNN" ambiguous in
+// every reference to it, so it must be renumbered; a gap is usually a
+// retired number and needs no action (ADR 0049).
 func checkADRNumbering(opts Options) ([]Issue, error) {
 	adrDir := filepath.Join(opts.TargetDir, "docs", "adr")
 	entries, err := adr.Scan(adrDir)
@@ -201,7 +218,8 @@ func checkADRNumbering(opts Options) ([]Issue, error) {
 		}
 		rel := filepath.ToSlash(filepath.Join("docs", "adr", e.Filename))
 		issues = append(issues, Issue{
-			Level: LevelInfo, File: rel,
+			Level: LevelError, File: rel,
+			Code:    "adr.duplicate-number",
 			Message: fmt.Sprintf("duplicate ADR number %04d", e.Number),
 		})
 	}
@@ -369,9 +387,14 @@ func checkEnvExample(opts Options) ([]Issue, error) {
 // section of a GLOSSARY.md file.
 var glossaryHeadingRE = regexp.MustCompile(`(?m)^###\s+(.+?)\s*$`)
 
-// checkGlossary warns when a glossary term is not used by any other
-// markdown file in the project.
+// checkGlossary reports glossary terms that no other markdown file uses.
+// It runs only with Options.Verbose: an unreferenced term is usually core
+// vocabulary, and reporting each one by default buried the findings that
+// need action (ADR 0049).
 func checkGlossary(opts Options) ([]Issue, error) {
+	if !opts.Verbose {
+		return nil, nil
+	}
 	glossaryPath := filepath.Join(opts.TargetDir, "GLOSSARY.md")
 	body, err := os.ReadFile(glossaryPath)
 	if errors.Is(err, fs.ErrNotExist) {

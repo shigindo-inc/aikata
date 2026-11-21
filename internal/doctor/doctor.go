@@ -66,6 +66,9 @@ type Options struct {
 	// Markdown file (`aikata doctor --all-markdown`). The cli layer
 	// populates this from ManagedIncludeGlobs by default.
 	Includes []string
+	// Verbose enables advisory checks that are off by default because
+	// they rarely call for action (today: unreferenced GLOSSARY terms).
+	Verbose bool
 }
 
 // Check is the contract every individual check function implements.

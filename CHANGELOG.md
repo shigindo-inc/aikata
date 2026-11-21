@@ -26,6 +26,16 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   builds it on demand. If map files exist while the map is off, `doctor`
   warns so you can enable it or delete them
   ([ADR 0050](./docs/adr/0050-doc-map-off-by-default.md)).
+- **`doctor` reports duplicate ADR numbers as errors.** A shared number
+  makes every "ADR NNNN" reference ambiguous. Gaps stay info
+  ([ADR 0049](./docs/adr/0049-doctor-reports-what-needs-action.md)).
+- `doctor` reports unreferenced GLOSSARY terms only with `--verbose`.
+
+### Fixed
+
+- `doctor` reads the ADR status from a `**状態**` line or the frontmatter
+  `status` key, so ADRs written that way no longer warn about a missing
+  `**Status**` line.
 
 ## [0.15.3] - 2026-11-21
 
