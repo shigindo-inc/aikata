@@ -39,6 +39,12 @@ func importPaths(body string) []contextImport {
 			continue
 		}
 		for _, m := range importPattern.FindAllStringSubmatch(blankCodeSpans(line), -1) {
+			// The path is echoed into notes and issues on the terminal; a
+			// control character (an ANSI escape, say) is never a real
+			// import and would let file content rewrite that output.
+			if strings.IndexFunc(m[1], unicode.IsControl) >= 0 {
+				continue
+			}
 			out = append(out, contextImport{path: strings.ReplaceAll(m[1], `\ `, " "), line: i + 1})
 		}
 	}

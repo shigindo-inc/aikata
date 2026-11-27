@@ -591,13 +591,22 @@ func TestParagraphs_SkipsMetadataAndStructure(t *testing.T) {
 	}
 }
 
+func TestImportPaths_SkipsControlCharacters(t *testing.T) {
+	body := "@AGENTS.md\n@\x1b[2Jevil.md\n@ok\\ name.md\n"
+	got := importPaths(body)
+	want := []contextImport{
+		{path: "AGENTS.md", line: 1},
+		{path: "ok name.md", line: 3},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("importPaths = %+v, want %+v", got, want)
+	}
+}
+
 func TestExcludeGlob_EscapesMetacharacters(t *testing.T) {
 	path := filepath.Join(string(filepath.Separator)+"work", "a[1]", "b*{x}", "CLAUDE.md")
 	got := excludeGlob(path)
 	want := `/work/a\[1\]/b\*\{x\}/CLAUDE.md`
-	if filepath.Separator == '\\' {
-		want = `\work/a\[1\]/b\*\{x\}/CLAUDE.md`
-	}
 	if got != want {
 		t.Errorf("excludeGlob = %q, want %q", got, want)
 	}
