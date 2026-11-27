@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "enrolled": true,
+  "questions": [
+    "q-accept-sync-conflict",
+    "q-find-release-support"
+  ],
+  "events": [
+    {
+      "event_id": "e-00000001",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000002",
+      "work_id": "w-00000002",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000003",
+      "work_id": "w-00000003",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000004",
+      "work_id": "w-00000004",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000005",
+      "work_id": "w-00000005",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000006",
+      "work_id": "w-00000006",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000007",
+      "work_id": "w-00000007",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000008",
+      "work_id": "w-00000008",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-00000009",
+      "work_id": "w-00000009",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-0000000a",
+      "work_id": "w-0000000a",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-0000000b",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "review",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-0000000c",
+      "work_id": "w-00000003",
+      "week": "2026-W47",
+      "phase": "review",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-0000000d",
+      "work_id": "w-00000004",
+      "week": "2026-W46",
+      "phase": "start",
+      "kind": "phase_exposed"
+    },
+    {
+      "event_id": "e-0000000e",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-0000000f",
+      "work_id": "w-00000001",
+      "week": "2026-W47",
+      "phase": "implementation",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-00000010",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "outcome_observed",
+      "question_id": "q-accept-sync-conflict",
+      "outcome": "repeat_search"
+    },
+    {
+      "event_id": "e-00000011",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "review",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-00000012",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "review",
+      "kind": "outcome_observed",
+      "question_id": "q-accept-sync-conflict",
+      "outcome": "no_repeat_search"
+    },
+    {
+      "event_id": "e-00000013",
+      "work_id": "w-00000002",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-00000014",
+      "work_id": "w-00000003",
+      "week": "2026-W47",
+      "phase": "review",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-00000015",
+      "work_id": "w-00000003",
+      "week": "2026-W47",
+      "phase": "review",
+      "kind": "outcome_observed",
+      "question_id": "q-accept-sync-conflict",
+      "outcome": "no_repeat_search"
+    },
+    {
+      "event_id": "e-00000016",
+      "work_id": "w-00000003",
+      "week": "2026-W47",
+      "phase": "handoff",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-00000017",
+      "work_id": "w-0000000b",
+      "week": "2026-W47",
+      "phase": "implementation",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    },
+    {
+      "event_id": "e-0000000e",
+      "work_id": "w-00000001",
+      "week": "2026-W46",
+      "phase": "implementation",
+      "kind": "question_observed",
+      "question_id": "q-accept-sync-conflict"
+    }
+  ],
+  "audit": [
+    {
+      "stratum": "candidate_positive",
+      "occurrence": "confirmed",
+      "relation_error": "none"
+    },
+    {
+      "stratum": "candidate_positive",
+      "occurrence": "confirmed",
+      "relation_error": "false_merge"
+    },
+    {
+      "stratum": "candidate_negative",
+      "occurrence": "absent",
+      "relation_error": "none"
+    },
+    {
+      "stratum": "candidate_negative",
+      "occurrence": "confirmed",
+      "relation_error": "missed_equivalent"
+    },
+    {
+      "stratum": "unclassified",
+      "occurrence": "confirmed",
+      "relation_error": "missed_equivalent"
+    }
+  ]
+}

@@ -1,0 +1,476 @@
+{
+  "version": 1,
+  "revision": "58844055d98b986f607b1f2c4d9987cefac30487",
+  "cases": [
+    {
+      "id": "t01",
+      "split": "tuning",
+      "lang": "en",
+      "kind": "exact",
+      "query": "Find the decision in ADR 0048.",
+      "baseline_terms": [
+        "ADR 0048"
+      ],
+      "required": [
+        [
+          "docs/adr/0048-accept-sync-conflicts-per-file.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "t02",
+      "split": "tuning",
+      "lang": "ja",
+      "kind": "paraphrase",
+      "query": "同期の衝突をファイル単位で受け入れる仕様は？",
+      "baseline_terms": [
+        "同期",
+        "衝突",
+        "ファイル単位"
+      ],
+      "required": [
+        [
+          "docs/adr/0048-accept-sync-conflicts-per-file.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "t03",
+      "split": "tuning",
+      "lang": "en",
+      "kind": "paraphrase",
+      "query": "Why keep a locally customised file during sync?",
+      "baseline_terms": [
+        "divergent",
+        "preserves"
+      ],
+      "required": [
+        [
+          "docs/adr/0025-sync-divergent-file-preservation.md",
+          "D1 — Post-clean-run manifest regeneration records the upstream rendering, not the on-disk snapshot"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "t04",
+      "split": "tuning",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "doctor の管理対象の既定値と明示的な除外は？",
+      "baseline_terms": [
+        "managed-surface",
+        "doctor.exclude"
+      ],
+      "required": [
+        [
+          "docs/adr/0037-tighten-adoption-mutation-boundaries.md",
+          "D1 - Ship ADR 0033's managed-surface `doctor` default"
+        ],
+        [
+          "docs/adr/0021-doctor-scope-and-exclusion.md",
+          "Glob shape"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "t05",
+      "split": "tuning",
+      "lang": "en",
+      "kind": "partial",
+      "query": "Which part of ADR 0041 was superseded when Claude command wrappers returned?",
+      "baseline_terms": [
+        "command wrappers",
+        "supersedes ADR 0041"
+      ],
+      "required": [
+        [
+          "docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md",
+          "D2 — Thin Claude Code command wrappers (supersedes ADR 0041 D1)"
+        ],
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ]
+      ]
+    },
+    {
+      "id": "t06",
+      "split": "tuning",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "aikata は Jira のチケットを自動で同期するか。該当する設定を探して",
+      "baseline_terms": [
+        "Jira ticket sync",
+        "Jira チケット同期"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "t07",
+      "split": "tuning",
+      "lang": "en",
+      "kind": "navigation",
+      "query": "Find the navigation entry for modifying CLI behavior.",
+      "baseline_terms": [
+        "Modify CLI behavior"
+      ],
+      "required": [
+        [
+          "AGENTS.md",
+          "3. Navigation matrix"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "t08",
+      "split": "tuning",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "追加機能は有効化前にどんな影響を避けるべき？現行の要件と設計判断を確認したい",
+      "baseline_terms": [
+        "Do-No-Harm",
+        "optional features"
+      ],
+      "required": [
+        [
+          "SPEC.md",
+          "6. The Do-No-Harm Policy (Summary)"
+        ],
+        [
+          "docs/adr/0003-do-no-harm-policy.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h01",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "exact",
+      "query": "ADR 0045 の決定を開いて",
+      "baseline_terms": [
+        "ADR 0045"
+      ],
+      "required": [
+        [
+          "docs/adr/0045-documentation-value-model.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h02",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "exact",
+      "query": "Open the decision of ADR 0002.",
+      "baseline_terms": [
+        "ADR 0002"
+      ],
+      "required": [
+        [
+          "docs/adr/0002-agents-md-as-canonical.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h03",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "paraphrase",
+      "query": "基準を受け入れても、別ファイルの状況はそのままか？",
+      "baseline_terms": [
+        "基準",
+        "受け入れ",
+        "別ファイル"
+      ],
+      "required": [
+        [
+          "docs/adr/0048-accept-sync-conflicts-per-file.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h04",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "paraphrase",
+      "query": "Can I deliberately take one file out of template updating?",
+      "baseline_terms": [
+        "sync.own",
+        "per-file"
+      ],
+      "required": [
+        [
+          "docs/adr/0025-sync-divergent-file-preservation.md",
+          "D2 — Per-file `owned` opt-out via `aikata.yaml` `sync.own:`"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h05",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "paraphrase",
+      "query": "いつも先に読ませる資料が膨らんだら、何をどこに移すの？",
+      "baseline_terms": [
+        "先に読む",
+        "文書整理",
+        "移す"
+      ],
+      "required": [
+        [
+          "docs/adr/0039-documentation-hygiene-and-context-budget.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h06",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "multiple",
+      "query": "Where is the canonical instruction file agreed, and how does generate expose it?",
+      "baseline_terms": [
+        "Canonical Source",
+        "aikata generate"
+      ],
+      "required": [
+        [
+          "docs/adr/0002-agents-md-as-canonical.md",
+          "Decision"
+        ],
+        [
+          "SPEC.md",
+          "4.4 `aikata generate`"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h07",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "管理対象の既定化は、どの設計で決めて、どの設計で出荷した？",
+      "baseline_terms": [
+        "managed-surface",
+        "ADR 0033"
+      ],
+      "required": [
+        [
+          "docs/adr/0033-doctor-default-scope-direction.md",
+          "D1 - Direction: managed-surface default, explicit broad audit mode"
+        ],
+        [
+          "docs/adr/0037-tighten-adoption-mutation-boundaries.md",
+          "D1 - Ship ADR 0033's managed-surface `doctor` default"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h08",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "partial",
+      "query": "Are all Claude commands still removed under the skills-only decision? Compare the historical ban with the successor rule.",
+      "baseline_terms": [
+        "remove the slash commands",
+        "Thin Claude Code command wrappers"
+      ],
+      "required": [
+        [
+          "docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md",
+          "D2 — Thin Claude Code command wrappers (supersedes ADR 0041 D1)"
+        ],
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ]
+      ]
+    },
+    {
+      "id": "h09",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "partial",
+      "query": "Claudeのコマンドを廃止した判断は今も全面的に有効？置き換わった条項と元の条項を確認したい",
+      "baseline_terms": [
+        "supersedes",
+        "slash commands",
+        "薄いラッパー"
+      ],
+      "required": [
+        [
+          "docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md",
+          "D2 — Thin Claude Code command wrappers (supersedes ADR 0041 D1)"
+        ],
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ]
+      ]
+    },
+    {
+      "id": "h10",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "partial",
+      "query": "What happened to the command policy of the original skill split? Find the old policy and the later decision removing those commands.",
+      "baseline_terms": [
+        "slash commands are unchanged",
+        "remove the slash commands"
+      ],
+      "required": [
+        [
+          "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+          "D1 — Skills-only surface; remove the slash commands"
+        ],
+        [
+          "docs/adr/0040-collaboration-operation-skill-split.md",
+          "Consequences"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0040-collaboration-operation-skill-split.md",
+          "Consequences"
+        ]
+      ]
+    },
+    {
+      "id": "h11",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "ADR 9876 の決定節を見たい",
+      "baseline_terms": [
+        "ADR 9876"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "h12",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "negative",
+      "query": "Find the current contract for the Slack emoji-to-ADR bot.",
+      "baseline_terms": [
+        "emoji-to-ADR",
+        "Slack emoji bot"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "h13",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "aikata が有料プランの請求金額を変更するコマンドは？",
+      "baseline_terms": [
+        "請求金額",
+        "billing plan mutation"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "h14",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "paraphrase",
+      "query": "Which layer holds the document map and why do we keep two renderings?",
+      "baseline_terms": [
+        "machine zone",
+        "two renderings"
+      ],
+      "required": [
+        [
+          "docs/adr/0044-doc-map-derived-artifact.md",
+          "D2 — Mandatory, machine-zone placement"
+        ],
+        [
+          "docs/adr/0044-doc-map-derived-artifact.md",
+          "D3 — One scan, two renderings"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h15",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "モデル化スキルで扱うユースケースとフィールドの設計境界はどこ？",
+      "baseline_terms": [
+        "model-feature",
+        "Traceability"
+      ],
+      "required": [
+        [
+          "docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md",
+          "D3 — A new first-party skill, `model-feature`, that ends before implementation"
+        ],
+        [
+          "docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md",
+          "D4 — Traceability closes inside `docs/`, at field granularity, and goes no further"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "h16",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "navigation",
+      "query": "Where do I check versioning and the release ritual?",
+      "baseline_terms": [
+        "release ritual"
+      ],
+      "required": [
+        [
+          "ARCHITECTURE.md",
+          "6.5 Versioning & the release ritual"
+        ]
+      ],
+      "historical": []
+    }
+  ]
+}

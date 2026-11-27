@@ -1,0 +1,310 @@
+{
+  "version": 1,
+  "revision": "58844055d98b986f607b1f2c4d9987cefac30487",
+  "cases": [
+    {
+      "id": "f01",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "paraphrase",
+      "query": "長く残すメモは、好みと作業中の申し送りをどのように分ける？",
+      "baseline_terms": [
+        "memory types",
+        "working state"
+      ],
+      "required": [
+        [
+          "docs/adr/0004-long-term-memory-slot.md",
+          "2. Memory types"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f02",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "paraphrase",
+      "query": "Which verb repairs missing canonical documents in an already populated checkout while preserving existing files?",
+      "baseline_terms": [
+        "fill",
+        "missing canonical"
+      ],
+      "required": [
+        [
+          "docs/adr/0042-fill-command-for-canonical-document-completion.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f03",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "paraphrase",
+      "query": "この道具そのものの更新と、雛形を自分のプロジェクトに取り込む操作はどう使い分ける？",
+      "baseline_terms": [
+        "CLI version update",
+        "Project template sync"
+      ],
+      "required": [
+        [
+          "docs/adr/0009-update-command-owns-cli-version-updates.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f04",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "multiple",
+      "query": "What is the independence of template breadth, target technology and locale, and what file naming is prescribed for Japanese project documentation?",
+      "baseline_terms": [
+        "documentation breadth",
+        "Japanese",
+        "--lang"
+      ],
+      "required": [
+        [
+          "docs/adr/0024-scope-stack-axes-split.md",
+          "Decision"
+        ],
+        [
+          "docs/adr/0006-locale-and-japanese-documentation-policy.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f05",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "partial",
+      "query": "技術別の手引きを短くするかどうかは、利用実績を待って判断する決まりのまま？以前の基準と変更後の基準を調べて。",
+      "baseline_terms": [
+        "editorial test",
+        "evidence-led",
+        "stack brief"
+      ],
+      "required": [
+        [
+          "docs/adr/0029-stack-brief-layout-convention.md",
+          "D3 — Briefs stay small; subtractive trimming is a separate, evidence-led step"
+        ],
+        [
+          "docs/adr/0030-trim-stack-briefs-to-standard-guardrails.md",
+          "D1 — Amend ADR 0029 D3: the basis is an editorial test, not usage data"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0029-stack-brief-layout-convention.md",
+          "D3 — Briefs stay small; subtractive trimming is a separate, evidence-led step"
+        ]
+      ]
+    },
+    {
+      "id": "f06",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "partial",
+      "query": "Was memory projection committed for the v0.6 packaging release? Find the earlier conditional schedule and the decision that revised it.",
+      "baseline_terms": [
+        "memory generate-projection",
+        "v0.6 packaging"
+      ],
+      "required": [
+        [
+          "docs/adr/0010-memory-projection-deferred-to-v0-6.md",
+          "Decision"
+        ],
+        [
+          "docs/adr/0012-memory-projection-deferral-extended.md",
+          "Decision"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0010-memory-projection-deferred-to-v0-6.md",
+          "Decision"
+        ]
+      ]
+    },
+    {
+      "id": "f07",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "文書構造を移行するとき、CLIと補助機能の責務は何で、元の文章は書き換えられる？",
+      "baseline_terms": [
+        "observation-only",
+        "relocation",
+        "content rewrite"
+      ],
+      "required": [
+        [
+          "docs/adr/0046-structure-migration-assistant-boundary.md",
+          "D2 — The aikata CLI stays observation-only"
+        ],
+        [
+          "docs/adr/0046-structure-migration-assistant-boundary.md",
+          "D4 — Relocation only; never content rewrite"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f08",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "multiple",
+      "query": "Does the former .ai location remain a read fallback, and does removal also discard config schema migration? Show the original decision and its replacement.",
+      "baseline_terms": [
+        ".ai/aikata.yaml",
+        "fallback",
+        "Schema migration support"
+      ],
+      "required": [
+        [
+          "docs/adr/0008-aikata-owned-config-directory.md",
+          "Decision"
+        ],
+        [
+          "docs/adr/0020-retire-ai-config-fallback.md",
+          "Decision"
+        ]
+      ],
+      "historical": [
+        [
+          "docs/adr/0008-aikata-owned-config-directory.md",
+          "Decision"
+        ]
+      ]
+    },
+    {
+      "id": "f09",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "paraphrase",
+      "query": "履歴管理の手順書を追加したとき、エージェントの共通ルールとどちらが正本になる？",
+      "baseline_terms": [
+        "canonical relationship",
+        "workflow guides"
+      ],
+      "required": [
+        [
+          "docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md",
+          "D2 - Canonical relationship to `AGENTS.md`"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f10",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "paraphrase",
+      "query": "Can a project enable the reusable prompt collection without a config schema bump?",
+      "baseline_terms": [
+        "components.prompts",
+        "schema bump"
+      ],
+      "required": [
+        [
+          "docs/adr/0034-reusable-prompts-opt-in-capability.md",
+          "D2 - Schema: a new `components.prompts` boolean, no version bump"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f11",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "exact",
+      "query": "ADR 0035 の決定節を開いて。",
+      "baseline_terms": [
+        "ADR 0035"
+      ],
+      "required": [
+        [
+          "docs/adr/0035-native-self-update-safety.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f12",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "exact",
+      "query": "Open the Decision of ADR 0023.",
+      "baseline_terms": [
+        "ADR 0023"
+      ],
+      "required": [
+        [
+          "docs/adr/0023-release-signing-and-supply-chain.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "f13",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "ADR 8651 の決定節はどこ？",
+      "baseline_terms": [
+        "ADR 8651"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "f14",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "negative",
+      "query": "Locate the setting for automatic Notion billing-page publication.",
+      "baseline_terms": [
+        "Notion billing-page publication",
+        "publish Notion billing"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "f15",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "予定表を CalDAV 経由で双方向に同期するコマンドの要件を探して。",
+      "baseline_terms": [
+        "CalDAV",
+        "予定表の双方向同期"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "f16",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "negative",
+      "query": "Locate the setting for translating repository prose with a DeepL API key.",
+      "baseline_terms": [
+        "DeepL API",
+        "DEEPL_API_KEY"
+      ],
+      "required": [],
+      "historical": []
+    }
+  ]
+}
