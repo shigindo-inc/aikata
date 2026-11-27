@@ -43,15 +43,26 @@ and Codex can silently drop rules once a repository's files pass 32 KiB.
 
 > **確度**: 実測 — the child's `.claude/settings.json` and
 > `settings.local.json` exist, and the parent's `AGENTS.md` is about
-> 8.7 KB. 二次情報 — the Claude Code loading rules are quoted verbatim from
-> code.claude.com/docs/en/memory, but through a subagent. The Codex rules
-> came from a summarizing fetch of the vendor page. 推測 — that Codex never
-> reads above the git root. 未調査 — Cursor's handling of parent
-> directories, and real behavior checked with `/context all`. Before
-> implementing, check the Claude Code rows against `/context all` in the
-> child repository. The decision itself (report only, no settings writes)
-> does not depend on the 推測 or 未調査 items; they only change what the
-> Codex and Cursor rows of the report say.
+> 8.7 KB. The Claude Code loading rows were checked on 2026-11-27 with
+> `/memory` in a session in the child repository: it loaded the parent's
+> `CLAUDE.md` and the `AGENTS.md` that file imports (both outside the
+> child's git repository), then the child's `CLAUDE.md` and its
+> `@AGENTS.md`. So the walk crosses the git boundary, runs root first, and
+> resolves an import next to the importing file. The same day, a session
+> started in a linked worktree (`.git` is a file) under the main
+> checkout's `.claude/worktrees/` did not load the main checkout's
+> `CLAUDE.md`, so the walk stops at a linked worktree's root; that it also
+> skips directories above the main checkout is 推測. 二次情報 — the rest of
+> the Claude Code rows (`CLAUDE.local.md` after `CLAUDE.md` in each
+> directory, the four-hop import limit, `claudeMdExcludes` matching
+> absolute paths) are quoted from code.claude.com/docs/en/memory. That
+> page also loads `.claude/CLAUDE.md`, `.claude/rules/*.md`, and, when no
+> `CLAUDE.md` exists, `AGENTS.md` directly; the report does not list those
+> yet. The Codex rules came from a summarizing fetch of the vendor page.
+> 推測 — that Codex never reads above the git root. 未調査 — Cursor's
+> handling of parent directories. The decision itself (report only, no
+> settings writes) does not depend on the 推測 or 未調査 items; they only
+> change what the Codex and Cursor rows of the report say.
 
 ## Decision (proposed)
 

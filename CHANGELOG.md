@@ -25,6 +25,17 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
   unknown / missing), the ADRs the status line names, and how many
   Markdown files refer to each
   ([ADR 0052](./docs/adr/0052-adr-inventory.md)).
+- **`aikata doctor --context [--json]`** lists, for each enabled AI tool,
+  the instruction files that load at session start in the current
+  directory: path, bytes, and whether the file lies outside the git
+  repository. Claude Code's list walks every parent directory (up to the
+  root of a linked worktree) and follows `@path` imports; Codex's runs
+  from the git root down. It reports files
+  loaded from outside the repository with the `claudeMdExcludes` glob that
+  would skip them, paragraphs repeated verbatim across the loaded files,
+  and Codex input over its 32 KiB `project_doc_max_bytes` default. It
+  reads files only and refuses `--fix`
+  ([ADR 0051](./docs/adr/0051-effective-context-check.md)).
 - **`adr-inventory` skill.** Takes stock of a repository's ADRs from that
   list, condenses the decisions that still hold, and proposes moving the
   rules `AGENTS.md` restates into `REVIEW.md` or lint. It writes nothing

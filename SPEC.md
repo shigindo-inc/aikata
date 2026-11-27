@@ -272,6 +272,38 @@ are recorded in
   from cobra itself are written to stderr and never mixed into the
   JSON stream.
 
+**Effective context (`--context`)**: instead of running the checks,
+lists the instruction files each enabled AI tool (`ai_tools` in
+`.aikata/aikata.yaml`) loads at session start in the current directory,
+in load order, with each file's path, size in bytes, and whether it lies
+outside the git repository (the nearest directory holding `.git`)
+([ADR 0051](./docs/adr/0051-effective-context-check.md)). It reads files
+only, never user-level files such as `~/.claude` or `~/.codex`, and
+counts bytes, not tokens (§8).
+
+- Claude Code: `CLAUDE.md` then `CLAUDE.local.md` in every directory from
+  the filesystem root down, across git boundaries, each followed by its
+  `@path` imports (resolved next to the importing file, up to four hops).
+  In a linked worktree (`.git` is a file) the walk starts at the worktree
+  root instead.
+- Codex: `AGENTS.override.md`, else `AGENTS.md`, one per directory, from
+  the git root down. That Codex never reads above the git root is an
+  inference.
+- Cursor: no files listed; whether it applies rules above the workspace
+  is undocumented.
+
+Issues: `context.outside-repo` (info) for a file loaded from outside the
+repository, with the `claudeMdExcludes` glob that would skip it and a
+reminder that exclusion drops the whole file; `context.duplicate-paragraph`
+(info) for paragraphs repeated verbatim across loaded files; and
+`context.codex-over-limit` (warning) when Codex's files pass its 32 KiB
+`project_doc_max_bytes` default. `--json` emits
+`{"version": 1, "kind": "context", "directory", "repository_root", "tools", "issues", "summary"}`,
+where each `tools` entry lists `files` (`path`, `bytes`,
+`outside_repository`, `imported_by`), `total_bytes`, and `notes`.
+`--strict` applies as in the checks. Combining `--context` with `--fix`,
+`--dry-run`, `--all-markdown`, or `--verbose` is a usage error (exit 2).
+
 ### 4.4 `aikata generate`
 
 **Purpose**: Produce per-AI-tool configuration files from canonical sources.

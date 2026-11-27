@@ -24,6 +24,7 @@ func newDoctorCmd() *cobra.Command {
 		strict      bool
 		allMarkdown bool
 		verbose     bool
+		contextMode bool
 	)
 	cmd := &cobra.Command{
 		Use:   "doctor",
@@ -38,12 +39,20 @@ func newDoctorCmd() *cobra.Command {
 			"Pass --fix to apply the trivially-fixable subset (map regeneration and\n" +
 			"missing-frontmatter scaffolds). Combine with --dry-run\n" +
 			"to preview the fix without writing. Pass --json to emit a\n" +
-			"machine-readable report instead of the human-readable text format.",
+			"machine-readable report instead of the human-readable text format.\n" +
+			"Pass --context to list, instead of running the checks, the instruction\n" +
+			"files each enabled AI tool loads at session start here (ADR 0051).",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			target, err := os.Getwd()
 			if err != nil {
 				return fmt.Errorf("doctor: getwd: %w", err)
+			}
+			if contextMode {
+				if err := rejectContextFlags(cmd); err != nil {
+					return err
+				}
+				return runDoctorContext(cmd, target, jsonOut, strict)
 			}
 			excludes, err := loadDoctorExcludes(target)
 			if err != nil {
@@ -126,7 +135,61 @@ func newDoctorCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&strict, "strict", false, "Treat warnings as errors (exit 3 if any warning exists). Used by the v0.5+ dogfood CI gate.")
 	cmd.Flags().BoolVar(&allMarkdown, "all-markdown", false, "Audit every Markdown file in the tree (broad mode); default audits only the aikata-managed document surface (ADR 0037)")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "Also run advisory checks that are off by default (GLOSSARY terms no other document references)")
+	cmd.Flags().BoolVar(&contextMode, "context", false, "List the instruction files each enabled AI tool loads at session start, instead of running the checks (ADR 0051)")
 	return cmd
+}
+
+// contextExcludedFlags configure the checks, which --context does not
+// run. --context reads files only, so --fix must never reach it.
+var contextExcludedFlags = []string{"fix", "dry-run", "all-markdown", "verbose"}
+
+func rejectContextFlags(cmd *cobra.Command) error {
+	for _, name := range contextExcludedFlags {
+		if cmd.Flags().Changed(name) {
+			return &ExitError{Code: 2, Err: fmt.Errorf(
+				"doctor: --context only reports and does not run the checks; it cannot be combined with --%s", name)}
+		}
+	}
+	return nil
+}
+
+// runDoctorContext runs `aikata doctor --context`: it reads ai_tools
+// from `.aikata/aikata.yaml` in target and reports, per tool, the
+// instruction files that load at session start. It writes nothing.
+func runDoctorContext(cmd *cobra.Command, target string, jsonOut, strict bool) error {
+	cfg, err := config.Load(target)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return &ExitError{Code: 2, Err: fmt.Errorf(
+				"doctor --context: %s not found; it lists the enabled ai_tools, so run `aikata init` first or cd into an aikata project",
+				config.PrimaryPath(target))}
+		}
+		return fmt.Errorf("doctor --context: load config: %w", err)
+	}
+	if len(cfg.AITools) == 0 {
+		return &ExitError{Code: 2, Err: fmt.Errorf("doctor --context: no ai_tools enabled in %s", config.PrimaryPath(target))}
+	}
+	report, err := doctor.InspectContext(target, cfg.AITools)
+	if err != nil {
+		if errors.Is(err, doctor.ErrUnknownContextTool) {
+			return &ExitError{Code: 2, Err: err}
+		}
+		return err
+	}
+	if jsonOut {
+		err = doctor.FormatContextJSON(cmd.OutOrStdout(), report)
+	} else {
+		err = doctor.FormatContext(cmd.OutOrStdout(), report)
+	}
+	if err != nil {
+		return err
+	}
+	if strict {
+		if n := countWarnings(report.Issues); n > 0 {
+			return &ExitError{Code: 3, Err: fmt.Errorf("doctor --context: --strict: %d issue(s) at warning level", n)}
+		}
+	}
+	return nil
 }
 
 // loadDoctorExcludes reads `.aikata/aikata.yaml` and returns its
