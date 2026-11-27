@@ -90,11 +90,11 @@ _generated: 2026-11-27_
 │   └── troubleshooting.md — Troubleshooting · draft · 2026-05-23
 ├── AGENTS.md — Agent Instructions for aikata Development · draft · 2026-05-31
 ├── ARCHITECTURE.md — ARCHITECTURE — How · draft · 2026-11-21
-├── CHANGELOG.md — Changelog · draft · 2026-11-21
+├── CHANGELOG.md — Changelog · draft · 2026-11-27
 ├── CONTRIBUTING.md — Contributing to aikata · draft · 2026-06-01 · (external)
 ├── GLOSSARY.md — Glossary · draft · 2026-08-14
 ├── README.md — aikata · draft · 2026-11-21
-├── ROADMAP.md — ROADMAP · draft · 2026-11-21
+├── ROADMAP.md — ROADMAP · draft · 2026-11-27
 ├── SECURITY.md — Security Policy · draft · 2026-05-29 · (external)
 └── SPEC.md — SPEC — What & Why · draft · 2026-11-21
 ```

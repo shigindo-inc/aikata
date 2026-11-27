@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.0.1
-updated: 2026-11-21
+updated: 2026-11-27
 audience: [human, agent]
 ---
 
@@ -17,6 +17,13 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
+
+## [0.17.0] - 2026-11-27
+
+**See which decisions still apply and which instructions agents load.**
+`aikata list adrs` and the `adr-inventory` skill help review decisions and
+their references, while `doctor --context` reports the instruction files
+loaded per tool. ADR decisions now come from the status line in the body.
 
 ### Added
 
