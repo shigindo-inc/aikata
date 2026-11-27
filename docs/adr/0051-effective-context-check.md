@@ -64,7 +64,7 @@ and Codex can silently drop rules once a repository's files pass 32 KiB.
 > settings writes) does not depend on the 推測 or 未調査 items; they only
 > change what the Codex and Cursor rows of the report say.
 
-## Decision (proposed)
+## Decision
 
 1. Add `aikata doctor --context`. It reports, for the current directory
    and each enabled AI tool, the instruction files that load at session

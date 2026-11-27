@@ -86,7 +86,7 @@ from aikata today.
 > If the 推測 is wrong, the migration in Decision 2 breaks that tool, so
 > the CHANGELOG entry names the change.
 
-## Decision (proposed)
+## Decision
 
 1. **The body status line is the only decision status.** ADRs get no
    exception to the lifecycle meaning of frontmatter `status`. `doctor`
