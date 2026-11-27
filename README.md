@@ -155,7 +155,8 @@ not found after install.
 
 ### Agent skills & plugins (optional, v0.3.1+)
 
-aikata ships **five** first-party skills (ADR 0043, ADR 0046, ADR 0047):
+aikata ships **six** first-party skills (ADR 0043, ADR 0046, ADR 0047,
+ADR 0052):
 `manage-docs` teaches the agent when to call the CLI and how to parse
 `aikata doctor --json`, `track-context` teaches the daily in-repo
 context-maintenance loop (which canonical docs to read, where new context
@@ -164,7 +165,7 @@ downstream maintenance loop that brings a repo's docs up to the latest
 aikata (update, sync, fill, doctor, deprecation cleanup),
 `migrate-structure` relocates off-structure documents into the recommended
 layout (`docs/layout.md`) — dry-run first, `git mv` only after you approve,
-and `model-feature` walks a single feature from use case to domain model
+`model-feature` walks a single feature from use case to domain model
 to a hand-off point just before implementation, writing into
 `docs/usecases.md` and `docs/domain.md` (the opt-in `modeling` capability;
 `aikata enable modeling`), and `adr-inventory` takes stock of a
