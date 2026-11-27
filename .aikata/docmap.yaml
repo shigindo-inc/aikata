@@ -820,6 +820,40 @@ docs:
       links:
         - ARCHITECTURE.md
         - docs/memory/README.md
+    - path: docs/plans/2026-11-27-task-scoped-document-retrieval.md
+      title: Task-scoped retrieval delivery plan
+      summary: '**Summary**: Offline comparisons and the source-linked guidance replay are complete. Keep automatic retrieval and maintained guides experimental pending opted-in work. **Read when**: Picking up or reporting progress on [#175](https://github.com/shigindo-inc/aikata/issues/175). **Status**: Active **Progress**: 8/10 **Next action**: Run an opt-in window for one question family, then compare an explicit phrase-based lookup and a temporary guide on independent work. **Blockers**: Real recurrence and guidance impact need observed, opted-in work. Current retrieval results do not justify a public CLI.'
+      status: draft
+      updated: "2026-11-27"
+      managed: false
+      links:
+        - docs/research/2026-11-27-document-retrieval-baseline.md
+        - docs/research/2026-11-27-section-lookup-variants.md
+        - docs/research/2026-11-27-topic-guidance-pilot.md
+        - docs/spec/task-scoped-document-retrieval.md
+    - path: docs/research/2026-11-27-document-retrieval-baseline.md
+      title: JA/EN section retrieval baseline
+      summary: '**Summary**: The reproducible navigation-and-ripgrep baseline recovered every required section for 7 of 13 positive held-out questions and returned no candidates for all three negative questions. Japanese paraphrases frequently missed English evidence. **Read when**: Comparing a retrieval candidate against [#176](https://github.com/shigindo-inc/aikata/issues/176). **Status**: Observed **Confidence**: High for the replay, low for generalization. **Adoption**: Use as an experimental control.'
+      status: draft
+      updated: "2026-11-27"
+      managed: false
+      links:
+        - docs/plans/2026-11-27-task-scoped-document-retrieval.md
+        - docs/spec/task-scoped-document-retrieval.md
+    - path: docs/research/2026-11-27-section-lookup-variants.md
+      title: Section lookup variants
+      summary: '**Summary**: Authored phrases helped the second benchmark, but did not solve difficult multi-source or near-neighbor questions in a separate confirmation set. Keep automatic free-form retrieval experimental and require a separate evidence judgment. **Read when**: Reviewing the next step for [#177](https://github.com/shigindo-inc/aikata/issues/177). **Status**: Reproduced offline. **Confidence**: High for the recorded runs, unmeasured for field quality or savings. **Adoption**: No public CLI change.'
+      status: draft
+      updated: "2026-11-27"
+      managed: false
+    - path: docs/research/2026-11-27-topic-guidance-pilot.md
+      title: Source-linked guidance route replay
+      summary: '**Summary**: Two staged source-linked cards preserved all required evidence and reduced bytes compared with a recorded extra navigation lookup. Both routes opened the same source sections. The cards add bytes when the mandatory material already points directly to the sections. **Read when**: Planning the field comparison in [#179](https://github.com/shigindo-inc/aikata/issues/179). **Status**: Complete for route replay, open for field validation. **Confidence**: High for fixture results. Field impact is unmeasured. **Adoption**: Deferred pending evidence from independent, opted-in work.'
+      status: draft
+      updated: "2026-11-27"
+      managed: false
+      links:
+        - docs/plans/2026-11-27-task-scoped-document-retrieval.md
     - path: docs/roadmap-archive.md
       title: ROADMAP archive — released milestones (Phase 1 – v0.15.2)
       summary: Historical record. These milestones are **all released**; their detailed per-version checklists were moved out of [ROADMAP.md](../ROADMAP.md) to keep the live roadmap focused on the current and upcoming surface ([ADR 0039](./adr/0039-documentation-hygiene-and-context-budget.md)). The binding decisions live in [`docs/adr/`](./adr/) and the shipped changes in [CHANGELOG.md](../CHANGELOG.md); this file preserves the planning detail verbatim. For current direction, see [ROADMAP.md](../ROADMAP.md).
@@ -856,6 +890,17 @@ docs:
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/decisions/docmap-design.md
         - docs/decisions/open-questions.md
+    - path: docs/spec/task-scoped-document-retrieval.md
+      title: Task-scoped document retrieval and recurring questions
+      summary: '**Summary**: Prototype an explicit read-only lookup of authoritative Markdown sections. Evaluate local recurring-question counts separately before adding topic guidance or committing to a CLI. **Read when**: Designing or evaluating [#176](https://github.com/shigindo-inc/aikata/issues/176) through [#179](https://github.com/shigindo-inc/aikata/issues/179). **Status**: Draft **Open**: Public command and schema, search weights, bilingual aliases, pilot thresholds and release scope.'
+      status: draft
+      updated: "2026-11-27"
+      managed: false
+      links:
+        - SPEC.md
+        - docs/adr/0003-do-no-harm-policy.md
+        - docs/adr/0045-documentation-value-model.md
+        - docs/plans/2026-11-27-task-scoped-document-retrieval.md
     - path: docs/troubleshooting.md
       title: Troubleshooting
       summary: Known setup problems for aikata itself. Keep entries short, concrete, and based on real failures.
