@@ -1,5 +1,5 @@
 version: 1
-generated: "2026-11-21"
+generated: "2026-11-27"
 docs:
     - path: AGENTS.md
       title: Agent Instructions for aikata Development
@@ -174,6 +174,7 @@ docs:
         - docs/adr/0049-doctor-reports-what-needs-action.md
         - docs/adr/0050-doc-map-off-by-default.md
         - docs/adr/0051-effective-context-check.md
+        - docs/adr/0052-adr-inventory.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/layout.md
@@ -610,6 +611,12 @@ docs:
       summary: '- **Status**: Proposed - **Date**: 2026-11-21 - **Related**: ADR 0002 (`AGENTS.md` is canonical), ADR 0049 (doctor reports what needs action)'
       status: draft
       updated: "2026-11-21"
+      managed: true
+    - path: docs/adr/0052-adr-inventory.md
+      title: 'ADR 0052 — ADR inventory: the CLI lists, a skill judges'
+      summary: '- **Status**: Proposed - **Date**: 2026-11-27 - **Related**: ADR 0001 (ADR format), ADR 0039 (documentation hygiene; ADR bodies are not rewritten), ADR 0045 (no `aikata compact`), ADR 0049 (doctor reports what needs action), ADR 0050 (doc map off by default)'
+      status: draft
+      updated: "2026-11-27"
       managed: true
     - path: docs/decisions/2026-06-17-watched-external-doc-homes-design.md
       title: Design — CLI/skill responsibility split & watched external doc homes
