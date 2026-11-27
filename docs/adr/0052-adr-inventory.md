@@ -8,7 +8,7 @@ audience: [human, agent]
 
 # ADR 0052 — ADR inventory: the CLI lists, a skill judges
 
-- **Status**: Proposed
+- **Status**: Accepted (2026-11-27)
 - **Date**: 2026-11-27
 - **Related**: ADR 0001 (ADR format), ADR 0039 (documentation hygiene;
   ADR bodies are not rewritten), ADR 0045 (no `aikata compact`),
@@ -97,12 +97,14 @@ from aikata today.
    release.** `aikata doctor --fix` (with `--dry-run` first) rewrites a
    frontmatter decision word to the lifecycle value `stable`, and adds a
    body status line built from the frontmatter word to an ADR that has
-   none. When the frontmatter word and the body line disagree, the fix
-   leaves that file alone and reports it for a person to settle
-   (fail-closed). From that release on, `doctor` no longer reads
-   frontmatter for the decision. In the 189-ADR repository this rewrites
-   about 180 frontmatter values, adds 7 body lines, and leaves 5 files
-   to a person.
+   none. When the frontmatter word and the body line's class differ, or
+   the body line's class is unknown, `doctor` reports
+   `adr.status-conflict` instead, and the fix leaves that file for a
+   person to settle (fail-closed). From that release on, `doctor` no
+   longer reads frontmatter for the decision. Run on a copy of the
+   189-ADR repository, the fix rewrote 174 frontmatter values (7 of them
+   also gained a body line) and left 6 files to a person; the sixth is
+   an ADR whose status line starts 「一部 active」.
 3. **Parsing lives in `internal/adr`.** That package already holds the
    ADR numbering rules as their single source
    (`internal/adr/numbering.go:1-6`). The status parser moves there from
@@ -145,8 +147,8 @@ On the 189-ADR repository, before vs. after the migration and one skill
 run:
 
 - ADRs that `aikata list adrs` classes as `unknown`: target 0.
-- `adr.decision-in-frontmatter` warnings: about 180 → 0, with the 5
-  disagreements settled by a person.
+- `adr.decision-in-frontmatter` warnings: 174 → 0, and
+  `adr.status-conflict`: 6 → 0, settled by a person.
 - `AGENTS.md` bytes (baseline 24,269) and ADR mentions in it (baseline
   29): both go down, and every removed rule appears in `REVIEW.md`, a
   lint rule, or the condensed list.

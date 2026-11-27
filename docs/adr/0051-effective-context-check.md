@@ -8,7 +8,7 @@ audience: [human, agent]
 
 # ADR 0051 — Effective context check for nested repositories
 
-- **Status**: Proposed
+- **Status**: Accepted (2026-11-27)
 - **Date**: 2026-11-21
 - **Related**: ADR 0002 (`AGENTS.md` is canonical), ADR 0049 (doctor
   reports what needs action)
