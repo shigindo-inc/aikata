@@ -2,7 +2,7 @@
 project: aikata
 status: draft
 version: 0.4.0
-updated: 2026-11-21
+updated: 2026-11-27
 audience: [human, agent]
 ---
 
@@ -72,6 +72,7 @@ binding decisions are in [`docs/adr/`](./docs/adr/); shipped changes in
 | v0.15.2 | 2026-10-05 | `CLAUDE.md` imports `AGENTS.md` |
 | v0.15.3 | 2026-11-21 | Per-file sync conflict acceptance; stable doc maps |
 | v0.16.0 | 2026-11-21 | `doctor` reports what needs action; doc map opt-in |
+| v0.17.0 | 2026-11-27 | ADR inventory and effective instruction context via `doctor --context` |
 
 ---
 
