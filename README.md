@@ -478,7 +478,8 @@ aikata generate
   - [0048 — Accept Sync Conflicts Per File](./docs/adr/0048-accept-sync-conflicts-per-file.md)
   - [0049 — Doctor Reports What Needs Action](./docs/adr/0049-doctor-reports-what-needs-action.md)
   - [0050 — Doc Map Off by Default](./docs/adr/0050-doc-map-off-by-default.md)
-  - [0052 — ADR Inventory: the CLI Lists, a Skill Judges](./docs/adr/0052-adr-inventory.md) _(Proposed)_
+  - [0051 — Effective Context Check (proposed)](./docs/adr/0051-effective-context-check.md)
+  - [0052 — ADR Inventory (proposed)](./docs/adr/0052-adr-inventory.md)
 
 ### AI-tool entry points
 
