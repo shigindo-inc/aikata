@@ -357,6 +357,10 @@ aikata generate
 
 # Check project consistency (v0.2):
 aikata doctor
+
+# List the instruction files each AI tool loads here, including ones
+# inherited from parent directories (ADR 0051):
+aikata doctor --context
 ```
 
 See [SPEC.md §4](./SPEC.md#4-functional-requirements-cli) for the full

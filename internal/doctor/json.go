@@ -48,12 +48,17 @@ type jsonReport struct {
 // Empty `line` and `code` are omitted so consumers do not need to
 // distinguish "missing field" from "explicit zero/empty".
 func FormatJSON(w io.Writer, issues []Issue) error {
-	report := jsonReport{
-		Version: JSONSchemaVersion,
-		Issues:  make([]jsonIssue, 0, len(issues)),
-	}
+	wire, summary := toJSONIssues(issues)
+	return encodeJSON(w, jsonReport{Version: JSONSchemaVersion, Issues: wire, Summary: summary})
+}
+
+// toJSONIssues converts issues to their wire shape and counts them by
+// level. Both doctor reports (the checks and --context) share it.
+func toJSONIssues(issues []Issue) ([]jsonIssue, jsonSummary) {
+	wire := make([]jsonIssue, 0, len(issues))
+	var summary jsonSummary
 	for _, iss := range issues {
-		report.Issues = append(report.Issues, jsonIssue{
+		wire = append(wire, jsonIssue{
 			Level:   iss.Level.String(),
 			File:    iss.File,
 			Line:    iss.Line,
@@ -62,16 +67,20 @@ func FormatJSON(w io.Writer, issues []Issue) error {
 		})
 		switch iss.Level {
 		case LevelError:
-			report.Summary.Errors++
+			summary.Errors++
 		case LevelWarning:
-			report.Summary.Warnings++
+			summary.Warnings++
 		case LevelInfo:
-			report.Summary.Info++
+			summary.Info++
 		}
 	}
+	return wire, summary
+}
+
+func encodeJSON(w io.Writer, v any) error {
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(report); err != nil {
+	if err := enc.Encode(v); err != nil {
 		return fmt.Errorf("doctor: format json: %w", err)
 	}
 	return nil

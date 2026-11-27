@@ -74,6 +74,7 @@ docs:
         - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/adr/0049-doctor-reports-what-needs-action.md
         - docs/adr/0050-doc-map-off-by-default.md
+        - docs/adr/0051-effective-context-check.md
         - docs/adr/0052-adr-inventory.md
     - path: CONTRIBUTING.md
       title: Contributing to aikata
@@ -230,6 +231,7 @@ docs:
         - docs/adr/0047-modeling-capability-and-per-feature-design-loop-boundary.md
         - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/adr/0050-doc-map-off-by-default.md
+        - docs/adr/0051-effective-context-check.md
         - docs/adr/0052-adr-inventory.md
         - docs/decisions/open-questions.md
     - path: docs/adoption.md
