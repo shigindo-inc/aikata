@@ -173,6 +173,7 @@ docs:
         - docs/adr/0048-accept-sync-conflicts-per-file.md
         - docs/adr/0049-doctor-reports-what-needs-action.md
         - docs/adr/0050-doc-map-off-by-default.md
+        - docs/adr/0051-effective-context-check.md
         - docs/decisions/open-questions.md
         - docs/japanese-users.ja.md
         - docs/layout.md
@@ -601,6 +602,12 @@ docs:
     - path: docs/adr/0050-doc-map-off-by-default.md
       title: ADR 0050 — Doc map off by default
       summary: '- **Status**: Accepted - **Date**: 2026-11-21 - **Related**: ADR 0044 (doc map as a derived artifact; its D5 "rebuild on every lifecycle command" now applies only when enabled)'
+      status: draft
+      updated: "2026-11-21"
+      managed: true
+    - path: docs/adr/0051-effective-context-check.md
+      title: ADR 0051 — Effective context check for nested repositories
+      summary: '- **Status**: Proposed - **Date**: 2026-11-21 - **Related**: ADR 0002 (`AGENTS.md` is canonical), ADR 0049 (doctor reports what needs action)'
       status: draft
       updated: "2026-11-21"
       managed: true
