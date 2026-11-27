@@ -22,8 +22,9 @@ import (
 func newListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
-		Short: "List known presets, stacks, or AI tools",
-		Long: "Enumerate the identifiers aikata accepts at init time.\n" +
+		Short: "List known presets, stacks, AI tools, or this project's ADRs",
+		Long: "Enumerate the identifiers aikata accepts at init time, or, with\n" +
+			"`list adrs`, the current project's ADRs.\n" +
 			"Use `aikata describe preset <name>` for the long-form description\n" +
 			"of an individual preset.",
 		Args: cobra.NoArgs,
@@ -33,6 +34,7 @@ func newListCmd() *cobra.Command {
 	cmd.AddCommand(newListAIToolsCmd())
 	cmd.AddCommand(newListCapabilitiesCmd())
 	cmd.AddCommand(newListArtifactsCmd())
+	cmd.AddCommand(newListADRsCmd())
 	return cmd
 }
 

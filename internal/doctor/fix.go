@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/shigindo-inc/aikata/internal/adr"
 	"github.com/shigindo-inc/aikata/internal/docmap"
 )
 
@@ -22,6 +23,7 @@ var FixableCodes = []string{
 	"frontmatter.missing-key.audience",
 	"docmap.missing",
 	"docmap.stale",
+	"adr.decision-in-frontmatter",
 }
 
 // FixResult summarizes the outcome of a Fix pass.
@@ -72,6 +74,8 @@ func Fix(opts Options, issues []Issue) (FixResult, error) {
 			changed, err = fixMissingKey(full, key, today)
 		case iss.Code == "docmap.missing" || iss.Code == "docmap.stale":
 			changed, err = fixDocMap(opts.TargetDir)
+		case iss.Code == "adr.decision-in-frontmatter":
+			changed, err = fixADRDecisionInFrontmatter(full)
 		default:
 			res.Skipped++
 			continue
@@ -191,6 +195,72 @@ func fixMissingKey(path, key, today string) (bool, error) {
 	insert := key + ": " + placeholderForKey(key, today) + "\n"
 	out := text[:absClose] + insert + text[absClose:]
 	return true, writeFileAtomic(path, []byte(out))
+}
+
+// lifecycleStable replaces a decision word in ADR frontmatter. The
+// decision itself lives on the body status line (ADR 0052).
+const lifecycleStable = "stable"
+
+// fixADRDecisionInFrontmatter moves an ADR's decision out of frontmatter:
+// the frontmatter `status` becomes the lifecycle value `stable`, and an
+// ADR without a body status line gets one carrying the old value. A file
+// whose frontmatter and status line disagree is left alone; doctor
+// reports it as adr.status-conflict for a person to settle.
+func fixADRDecisionInFrontmatter(path string) (bool, error) {
+	body, err := os.ReadFile(path)
+	if err != nil {
+		return false, err
+	}
+	fmValue, fmLine := adrFrontmatterStatus(body)
+	fmClass, decision := adr.DecisionWord(fmValue)
+	if !decision {
+		return false, nil
+	}
+	status, hasLine := adr.ParseStatus(body)
+	if hasLine && status.Class != fmClass {
+		return false, nil
+	}
+	lines := strings.Split(string(body), "\n")
+	line := lines[fmLine-1]
+	cr := ""
+	if strings.HasSuffix(line, "\r") {
+		cr = "\r"
+	}
+	indent := line[:len(line)-len(strings.TrimLeft(line, " \t"))]
+	lines[fmLine-1] = indent + "status: " + lifecycleStable + cr
+	if !hasLine {
+		lines = insertStatusLine(lines, fmValue)
+	}
+	return true, writeFileAtomic(path, []byte(strings.Join(lines, "\n")))
+}
+
+// insertStatusLine adds `- **Status**: value` as its own paragraph after
+// the first `# ` heading, or right after the frontmatter when there is no
+// heading.
+func insertStatusLine(lines []string, value string) []string {
+	at := 0
+	if len(lines) > 0 && strings.TrimRight(lines[0], "\r") == "---" {
+		for i := 1; i < len(lines); i++ {
+			if strings.TrimRight(lines[i], "\r") == "---" {
+				at = i + 1
+				break
+			}
+		}
+	}
+	for i := at; i < len(lines); i++ {
+		if strings.HasPrefix(lines[i], "# ") {
+			at = i + 1
+			break
+		}
+	}
+	block := []string{"", "- **Status**: " + value}
+	if at < len(lines) && strings.TrimSpace(lines[at]) != "" {
+		block = append(block, "")
+	}
+	out := make([]string, 0, len(lines)+len(block))
+	out = append(out, lines[:at]...)
+	out = append(out, block...)
+	return append(out, lines[at:]...)
 }
 
 // hasFrontmatter reports whether body begins with a YAML frontmatter

@@ -128,30 +128,11 @@ func checkLinks(opts Options) ([]Issue, error) {
 	return issues, nil
 }
 
-// adrStatusRE captures the value after `**Status**:` (or the Japanese
-// `**状態**:`, with either an ASCII or a full-width colon) on a single ADR
-// metadata line. The ja templates keep the English key, but ADRs written
-// by hand in Japanese projects use the localized one.
-var adrStatusRE = regexp.MustCompile(`(?i)\*\*(?:Status|状態)\*\*\s*[:：]\s*([^\n]+)`)
-
-// adrStatus returns the ADR's decision status. The body metadata line wins
-// because aikata's own templates use the frontmatter `status` for the
-// document lifecycle (draft / stable) and the body line for the decision;
-// projects that keep only the frontmatter key fall back to it.
-func adrStatus(body []byte) (string, bool) {
-	if m := adrStatusRE.FindSubmatch(body); m != nil {
-		return strings.TrimSpace(string(m[1])), true
-	}
-	lines, _ := docmeta.ParseFrontmatter(body)
-	if v, _, ok := docmeta.FrontmatterValue(lines, "status"); ok && v != "" {
-		return v, true
-	}
-	return "", false
-}
-
-// checkADR verifies Deprecated ADRs reference their replacement.
+// checkADR verifies each ADR's decision status. The body status line is
+// the only decision status; frontmatter `status` is the document
+// lifecycle, as on every other Markdown file (ADR 0052).
 func checkADR(opts Options) ([]Issue, error) {
-	adrDir := filepath.Join(opts.TargetDir, "docs", "adr")
+	adrDir := filepath.Join(opts.TargetDir, adr.Dir)
 	if _, err := os.Stat(adrDir); err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return nil, nil
@@ -167,31 +148,65 @@ func checkADR(opts Options) ([]Issue, error) {
 		if e.IsDir() || !strings.HasSuffix(e.Name(), ".md") {
 			continue
 		}
-		rel := filepath.ToSlash(filepath.Join("docs", "adr", e.Name()))
+		rel := filepath.ToSlash(filepath.Join(adr.Dir, e.Name()))
 		body, err := os.ReadFile(filepath.Join(adrDir, e.Name()))
 		if err != nil {
 			return nil, err
 		}
-		status, ok := adrStatus(body)
-		if !ok {
-			issues = append(issues, Issue{
-				Level: LevelWarning, File: rel,
-				Code:    "adr.missing-status",
-				Message: "ADR has no status (expected a **Status** line or frontmatter status)",
-			})
-			continue
-		}
-		if strings.HasPrefix(strings.ToLower(status), "deprecated") {
-			if !strings.Contains(string(body), "Replaced by") &&
-				!strings.Contains(string(body), "Superseded by") {
-				issues = append(issues, Issue{
-					Level: LevelError, File: rel,
-					Message: "Deprecated ADR must reference Replaced by / Superseded by ADR-NNNN",
-				})
-			}
-		}
+		issues = append(issues, adrStatusIssues(rel, body)...)
 	}
 	return issues, nil
+}
+
+func adrStatusIssues(rel string, body []byte) []Issue {
+	status, hasLine := adr.ParseStatus(body)
+	fmValue, fmLine := adrFrontmatterStatus(body)
+	fmClass, fmDecision := adr.DecisionWord(fmValue)
+
+	var issues []Issue
+	switch {
+	case fmDecision && hasLine && fmClass != status.Class:
+		// Settling which one is right is a person's call, so --fix leaves it.
+		issues = append(issues, Issue{
+			Level: LevelWarning, File: rel, Line: fmLine,
+			Code: "adr.status-conflict",
+			Message: fmt.Sprintf("frontmatter status %q disagrees with the status line %q; "+
+				"keep the decision in the status line and set frontmatter status to a lifecycle value", fmValue, status.Raw),
+		})
+	case fmDecision:
+		issues = append(issues, Issue{
+			Level: LevelWarning, File: rel, Line: fmLine,
+			Code: "adr.decision-in-frontmatter",
+			Message: fmt.Sprintf("frontmatter status %q is a decision; the status line holds the decision "+
+				"and frontmatter status the document lifecycle (`aikata doctor --fix` moves it)", fmValue),
+		})
+	case !hasLine:
+		issues = append(issues, Issue{
+			Level: LevelWarning, File: rel,
+			Code:    "adr.missing-status",
+			Message: "ADR has no status line (expected `**Status**: <decision>` in the body)",
+		})
+	}
+	if hasLine && strings.HasPrefix(strings.ToLower(status.Raw), "deprecated") &&
+		!strings.Contains(string(body), "Replaced by") &&
+		!strings.Contains(string(body), "Superseded by") {
+		issues = append(issues, Issue{
+			Level: LevelError, File: rel, Line: status.Line,
+			Message: "Deprecated ADR must reference Replaced by / Superseded by ADR-NNNN",
+		})
+	}
+	return issues
+}
+
+// adrFrontmatterStatus returns the frontmatter `status` value and its
+// 1-based file line, or ("", 0) when there is none.
+func adrFrontmatterStatus(body []byte) (string, int) {
+	lines, _ := docmeta.ParseFrontmatter(body)
+	v, line, ok := docmeta.FrontmatterValue(lines, "status")
+	if !ok {
+		return "", 0
+	}
+	return v, line
 }
 
 // checkADRNumbering reports duplicate numbers as errors and missing slots
