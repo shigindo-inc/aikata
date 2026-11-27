@@ -1,0 +1,72 @@
+{
+  "revision": "58844055d98b986f607b1f2c4d9987cefac30487",
+  "shared_read_bytes_per_task": 104797,
+  "tasks": [
+    {
+      "task": "single-sync-conflict",
+      "current": {
+        "navigation_operations": 1,
+        "source_sections_opened": 2,
+        "source_files_opened": 1,
+        "required_sections": 2,
+        "recovered_sections": [
+          "sync-decision",
+          "sync-consequences"
+        ],
+        "navigation_bytes": 817,
+        "source_section_bytes": 754,
+        "additional_payload_bytes": 1571,
+        "payload_including_shared_reads_bytes": 106368
+      },
+      "guidance": {
+        "navigation_operations": 1,
+        "source_sections_opened": 2,
+        "source_files_opened": 1,
+        "required_sections": 2,
+        "recovered_sections": [
+          "sync-decision",
+          "sync-consequences"
+        ],
+        "navigation_bytes": 274,
+        "source_section_bytes": 754,
+        "additional_payload_bytes": 1028,
+        "payload_including_shared_reads_bytes": 105825
+      },
+      "difference_guided_minus_current_bytes": -543,
+      "difference_if_current_uses_shared_reads_only_bytes": 274
+    },
+    {
+      "task": "partial-skill-supersession",
+      "current": {
+        "navigation_operations": 1,
+        "source_sections_opened": 2,
+        "source_files_opened": 2,
+        "required_sections": 2,
+        "recovered_sections": [
+          "current-wrapper",
+          "historical-layout"
+        ],
+        "navigation_bytes": 1746,
+        "source_section_bytes": 1229,
+        "additional_payload_bytes": 2975,
+        "payload_including_shared_reads_bytes": 107772
+      },
+      "guidance": {
+        "navigation_operations": 1,
+        "source_sections_opened": 2,
+        "source_files_opened": 2,
+        "required_sections": 2,
+        "recovered_sections": [
+          "current-wrapper",
+          "historical-layout"
+        ],
+        "navigation_bytes": 536,
+        "source_section_bytes": 1229,
+        "additional_payload_bytes": 1765,
+        "payload_including_shared_reads_bytes": 106562
+      },
+      "difference_guided_minus_current_bytes": -1210,
+      "difference_if_current_uses_shared_reads_only_bytes": 536
+    }
+  ]
+}

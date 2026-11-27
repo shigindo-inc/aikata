@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "revision": "58844055d98b986f607b1f2c4d9987cefac30487",
+  "cases": [
+    {
+      "id": "c01",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "標準の雛形で完了前の検証はどう条件づけられ、テストを先に書く運用はどこに置かれる？",
+      "baseline_terms": [
+        "Verify before claiming done",
+        "test-first"
+      ],
+      "required": [
+        [
+          "docs/adr/0027-verification-expectation-in-generated-templates.md",
+          "D1 — Add a methodology-neutral verification rule to the standard template"
+        ],
+        [
+          "docs/adr/0027-verification-expectation-in-generated-templates.md",
+          "D3 — TDD *recommendation* lives in opt-in docs, never in default `AGENTS.md`"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "c02",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "multiple",
+      "query": "After adopting a project with fill, why does the next sync preserve a hand-edited file, and which ancestor should be recorded?",
+      "baseline_terms": [
+        "hand-edited",
+        "upstream rendering",
+        "living record"
+      ],
+      "required": [
+        [
+          "SPEC.md",
+          "4.8 `aikata fill`"
+        ],
+        [
+          "docs/adr/0014-manifest-living-record.md",
+          "Invariants"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "c03",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "既存の設計資料を所定の場所へ移したい。実際に移す前の確認手順と、設計内容の種類に応じた移動先の考え方を知りたい。",
+      "baseline_terms": [
+        "confirm-move",
+        "dry-run plan",
+        "DESIGN.md"
+      ],
+      "required": [
+        [
+          "docs/adr/0046-structure-migration-assistant-boundary.md",
+          "D3 — observe → propose → confirm-move → rebuild"
+        ],
+        [
+          "docs/adr/0007-no-generic-design-md.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "c04",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "multiple",
+      "query": "How is Codex native plugin packaging different from the files the generate provider emits for Codex or Cursor?",
+      "baseline_terms": [
+        "native Codex plugin",
+        "no-op provider",
+        "Cursor"
+      ],
+      "required": [
+        [
+          "docs/adr/0036-codex-native-distribution.md",
+          "D1 - Advance the Codex skill-only native wrapper to v0.9.6"
+        ],
+        [
+          "docs/adr/0005-cursor-codex-pass-through.md",
+          "Decision"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "c05",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "multiple",
+      "query": "GoでインストールしたCLIの更新は誰が行い、配布済みバイナリを入れ替える場合の確認は何か？",
+      "baseline_terms": [
+        "go-install",
+        "Verify before swap",
+        "package-manager installs"
+      ],
+      "required": [
+        [
+          "SPEC.md",
+          "4.5 `aikata update`"
+        ],
+        [
+          "docs/adr/0035-native-self-update-safety.md",
+          "D1 - Per-channel action (no one-size-fits-all swap)"
+        ],
+        [
+          "docs/adr/0035-native-self-update-safety.md",
+          "D2 - Verify before swap; SHA-256 over an HTTPS transport anchor"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "c06",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "multiple",
+      "query": "Does Git workflow setup record an opt-in workflow in the config, and when does the feature generate GitHub enforcement files?",
+      "baseline_terms": [
+        "enable workflow git",
+        "GitHub enforcement artifacts"
+      ],
+      "required": [
+        [
+          "docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md",
+          "D3 - CLI shape"
+        ],
+        [
+          "docs/adr/0026-workflow-guides-as-opt-in-collaboration-docs.md",
+          "D5 - GitHub enforcement artifacts are deferred"
+        ]
+      ],
+      "historical": []
+    },
+    {
+      "id": "c07",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "aikata fill が既存の README を上書きするためのフラグはどこに記載されている？",
+      "baseline_terms": [
+        "aikata fill",
+        "overwriting",
+        "README"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "c08",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "negative",
+      "query": "Find the parameter for enabling glob-scoped Cursor MDC output per rule category in aikata generate.",
+      "baseline_terms": [
+        "glob-scoped MDC",
+        "Cursor",
+        "aikata generate"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "c09",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "標準の AGENTS.md にテストファーストを必須で組み込む既定設定はどこ？",
+      "baseline_terms": [
+        "test-first",
+        "default",
+        "AGENTS.md"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "c10",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "negative",
+      "query": "Find the native aikata migrate command option that rewrites Markdown links during a move.",
+      "baseline_terms": [
+        "aikata migrate",
+        "link rewriting",
+        "relocation"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "c11",
+      "split": "heldout",
+      "lang": "ja",
+      "kind": "negative",
+      "query": "aikata enable workflow git が GitHub ruleset を生成するフラグの仕様を探して。",
+      "baseline_terms": [
+        "aikata enable workflow git",
+        "rulesets",
+        "--with-github-files"
+      ],
+      "required": [],
+      "historical": []
+    },
+    {
+      "id": "c12",
+      "split": "heldout",
+      "lang": "en",
+      "kind": "negative",
+      "query": "Find the aikata update --apply option that directly overwrites a Go-installed binary with the GitHub release build.",
+      "baseline_terms": [
+        "update --apply",
+        "go-install",
+        "binary swap"
+      ],
+      "required": [],
+      "historical": []
+    }
+  ]
+}

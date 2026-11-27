@@ -1,0 +1,211 @@
+{
+  "audit_by_stratum": {
+    "candidate_negative": {
+      "false_merge": 0,
+      "missed_equivalent": 1,
+      "occurrence_absent": 1,
+      "occurrence_confirmed": 1,
+      "sampled": 2
+    },
+    "candidate_positive": {
+      "false_merge": 1,
+      "missed_equivalent": 0,
+      "occurrence_absent": 0,
+      "occurrence_confirmed": 2,
+      "sampled": 2
+    },
+    "unclassified": {
+      "false_merge": 0,
+      "missed_equivalent": 1,
+      "occurrence_absent": 0,
+      "occurrence_confirmed": 1,
+      "sampled": 1
+    }
+  },
+  "rows": [
+    {
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 1,
+        "numerator": 0,
+        "status": "sparse",
+        "value": null
+      },
+      "phase": "start",
+      "question_id": "q-accept-sync-conflict",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "missing_exposure_works": 1,
+      "occurrence": {
+        "denominator": 10,
+        "numerator": 2,
+        "status": "available",
+        "value": 0.2
+      },
+      "phase": "implementation",
+      "question_id": "q-accept-sync-conflict",
+      "repeat_search": {
+        "denominator": 1,
+        "numerator": 1,
+        "status": "sparse",
+        "value": null
+      },
+      "unknown_outcome_works": 1
+    },
+    {
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 2,
+        "numerator": 2,
+        "status": "sparse",
+        "value": null
+      },
+      "phase": "review",
+      "question_id": "q-accept-sync-conflict",
+      "repeat_search": {
+        "denominator": 2,
+        "numerator": 0,
+        "status": "sparse",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "missing_exposure_works": 1,
+      "occurrence": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "phase": "handoff",
+      "question_id": "q-accept-sync-conflict",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "distinct_first_occurrence_weeks": 2,
+      "missing_exposure_works": 2,
+      "occurrence": {
+        "denominator": 10,
+        "numerator": 3,
+        "status": "available",
+        "value": 0.3
+      },
+      "phase": "all",
+      "question_id": "q-accept-sync-conflict",
+      "repeat_search": {
+        "denominator": 1,
+        "numerator": 1,
+        "status": "sparse",
+        "value": null
+      },
+      "unknown_outcome_works": 2
+    },
+    {
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 1,
+        "numerator": 0,
+        "status": "sparse",
+        "value": null
+      },
+      "phase": "start",
+      "question_id": "q-find-release-support",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 10,
+        "numerator": 0,
+        "status": "available",
+        "value": 0.0
+      },
+      "phase": "implementation",
+      "question_id": "q-find-release-support",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 2,
+        "numerator": 0,
+        "status": "sparse",
+        "value": null
+      },
+      "phase": "review",
+      "question_id": "q-find-release-support",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "phase": "handoff",
+      "question_id": "q-find-release-support",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    },
+    {
+      "distinct_first_occurrence_weeks": 0,
+      "missing_exposure_works": 0,
+      "occurrence": {
+        "denominator": 10,
+        "numerator": 0,
+        "status": "available",
+        "value": 0.0
+      },
+      "phase": "all",
+      "question_id": "q-find-release-support",
+      "repeat_search": {
+        "denominator": 0,
+        "numerator": 0,
+        "status": "unavailable",
+        "value": null
+      },
+      "unknown_outcome_works": 0
+    }
+  ],
+  "schema_version": 1,
+  "sparse_below": 10
+}

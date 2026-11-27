@@ -1,0 +1,129 @@
+{
+  "revision": "58844055d98b986f607b1f2c4d9987cefac30487",
+  "shared_reads": [
+    "README.md",
+    "AGENTS.md",
+    "SPEC.md",
+    "ARCHITECTURE.md",
+    "GLOSSARY.md",
+    "docs/memory/feedback.md"
+  ],
+  "tasks": [
+    {
+      "id": "single-sync-conflict",
+      "prompt": "同期の衝突が2件ある。1件だけ手で解消して受け入れた場合、もう1件と関連しないmanifestの項目はどうなるか？",
+      "required": [
+        {
+          "source": "sync-decision",
+          "contains": [
+            "Keep unresolved files byte-identical on retry",
+            "removing aikata's markers",
+            "same render overrides",
+            "unrelated manifest entries"
+          ]
+        },
+        {
+          "source": "sync-consequences",
+          "contains": [
+            "Ordinary sync subsequently preserves accepted edits as user edits"
+          ]
+        }
+      ],
+      "current": {
+        "start": {
+          "file": "SPEC.md",
+          "term": "--accept-conflict",
+          "context": 3
+        },
+        "route": [
+          {
+            "source": "sync-decision",
+            "found_by": "0048-accept-sync-conflicts-per-file.md"
+          },
+          {
+            "source": "sync-consequences",
+            "found_by": "0048-accept-sync-conflicts-per-file.md"
+          }
+        ]
+      },
+      "guidance": {
+        "card": "Per-file sync conflict. Open ADR 0048 Decision for the retry rule and what is written. Open Consequences for the next sync.",
+        "route": [
+          {
+            "source": "sync-decision"
+          },
+          {
+            "source": "sync-consequences"
+          }
+        ]
+      }
+    },
+    {
+      "id": "partial-skill-supersession",
+      "prompt": "ADR 0041のコマンド廃止と配布ディレクトリは、Claude Code pluginとCodexで今どう適用される？",
+      "required": [
+        {
+          "source": "current-wrapper",
+          "contains": [
+            "plugin only",
+            "supersedes ADR 0041 D1",
+            "surface stays skill-only"
+          ]
+        },
+        {
+          "source": "historical-layout",
+          "contains": [
+            "All four distribution locations",
+            "identical `<base>/<name>/SKILL.md` shape"
+          ]
+        }
+      ],
+      "current": {
+        "start": {
+          "file": "ARCHITECTURE.md",
+          "term": "Claude Code command wrappers",
+          "context": 7
+        },
+        "route": [
+          {
+            "source": "current-wrapper",
+            "found_by": "ADR 0043"
+          },
+          {
+            "source": "historical-layout",
+            "found_by": "ADR 0041"
+          }
+        ]
+      },
+      "guidance": {
+        "card": "Claude Code plugin commands. Open ADR 0043 D2 for the current wrapper rule by distribution. Open ADR 0041 D2 for the directory convention.",
+        "route": [
+          {
+            "source": "current-wrapper"
+          },
+          {
+            "source": "historical-layout"
+          }
+        ]
+      }
+    }
+  ],
+  "sources": {
+    "sync-decision": {
+      "path": "docs/adr/0048-accept-sync-conflicts-per-file.md",
+      "heading": "## Decision"
+    },
+    "sync-consequences": {
+      "path": "docs/adr/0048-accept-sync-conflicts-per-file.md",
+      "heading": "## Consequences"
+    },
+    "current-wrapper": {
+      "path": "docs/adr/0043-command-wrapper-skill-surface-and-simple-skill-names.md",
+      "heading": "### D2 — Thin Claude Code command wrappers (supersedes ADR 0041 D1)"
+    },
+    "historical-layout": {
+      "path": "docs/adr/0041-skills-only-surface-and-plugin-skill-layout.md",
+      "heading": "### D2 — Claude Code skills use the `<name>/SKILL.md` directory layout"
+    }
+  }
+}
