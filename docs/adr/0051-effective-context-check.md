@@ -57,9 +57,9 @@ and Codex can silently drop rules once a repository's files pass 32 KiB.
 
 1. Add `aikata doctor --context`. It reports, for the current directory
    and each enabled AI tool, the instruction files that load at session
-   start, in load order: path, bytes, an approximate token count, and
-   whether the file lies outside the current git repository. It also
-   reports:
+   start, in load order: path, bytes, and whether the file lies outside
+   the current git repository. It reports bytes, not tokens, because
+   aikata does no token counting (SPEC §8). It also reports:
    - paragraphs repeated verbatim across those files (info);
    - files loaded from outside the repository (info, with the
      `claudeMdExcludes` pattern that would skip them). The exclusion
