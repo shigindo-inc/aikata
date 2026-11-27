@@ -167,7 +167,10 @@ layout (`docs/layout.md`) — dry-run first, `git mv` only after you approve,
 and `model-feature` walks a single feature from use case to domain model
 to a hand-off point just before implementation, writing into
 `docs/usecases.md` and `docs/domain.md` (the opt-in `modeling` capability;
-`aikata enable modeling`). All ship together as the single `aikata`
+`aikata enable modeling`), and `adr-inventory` takes stock of a
+repository's ADRs from `aikata list adrs --json`, condenses the decisions
+that still hold, and proposes where the rules in `AGENTS.md` belong
+(ADR 0052). All ship together as the single `aikata`
 plugin — there is no separate install per skill. Pick the surface your
 agent uses:
 
@@ -193,10 +196,11 @@ app integration. In Claude Code the skills carry simple capability names
 and are fronted by thin slash commands (ADR 0043): `/aikata:manage-docs`,
 `/aikata:refresh-docs`, and `/aikata:migrate-structure` appear in the `/`
 menu (the skills themselves are `user-invocable: false`, so they do not
-double-list); `track-context` and `model-feature` fire automatically
-(the latter per ADR 0047 D4: skill-only, no command wrapper) and have no
-command. In Codex the five skills are model-invoked as `$manage-docs` /
-`$track-context` / `$refresh-docs` / `$migrate-structure` / `$model-feature`.
+double-list); `track-context`, `model-feature`, and `adr-inventory` fire
+automatically (`model-feature` per ADR 0047 D4: skill-only, no command
+wrapper) and have no command. In Codex the six skills are model-invoked as
+`$manage-docs` / `$track-context` / `$refresh-docs` / `$migrate-structure` /
+`$model-feature` / `$adr-inventory`.
 The standalone and universal installs are skill-only (no commands) and rely
 on model invocation.
 To **update**: Claude Code `/plugin marketplace update aikata`; Codex
@@ -478,8 +482,8 @@ aikata generate
   - [0048 — Accept Sync Conflicts Per File](./docs/adr/0048-accept-sync-conflicts-per-file.md)
   - [0049 — Doctor Reports What Needs Action](./docs/adr/0049-doctor-reports-what-needs-action.md)
   - [0050 — Doc Map Off by Default](./docs/adr/0050-doc-map-off-by-default.md)
-  - [0051 — Effective Context Check (proposed)](./docs/adr/0051-effective-context-check.md)
-  - [0052 — ADR Inventory (proposed)](./docs/adr/0052-adr-inventory.md)
+  - [0051 — Effective Context Check](./docs/adr/0051-effective-context-check.md)
+  - [0052 — ADR Inventory](./docs/adr/0052-adr-inventory.md)
 
 ### AI-tool entry points
 
