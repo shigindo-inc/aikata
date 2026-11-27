@@ -1,0 +1,6 @@
+interface:
+  display_name: "adr-inventory (aikata)"
+  short_description: "Take stock of a repository's ADRs from aikata's parsed list, condense the effective decisions, and propose where ADR rules belong"
+  default_prompt: "Use $adr-inventory to take stock of this repo's ADRs: settle status issues from aikata doctor, build the inventory from aikata list adrs --json, propose a condensed list of effective decisions, and propose moving rules out of AGENTS.md, applying nothing without approval."
+policy:
+  allow_implicit_invocation: true

@@ -15,9 +15,9 @@ import (
 // from the single aikata plugin: the CLI-wrapper responsibility
 // (manage-docs), the in-repo context-maintenance loop (track-context), the
 // downstream doc-refresh loop (refresh-docs), the structure-migration
-// assistant (migrate-structure, ADR 0046), and the per-feature design loop
-// (model-feature).
-var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure", "model-feature"}
+// assistant (migrate-structure, ADR 0046), the per-feature design loop
+// (model-feature), and the ADR inventory (adr-inventory, ADR 0052).
+var firstPartySkills = []string{"manage-docs", "track-context", "refresh-docs", "migrate-structure", "model-feature", "adr-inventory"}
 
 // TestSkillCopiesMatchCanonical enforces the copy boundary of ADR 0040 /
 // ADR 0041: `dist/universal-skill/<skill>/SKILL.md` is the single

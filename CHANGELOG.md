@@ -18,6 +18,29 @@ see [AGENTS.md](./AGENTS.md) for the project-specific rules.
 
 ## [Unreleased]
 
+### Added
+
+- **`aikata list adrs [--json]`** lists the project's ADRs with their
+  status line, status class (pending / effective / superseded / retired /
+  unknown / missing), the ADRs the status line names, and how many
+  Markdown files refer to each
+  ([ADR 0052](./docs/adr/0052-adr-inventory.md)).
+- **`adr-inventory` skill.** Takes stock of a repository's ADRs from that
+  list, condenses the decisions that still hold, and proposes moving the
+  rules `AGENTS.md` restates into `REVIEW.md` or lint. It writes nothing
+  without approval and never edits an ADR's decision text.
+
+### Changed
+
+- **Breaking: an ADR's decision is read only from its body status line.**
+  Frontmatter `status` means the document lifecycle on ADRs as on every
+  other document. A decision word there now warns
+  (`adr.decision-in-frontmatter`); `aikata doctor --fix` sets it to
+  `stable` and, when the ADR has no status line, adds one with the old
+  value. When frontmatter and the status line disagree, `doctor` reports
+  `adr.status-conflict` and `--fix` leaves the file for you to settle
+  ([ADR 0052](./docs/adr/0052-adr-inventory.md)).
+
 ## [0.16.0] - 2026-11-21
 
 **`doctor` reports what needs action, and the doc map becomes opt-in.**

@@ -432,33 +432,52 @@ audience: [human, agent]
 }
 
 func TestCheckADR_StatusSources(t *testing.T) {
+	fm := func(status string) string {
+		return "---\nproject: sample\nstatus: " + status + "\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n"
+	}
 	cases := []struct {
-		name, body  string
-		wantMissing bool
-		wantDepErr  bool
+		name, body string
+		wantCode   string
+		wantDepErr bool
 	}{
 		{
 			name: "japanese status line with full-width colon",
-			body: "---\nproject: sample\nstatus: draft\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n\n> **状態**：active\n",
+			body: fm("draft") + "\n> **状態**：active\n",
 		},
 		{
-			name: "frontmatter status only",
-			body: "---\nproject: sample\nstatus: accepted\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n",
+			name:     "decision only in frontmatter",
+			body:     fm("accepted"),
+			wantCode: "adr.decision-in-frontmatter",
 		},
 		{
-			name:       "body line wins over frontmatter",
-			body:       "---\nproject: sample\nstatus: draft\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n\n- **Status**: Deprecated\n",
+			name:     "frontmatter repeats the status line",
+			body:     fm("accepted") + "\n- **Status**: Accepted\n",
+			wantCode: "adr.decision-in-frontmatter",
+		},
+		{
+			name:     "frontmatter disagrees with the status line",
+			body:     fm("superseded") + "\n> **状態**: active\n",
+			wantCode: "adr.status-conflict",
+		},
+		{
+			name:       "deprecated status line needs a replacement",
+			body:       fm("draft") + "\n- **Status**: Deprecated\n",
 			wantDepErr: true,
 		},
 		{
-			name:       "deprecated in frontmatter still needs a replacement",
-			body:       "---\nproject: sample\nstatus: deprecated\nversion: 0.0.1\nupdated: 2026-05-20\naudience: [human, agent]\n---\n\n# ADR\n",
-			wantDepErr: true,
+			name:     "deprecated only in frontmatter is not read as the decision",
+			body:     fm("deprecated"),
+			wantCode: "adr.decision-in-frontmatter",
 		},
 		{
-			name:        "no status anywhere",
-			body:        "# ADR\n\nNo metadata.\n",
-			wantMissing: true,
+			name:     "lifecycle frontmatter and no status line",
+			body:     fm("draft"),
+			wantCode: "adr.missing-status",
+		},
+		{
+			name:     "no status anywhere",
+			body:     "# ADR\n\nNo metadata.\n",
+			wantCode: "adr.missing-status",
 		},
 	}
 	for _, tc := range cases {
@@ -468,20 +487,25 @@ func TestCheckADR_StatusSources(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(tmp, "docs", "adr", "0002-case.md"), []byte(tc.body), 0o644); err != nil {
 				t.Fatalf("write: %v", err)
 			}
-			var gotMissing, gotDep bool
+			var gotCodes []string
+			var gotDep bool
 			for _, iss := range runDoctor(t, tmp) {
 				if iss.File != "docs/adr/0002-case.md" {
 					continue
 				}
-				if iss.Code == "adr.missing-status" {
-					gotMissing = true
+				if strings.HasPrefix(iss.Code, "adr.") {
+					gotCodes = append(gotCodes, iss.Code)
 				}
 				if strings.Contains(iss.Message, "Deprecated ADR") {
 					gotDep = true
 				}
 			}
-			if gotMissing != tc.wantMissing {
-				t.Errorf("missing-status reported = %v, want %v", gotMissing, tc.wantMissing)
+			var want []string
+			if tc.wantCode != "" {
+				want = []string{tc.wantCode}
+			}
+			if strings.Join(gotCodes, ",") != strings.Join(want, ",") {
+				t.Errorf("adr codes = %v, want %v", gotCodes, want)
 			}
 			if gotDep != tc.wantDepErr {
 				t.Errorf("deprecated error reported = %v, want %v", gotDep, tc.wantDepErr)

@@ -211,9 +211,13 @@ scaffolds with no durable schema change:
 **Must check**:
 
 - Every file `AGENTS.md` links to exists.
-- Every ADR declares a status (a `**Status**` / `**状態**` line, or the
-  frontmatter `status` key), and no ADR is `Deprecated` without a
-  replacement reference.
+- Every ADR declares its decision on a body `**Status**` / `**状態**`
+  line, and no ADR is `Deprecated` without a replacement reference.
+  Frontmatter `status` is the document lifecycle on ADRs too: a decision
+  word there (`proposed`, `accepted`, `active`, `superseded`,
+  `deprecated`, `rejected`) warns, and `--fix` moves it to the status
+  line unless it disagrees with an existing one
+  ([ADR 0052](./docs/adr/0052-adr-inventory.md)).
 - No two ADRs share a number (error). Gaps in the numbering are info.
 - With `--verbose` only: every term defined in `GLOSSARY.md` is used at
   least once elsewhere (info).
@@ -350,6 +354,10 @@ AI-tool integrations.
   changelog, prompts, monorepo, stack, ai-tool, workflow) and one-off
   artifacts (`list artifacts`: adr, app-icon, mascot).
 - AI tools the current aikata binary supports.
+- The current project's ADRs (`list adrs`): number, title, raw status,
+  status class, ADRs named on the status line, Markdown references, and
+  size. Read-only; the `adr-inventory` skill reads its `--json`
+  ([ADR 0052](./docs/adr/0052-adr-inventory.md)).
 
 ### 4.8 `aikata fill`
 
